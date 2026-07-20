@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-07-19 (Conv 397, r-end). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-07-20 (Conv 398, r-commit). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
@@ -165,16 +165,12 @@ Enable the **15 React Compiler rules we already ship but never run**. `eslint-pl
 - **Also unknown:** whether these fire on `.astro` frontmatter via `eslint-plugin-astro`. Check while wiring.
 - **Refs:** `../Peerloop/eslint.config.js`, `docs/decisions/06-testing-ci.md` §§ RDOC + "react-hooks/exhaustive-deps Registered as warn".
 
-### [RDFIX] · standalone (confirmed defects) · surfaced Conv 397
+### [KNIP] · 🔄 Active — oracle adopted Conv 398; gate-wiring deferred · [Opus]
 
-The verified defects from the `[RDOC]` audit that neither `[A11Y]` nor `[RHOOKS]` covers. Each confirmed by reading the code; false positives already stripped out.
-- **🔴 CONFIRMED BUG — `src/components/booking/SessionRoom.tsx:126`** (`no-impure-state-updater`, error). The `setViewState((current) => {...})` updater calls `setTimeUntilJoin()` inside itself (line 142). React may invoke updater callbacks more than once, so the countdown can repeat or observe inconsistent external state. **Fix:** compute the countdown outside the updater; keep the updater pure. Subtle enough to survive code review.
-- **Dead code outside our detector's reach** — `codecheck-orphan-components.mjs` is scoped to `src/components/**` and structurally cannot see these: `src/emails/WelcomeEmail.tsx` + `src/emails/PaymentReceiptEmail.tsx` (both genuinely unreferenced, `git grep` confirms zero importers); dead exports `hasRole` (847) + `canAccessFeature` (859) in `src/lib/db/types.ts` — the only other `hasRole` hit is an unrelated **local variable** in `lib/auth/session.ts:140`, likely ROLE-SEMANTICS leftovers (that block closed Convs 253/254).
-- **Lower confidence, needs the same importer check:** unused exports in `emails/styles.ts` (6), `discover/role-utils.ts` (`INACTIVE_COLORS`, `MEMBER_ROLE_COLORS`), `ui/charts/types.ts` (`CHART_BREAKPOINTS`), `lib/db/index.ts` (`now`, `parseTimestamp`), `lib/mock-data.ts` (`creators`, `getRelatedCourses`, `getFeaturedCreators`).
-- **Before deleting:** apply the Conv-393 deletion-safety rule — safe = **zero importers of ANY kind** (reachable + parked-orphan + test), not just zero reachable importers. `tsc --noEmit` between batches. For the email templates specifically, confirm Resend doesn't resolve them dynamically by name.
-- **⛔ Verified FALSE POSITIVES — do NOT action:** `MyStudents.tsx:197` "setInterval never cleaned up" (cleanup **does** exist at lines 142–148 — unmount `useEffect` clearing `pollTimers.current` via the captured-ref pattern; the rule can't see across functions) · `workers/cron/src/index.ts` "unused file" (it's `main` in `workers/cron/wrangler.toml`, a CF Worker entry point — the exact FP class our own detector is scoped to avoid) · the 17 marketing/stories/testimonials `unused-file` hits (knowingly parked as `[ORPHAN-BACKLOG]` Category B behind `[RG-PUBLIC]`).
-- **Judged low value, not included:** 151 `button-has-type` (true but latent — no `<form>` in the sampled file; only bites if the component is reused inside one) · 41 `no-giant-component` (>300 lines, opinion).
-- **Refs:** `.scratch/rdoc-report-conv397.json`, `docs/decisions/06-testing-ci.md` §§ RDOC + "Dead `.ts` Sweep" (Conv 393).
+Adopted `knip@6.27.0` (devDep + `knip.json` + `npm run knip`) as the module-graph reachability oracle — closes grep's blind spots (`.astro`, relative-path imports, barrel passthroughs). **Done Conv 398:** installed, configured (cron-worker + `scripts/**` entries, `project: src/**`), first run adjudicated all 9 `[RDFIX]` candidates (converged with grep, now with `.astro` coverage) and independently reproduced the 14 parked `[ORPHAN-BACKLOG]` Cat-B files + kept `emails/styles.ts` correctly live.
+- **Remaining before it can be a hard gate:** (1) tune the dependency analysis — false-flags `zod`/`tailwindcss`/`@tailwindcss/forms`/`react-day-picker` (used via CSS `@plugin`/runtime, not JS import) + `cloudflare:` unlisted; (2) baseline the 14 Cat-B files (or wait for `[RG-PUBLIC]` cleanup) so gating doesn't fail on known-parked orphans — **same blocker as the hand-rolled `codecheck-orphan-components.mjs`, which knip would replace**; (3) wire into `/w-codecheck` (only NEW unused fails).
+- **Known dead exports KEPT by decision (Conv 398), knip will re-flag when the gate lands:** `CHART_BREAKPOINTS` (+ its barrel re-export line), `now()`/`parseTimestamp()` (`lib/db/index.ts`), `creators`/`getRelatedCourses`/`getFeaturedCreators` (`lib/mock-data.ts`), and `MONITORING_COLORS` (`discover/role-utils.ts` — newly orphaned by the Group-A `MEMBER_ROLE_COLORS` deletion). Plus `emails/styles.ts`'s 6 unused exports (file is live). Sweep whenever the gate is stood up.
+- **Refs:** `../Peerloop/knip.json`, `.claude/scripts/codecheck-orphan-components.mjs`, `[[feedback_orphaned_components_survive_migration]]`, `[ORPHAN-BACKLOG]`, `docs/decisions/06-testing-ci.md` § RDOC.
 
 > ## ⏸️ PARKED (blocked behind a clear gate — out of active rotation)
 >
@@ -208,10 +204,6 @@ Icon commercial-use compliance, surfaced Conv 370 during [ICN-NS]. **Two items:*
 
 ## ✅ Completed this conv
 
-### [RDOC] · ✅ DONE Conv 397
+### [RDFIX] · ✅ DONE Conv 398
 
-Assessed the `react-doctor` npm package (Million Software; 405 rules on an oxlint engine) for the Peerloop toolchain. Ran read-only on `jfg-dev-14` — no branch, no dependency added, working tree restored clean at `2d148da7`.
-- **Verdict: occasional external audit (pre-go-live), NOT toolbelt tooling.** Disqualifier is structural — **0 of our 90 `.astro` files were analyzed** (`framework: "unknown"`), so it can never be a trustworthy gate; `0.x` at ~4 versions/day is secondary. `install` / `ci install` deliberately left unexecuted.
-- **Scan:** 712 findings (2 error / 710 warning) over 210 files in 16.5s, from 47 of 405 rules — Bugs 287, Maintainability 164, A11y 154, Perf 105, Security 2.
-- **Load-bearing finding:** react-doctor reports **zero** `react-hooks/*` rules despite depending on the plugin — the two tools are **complementary, not overlapping**, falsified in both directions. The audit's durable value was two gaps in coverage **we already owned** → spun out as `[A11Y]` + `[RHOOKS]`; confirmed defects → `[RDFIX]`.
-- **Landed:** decision entry in `docs/decisions/06-testing-ci.md`; pre-launch run procedure as `MVP-GOLIVE.CODE-AUDIT` in `plan/mvp-golive/README.md` (+ PLAN.md block-3 row); `VERNACULAR.md` row; baseline report preserved at `.scratch/rdoc-report-conv397.json`.
+Resolved the `[RDOC]`-audit confirmed defects. **Confirmed bug fixed:** `SessionRoom.tsx:126` impure `setViewState` updater (it called `setTimeUntilJoin` inside itself) → mirrored `viewState` in a `useRef`, moved the countdown compute + setters outside the updater so it's now pure; behavior preserved exactly (same user-initiated-state guard, same countdown math). **Group-A dead code deleted** (verified zero-importer by grep **and** knip): `emails/WelcomeEmail.tsx` + `emails/PaymentReceiptEmail.tsx` (whole files); `hasRole` + `canAccessFeature` (`db/types.ts`); `INACTIVE_COLORS` + `MEMBER_ROLE_COLORS` + the orphaned `MemberRole` import (`discover/role-utils.ts`). **Groups B/C/D kept by user decision** as intentional barrel/infra/fixture surface (tracked as knip-flaggable under `[KNIP]`). Reachability method upgraded mid-task grep → knip (`[KNIP]`) after the user flagged grep's blind spots. All 5 baseline gates green this conv (tsc / astro check / lint / test 405 files·6540 / build).
