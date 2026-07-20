@@ -3,6 +3,17 @@
 
 ## 6. Testing & CI/CD
 
+### Adopt `eslint-plugin-jsx-a11y` at `warn` (upstream + `overrides` peer pin), Not the ESLint-10-Native Fork — the Fork Silently Drops `.astro` Coverage (A11Y, Conv 399)
+**Date:** 2026-07-20 (Conv 399)
+
+`[A11Y]` (from the Conv-397 RDOC audit — "zero accessibility linting anywhere") needed a **permanent** a11y linter for both `.tsx` and `.astro`. The obvious pick, `eslint-plugin-jsx-a11y`, hit a real obstacle: its latest release (`6.10.2`, Oct 2024) caps its `eslint` peer at `^9`, so `npm install` ERESOLVE-fails on our ESLint 10 — and the upstream fix is **stalled** (issue [#1075](https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/issues/1075), PRs [#1079](https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/pull/1079)/[#1081](https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/pull/1081) open + unmerged since Feb 2026; maintainer spread thin, no ETA). Two alternatives were evaluated empirically. **The es-tooling fork `eslint-plugin-jsx-a11y-x@0.2.0`** natively supports ESLint 10 — but tested via npm alias it **resolves 0 rules through `eslint-plugin-astro`'s a11y config** (astro hard-codes upstream's shape), i.e. it silently drops `.astro` coverage, and it's a young `0.x` with an ESM-redesigned API. **Oxlint** (a separate Rust linter that natively ports the jsx-a11y rules, no eslint-peer coupling) is a whole parallel tool to adopt. Chosen: **upstream `jsx-a11y@6.10.2` + a one-line package.json `overrides` peer pin** (`{ "eslint-plugin-jsx-a11y": { "eslint": "$eslint" } }`) — it keeps `npm install`/`npm ci` clean, integrates natively with `eslint-plugin-astro` for `.astro`, and **self-heals**: delete the override the day upstream ships `eslint ^10`. This is the exact posture we already run for `eslint-plugin-react-hooks@7.1.1` (which *has* shipped the `eslint ^10` peer) — jsx-a11y is just the lagging sibling; empirically it loads and runs all 34 rules on ESLint 10.
+
+**Land-at-warn (per `[LE-TRIAGE]`):** the `recommended` set surfaced **100 `.tsx` findings / 34 files** (label-has-associated-control 61 · click-events-have-key-events 13 · no-static-element-interactions 11 · no-autofocus 8 · aria-role 5) and **0 `.astro`** (our 90 `.astro` are structural shells; interactive UI lives in `.tsx` islands, and Astro's dev-toolbar Audit already runtime-checks rendered `.astro`). All rules registered at `warn` (options preserved, `off` rules kept off), so `npm run lint` (`eslint src/`, no `--max-warnings`) stays **exit-0** — the lint baseline gate is green; the 100 are the triage backlog under `[A11Y]`. Astro coverage was deemed **not load-bearing now** (0 findings) but kept for free/future-proofing.
+
+**Config wrinkle (ESLint 10):** `eslint-plugin-astro`'s `flat/jsx-a11y-recommended` registers the `jsx-a11y` plugin in an **unscoped** config object, which collides with the `.tsx` block's own `jsx-a11y` registration ("Cannot redefine plugin"). Fix: `.map()` that one object to `files: ['**/*.astro']` so the two registrations never apply to the same file. This is baked into `eslint.config.js` with a comment.
+
+**See:** `../Peerloop/eslint.config.js`, `../Peerloop/package.json` (`overrides` + devDep); the RDOC entry below (`[A11Y]` origin) and the `exhaustive-deps`/`[LE-TRIAGE]` entry (land-at-warn precedent); `CURRENT-TASKS.md` § [A11Y]; Conv 399.
+
 ### Adopt `knip` as the Durable Module-Graph Reachability Oracle — "Absent From the Build = Dead" Closes grep's Blind Spots (KNIP, Conv 398)
 **Date:** 2026-07-20 (Conv 398)
 
