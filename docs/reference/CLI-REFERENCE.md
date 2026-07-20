@@ -248,6 +248,28 @@ npm run check:tailwind
 
 ---
 
+### `npm run knip`
+
+Report unused files, exports, and dependencies.
+
+```bash
+npm run knip
+```
+
+**What it does:**
+- Executes `knip` (config in `knip.json`)
+- Builds the real module graph from entry points and tree-shakes, reporting code that is never reached
+- Auto-detects Astro/vitest/playwright plugins and compiles `.astro` frontmatter, so it sees imports a text `grep` misses (relative paths, barrel passthroughs, `.astro` markup)
+- Entry points: the Cloudflare cron worker (`workers/cron/src/index.ts`) + `scripts/**`; project scope is `src/**/*.{ts,tsx,astro}`
+
+**Use when:**
+- Adjudicating dead-code deletions — "absent from the graph = dead" is a stronger oracle than `git grep` importer analysis
+- Auditing unused exports across `src/` (generalizes `codecheck-orphan-components.mjs`, which is scoped to `src/components/**`)
+
+**Note:** The file/export reachability is trustworthy; the *dependency* section has known false positives (`zod`/`tailwindcss`/`react-day-picker` are used via CSS `@plugin`/runtime, not a JS import) and needs tuning before gating on it. Not yet a hard gate.
+
+---
+
 ## Database Commands
 
 > Full documentation: [migrations.md](../architecture/migrations.md)

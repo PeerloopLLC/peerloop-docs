@@ -395,6 +395,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [6. Testing & CI/CD](06-testing-ci.md)
 
+- [Adopt `knip` as the Durable Module-Graph Reachability Oracle — "Absent From the Build = Dead" Closes grep's Blind Spots (KNIP, Conv 398)](06-testing-ci.md#adopt-knip-as-the-durable-module-graph-reachability-oracle--absent-from-the-build--dead-closes-greps-blind-spots-knip-conv-398)
 - [React Doctor = Occasional External Audit (e.g. Pre-Go-Live), NOT Toolbelt Tooling; Its Real Yield Was Two Coverage Gaps We Already Owned (RDOC, Conv 397)](06-testing-ci.md#react-doctor--occasional-external-audit-eg-pre-go-live-not-toolbelt-tooling-its-real-yield-was-two-coverage-gaps-we-already-owned-rdoc-conv-397)
 - [Dead `.ts` Sweep + Deletion-Safety Refinement — Route-Reachability Is Authoritative for `src/components/**` Only (ORPHAN-BACKLOG, Conv 393)](06-testing-ci.md#dead-ts-sweep--deletion-safety-refinement--route-reachability-is-authoritative-for-srccomponents-only-orphan-backlog-conv-393)
 - [Orphaned Page-Component Detector (BFS Reachability from Routes) — Built as a Manual Tool, Not Yet a `/w-codecheck` Gate (ORPHAN-DETECT, Conv 392)](06-testing-ci.md#orphaned-page-component-detector-bfs-reachability-from-routes--built-as-a-manual-tool-not-yet-a-w-codecheck-gate-orphan-detect-conv-392)

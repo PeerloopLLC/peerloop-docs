@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-07-20 (Conv 398, r-commit). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-07-20 (Conv 398, r-end). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
@@ -165,12 +165,20 @@ Enable the **15 React Compiler rules we already ship but never run**. `eslint-pl
 - **Also unknown:** whether these fire on `.astro` frontmatter via `eslint-plugin-astro`. Check while wiring.
 - **Refs:** `../Peerloop/eslint.config.js`, `docs/decisions/06-testing-ci.md` §§ RDOC + "react-hooks/exhaustive-deps Registered as warn".
 
-### [KNIP] · 🔄 Active — oracle adopted Conv 398; gate-wiring deferred · [Opus]
+### [KNIP] · 🔄 Active — oracle adopted Conv 398; gate-wiring deferred
 
 Adopted `knip@6.27.0` (devDep + `knip.json` + `npm run knip`) as the module-graph reachability oracle — closes grep's blind spots (`.astro`, relative-path imports, barrel passthroughs). **Done Conv 398:** installed, configured (cron-worker + `scripts/**` entries, `project: src/**`), first run adjudicated all 9 `[RDFIX]` candidates (converged with grep, now with `.astro` coverage) and independently reproduced the 14 parked `[ORPHAN-BACKLOG]` Cat-B files + kept `emails/styles.ts` correctly live.
 - **Remaining before it can be a hard gate:** (1) tune the dependency analysis — false-flags `zod`/`tailwindcss`/`@tailwindcss/forms`/`react-day-picker` (used via CSS `@plugin`/runtime, not JS import) + `cloudflare:` unlisted; (2) baseline the 14 Cat-B files (or wait for `[RG-PUBLIC]` cleanup) so gating doesn't fail on known-parked orphans — **same blocker as the hand-rolled `codecheck-orphan-components.mjs`, which knip would replace**; (3) wire into `/w-codecheck` (only NEW unused fails).
 - **Known dead exports KEPT by decision (Conv 398), knip will re-flag when the gate lands:** `CHART_BREAKPOINTS` (+ its barrel re-export line), `now()`/`parseTimestamp()` (`lib/db/index.ts`), `creators`/`getRelatedCourses`/`getFeaturedCreators` (`lib/mock-data.ts`), and `MONITORING_COLORS` (`discover/role-utils.ts` — newly orphaned by the Group-A `MEMBER_ROLE_COLORS` deletion). Plus `emails/styles.ts`'s 6 unused exports (file is live). Sweep whenever the gate is stood up.
 - **Refs:** `../Peerloop/knip.json`, `.claude/scripts/codecheck-orphan-components.mjs`, `[[feedback_orphaned_components_survive_migration]]`, `[ORPHAN-BACKLOG]`, `docs/decisions/06-testing-ci.md` § RDOC.
+
+### [EMAILDOC] · standalone (doc cleanup) · trivial · surfaced Conv 398
+
+Conv 398 deleted `src/emails/WelcomeEmail.tsx` + `PaymentReceiptEmail.tsx` (dead, zero importers). Both are still listed in `docs/reference/resend.md` + `docs/reference/DEVELOPMENT-GUIDE.md` — both **`manual`** category (editorial/vendor, user-owned), so the r-end docs agent left them by policy. Stale reference to now-deleted files — remove/annotate the two templates (verify each mention is the deleted template, not a live one). Low priority. **Refs:** `docs/reference/resend.md`, `docs/reference/DEVELOPMENT-GUIDE.md`.
+
+### [NPMVULN] · standalone (security hygiene) · low priority · surfaced Conv 398
+
+`npm install` (knip adoption) reported **21 tree-wide vulnerabilities** (2 low / 10 moderate / 9 high) — whole-dependency-tree total, **not** knip-specific. Run `npm audit` in `~/projects/Peerloop`, triage dev-only/transitive vs. runtime-reachable, decide fixes (don't churn the lockfile without cause). PACKAGE-UPDATES-adjacent; worth a look before MVP-GOLIVE. **Refs:** `~/projects/Peerloop/package.json`.
 
 > ## ⏸️ PARKED (blocked behind a clear gate — out of active rotation)
 >
