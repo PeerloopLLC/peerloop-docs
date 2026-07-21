@@ -3,6 +3,23 @@
 
 ## 6. Testing & CI/CD
 
+### `set-state-in-effect` Is an Accepted Baseline, Not a To-Do List — Most Are Idiomatic Fetch-on-Mount or SSR-Hydration-Safety (RHOOKS triage, Conv 400)
+**Date:** 2026-07-20 (Conv 400)
+
+After adopting react-hooks `recommended-latest` at warn (§ RHOOKS below), the dominant finding was `set-state-in-effect` (95 after the Batch-1 reorders unmasked latent ones). A full categorization of the 95 showed **~90 are correct for our architecture** and must not be "fixed":
+
+- **49 fetch-on-mount** (`useEffect(() => { fetchX() }, [])`) — the idiomatic Astro-islands data-load pattern; the only real "fix" is adopting a data-fetching library (react-query/swr), out of scope.
+- **~25 deliberate SSR-hydration-safety** — client-only reads (`localStorage`, `window.location.hash`, `document`, the current-user cache) intentionally deferred to an effect so SSR and the first (hydration) client render both produce the server value. `current-user.ts` and `ThemeToggle.tsx` carry explicit *"match SSR output / guarded for SSR"* comments. Converting these to lazy-`useState` initializers or render-time compute would reintroduce hydration mismatches / SSR crashes (`window` undefined) — **the rule cannot see SSR constraints.**
+- **~15 prop→state sync / `setPage(1)`-on-filter** — mild anti-patterns, but changing them risks edit-flow / pagination regressions for negligible gain.
+
+**Decision:** keep `set-state-in-effect` at **warn** (it never blocks the gate) and treat the existing ~93 as an **accepted baseline** — exactly how `exhaustive-deps` (`[LE-TRIAGE]`) is treated. Triage only genuinely-new or egregious cases; do **not** chase the baseline to zero. Blindly rewriting these would introduce SSR/hydration bugs, which is why the pass produced a policy, not a sweep.
+
+**The one genuine fix taken:** `useCurrentUser` + `useAuthStatus` (`current-user.ts`) migrated from a `useState`+hydrate-`useEffect` to **`useSyncExternalStore`** — the React-blessed external-store-with-hydration primitive, and now the reusable pattern for any future client-store hydration hook. It fit cleanly because the store already had the pieces: the subscribe functions are the `(listener) => unsubscribe` shape `useSyncExternalStore` wants; `getSnapshot` returns a referentially-stable value (`getCurrentUser()` returns the cached `window.__peerloop.currentUser`, deduped on `id`+`dataVersion`; `authStatus` is a primitive string), satisfying the cached-snapshot contract; and `getServerSnapshot` (`null` / `'loading'`) matches the prior SSR init exactly. Verified: tsc 0, **151 targeted tests pass** (current-user lib + hook consumers), react-hooks 99→97.
+
+**Batch 1 (10 correctness fixes, same conv):** 6 `static-components` (hoist stateless inline `Spinner`/`InfoPill` to module scope) + 4 `immutability` (reorder each loader above its `useEffect`). The 4 immutability reorders each unmasked a latent `set-state-in-effect` (91→95) the error had masked — folded into the baseline above. `TestimonialsBrowse` `FilterContent` (the last 2 `static-components`) was then fixed by converting the inline `<FilterContent/>` component to a plain `{filterContent}` element value — no prop-threading, and it also fixes the controlled-radio remount (53 tests pass). Deferred at warn: `ModeratorDetailContent` `purity` (benign `Date.now()` countdown display), `CoursesCatalog` `preserve-manual-memoization` (advisory). Net after triage: `static-components` + `immutability` fully cleared; react-hooks 105→95.
+
+**See:** `../Peerloop/src/lib/current-user.ts` (the `useSyncExternalStore` hydration pattern), `../Peerloop/eslint.config.js`; § RHOOKS below (adoption); the `exhaustive-deps`/`[LE-TRIAGE]` entry (same warn-baseline treatment); `CURRENT-TASKS.md` § [RHOOKS]; Conv 400.
+
 ### Enable the Full `react-hooks` `recommended-latest` Set at `warn` — the 15 React-Compiler Rules We Already Shipped but Never Ran (RHOOKS, Conv 400)
 **Date:** 2026-07-20 (Conv 400)
 
