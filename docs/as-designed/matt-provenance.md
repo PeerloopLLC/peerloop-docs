@@ -436,6 +436,10 @@ The Tier-1/Tier-2 page-conversion split (Conv 219) surfaced a third legitimate c
 
 So the stamp taxonomy is really **four** states, not three: `matt-sourced` / `matt-inspired` / `legacy` (the three *stamped* states) **+ unstamped pre-primitive** (the legitimate no-stamp state). Reserve `legacy` for an actually-legacy primitive used at root; reserve no-stamp for a composition of vetted primitives.
 
+**Second no-stamp case — behavioral primitives (Conv 404, `[A11Y]`).** `ui/ModalBackdrop.tsx` and `ui/ClickableRow.tsx` are unstamped and unregistered but are **not** pre-primitives: they render raw DOM rather than composing vetted primitives. They carry an *interaction contract* (a backdrop's `aria-hidden="true"` + dismiss handler; a row's `role="button"` + Enter/Space + focus ring), not design, and have no Figma counterpart — so any `data-prov` value would be a false provenance claim, and a registry entry would require invented `figmaMatchNames`. Verified: `prov:sweep` raises nothing for either.
+
+**Consequence for the DOM page-report (§12c):** `ClickableRow` renders `role="button"` with no `[data-prov]` ancestor, so it counts as an **uncovered interactive** — by design, not a worklist item. Until that distinction is encoded, read "uncovered" as *raw interactive **or** behavioral primitive*. A formal behavioral tier here was considered and deliberately deferred (Conv 404 Decision 3, as out-of-scope); §12e remains the extension point if one is ever wanted.
+
 ### Origin
 
 User directive Conv 216: *"Vetted primitives are in the Matt-sourced registry or the Matt-inspired

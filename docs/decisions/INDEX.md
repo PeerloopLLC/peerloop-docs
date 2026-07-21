@@ -252,6 +252,8 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [[A11Y] Two Behavioral Primitives Split by a11y Contract — `ModalBackdrop` (Never Focusable) vs `ClickableRow` (Conv 404)](05-ui-ux-components.md#a11y-two-behavioral-primitives-split-by-a11y-contract--modalbackdrop-never-focusable-vs-clickablerow-conv-404)
+- [Behavioral Primitives Are Neither `data-prov`-Stamped Nor Registry-Registered (Conv 404)](05-ui-ux-components.md#behavioral-primitives-are-neither-data-prov-stamped-nor-registry-registered-conv-404)
 - [Universal Auto-Derived Feature → Static Perk, Not a Vestigial Toggle (DIPLOMA-UI-GAPS, Conv 391)](05-ui-ux-components.md#universal-auto-derived-feature--static-perk-not-a-vestigial-toggle-diploma-ui-gaps-conv-391)
 - [Canonical Brand Name Is "Peerloop"; the Logo Wordmark Was Hand-Edited to Conform (BRAND-CASE, Conv 369)](05-ui-ux-components.md#canonical-brand-name-is-peerloop-the-logo-wordmark-was-hand-edited-to-conform-brand-case-conv-369)
 - [Sidebar Collision-Merge = JS ResizeObserver + Hysteresis on Un-Clamped `clientHeight` (SIDEBAR-COLLIDE, Conv 368)](05-ui-ux-components.md#sidebar-collision-merge--js-resizeobserver--hysteresis-on-un-clamped-clientheight-sidebar-collide-conv-368)

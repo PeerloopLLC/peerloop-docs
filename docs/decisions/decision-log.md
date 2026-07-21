@@ -1721,3 +1721,21 @@ Re-scoped `[AAP]` on the upgraded stack: root cause is now `node_modules/astro/d
 **Rationale:** Dev-only cosmetic no-op, production verified clean; re-probe after each future astro upgrade via the existing curl probe.
 
 **See:** `docs/decisions/01-architecture.md` [AAP] entry; `docs/sessions/2026-07/20260721_1137 Decisions.md` §3, Learnings §5; PLAN.md § [AAP]; docs `7bb37ff`.
+
+### [A11Y] Two Behavioral Primitives Split by a11y Contract — `ModalBackdrop` (Never Focusable) vs `ClickableRow` (Conv 404)
+**Date:** 2026-07-21 (Conv 404)
+
+The ~13 `click-events-have-key-events` / `no-static-element-interactions` lint sites are **not one family**, so they get **two** primitives with opposite contracts: `ui/ModalBackdrop.tsx` (`aria-hidden="true"` + optional `onClick`, deliberately **no** `tabIndex` / `role="button"` — formalizing the already-correct idiom at `Modal.tsx:92`, which is why the linter flags `:83` but not `:92`) and `ui/ClickableRow.tsx` (`role="button"` + tab stop + Enter/Space with `preventDefault` + focus ring + optional `aria-expanded`). Rejected the approved-but-wrong "one shared primitive for all 13" plan — it would have put **7 decorative backdrops into the tab order**. 8 sites migrated with each backdrop keeping its exact `className` (zero visual change); `AvailabilityCalendar:654`, `AdminDataTable:137`, `Modal.tsx:83` left as documented one-offs.
+
+**Rationale:** A backdrop must be *removed* from the a11y tree and never focusable; a row must be *added* to it as a button — one component cannot honour both. Aggregate lint counts describe symptoms, not shared structure; grouping by rule name is not grouping by contract. Lint 100 → 72 a11y warnings; all 5 gates green in-conv.
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `docs/sessions/2026-07/20260721_1540 Decisions.md` §2, Learnings §§3–4; code `5a8cb6f9`.
+
+### Behavioral Primitives Are Neither `data-prov`-Stamped Nor Registry-Registered (Conv 404)
+**Date:** 2026-07-21 (Conv 404)
+
+Components carrying an **interaction contract rather than a design** ship unstamped (no `data-prov`) and unregistered (absent from `matt-inspired-registry.ts`), with `prov:sweep` verified green empirically. Established by `ModalBackdrop` + `ClickableRow`. Rejected stamping `matt-inspired` with invented `figmaMatchNames`, and pre-emptively extending `matt-provenance.md §12e` with a formal behavioral tier.
+
+**Rationale:** Registry entries require `figmaMatchNames` and all three `data-prov` values assert **design** provenance; these primitives have no Figma counterpart, so a stamp would be a false claim in a scheme whose whole value is trustworthy provenance. §12e is the documented extension point if a formal tier is ever wanted.
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `docs/as-designed/matt-provenance.md` §12e; `docs/sessions/2026-07/20260721_1540 Decisions.md` §3.

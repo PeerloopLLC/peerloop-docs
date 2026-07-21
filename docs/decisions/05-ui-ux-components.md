@@ -3,6 +3,32 @@
 
 ## 5. UI/UX & Components
 
+### [A11Y] Two Behavioral Primitives Split by a11y Contract — `ModalBackdrop` (Never Focusable) vs `ClickableRow` (Conv 404)
+**Date:** 2026-07-21 (Conv 404)
+
+**Decision:** The ~13 `click-events-have-key-events` / `no-static-element-interactions` lint sites are **not one family**, so they get **two** primitives with deliberately opposite contracts, each documenting that it must not absorb the other's cases:
+- **`ui/ModalBackdrop.tsx`** (42 lines) — dismiss backdrops. `aria-hidden="true"` + optional `onClick`, and **no `tabIndex`, no `role="button"`**. `aria-hidden` removes the element from the accessibility tree, satisfying both rules without making anything focusable. This formalizes an idiom **already correct in the codebase** at `Modal.tsx:92` — which is exactly why the linter flags `Modal.tsx:83` and not `:92`.
+- **`ui/ClickableRow.tsx`** (78 lines) — genuinely button-like rows. `role="button"` + tab stop + Enter/Space with `preventDefault` + focus ring + optional `aria-expanded` + `disabled` handling, with a header comment recording why a native `<button>` is unavailable (block content inside `<button>` is invalid HTML).
+
+Rejected: one shared `ClickableRow` for all 13 (the plan as originally approved — it would have put **7 decorative backdrops into the tab order**, making accessibility worse), and 13 one-off keyboard-handler edits (free to drift). 8 sites migrated, each backdrop keeping its exact `className` → zero visual change. `AvailabilityCalendar:654` (already `role="gridcell"`, wants grid nav), `AdminDataTable:137` (a `stopPropagation` sink, not a control), and `Modal.tsx:83` are left as documented one-offs.
+
+**Rationale:** The two families need opposite things — a backdrop must be *removed* from the a11y tree and never focusable; a row must be *added* to it as a button — and one component cannot honour both. The reuse count that justified the extraction only ever supported 4 sites: **aggregate lint counts describe symptoms, not shared structure, and grouping by rule name is not grouping by contract**. `ModalBackdrop` additionally centralizes 5 divergent overlay styles. Cohesion split (`feedback_decompose_by_cohesion_not_pseudo_isolation`) applies to primitives too.
+
+**Consequences:** 16 interactive warnings cleared across 8 sites; lint 100 → 72 a11y warnings (`HomeworkEditor` 14 → 1); all 5 baseline gates re-verified in-conv. Both primitives carry explicit "do not widen" notes so nobody "improves" `ModalBackdrop` into a focusable div. Caveat: `TestimonialsBrowse` is a known Cat-B orphan, so 2 of the 28 cleared warnings are on unreachable code — the honest figure is 26.
+
+**See:** `src/components/ui/ModalBackdrop.tsx`, `src/components/ui/ClickableRow.tsx`, `src/components/ui/Modal.tsx`; `CURRENT-TASKS.md` § `[A11Y]`; `docs/sessions/2026-07/20260721_1540 Decisions.md` §2, Learnings §§3–4; code `5a8cb6f9`.
+
+### Behavioral Primitives Are Neither `data-prov`-Stamped Nor Registry-Registered (Conv 404)
+**Date:** 2026-07-21 (Conv 404)
+
+**Decision:** Components that carry an **interaction contract rather than a design** ship **unstamped** (no `data-prov`) and **unregistered** (absent from `matt-inspired-registry.ts`), with `prov:sweep` verified green for them empirically rather than assumed. Established by `ModalBackdrop` + `ClickableRow`, the first two members of this behavioral tier. Rejected: stamping `matt-inspired` and inventing `figmaMatchNames` (fabricates provenance), and extending `matt-provenance.md §12e` with a formal behavioral tier up front (larger scope, unprompted).
+
+**Rationale:** The provenance scheme has no slot for a behavior-only wrapper — registry entries *require* `figmaMatchNames` and all three `data-prov` values assert **design** provenance. These primitives have no Figma counterpart, so any stamp would be a false claim in a scheme whose entire value is that its claims are trustworthy. Verified rather than asserted, per the in-conv baseline rule.
+
+**Consequences:** `prov:sweep` raises nothing for either primitive. If a formal behavioral tier is ever wanted, `matt-provenance.md §12e` is the documented extension point (noted in both source files and in `[A11Y]`). Note this is *separate* from the pre-existing `[PROV-SWEEP-DEBT2]` backlog (prov:sweep at 10 issues, was 0 at Conv 244) — verified **not** caused by this conv.
+
+**See:** `src/components/ui/ModalBackdrop.tsx`, `src/components/ui/ClickableRow.tsx`; `docs/as-designed/matt-provenance.md` §12e; `CURRENT-TASKS.md` § `[PROV-SWEEP-DEBT2]`; `docs/sessions/2026-07/20260721_1540 Decisions.md` §3.
+
 ### Universal Auto-Derived Feature → Static Perk, Not a Vestigial Toggle (DIPLOMA-UI-GAPS, Conv 391)
 **Date:** 2026-07-12 (Conv 391)
 

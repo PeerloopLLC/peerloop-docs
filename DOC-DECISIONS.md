@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-07-21 Conv 403 (interactive `claude` launchers must strip `CLAUDE_CODE_CHILD_SESSION` + `AI_AGENT` to avoid child-session misclassification withholding the todo/task tools — §3)
+**Last Updated:** 2026-07-21 Conv 404 (a falsified memory keeps its filename — rewrite `description:` + body, never rename or delete — §3; the Conv-403 launcher-strip decision above it is ⚠️ SUPERSEDED and fully withdrawn)
 
 ---
 
@@ -526,6 +526,17 @@ The 4572-line `docs/DECISIONS.md` was split into a `docs/decisions/` folder: ele
 ---
 
 ## 3. Claude Code Workflow
+
+### A Falsified Memory Keeps Its Filename — Rewrite `description:` + Body, Never Rename or Delete (Conv 404)
+**Date:** 2026-07-21 (Conv 404)
+
+When a memory file's recorded cause turns out to be false, the fix is to **rewrite the frontmatter `description:` and the entire body in place** — leading with the corrected cause and explicitly marking the old one falsified — while **keeping the filename**, even when the slug now names a mechanism that doesn't exist. Applied to `memory/project_task_tools_child_session_leak.md`: the slug still says "child_session_leak" (a cause Conv 404 disproved), but `TIMELINE.md`, `DOC-DECISIONS.md` §3, and the Conv-403 Extract all cite that slug, and archival session docs are never edited by policy — a rename would dangle every one of them. Rejected: renaming to match the corrected cause (dangles refs) and deleting for a fresh memory (discards the falsification, inviting a third rediscovery). The MEMORY.md pointer line is reflattened so its distinctive markers describe the *corrected* content.
+
+**Rationale:** Recall matches on `description:`, not filename, so rewriting the description fully fixes the misleading part while the path stays a stable identifier for cross-references. Retaining the falsification history is load-bearing, not sentimental — the same faulty probe was run in two consecutive convs, and the memory naming it explicitly is what prevents a third. Generalizes the §"Session Logs Immutable" principle from archival docs to memory files: the *identifier* is immutable, the *content* is corrigible.
+
+**See:** `memory/project_task_tools_child_session_leak.md`; `.claude/memory-sync/memories/MEMORY.md`; §3 Conv-403 entry (below, superseded); Conv 404 Decisions §1, Learnings §6.
+
+---
 
 ### Interactive `claude` Launchers Must Strip `CLAUDE_CODE_CHILD_SESSION` + `AI_AGENT` (Conv 403) — ⚠️ SUPERSEDED (Conv 404)
 **Date:** 2026-07-21 (Conv 403) · **Superseded:** 2026-07-21 (Conv 404)

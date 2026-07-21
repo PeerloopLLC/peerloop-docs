@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-07-21 (Conv 404, r-commit — hand-refreshed; Task MCP tools unavailable, see `[TASK-TOOLS-VERIFY]`). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-07-21 (Conv 404, r-end — hand-refreshed; Task MCP tools unavailable, see `[TASK-TOOLS-VERIFY]`). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
@@ -203,6 +203,13 @@ Investigative throwaway `npm install` probes (testing jsx-a11y / the fork / `ove
 - **Conv-403 correction is done, don't redo it:** the "leaked `CLAUDE_CODE_CHILD_SESSION` from VS Code" root cause was falsified in Conv 404 (`ps -wwwE` shows the vars absent from the claude process, its parent zsh, and VS Code — they exist only inside Bash-*tool* subprocesses, where CC injects them). Both `~/.zshrc` launchers were reverted to plain `claude …` (backup `~/.zshrc.bak-conv404`); `DOC-DECISIONS.md` §3 + `TIMELINE.md` Conv-403 row carry SUPERSEDED notes; the memory is rewritten.
 - **Refs:** `memory/project_task_tools_child_session_leak.md` (`[TASK-TOOLS-DOWN]`), `DOC-DECISIONS.md` §3, `~/.claude/settings.json`, `.claude/settings.json`.
 
+### [COMPDOC] · standalone (doc drift) · surfaced Conv 404 r-end
+
+**`docs/reference/_COMPONENTS.md` "UI Primitives (`src/components/ui/`)" section is badly stale.** It documents **6** entries against **29** actual files — 24 undocumented — and one documented entry, `Breadcrumbs.astro`, references a file that no longer exists anywhere in `src/`. The doc is **driftCheck** category (so it IS in the r-end docs agent's scope), self-describes as "GATHER Phase", and was last updated 2026-07-07.
+- **Pre-existing — NOT caused by Conv 404.** The docs agent deliberately declined to fix it in-pass: adding only that conv's two new primitives (`ModalBackdrop`, `ClickableRow`) to a doc already ~83% incomplete would have been an arbitrary partial edit — the manufactured-edit case the Conv-200 policy warns against. Correct call; it needs a real pass, not a drive-by.
+- **When picked up:** decide first whether this section should be hand-maintained at all, or become `generated` (a `src/components/ui/*` scan is trivial and would never drift again) — that choice is the actual work; the catalogue is downstream of it.
+- **Refs:** `docs/reference/_COMPONENTS.md`, `.claude/scripts/docs-registry.mjs doc-category`, `[A11Y]`, `[PROV-SWEEP-DEBT2]`.
+
 > ## ⏸️ PARKED (blocked behind a clear gate — out of active rotation)
 >
 > Each revisits when its gate clears.
@@ -235,4 +242,9 @@ Icon commercial-use compliance, surfaced Conv 370 during [ICN-NS]. **Two items:*
 
 ## ✅ Completed this conv
 
-_(none yet — refreshed at /r-commit and /r-end as tasks close.)_
+**No backlog row closed outright** — but two substantial threads landed:
+
+- **`[TASK-TOOLS-DOWN]` root cause FALSIFIED and fully unwound.** Conv 403's "leaked `CLAUDE_CODE_CHILD_SESSION` from VS Code" diagnosis was disproved (`ps -wwwE`: the vars are absent from the claude process, its parent zsh, and VS Code — they exist only inside Bash-*tool* subprocesses where CC injects them). Real cause: `TodoWrite` default-off since CC 2.1.142. Both Conv-403 remediations undone (`~/.zshrc` launchers reverted, Cmd-Q relaunch retracted); memory rewritten; `DOC-DECISIONS.md` §3 + `TIMELINE.md` marked SUPERSEDED. Residual verification handed to **`[TASK-TOOLS-VERIFY]`**.
+- **`[A11Y]` first triage pass — 100 → 72 warnings** (task stays 🔄 Active; 49 labels remain). Two behavioral primitives built + 8 sites migrated; all 5 gates green. Detail in the `[A11Y]` row above.
+
+_Refreshed by hand at /r-end — Task MCP tools unavailable this conv, see `[TASK-TOOLS-VERIFY]`._
