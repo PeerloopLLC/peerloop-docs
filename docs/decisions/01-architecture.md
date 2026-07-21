@@ -231,6 +231,24 @@ Astro dev emits `<script src="/Users/<user>/projects/Peerloop/node_modules/...">
 
 **Verification probe (run after each Astro upgrade):** `curl http://localhost:4321/ | grep -oE 'src="[^"]*ClientRouter[^"]*"'` — if path is relative, upstream is fixed; if still absolute, the deferral stands. Tracked as task [AAP].
 
+### [ASTRO7] Astro 6→7 Migration De-Risked Green but Deferred to Its Own Conv; NPMVULN's Astro-Independent Chains Fixed Now
+**Date:** 2026-07-21 (Conv 401)
+
+Astro 7.0.0 released 2026-06-22 (now 7.1.3); the project runs 6.3.7. The migration is a coordinated 4-major bump (astro 7.1.3 + `@astrojs/cloudflare` 13→14 + `@astrojs/react` 5→6 + **vite 7→8**) plus a Go→Rust compiler swap. A read-only assessment (npm registry + v7 upgrade guide + codebase scan) found **exposure LOW**: 6 of 9 documented breaking changes are zero-impact for us (no `src/fetch.ts`, `@astrojs/db`, `astro:transitions` internals, `getContainerRenderer`, `experimental:` block, ~no markdown/content); Node fine (v7 floor 22.12, we run 22.19). An empirical throwaway-worktree de-risk (`jfg-astro7-spike` off jfg-dev-14) came back **green with zero code changes**: `astro build` 0 errors (Rust compiler accepted all 90 `.astro`), tsc 0, astro-check 0, 6540 tests pass, no peer conflicts, adapter-14 built clean (KV sessions + `_headers`); `npm audit` 17→7. **Decision:** treat v7 as its own migration — spike torn down, jfg-dev-14 left pristine. Remaining promotion steps captured in the git-tracked `[ASTRO7]` `CURRENT-TASKS.md` row + `.scratch/astro7-assessment.md`: pin `compressHTML: true` in `astro.config.mjs` (v7 flips the default `true`→`'jsx'`; the conservative pin preserves exact rendering per the "never lose appearance" rule and avoids a full visual-regression pass), live dev/staging SSR smoke (vite-8 optimizeDeps / the fragile [DSSR-SCOPE] area) + [AAP] ClientRouter abs-path re-probe, then apply the v7 bump set to jfg-dev-14 + 5 gates + commit.
+
+**Rationale:** The de-risk confirmed safety, but promotion still wants a real-branch commit + SSR smoke + the compressHTML pin — cleaner as its own scoped conv than tail-ended onto NPMVULN. Doing v7 later also retires most of the NPMVULN dev-tail (vite/esbuild/postcss/astro roll-up all subsumed), leaving only undici/ws (miniflare), brace-expansion (eslint), fast-uri/js-yaml (@astrojs/check). Follows the PACKAGE-UPDATES Phase 2 precedent (major framework bumps assessed then scheduled deliberately).
+
+**See:** `docs/sessions/2026-07/20260721_0851 Decisions.md`; `.scratch/astro7-assessment.md`; `CURRENT-TASKS.md` § [ASTRO7]; task [AAP] above.
+
+### [NPMVULN] npm-audit Triage Policy: Fix Production-Runtime-Reachable Chains In-Range Now, Defer the Dev-Tail
+**Date:** 2026-07-21 (Conv 401)
+
+`npm audit` reported 21 advisories (2 low / 8 moderate / 11 high). Classifying by prod-vs-dev reachability found **only 2 chains are production-runtime-reachable** — `resend→svix→uuid` (moderate) and `astro/@astrojs/react→devalue` (high); the other ~19 are dev/build/deploy tooling (vite Windows-only CVEs, undici/ws via the miniflare emulator, @astrojs/check/eslint chains). Blanket `npm audit fix` (no `--force`) was rejected: dry-run = +205/−2/~52 packages **and still reported 21 remaining**. **Decision:** fix only the two prod-runtime chains via a lockfile-only, in-range `npm update resend devalue` (resend 6.10.0→6.17.2 cascading svix + uuid ≥11.1.1; devalue 5.7.1→5.8.2, in-range under astro-6's `^5.6.3`) — no `package.json` edit, no major bumps, net −23 lockfile lines; defer the ~17 dev-only advisories (most subsumed by the future Astro 7 migration).
+
+**Rationale:** Only 2 chains carry any production attack surface and both fix without a major bump; fixing vite/esbuild/etc. separately would be throwaway work the v7 migration will redo. Result: `npm audit` 21→17, **prod-runtime surface 0**, all 5 gates green (6540 tests). Reusable rubric: classify advisories by prod-runtime reachability first, prefer targeted in-range `npm update` over blanket `audit fix`.
+
+**See:** `docs/sessions/2026-07/20260721_0851 Decisions.md`; `docs/sessions/2026-07/20260721_0851 Learnings.md` (Learnings 1–2); `CURRENT-TASKS.md` § [NPMVULN]; code commit `5ead39da`.
+
 ### Docs-Primary Claude Code Architecture (Implemented)
 **Date:** 2026-02-20 (Session 229 planned, Session 232 implemented)
 

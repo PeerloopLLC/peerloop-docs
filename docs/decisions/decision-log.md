@@ -1676,3 +1676,21 @@ The Conv-397 RDOC follow-through needed to delete dead code, but `git grep` impo
 **Rationale:** Only option covering both file types with native eslint-plugin-astro integration; canonical package + huge userbase; the override is trivial and self-heals. Mirrors the react-hooks lag we already accept. Research confirmed the apparent "clean fix" (fork) silently drops `.astro`.
 
 **See:** `docs/decisions/06-testing-ci.md` entry; `../Peerloop/eslint.config.js`, `../Peerloop/package.json` (`overrides` + devDep); the RDOC (`[A11Y]` origin) and `exhaustive-deps`/`[LE-TRIAGE]` (land-at-warn precedent) entries; `CURRENT-TASKS.md` § [A11Y]; `docs/sessions/2026-07/20260720_1245 Decisions.md` §1, Learnings §§1–5; Conv 399.
+
+### [NPMVULN] npm-audit Triage Policy: Fix Production-Runtime-Reachable Chains In-Range Now, Defer the Dev-Tail (Conv 401)
+**Date:** 2026-07-21 (Conv 401)
+
+`npm audit` reported 21 advisories (2 low / 8 moderate / 11 high); classifying by prod-vs-dev reachability found **only 2 chains are production-runtime-reachable** (`resend→svix→uuid` moderate, `astro/@astrojs/react→devalue` high) — the other ~19 are dev/build/deploy tooling. Blanket `npm audit fix` was rejected (dry-run +205/−2/~52 packages and still 21 remaining). Fixed only the two prod chains via a lockfile-only, in-range `npm update resend devalue` (resend 6.10.0→6.17.2 cascading svix + uuid ≥11.1.1; devalue 5.7.1→5.8.2, in-range under astro-6 `^5.6.3`) — no `package.json` edit, net −23 lockfile lines. `npm audit` 21→17, **prod-runtime surface 0**, all 5 gates green (6540 tests). Deferred ~17 dev-only advisories (most subsumed by the future Astro 7 migration).
+
+**Rationale:** Only 2 chains carry production attack surface and both fix without a major bump; fixing vite/esbuild/etc. separately is throwaway work v7 will redo. Reusable rubric: classify advisories by prod-runtime reachability first; prefer targeted in-range `npm update` over blanket `audit fix`.
+
+**See:** `docs/decisions/01-architecture.md` entry; `docs/sessions/2026-07/20260721_0851 Decisions.md` §1, Learnings §§1–2; `CURRENT-TASKS.md` § [NPMVULN]; code commit `5ead39da`.
+
+### [ASTRO7] Astro 6→7 Migration De-Risked Green but Deferred to Its Own Conv (Conv 401)
+**Date:** 2026-07-21 (Conv 401)
+
+Astro 7.0.0 (released 2026-06-22, now 7.1.3) vs our 6.3.7 — a coordinated 4-major bump (astro + `@astrojs/cloudflare` 13→14 + `@astrojs/react` 5→6 + vite 7→8) plus a Go→Rust compiler swap. Read-only assessment: exposure LOW (6 of 9 documented breaking changes zero-impact; Node fine). Empirical throwaway-worktree de-risk (`jfg-astro7-spike`) came back **green with zero code changes**: `astro build` 0 errors (Rust compiler accepted all 90 `.astro`), tsc 0, astro-check 0, 6540 tests pass, no peer conflicts, adapter-14 built clean, `npm audit` 17→7. Decision: treat v7 as its own migration; spike torn down, jfg-dev-14 left pristine. Remaining promotion steps (pin `compressHTML: true` — v7 flips the default `true`→`'jsx'`, the conservative pin preserves exact rendering; live dev/staging SSR smoke + [AAP] re-probe; apply the bump set + 5 gates + commit) captured in the git-tracked `[ASTRO7]` row + `.scratch/astro7-assessment.md`.
+
+**Rationale:** The de-risk confirmed safety but promotion still wants a real-branch commit + SSR smoke + the compressHTML pin — cleaner as its own scoped conv. Doing v7 later also retires most of the NPMVULN dev-tail. Follows the PACKAGE-UPDATES Phase 2 precedent (major framework bumps assessed then scheduled deliberately).
+
+**See:** `docs/decisions/01-architecture.md` entry; `docs/sessions/2026-07/20260721_0851 Decisions.md` §§2–3, Learnings §§3–5; `.scratch/astro7-assessment.md`; `CURRENT-TASKS.md` § [ASTRO7]; task [AAP].

@@ -27,6 +27,8 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [1. Architecture & Design (Highest Impact)](01-architecture.md)
 
+- [[ASTRO7] Astro 6→7 Migration De-Risked Green but Deferred to Its Own Conv; NPMVULN's Astro-Independent Chains Fixed Now (Conv 401)](01-architecture.md#astro7-astro-67-migration-de-risked-green-but-deferred-to-its-own-conv-npmvulns-astro-independent-chains-fixed-now)
+- [[NPMVULN] npm-audit Triage Policy: Fix Production-Runtime-Reachable Chains In-Range Now, Defer the Dev-Tail (Conv 401)](01-architecture.md#npmvuln-npm-audit-triage-policy-fix-production-runtime-reachable-chains-in-range-now-defer-the-dev-tail)
 - [`completeSession` Threads an Optional `waitUntil` Param — Webhook Callers Pass `ctx.waitUntil`, Others Await (Fixes Fire-and-Forget Drop, Conv 384)](01-architecture.md#completesession-threads-an-optional-waituntil-param--webhook-callers-pass-ctxwaituntil-others-await-fixes-fire-and-forget-drop-conv-384)
 - [TZ-MODEL Phase 2 Complete — Per-Recipient Email & Notification Localization via `formatRecipientSession` (Conv 373)](01-architecture.md#tz-model-phase-2-complete--per-recipient-email--notification-localization-via-formatrecipientsession-conv-373)
 - [TZ-MODEL Phase 1 Complete — Viewer-TZ Booking Calendar (`dateKeyInTz`) + UTC-Stable Date-Only-Stamp Policy (Conv 373)](01-architecture.md#tz-model-phase-1-complete--viewer-tz-booking-calendar-datekeyintz--utc-stable-date-only-stamp-policy-conv-373)

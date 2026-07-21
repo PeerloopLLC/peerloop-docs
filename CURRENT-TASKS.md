@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-07-21 (Conv 401, r-commit). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-07-21 (Conv 401, r-end). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
