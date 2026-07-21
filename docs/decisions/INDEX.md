@@ -27,8 +27,8 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [1. Architecture & Design (Highest Impact)](01-architecture.md)
 
-- [[ASTRO7] Astro 6→7 Migration De-Risked Green but Deferred to Its Own Conv; NPMVULN's Astro-Independent Chains Fixed Now (Conv 401)](01-architecture.md#astro7-astro-67-migration-de-risked-green-but-deferred-to-its-own-conv-npmvulns-astro-independent-chains-fixed-now)
-- [[NPMVULN] npm-audit Triage Policy: Fix Production-Runtime-Reachable Chains In-Range Now, Defer the Dev-Tail (Conv 401)](01-architecture.md#npmvuln-npm-audit-triage-policy-fix-production-runtime-reachable-chains-in-range-now-defer-the-dev-tail)
+- [[ASTRO7] Astro 6.3.7→7.1.3 Promoted to jfg-dev-14 — vite 8, adapter 14, compressHTML Pinned (Conv 402)](01-architecture.md#astro7-astro-637713-promoted-to-jfg-dev-14--vite-8-adapter-14-compresshtml-pinned-conv-402)
+- [[NPMVULN] Dev-Tail Accepted as Residual — RESOLVED; audit Stays at 7, wrangler Lever Deferred (Conv 402)](01-architecture.md#npmvuln-dev-tail-accepted-as-residual--resolved-audit-stays-at-7-wrangler-lever-deferred-conv-402)
 - [`completeSession` Threads an Optional `waitUntil` Param — Webhook Callers Pass `ctx.waitUntil`, Others Await (Fixes Fire-and-Forget Drop, Conv 384)](01-architecture.md#completesession-threads-an-optional-waituntil-param--webhook-callers-pass-ctxwaituntil-others-await-fixes-fire-and-forget-drop-conv-384)
 - [TZ-MODEL Phase 2 Complete — Per-Recipient Email & Notification Localization via `formatRecipientSession` (Conv 373)](01-architecture.md#tz-model-phase-2-complete--per-recipient-email--notification-localization-via-formatrecipientsession-conv-373)
 - [TZ-MODEL Phase 1 Complete — Viewer-TZ Booking Calendar (`dateKeyInTz`) + UTC-Stable Date-Only-Stamp Policy (Conv 373)](01-architecture.md#tz-model-phase-1-complete--viewer-tz-booking-calendar-datekeyintz--utc-stable-date-only-stamp-policy-conv-373)
@@ -54,7 +54,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 - [Adapter 13 Config: `platformProxy` Split into `remoteBindings` + `CLOUDFLARE_ENV`](01-architecture.md#adapter-13-config-platformproxy-split-into-remotebindings-cloudflare_env)
 - [Centralize Cloudflare Env Access Through Helpers](01-architecture.md#centralize-cloudflare-env-access-through-helpers)
 - [Split PACKAGE-UPDATES Phase 2: Astro 6/adapter 13/react 5 now; TypeScript 6 deferred](01-architecture.md#split-package-updates-phase-2-astro-6adapter-13react-5-now-typescript-6-deferred)
-- [[AAP] Astro Absolute-Path Leak Deferred — WAITING on Upstream Fix Post-6.3.6](01-architecture.md#aap-astro-absolute-path-leak-deferred-waiting-on-upstream-fix-post-636)
+- [[AAP] Astro Absolute-Path Leak — Dev-Only, Production-Clean; Persists on v7 (Accept + Keep Watch)](01-architecture.md#aap-astro-absolute-path-leak--dev-only-production-clean-persists-on-v7-accept--keep-watch)
 - [Docs-Primary Claude Code Architecture (Implemented)](01-architecture.md#docs-primary-claude-code-architecture-implemented)
 - [Three Separate Navigation Sets](01-architecture.md#three-separate-navigation-sets)
 - [NAV-RETROFIT Narrowed to AdminNavbar Only](01-architecture.md#nav-retrofit-narrowed-to-adminnavbar-only)

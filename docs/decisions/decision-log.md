@@ -1694,3 +1694,30 @@ Astro 7.0.0 (released 2026-06-22, now 7.1.3) vs our 6.3.7 — a coordinated 4-ma
 **Rationale:** The de-risk confirmed safety but promotion still wants a real-branch commit + SSR smoke + the compressHTML pin — cleaner as its own scoped conv. Doing v7 later also retires most of the NPMVULN dev-tail. Follows the PACKAGE-UPDATES Phase 2 precedent (major framework bumps assessed then scheduled deliberately).
 
 **See:** `docs/decisions/01-architecture.md` entry; `docs/sessions/2026-07/20260721_0851 Decisions.md` §§2–3, Learnings §§3–5; `.scratch/astro7-assessment.md`; `CURRENT-TASKS.md` § [ASTRO7]; task [AAP].
+
+### [ASTRO7] Astro 6.3.7→7.1.3 Promoted to jfg-dev-14 — vite 8, adapter 14, compressHTML Pinned (Conv 402)
+**Date:** 2026-07-21 (Conv 402)
+
+Promoted the Conv-401 de-risked migration onto `jfg-dev-14`: one `npm install` of the measured bump set (astro 7.1.3 + `@astrojs/cloudflare` 14.1.4 + `@astrojs/react` 6.0.1 + `@tailwindcss/vite` 4.3.3 + `@astrojs/check` 0.9.9 + vitest 4.1.10 + `@vitest/ui` 4.1.10 → **vite 8.1.5** deduped, no peer conflicts, no code edits) + a one-line pin of `compressHTML: true` in `astro.config.mjs` (v7 flips the default `true`→`'jsx'`; the pin preserves exact v6 whitespace). All 5 gates green (tsc 0, astro-check 0/0/3-hints, lint 0-err/195-warn, build clean adapter-14 `_headers`, **6540 tests**). Live dev SSR curl smoke clean; all 3 assessed risks cleared empirically — Rust compiler ×90 `.astro` (build 0), compressHTML flip (pinned), and **adapter 13→14 FULLY CLEARED** via a `dev:staging` remoteBindings smoke (267 KB staging-D1 render vs 314 KB local, zero D1 errors). `npm audit` 17→7; `[AAP]` re-probed (still leaks on v7, dev-only/production-clean).
+
+**Rationale:** The Conv-401 de-risk already proved zero code changes needed; the pin neutralizes the only visual-regression risk; a real-branch promotion added the SSR + staging remoteBindings smokes the throwaway spike couldn't. Follows the PACKAGE-UPDATES Phase 2 precedent.
+
+**See:** `docs/decisions/01-architecture.md` entry (supersedes the Conv-401 de-risk entry); `docs/sessions/2026-07/20260721_1137 Decisions.md` §1, Learnings §§1–2; `.scratch/astro7-assessment.md` (Promotion §); code `91a0e8a6`, docs `15b5fa6`.
+
+### [NPMVULN] Dev-Tail Accepted as Residual — RESOLVED; audit Stays at 7, wrangler Lever Deferred (Conv 402)
+**Date:** 2026-07-21 (Conv 402)
+
+After the Astro 7 promotion subsumed most of the Conv-401 dev-tail, `npm audit` sat at 7 advisories — all dev/build/test-only (prod-runtime surface already 0 from Conv 401). Audit-0 is not cleanly reachable: `npm audit fix` wants ~40 cross-platform optional binaries (Conv-401-avoided churn), and the one clean lever — `wrangler` ^4.94→4.112 (would clear `ws`) — hit ERESOLVE because wrangler 4.112 `peerOptional`-requires `@cloudflare/workers-types@^5` while the project is on v4 (drags a CF-types major across `src/`). Accepted the dev-tail as documented residual; did NOT force the wrangler bump via `--legacy-peer-deps` nor take the audit-fix churn. `[NPMVULN]` RESOLVED, audit stays at 7.
+
+**Rationale:** Every remaining advisory is dev/build/test tooling; none prod-reachable. The clean lever isn't clean, and the alternatives cost more than the risk they remove. Per-advisory floor + deferred workers-types-v5 lever documented in `CURRENT-TASKS.md`.
+
+**See:** `docs/decisions/01-architecture.md` entry (supersedes the Conv-401 prod-fix policy); `docs/sessions/2026-07/20260721_1137 Decisions.md` §2; code `91a0e8a6`, docs `7bb37ff`.
+
+### [AAP] Astro Absolute-Path Leak Re-Probed on v7 — Dev-Only, Production-Clean; Accept + Keep Watch (Conv 402)
+**Date:** 2026-07-21 (Conv 402)
+
+Re-scoped `[AAP]` on the upgraded stack: root cause is now `node_modules/astro/dist/vite-plugin-astro/compile.js:22` (was `:50` on v6) — the v7 Go→Rust compiler swap changed `.astro`→JS compilation but not this vite-plugin dev-mode `type=script` import wiring, so the absolute-path leak persists identically. Confirmed **production-clean on v7**: `dist/client/` has zero leaks; the `/Users/…` strings in `dist/server/*.mjs` are SSR-internal manifest metadata, never browser-served. Disposition unchanged — accept + keep the watch task; a local dev-only Vite middleware / patch is over-engineering for a functional no-op, and no exact upstream issue exists.
+
+**Rationale:** Dev-only cosmetic no-op, production verified clean; re-probe after each future astro upgrade via the existing curl probe.
+
+**See:** `docs/decisions/01-architecture.md` [AAP] entry; `docs/sessions/2026-07/20260721_1137 Decisions.md` §3, Learnings §5; PLAN.md § [AAP]; docs `7bb37ff`.

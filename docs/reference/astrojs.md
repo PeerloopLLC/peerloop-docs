@@ -327,16 +327,20 @@ adapter: cloudflare({
 | 2026-04-10 | `@astrojs/react` | 4.4.2 | 5.0.3 | PACKAGE-UPDATES Phase 2a — React 19 `server.edge` upstream fix |
 | 2026-04-10 | `@cloudflare/workers-types` | (transitive) | ^4.20260410.1 | Re-added as explicit dev dep (adapter 13 stopped pulling it in transitively) |
 | 2026-04-10 | Transitive | vite 6.4.2 → 7.3.2, `@vitejs/plugin-react` 4.7.0 → 5.2.0, `@cloudflare/vite-plugin` 1.31.2 (new) | | |
+| 2026-07-21 | `astro` | 6.3.7 | 7.1.3 | ASTRO7 (Conv 402) — v7 major; Rust compiler now default, `compressHTML` default `true`→`'jsx'` (pinned `true` to preserve whitespace); all 5 gates + live dev + `dev:staging` remoteBindings SSR smoke green, zero code changes |
+| 2026-07-21 | `@astrojs/cloudflare` | 13.5.4 | 14.1.4 | ASTRO7 (Conv 402) — adapter 14 (peer `astro ^7`); D1/R2/KV remoteBindings verified against staging |
+| 2026-07-21 | `@astrojs/react` | 5.0.5 | 6.0.1 | ASTRO7 (Conv 402) — v7 line |
+| 2026-07-21 | Transitive | vite 7 → 8.1.5, `@tailwindcss/vite` → 4.3.3, `vitest`/`@vitest/ui` → 4.1.10, `@astrojs/check` → 0.9.9 | | ASTRO7 (Conv 402) |
 
-### Current Versions (Conv 101)
+### Current Versions (Conv 402)
 
 | Package | Version | Notes |
 |---------|---------|-------|
-| `astro` | 6.1.5 | Latest stable |
-| `@astrojs/cloudflare` | 13.1.8 | Adapter 13 — uses `@cloudflare/vite-plugin`, removes `locals.runtime.env` |
-| `@astrojs/react` | 5.0.3 | React plugin 5 — fixes React 19 `server.edge` issue upstream |
-| `@cloudflare/workers-types` | ^4.20260410.1 | Explicit dev dep (Conv 101) |
-| `vite` | 7.3.2 | Transitive bump from adapter 13 + react plugin 5 |
+| `astro` | 7.1.3 | v7 major (Conv 402); Rust compiler default; `compressHTML: true` pinned in `astro.config.mjs` |
+| `@astrojs/cloudflare` | 14.1.4 | Adapter 14 — `@cloudflare/vite-plugin`, `remoteBindings`, no `locals.runtime.env` |
+| `@astrojs/react` | 6.0.1 | React plugin 6 (React 19) |
+| `@cloudflare/workers-types` | ^4.20260411.1 | Explicit dev dep, still v4 (wrangler 4.112 peer-wants v5 — deferred; see `[NPMVULN]`) |
+| `vite` | 8.1.5 | Transitive from astro 7 (needs `vite ^8.0.13`) |
 
 ### Adapter Configuration
 
