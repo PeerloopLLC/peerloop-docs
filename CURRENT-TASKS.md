@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-07-20 (Conv 400, r-end). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-07-21 (Conv 401, r-commit). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
@@ -176,9 +176,13 @@ Adopted `knip@6.27.0` (devDep + `knip.json` + `npm run knip`) as the module-grap
 
 Conv 398 deleted `src/emails/WelcomeEmail.tsx` + `PaymentReceiptEmail.tsx` (dead, zero importers). Both are still listed in `docs/reference/resend.md` + `docs/reference/DEVELOPMENT-GUIDE.md` — both **`manual`** category (editorial/vendor, user-owned), so the r-end docs agent left them by policy. Stale reference to now-deleted files — remove/annotate the two templates (verify each mention is the deleted template, not a live one). Low priority. **Refs:** `docs/reference/resend.md`, `docs/reference/DEVELOPMENT-GUIDE.md`.
 
-### [NPMVULN] · standalone (security hygiene) · low priority · surfaced Conv 398
+### [NPMVULN] · 🔄 Active — prod-runtime chains FIXED Conv 401; dev-tail deferred · low priority
 
-`npm install` (knip adoption) reported **21 tree-wide vulnerabilities** (2 low / 10 moderate / 9 high) — whole-dependency-tree total, **not** knip-specific. Run `npm audit` in `~/projects/Peerloop`, triage dev-only/transitive vs. runtime-reachable, decide fixes (don't churn the lockfile without cause). PACKAGE-UPDATES-adjacent; worth a look before MVP-GOLIVE. **Refs:** `~/projects/Peerloop/package.json`.
+**Prod-runtime attack surface CLEARED (Conv 401).** Triaged all 21 audit advisories → only **2 chains were production-runtime-reachable**: `resend→svix→uuid` (moderate) + `astro/@astrojs/react→devalue` (high). Both fixed via a **lockfile-only, in-range** `npm update resend devalue` (resend 6.10.0→6.17.2 cascading uuid ≥11.1.1; devalue 5.7.1→5.8.2, in-range of astro-6 `^5.6.3`) — no `package.json` edit, no major bumps, net −23 lockfile lines. `npm audit` **21→17**; all 5 gates green (6540 tests). **Deferred tail (17, all dev/tooling — none prod-reachable):** `undici`/`ws` (miniflare/wrangler CF-emulation), `@babel/core`/`esbuild`/`postcss` (build), `brace-expansion` (eslint), `fast-uri`/`js-yaml` (@astrojs/check chain); the `astro <=7.0.9` roll-up + `esbuild`/`vite` clear with the v7 migration (see `[ASTRO7]`). Revisit the dev tail opportunistically before MVP-GOLIVE. **Refs:** `~/projects/Peerloop/package-lock.json`, `[ASTRO7]`, `[DEPEXP]`.
+
+### [ASTRO7] · standalone (dependency migration) · deferred to own conv · [Opus] · surfaced Conv 401
+
+Migrate Astro **6.3.7 → 7.1.3** (v7 released 2026-06-22). **Assessed read-only Conv 401 — safe but a coordinated 4-major migration + Go→Rust compiler swap, NOT a drop-in.** Forced bump set: astro 7.1.3 + `@astrojs/cloudflare` 13.5.4→14.1.4 (peer `astro ^7`) + `@astrojs/react` 5.0.5→6.0.1 + **vite 7→8** (astro-7 needs `vite ^8.0.13`) + `@tailwindcss/vite` 4.3.3 + `vitest` 4.1.10 + `@astrojs/check` 0.9.9. Node OK (v7 floor `>=22.12.0`; we run 22.19.0). **Breaking-change exposure LOW — 6 of 9 = zero** (no `src/fetch.ts`, no `@astrojs/db`, no `astro:transitions` internals, no `getContainerRenderer`, no `experimental:` block, ~no markdown/content). **3 real risks to verify empirically:** (1) Rust compiler across **90 `.astro`** (unclosed tags / invalid nesting now error) — measure with a throwaway-worktree `astro build`; (2) `compressHTML` `true`→`'jsx'` whitespace shifts (neutralize with `compressHTML: true`); (3) `@astrojs/cloudflare` 13→14 (D1/R2/KV bindings + SSR load-bearing) — changelog + local & staging SSR smoke. Also clears the `[NPMVULN]` dev-tail `astro`/`vite`/`esbuild` advisories. **Recommended first step:** worktree de-risk (`git worktree` + astro-7 install + build → concrete Rust-compiler error list, zero risk to the real tree). Full assessment → `.scratch/astro7-assessment.md`. **Refs:** https://docs.astro.build/en/guides/upgrade-to/v7/, `[NPMVULN]`, `[AAP]` (PLAN.md — v7 may fix the ClientRouter abs-path leak), `astro.config.mjs`.
 
 ### [DEPEXP] · standalone (tooling hygiene) · low priority · surfaced Conv 399
 
@@ -216,4 +220,5 @@ Icon commercial-use compliance, surfaced Conv 370 during [ICN-NS]. **Two items:*
 
 ## ✅ Completed this conv
 
-- **[RHOOKS]** — react-hooks `recommended-latest` set WIRED at warn (Conv 400): the 15 unrun React-Compiler rules turned on via `asWarn(...)` spread, `rules-of-hooks` re-overridden to error. 105 findings surfaced (set-state-in-effect 91), all → warn; lint gate GREEN (0 err/205 warn), tsc 0, astro-check 0. `.astro` open-question answered NO. Decision → `docs/decisions/06-testing-ci.md` § RHOOKS. **Adoption milestone done; row stays Active for incremental triage of the 105 warnings.**
+- **[NPMVULN]** (prod-runtime part) — cleared both production-reachable `npm audit` chains via a lockfile-only in-range bump (resend 6.10.0→6.17.2 → uuid ≥11.1.1; devalue 5.7.1→5.8.2). `npm audit` 21→17, **prod-runtime surface now 0**; all 5 gates green (6540 tests). Dev-tooling tail (17) deferred: astro-rollup → `[ASTRO7]`, rest dev-only. **Row stays Active for the deferred tail.**
+- **[ASTRO7]** (assessment) — assessed Astro 6→7 read-only: safe, coordinated 4-major migration + Rust-compiler swap, 6/9 breaking changes = zero exposure; deferred to its own conv. Assessment → `.scratch/astro7-assessment.md`. New Active-backlog row created.
