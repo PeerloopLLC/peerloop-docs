@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-07-21 (Conv 402, r-end). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-07-21 (Conv 403, r-end). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
@@ -180,10 +180,6 @@ Conv 398 deleted `src/emails/WelcomeEmail.tsx` + `PaymentReceiptEmail.tsx` (dead
 
 Investigative throwaway `npm install` probes (testing jsx-a11y / the fork / `overrides` in-place during `[A11Y]`) pulled newer transitive optional pins (`@emnapi` via knip's oxc-parser) into npm's resolution, then a later `npm ci` failed "package.json and package-lock.json out of sync" even though the committed lockfile was **byte-identical** to HEAD (it installed fine at conv start). Reconciled via `npm install` + `git restore package-lock.json`. **Habit to adopt:** run dependency experiments in a throwaway git worktree, or always reconcile (`npm install` to repopulate `node_modules`, then restore the committed lockfile) after in-place probes. Sibling of `[SCRATCH-DEBRIS]`/`[DEVSRV-KILL]` hygiene notes. **Refs:** `docs/sessions/2026-07/20260720_1245 Learnings.md` §5.
 
-### [MMB] · standalone (member-card triage) · low priority · surfaced Conv 402
-
-The member directory (`/members`) renders a **"Monitoring"** role badge on Alex Rivera's card — a registered, role-less, enrollment-less student — where the Conv-343 PLATO `member-directory` spec expected **no badge**. Surfaced during the Conv-402 `[ASTRO7]` real-browser smoke; the badge uses the same pill component as Mara's "Creator" badge (`rounded-full px-8 py-4 … bg-n…` vs Creator's `bg-c…`). **NOT migration-related** — Astro 7 / vite 8 can't change computed badge text; this is member-card role-label logic. **Triage:** is "Monitoring" intentional current behavior (a default/observer label for role-less members) → update the PLATO spec `expect`; or a stray/regressed label → fix the component. Classify REDESIGN vs REGRESSION vs INTENTIONAL per `feedback_plato_expect_is_legacy_spec`. **Refs:** grep the `"Monitoring"` string under `../Peerloop/src/components/**` (member-card + role-badge), `../Peerloop/tests/plato/instances/member-directory.instance.ts` (step "Clear the default Creator filter" `expect` says "no role badges"), Conv 402 PLATO walk.
-
 > ## ⏸️ PARKED (blocked behind a clear gate — out of active rotation)
 >
 > Each revisits when its gate clears.
@@ -216,5 +212,6 @@ Icon commercial-use compliance, surfaced Conv 370 during [ICN-NS]. **Two items:*
 
 ## ✅ Completed this conv
 
-- **[ASTRO7]** ✅ Promoted Astro 6.3.7→7.1.3 (adapter 14, react 6, **vite 8**) on `jfg-dev-14` — 5 gates + live dev + `dev:staging` remoteBindings SSR smoke green, all 3 risks cleared, zero code changes beyond the `compressHTML: true` pin. Detail → `docs/decisions/01-architecture.md`, `.scratch/astro7-assessment.md`.
-- **[NPMVULN]** ✅ Resolved — the 7 post-v7 audit advisories are all dev-only (prod surface already 0); audit-0 not cleanly reachable (the wrangler bump is blocked by a `@cloudflare/workers-types` v5 peer-major), so accepted as documented residual + a deferred workers-types-v5 lever.
+### [MMB] · ✅ Resolved INTENTIONAL (Conv 403)
+
+Member directory `/members` "Monitoring" badge on Alex Rivera's card triaged as **intentional, designed behavior** — `getMemberBadges` pushes a `{ role: 'monitoring', label: 'Monitoring' }` fallback when a member has none of admin/mod/creator/teacher/student (`role-utils.ts:110`); `'monitoring'` is a first-class `MemberRole` (`types.ts:29`) with its own `MONITORING_COLORS` palette, all landed together in Conv 111 (`9a81450a`, "unified member directory"). Not a regression; Astro 7/vite 8 can't affect computed badge text. **Fix:** per `[[feedback_plato_expect_is_legacy_spec]]`, corrected the stale PLATO `expect` at `tests/plato/instances/member-directory.instance.ts:108` to reflect the Monitoring fallback badge (component unchanged, no code change).
