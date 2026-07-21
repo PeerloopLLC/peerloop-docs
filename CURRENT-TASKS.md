@@ -194,6 +194,10 @@ Migrate Astro **6.3.7 → 7.1.3** (v7 released 2026-06-22). **Assessed read-only
 
 Investigative throwaway `npm install` probes (testing jsx-a11y / the fork / `overrides` in-place during `[A11Y]`) pulled newer transitive optional pins (`@emnapi` via knip's oxc-parser) into npm's resolution, then a later `npm ci` failed "package.json and package-lock.json out of sync" even though the committed lockfile was **byte-identical** to HEAD (it installed fine at conv start). Reconciled via `npm install` + `git restore package-lock.json`. **Habit to adopt:** run dependency experiments in a throwaway git worktree, or always reconcile (`npm install` to repopulate `node_modules`, then restore the committed lockfile) after in-place probes. Sibling of `[SCRATCH-DEBRIS]`/`[DEVSRV-KILL]` hygiene notes. **Refs:** `docs/sessions/2026-07/20260720_1245 Learnings.md` §5.
 
+### [MMB] · standalone (member-card triage) · low priority · surfaced Conv 402
+
+The member directory (`/members`) renders a **"Monitoring"** role badge on Alex Rivera's card — a registered, role-less, enrollment-less student — where the Conv-343 PLATO `member-directory` spec expected **no badge**. Surfaced during the Conv-402 `[ASTRO7]` real-browser smoke; the badge uses the same pill component as Mara's "Creator" badge (`rounded-full px-8 py-4 … bg-n…` vs Creator's `bg-c…`). **NOT migration-related** — Astro 7 / vite 8 can't change computed badge text; this is member-card role-label logic. **Triage:** is "Monitoring" intentional current behavior (a default/observer label for role-less members) → update the PLATO spec `expect`; or a stray/regressed label → fix the component. Classify REDESIGN vs REGRESSION vs INTENTIONAL per `feedback_plato_expect_is_legacy_spec`. **Refs:** grep the `"Monitoring"` string under `../Peerloop/src/components/**` (member-card + role-badge), `../Peerloop/tests/plato/instances/member-directory.instance.ts` (step "Clear the default Creator filter" `expect` says "no role badges"), Conv 402 PLATO walk.
+
 > ## ⏸️ PARKED (blocked behind a clear gate — out of active rotation)
 >
 > Each revisits when its gate clears.
