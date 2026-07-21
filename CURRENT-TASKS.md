@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-07-21 (Conv 404, r-end — hand-refreshed; Task MCP tools unavailable, see `[TASK-TOOLS-VERIFY]`). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-07-21 (Conv 405, r-commit — hand-refreshed; Task MCP tools unavailable, see `[TASK-TOOLS-VERIFY]`). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
@@ -195,13 +195,16 @@ Investigative throwaway `npm install` probes (testing jsx-a11y / the fork / `ove
 - **Why it matters:** `prov:sweep` is a real gate that has been failing unnoticed, which means the registry⟺marker⟺stamp conformity guarantee from `[PRIM-STAMP]` (Conv 217) is not currently holding. Each offender needs a registry entry (with `figmaMatchNames`) **or** its stamp removed if it isn't a vetted primitive — decide per component, don't bulk-register.
 - **Refs:** `../Peerloop/scripts/matt-inspired-registry.ts`, `npm run prov:sweep`, `docs/as-designed/matt-provenance.md §12c`, `plan/prim-registry/README.md`, `[PRIM-STAMP]`, `[PROV-SWEEP-DEBT]`.
 
-### [TASK-TOOLS-VERIFY] · 🔁 Watch — verify at next launch · surfaced Conv 404
+### [TASK-TOOLS-VERIFY] · 🔁 Watch — env var REVERTED Conv 405; re-verify at next launch · surfaced Conv 404
 
-**Confirm whether `CLAUDE_CODE_ENABLE_TASKS=0` actually restores `TodoWrite`.** Added to `~/.claude/settings.json` `env` in Conv 404 on the strength of the official docs (`code.claude.com/docs/en/tools-reference.md` — TodoWrite "disabled by default as of v2.1.142" in favour of the Task tools). **Not yet verified** — env changes take effect only at the next `claude` launch. Check at the start of the next conv: if `TodoWrite` is present, the docs claim is confirmed and `[TASK-TOOLS-DOWN]` is fully closed.
-- **⚠️ If it does NOT come back, the corrected diagnosis is still incomplete.** The unexplained part: on CC 2.1.216 the `Task*` tools were *also* absent — **as were `Grep` and `Glob`** — which no setting, CLI flag, or output style accounts for. That pattern says the session's tool set is pruned more broadly than the TodoWrite default explains. Investigate the pruned tool set, **not** child-session status (that theory is falsified — see below).
-- **Cross-machine gap:** the var went into the **global** `~/.claude/settings.json`, which is a home dotfile and therefore **NOT** git-tracked — so MacMiniM4 will not get it. Either replicate it there, or move/duplicate it into the git-tracked project `.claude/settings.json` `env` block (the `CLAUDE_AFK_TIMEOUT_MS` precedent sets it in *both* scopes). Decide which.
-- **Conv-403 correction is done, don't redo it:** the "leaked `CLAUDE_CODE_CHILD_SESSION` from VS Code" root cause was falsified in Conv 404 (`ps -wwwE` shows the vars absent from the claude process, its parent zsh, and VS Code — they exist only inside Bash-*tool* subprocesses, where CC injects them). Both `~/.zshrc` launchers were reverted to plain `claude …` (backup `~/.zshrc.bak-conv404`); `DOC-DECISIONS.md` §3 + `TIMELINE.md` Conv-403 row carry SUPERSEDED notes; the memory is rewritten.
-- **Refs:** `memory/project_task_tools_child_session_leak.md` (`[TASK-TOOLS-DOWN]`), `DOC-DECISIONS.md` §3, `~/.claude/settings.json`, `.claude/settings.json`.
+**Conv 405 verdict: `CLAUDE_CODE_ENABLE_TASKS=0` did NOT restore `TodoWrite`, and it COST us the `Task*` tools.** Fresh CC **2.1.216** launch with the var live in `~/.claude/settings.json` `env`: no `TodoWrite`, no `Task*`, no `Grep`, no `Glob`. **The var has been REMOVED from `~/.claude/settings.json` (Conv 405)** — reverting to the documented default (Task* on, TodoWrite off). ⚠️ **UNVERIFIED — needs a relaunch.**
+- **Empirical timeline (transcript scan, 78 JSONLs, v2.1.183 → 2.1.216).** `Task*` usage was healthy every conv through **07-21 09:08 (v2.1.215)** and hits **0 from 07-21 11:55 onward** — i.e. Task* died in the Conv-403/404 window, not from a CC upgrade. `~/.claude/settings.json` mtime is 07-21 13:16 (the Conv-404 edit). Since `ENABLE_TASKS=0` is literally the "turn Task tools off" switch, Conv 404's remediation **caused a regression** while chasing a tool (`TodoWrite`) that has been deprecated since v2.1.142 anyway. The project already uses `TaskCreate`/`TaskList`/`TaskUpdate` throughout — **we do not need `TodoWrite`**; restoring `Task*` is the whole fix.
+- **Docs say the opposite of what we observed** (claude-code-guide agent, `code.claude.com/docs/en/tools-reference.md`): TodoWrite is "disabled by default as of v2.1.142 … set `CLAUDE_CODE_ENABLE_TASKS=0` to re-enable". We set exactly that and TodoWrite did **not** appear. So either the doc is wrong or something else suppresses it — **don't burn more time on TodoWrite**, it is not needed.
+- **⚠️ `Grep` / `Glob` are a SEPARATE, OLDER, still-UNEXPLAINED problem — not a Conv-403/404 artifact.** The transcript scan shows **zero** `Grep`/`Glob` calls across the *entire* retained window (06-22 → 07-21, v2.1.183 → 2.1.216). Ruled out locally: no `--tools`/`--disallowedTools` in the `peerloop` alias (plain `claude --add-dir ../Peerloop "$@"`); no `deny` rules in global/project/local settings; no `managed-settings.json` anywhere; `~/.claude.json` project `allowedTools: []`; ripgrep **14.1.1** present and working. Docs confirm both tools are **current and not deprecated** in 2.1.216 (changelog shows only bugfixes: Grep pagination v2.1.210, Glob null-byte v2.1.208), and that tool-search deferral is documented as **MCP-only** — yet this session's deferred pool contains built-ins (`Monitor`, `WebFetch`, `WebSearch`, `EnterPlanMode`, `Cron*`), so the deferral here is broader than documented. **Verdict: undocumented harness behavior → `/feedback` candidate.**
+- **Impact is degradation, not blockage:** Bash `grep`/`find`/`rg` are all permitted (rg 14.1.1 works), and the `Explore` agent covers fan-out search. Expect slower code navigation until resolved.
+- **Cross-machine gap (still OPEN):** the now-removed var lived in the **global** `~/.claude/settings.json`, a non-git-tracked home dotfile — MacMiniM4 never got it, so that machine needs no revert. But MacMiniM4 **does** still carry the Conv-403 `~/.zshrc` `env -u` guards (harmless no-ops, but stale) — clean them up next time we're on it.
+- **Do NOT re-open the Conv-403 `CLAUDE_CODE_CHILD_SESSION` theory** — falsified Conv 404 and fully unwound.
+- **Refs:** `memory/project_task_tools_child_session_leak.md` (`[TASK-TOOLS-DOWN]`), `DOC-DECISIONS.md` §3, `~/.claude/settings.json`, `code.claude.com/docs/en/tools-reference.md`.
 
 ### [COMPDOC] · standalone (doc drift) · surfaced Conv 404 r-end
 
@@ -242,9 +245,4 @@ Icon commercial-use compliance, surfaced Conv 370 during [ICN-NS]. **Two items:*
 
 ## ✅ Completed this conv
 
-**No backlog row closed outright** — but two substantial threads landed:
-
-- **`[TASK-TOOLS-DOWN]` root cause FALSIFIED and fully unwound.** Conv 403's "leaked `CLAUDE_CODE_CHILD_SESSION` from VS Code" diagnosis was disproved (`ps -wwwE`: the vars are absent from the claude process, its parent zsh, and VS Code — they exist only inside Bash-*tool* subprocesses where CC injects them). Real cause: `TodoWrite` default-off since CC 2.1.142. Both Conv-403 remediations undone (`~/.zshrc` launchers reverted, Cmd-Q relaunch retracted); memory rewritten; `DOC-DECISIONS.md` §3 + `TIMELINE.md` marked SUPERSEDED. Residual verification handed to **`[TASK-TOOLS-VERIFY]`**.
-- **`[A11Y]` first triage pass — 100 → 72 warnings** (task stays 🔄 Active; 49 labels remain). Two behavioral primitives built + 8 sites migrated; all 5 gates green. Detail in the `[A11Y]` row above.
-
-_Refreshed by hand at /r-end — Task MCP tools unavailable this conv, see `[TASK-TOOLS-VERIFY]`._
+_(none yet — refreshed at /r-commit and /r-end as tasks close.)_
