@@ -1,248 +1,329 @@
-# Current Tasks — between convs
+# Current Tasks
 
-> Last refreshed 2026-07-21 (Conv 405, r-commit — hand-refreshed; Task MCP tools unavailable, see `[TASK-TOOLS-VERIFY]`). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> **Write-through task board.** Edit this file directly the moment a task changes — it *is* the task
+> state (no Task-tool overlay; see `[TASK-TOOLS-VERIFY]`). Tracked in git so both machines share it via
+> `/r-commit` push/pull. Per-conv history lives in `docs/sessions/` + git.
 >
-> **Persistent home for Peerloop task state.** Tracked in git so both machines see the
-> same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
-> plus `/r-commit` + `/r-end`) preserves your edits and overlays statuses from TodoWrite for
-> code-matched rows.
+> **How it works.** `[CODE]` (unique, bracketed) is the stable key — the whole commit/timecard/memory
+> system references it. Task **bodies** live in `## Tasks`, alphabetical by code, and **never move**.
+> Ordering + status live in two tables of contents that link down to the bodies:
+> - **`## 🎯 Now`** — the ordered execution queue (top = next). Reprioritise by reordering *here* only.
+> - **`## ⏸️ Parked`** — gated / out-of-rotation, each with its gate.
 >
-> **Format:** Tasks are keyed by `[CODE]` (the sole stable identifier — no numeric IDs). Every task is
-> an H3 (`### [CODE] · status · [model]`; the status segment appears in Ordered only) with a lead line
-> then sub-bullets (Ordered uses Status / Next / Why / Refs; backlog is a lead line + adaptive
-> sub-bullets). **Lanes** fold related micro-tasks into one H3's sub-bullets. **Parked** items sit under
-> the blockquoted `> ## ⏸️ PARKED` divider near the end of the backlog. Only the three real `## ` H2
-> anchors (🔥 Ordered / 📋 Unordered backlog / ✅ Completed this conv) are load-bearing.
+> Reprioritise / start / park a task by editing a TOC line + its `State:` bullet — the body stays put.
+> **Complete** a task by deleting its body from `## Tasks` and adding a one-liner to `## ✅ Done this conv`
+> (cleared each `/r-start`). `[Opus]` on the `State:` line flags model tier. Only the four `## ` H2
+> anchors (🎯 Now / ⏸️ Parked / Tasks / ✅ Done this conv) are load-bearing.
 
 ---
 
-## 🔥 Ordered (next-conv execution sequence)
+## 🎯 Now  (execution order — top = next)
 
-### [MERGE-BRIAN-JULY7] · ⏸️ ON HOLD — gate: user's conversation with the client · [Opus]
+1. [A11Y](#a11y) — accessibility lint triage
+2. [RHOOKS](#rhooks) — react-hooks lint triage
+3. [KNIP](#knip) — dead-export oracle → gate
+4. [PROV-SWEEP-DEBT2](#prov-sweep-debt2) — `prov:sweep` gate silently red (9 unregistered)
+5. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
+6. [EDITSAFE](#editsafe) — anchored-edit discipline
+7. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
+8. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
+9. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
+10. [HOME-FIXES](#home-fixes) — Home route fix bucket
+11. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
+12. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
+13. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
+14. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
+15. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
+16. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
+17. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
+18. [RSFD](#rsfd) — port `r-start-from-dirty`
+19. [DEPEXP](#depexp) — dependency-probe hygiene
+20. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
+21. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
 
-**HOLD (Conv 396, user's call):** integration discussion is suspended until the user has talked to Brian about the **why** and the **what** of his changes. User's position: *"I wanted the client to explore, but I am not going to keep all that he has done. I have to see its impact first and he has to explain his intentions… He is not in a position to know if they are destabilizing changes."* → Do **not** transfer files, plan batches, or re-open the merge-mechanism debate until that conversation has happened. Assessment findings below are complete and durable; resume from them.
+## ⏸️ Parked  (gated — out of rotation)
 
-**🚦 THE ADMISSION GATE (user's framing, Conv 396 — every file passes this before entering `jfg-dev*`).** New-ness is not a pass; novelty of a file says nothing about its blast radius. Three questions:
-1. **Destabilizing?** Do these changes break the Peerloop app?
-2. **Structural dependency?** Do they imply changes to structure other parts depend on — *in particular reporting, messaging, notification, and admin counterparts*?
-3. **Style-guide conflict?** Do they negate the current style guide — and if so, do we want to adopt them?
-
-**Gate-probe results so far (Conv 396, partial — Gate 1 not yet run):**
-- **Gate 2 — the user's instinct was correct, verdict this time benign.** The `Teachers → Peer Teachers` relabel did NOT stay in course UI: it reached **`admin/AdminDashboard.tsx`, `admin/TeachersAdmin.tsx`, `analytics/CoursePerformanceTable.tsx`, `layout/AdminNavbar.tsx`, and the API endpoint `src/pages/api/admin/analytics/users.ts`** — i.e. reporting + admin counterparts, exactly the named concern. **On inspection it is display-string only:** the endpoint changes `{ name: 'Teachers' → 'Peer Teachers' }` while the SQL field `teacher_certifications` is untouched; `CoursePerformanceTable` is a `<th>` label. **Nothing keys off the literal** (`git grep "=== 'Teachers'"` → 0) and the sole consumer is `AdminAnalytics.tsx`, which renders `name` as a chart label. So: the gate correctly flagged it, and it passes. **Messaging / notifications / email are untouched** — zero files matched `notif|messag|email`. The `[COMM-BRAND]` schema change is **additive** (`ADD COLUMN accent_color, logo_url`), the low-risk shape.
-- **Gate 3 — one systemic miss, token conformance mostly fine.** All **7 of his new `src/` files carry NO provenance marker** (`TeachersTabList.tsx`, `CourseCoverPanel.tsx`, `CommunityBand.tsx`, `CourseMiniHeader.tsx`, `community-branding.ts`, `logo.ts`, `[...key].ts`) — violates CLAUDE.md §Page Provenance (exactly one of `@stand-in` / `@matt-source` / `@matt-inspired`). Design-token conformance is **better than expected**: `CommunityBand.tsx` and `CourseMiniHeader.tsx` have zero hardcoded colors or arbitrary px; only `CourseCoverPanel.tsx` deviates (2 hex `#0e3a5c`/`#0b2740` + arbitrary `[180px]`/`[120px]`/`[10px]`). Not systemic — a specific, small fix.
-- **Gate 1 — NOT YET MEASURED.** Mechanical when wanted: apply his tree to a scratch branch and run all 5 gates. Also unknown and cheap: **does his own branch pass the 5 gates?** Known destabilizer already in hand: the `CourseTabs.tsx` modify/delete below.
-
-**Questions the conversation needs to cover** (derived from the findings below): why the course-tab architecture was rebuilt on a component we had deleted; what the `[COMM-BRAND]` schema addition is for; whether the hidden-but-retained surfaces (Popular Courses carousel, role tabs, Meet-the-Creator/Reviews/Resources tabs, photo backdrops) are meant to come back; and — since several commits cite *"approved Option B"* / *"approved interactive mockup"* — **ask him for those mockups and option write-ups**, because they exist only in his own chat sessions and are the sole record of his reasoning (see docs-repo finding).
-
-Assess the client's `brian-July-7` branch for impact, then integrate what's worth keeping into `jfg-dev-14`. **Discard nothing without review** — the user's standing instruction is that the work may be very good for Peerloop; be methodical and diligent. The client has said he wants to **discuss the work soon**, so an assessment should be ready before that conversation. Scope will likely grow — the user expects to add to this task.
-
-- **Working model of the client (user's framing, Conv 396):** Brian is not a coder and drives his own CC instances. Treat him as a peer recipient of the *same* expert suggestions CC gives the user — with **one exception**: his directives are issued without regard to downstream codebase consequences, whereas the user's are framed with the codebase in mind and the user can course-correct interactively. So client-originated changes need a consequence audit that user-originated ones don't.
-- **🆕 New client branch (Conv 400):** `/r-start` pulled a new `origin/brian-July-20` — **13 days newer** than the `brian-July-7` assessed below. The assessment target has moved; re-scope against `brian-July-20` (or diff the two branches) when this un-holds.
-- **Branch state (measured Conv 396):** merge-base `c50afd82` (Conv 370, 2026-07-07). **53 commits ahead, 52 behind** `jfg-dev-14`. **66 files**: `src/components` 34, `src/pages` 14, `public/images` 6, `src/lib` 4, `public/demo-logos` 3, plus `src/layouts/AppLayout.astro`, `scripts/seed-feeds.mjs`, `migrations/0005_community_branding.sql`, `migrations-dev/0001_seed_dev.sql`, `.gitignore`. All 53 authored **`brian@peerloop.com`** — confirmed genuinely the client's, *not* CC work stranded by the Conv-371 wrong-branch incident.
-- **🔴 NOT UI-only** (contradicts the working assumption): the branch carries a **new schema migration** `migrations/0005_community_branding.sql` (`ALTER TABLE communities ADD COLUMN accent_color TEXT, logo_url TEXT`) plus a new module `src/lib/community-branding.ts`, edits to `src/lib/ssr/loaders/{courses,communities}.ts`, `src/lib/mock-data.ts`, and the dev seed. Schema + SSR loaders + seed = real consequence surface. Note `0005` is a **filename collision risk** — `jfg-dev-14` has no `0005`, so it merges cleanly *today*, but any `0005_*` we author before merging collides. See CLAUDE.md §Schema Discrepancy Discipline before touching it.
-- **Conflict surface — 17 files changed on BOTH branches:** `src/components/courses/{CoursesCatalog,CoursesFilters,CourseTabs}.tsx`, `src/components/creators/studio/CourseEditor.tsx`, `src/components/entity/CourseHeader.tsx`, `src/components/layout/AdminNavbar.tsx`, `src/components/teachers/profiles/TeacherProfile.tsx`, `src/lib/mock-data.ts`, `src/lib/ssr/loaders/courses.ts`, `src/pages/api/admin/analytics/users.ts`, `src/pages/course/[slug]/{_course-tabs.ts,[...tab].astro,book.astro,success.astro}`, `src/pages/index.astro`, `migrations-dev/0001_seed_dev.sql`, `.gitignore`.
-- **Themes on the branch** (client's own `[CODE]`s): `[COVER-STORY]`/`[COVER-STORY-MIRROR]` catalog+detail hero rework · `[TAB-SCROLL]`/`[TAB-FLOAT]`/`[TAB-COMPACT]`/`[TAB-OWNS-PAGE]` course-tab architecture · `[COMM-BRAND]` community branding (the schema change) · `[TCH-SEARCH]` · "Teachers"→"Peer Teachers" relabel sweep · bespoke SVG course covers · hidden-but-code-retained surfaces (Popular Courses carousel, role tabs, Meet-the-Creator/Reviews/Resources tabs, photo backdrops).
-- **🟠 Conv-number collision:** his CC numbers convs too — `brian-July-7` carries commits labelled "Conv 371/372/373/374/375", which are *different work* from our Convs 371–375. Breaks the same-number-in-both-repos traceability invariant (CLAUDE.md §Conv Lifecycle) and will confuse commit archaeology + the timecard skills.
-- **⛔ Gate before any merge:** **[TC-MERGE-TZ]** (Parked) — Brian commits from **CST**, Fraser from **ET**; a history-preserving merge imports his commits into `jfg-dev-14`'s daily timecard buckets. Resolve merge strategy (author filter / `--squash` / tz offset) *first*.
-- **📊 Timecard contamination MEASURED (Conv 396, empirical — `node .claude/scripts/timecard-day.js <date>`):** `brian-July-7` is a **local** branch, so `discoverCandidateBranches()` already sweeps it every run. Confirmed contaminated days: **07-07 (6 of his commits in the audit table, absorbed into our real Conv 371 bucket, `isAdHoc:false`), 07-08, 07-09, 07-11 (1 each)**. **Billable-minute delta on every one of those days = 0m** — his commits landed *inside* windows our own commits already bounded, so to date the damage is **cosmetic** (audit table + Block attribution), not financial. That is luck, not design: a commit of his outside our window would extend it. **07-17/07-18 (19 commits) produced a 0m timecard** — no conv heartbeat of ours on those dates, so no window was anchored at all.
-- **⚠️ Conv-number collision is the mechanism:** timecard buckets anchor on docs-repo heartbeats (`^Conv (\d{3}) start —`) and match code commits via `^Conv (\d{3})[:\s]`. His commits carry the *same* prefixes. He collides only when his conv number **and** date coincide with ours — 07-07 (his "Conv 371" ↔ our Conv 371 heartbeat) is the confirmed hit; his other conv-prefixed days missed by date and were silently skipped.
-- **🟠 `--exclude-branches` is CLI-only and effectively inert:** parsed at `timecard-day.js:64/70`, used once at `:1586`, **no persistent config default** — so no routine timecard run passes it. It *works* when passed (07-07: 6 of his commits → 0 extracted), but nobody remembers a flag. **Branch exclusion also dies at merge time** — once `brian-July-7` lands in `jfg-dev-14` his commits are on our branch and branch-filtering can no longer see them. **Author-based exclusion (`brian@peerloop.com`) is the only filter that survives the merge.**
-- **✅ Docs repo is CLEAN of client commits (verified Conv 396).** `peerloop-docs` has **one** branch (`main`), **1205 commits, every one authored *and* committed `Fraser Gorrie <fraser@meristics.com>`**; `--author=brian@peerloop.com` returns 0 across `--all`. **So the client did NOT use the dual-repo architecture** — he worked code-only. Three consequences: (1) his `Conv NNN` labels have **no heartbeat commits**, which is why `timecard-day.js` silently skipped most of his days (only same-date collisions like 07-07 got through); (2) there are **no session docs, no PLAN.md entries, no RESUME-STATE narratives** for any of his work — his *rationale exists nowhere in git*, only in his own chat sessions; (3) his commit messages cite *"approved Option B"* / *"approved interactive mockup"* / *"approved mockup"*, so decision artifacts exist on his side and must be **requested from him**, not reconstructed.
-- **🔴 Biggest integration question — `CourseTabs.tsx` modify/delete (found Conv 396).** Conv 392 `cfcfc8af` [ORPHAN-PURGE] **deleted 16 orphaned course-detail components**, `CourseTabs.tsx` among them (389 lines), as confirmed-dead after `/old` routing was retired (Conv 339). The client forked at Conv 370 — *before* the purge — and built **8+ commits of tab architecture on top of it** (`[TAB-SCROLL]`, `[TAB-FLOAT]`, `[TAB-COMPACT]`, `[TAB-OWNS-PAGE]`). Both determinations were locally correct; nothing routed to it on our branch, it was the centerpiece on his. **This is a design question, not a merge conflict** — no per-hunk resolution answers it: does his tab architecture supersede the Matt `/course/[slug]` page, or does the *intent* get ported onto the page we kept? Likely carries more work than the other 65 files combined. **Expect more of this class** — his branch predates the purge entirely, so anything built on the other 15 deleted components has the same shape. An exhaustive survey of that class was offered and *not yet run* (deferred by the hold).
-- **🔬 Merge dry-run (`git merge-tree`, Conv 396) — far less conflict than feared.** Of the 17 both-touched files, **12 auto-merge cleanly**; only **5** need real resolution: `CourseTabs.tsx` (modify/delete, above), `CoursesCatalog.tsx`, `CoursesFilters.tsx`, `CourseHeader.tsx`, `src/pages/course/[slug]/[...tab].astro`. The other **49 of 66 files are his-only** and transfer with zero risk.
-- **🧭 Integration mechanism — reasoned through Conv 396, no decision taken (hold).** Direction of travel: **keep git as the transfer vehicle, drive it per-theme.** Hand-moving files was considered and argued against — `git checkout brian-July-7 -- <file>` is a *wholesale overwrite*, not a merge, so on the 17 shared files it silently discards our side; it would trade 5 genuine reconciliations for 17 manual ones with invisible-work-loss as the failure mode. **Batch unit = theme, sized so each commit passes all 5 gates** (his themes cut across schema + lib + loaders + components; a half-transferred theme won't build). A **worktree of `brian-July-7` is still wanted — but to *run* his branch and compare behavior, not as the transfer path** (`git show brian-July-7:<path>` reads any file without one); same role `Peerloop-preflip` plays. **Squash (no history) remains required**, and is now load-bearing for the timecard fix: the `^jfg-dev` allowlist stops working the instant his commits land on a `jfg-dev*` branch with history preserved. Caveat to honor: `--squash` records no merge parent, so he must **abandon `brian-July-7` after handoff** and start from the branch we deliver, or every subsequent squash re-presents old changes as new conflicts.
-- **Refs:** branch `origin/brian-July-7`, `[TC-MERGE-TZ]` (Parked, below), CLAUDE.md §Schema Discrepancy Discipline, `[[project_jfg_dev_branches_are_snapshots]]`, `[[project_preflip_worktree_reference]]`, Conv 392 `cfcfc8af`. Surfaced Conv 396.
-
-### [ORPHAN-BACKLOG] · 🔄 Active · Category-A+C DONE; B parked · [Opus]
-
-`[ORPHAN-DETECT]` surfaced 118 orphaned components. Conv 392 deleted all of **Category A** (dead legacy, 74 files). Conv 393 resolved all of **Category C**: deleted 3 (`error/ErrorPage`, `leaderboard/Leaderboard`+its orphaned API, `context-actions/*`) and **wired 1** — `invite/ModeratorInvite` was a LIVE bug not debris (admin invite emails `/invite/mod/{token}`, RESEND live on staging, but no page existed → link 404'd); built `src/pages/invite/mod/[token].astro` to fix it. Conv 393 also swept **12 stray dead `.ts`** (utils/types + dead live-dir barrels). Component detector now **53** (was 118); all 5 gates green throughout.
-- **Remaining — Category B (52, PARKED behind [RG-PUBLIC]):** `marketing/*` (48) + `stories/*` (2) + `testimonials/*` (2) + `creators/profiles/CreatorCard` (marketing `FeaturedCreators` dep) — the old marketing site; keep until the marketing redesign, then delete/replace. (12 dead `.ts` barrels for this parked set were deliberately LEFT with it — they'd dangle still-compiled parked orphans; `icons/icon-provenance.ts` is KEPT, it's the `prov:sweep` source-of-truth, not dead.)
-- **Open — detector wiring:** once B resolves, snapshot residuals into `KNOWN_ORPHANS` and wire the detector into `/w-codecheck` as a hard gate (only NEW orphans fail). The stray dead-`.ts` cleanup is DONE (Conv 393); a `.ts` variant of the detector (scope to `src/components/**` — `src/lib/**` has worker/middleware entry points that false-positive) can be productionized then if a `.ts` gate is wanted.
-- **Refs:** `.claude/scripts/codecheck-orphan-components.mjs`, `[[feedback_orphaned_components_survive_migration]]`, `.claude/skills/w-codecheck`.
-
-### [PLATO-SEQ] · 🟢 Active work complete · 4c post-launch · [Opus]
-
-Waypoint-sequenced PLATO API+browser test architecture. **Phases 1–4b all ✅ (Convs 379–385)** — the waypoint producers, the dependency-graph + provenance foundation (`plato:graph`), and the `plato:run` make-for-waypoints runner are built, validated, and committed; full history in git + `docs/sessions/` + `docs/as-designed/plato.md`. **Only Phase 4c remains, and it is post-launch-gated** (duplicates the Parked `[BROWSER-SMOKE-2B]` below).
-- **⏳ Outstanding — Phase 4c (deferred post-launch):** the agent-driven browser walker (PLATO-ON-STEROIDS / `[BROWSER-SMOKE-2B]`) — auto-walk a pure-UI browser segment from a restored waypoint and self-verify the UI, so a full journey chains API-produced waypoints (which cross Stripe Connect / Checkout / BBB that a browser can't) with browser-verified UI segments. Do NOT resurrect Playwright E2E.
-- **To resume 4c:** the reusable browser-walk mechanics (actor-switch via `POST /api/auth/dev-login`; CUT-2 enroll = signed `checkout.session` with **no `payment_intent`** via `trigger-webhook.sh stripe-direct-raw`; CUT-3 = `bbb-meeting-ended`; click-by-`ref`/late-hydration gotchas; Genesis creds) are captured in `.scratch/plato-waypoint-plan.md` and memory `[[reference_chrome_bridge_island_stale_cache]]` / `[[plato_walk_mocked_service_divergence]]`.
-- **Refs:** `docs/as-designed/plato.md` § Waypoint-Sequenced Segments, `tests/plato/snapshots/README.md` § Browser-walk validation, `PLAN.md` § PLATO-SEQ, `.scratch/plato-waypoint-plan.md`, `docs/decisions/06-testing-ci.md`.
+- [MERGE-BRIAN-JULY7](#merge-brian-july7) — gate: user ↔ client conversation
+- [ORPHAN-BACKLOG](#orphan-backlog) — gate: marketing redesign (RG-PUBLIC)
+- [PLATO-SEQ](#plato-seq) — gate: post-launch (Phase 4c)
+- [SESSION-REMIND-DEPLOY](#session-remind-deploy) — gate: MVP-GOLIVE (prod)
+- [FEEDBACK-DEPLOY](#feedback-deploy) — gate: MVP-GOLIVE (prod)
+- [TC-MERGE-TZ](#tc-merge-tz) — gate: before the brian-July-7 merge
+- [RG-PUBLIC](#rg-public) — gate: marketing redesign
+- [PREFLIP-WT](#preflip-wt) — gate: user say-so
+- [BROWSER-SMOKE-2B](#browser-smoke-2b) — gate: post-launch
+- [MINWIDTH-320](#minwidth-320) — gate: user say-so
+- [ICON-LIC](#icon-lic) — gate: MVP-GOLIVE
 
 ---
 
-## 📋 Unordered backlog
+## Tasks
 
-### [SESSION-REMIND-DEPLOY] · ⏸️ Parked — gate: MVP-GOLIVE (prod repeat only; staging DONE Conv 388)
+### [A11Y]
 
-**Fully activated on STAGING Conv 388** — reminder columns applied (reseed), `RESEND_API_KEY` secret set on `peerloop-cron-staging`, cron worker deployed (`d95ddb91`, `*/15`). Session reminders now fire on staging instead of logging `skipped`. **Remaining (prod only, gated behind MVP-GOLIVE):** repeat both steps for production — `wrangler secret put RESEND_API_KEY --env production --config workers/cron/wrangler.toml` + `deploy:cron:prod` — when prod is unblocked. **Refs:** `workers/cron/wrangler.toml`, `src/lib/session-reminders.ts`.
+- **State:** 🔄 active
+- **What:** `eslint-plugin-jsx-a11y@6.10.2` adopted at **warn** (Conv 399) for `.tsx` (recommended) + `.astro`; ESLint-10 peer gap fixed via self-healing package.json `overrides` pin. Gate stays GREEN (warn-only). Triage warnings incrementally.
+- **Progress:** 100 → 72 warnings (Conv 404, all 5 gates green). Built 2 behavioral primitives: `ui/ModalBackdrop.tsx` (aria-hidden backdrop, deliberately **not** focusable — 7 sites) + `ui/ClickableRow.tsx` (role=button rows wrapping block content — 1 site). Both **unstamped/unregistered** by design (behavior not design; `prov:sweep` accepts).
+- **Next:** batch 2, same `htmlFor`/`id` pattern → `creators/studio/ResourcesEditor` (12), `community/AddCommunityResourceModal` (8), `teachers/workspace/AvailabilityCalendar` (6), `admin/UsersAdmin` (5).
+- **Do NOT force `ClickableRow` on:** `AvailabilityCalendar:654` (already `role=gridcell`, wants grid nav), `AdminDataTable:137` (`stopPropagation` sink), `Modal.tsx:83` (`handleBackdropClick` is dead code — delete, don't decorate). Genuine `ClickableRow` candidates: `NotificationCenter:310`, `ModerationDetailContent:265`, `AdminDataTable` row.
+- **⚠️ Process:** run the `[ORPHAN-DETECT]` reachability check on **every** file in a batch — Conv 404's `TestimonialsBrowse` edit landed on parked dead code (Cat-B), so honest cleared count was 26 not 28.
+- **Deferred:** escalate `recommended`→`strict` after triage; consider gating any rule at `error`; drop the `overrides` pin when upstream ships `eslint ^10`.
+- **Refs:** `../Peerloop/eslint.config.js`, `../Peerloop/package.json`, `../Peerloop/src/components/ui/{ModalBackdrop,ClickableRow}.tsx`, `docs/decisions/06-testing-ci.md §A11Y`, `[LE-TRIAGE]`, `[PROV-SWEEP-DEBT2]`.
 
-### [HOME-FIXES] · standalone (deferred per-route bucket)
+### [BLOCKPLAN]
 
-Deferred bucket of per-route fixes captured while sweeping the Home (`/`) route — small issues set aside to batch later.
+- **State:** 📋 queued · low priority
+- **What:** `CURRENT-BLOCK-PLAN.md` (docs-repo root) is an unfilled March template never used — multi-conv blocks (PLATO-SEQ etc.) track in PLAN.md instead (PLAN.md is SoT per CLAUDE.md §Feature Tracking; Conv 382 Decision #3).
+- **Decide:** adopt it consistently for multi-conv blocks, or remove it to cut surface.
+- **Refs:** surfaced Conv 382.
 
-### [COURSES-FIXES] · standalone (deferred per-route bucket)
+### [BRAND-DOCS]
 
-Same as [HOME-FIXES] but for the Courses route(s).
+- **State:** 📋 queued · low priority
+- **What:** docs-wide "PeerLoop" → "Peerloop" casing sweep. **Pre-existing** (not Conv-369-caused); ~30 docs still carry old casing, mostly manual/vendor (`resend.md`, `stripe.md`, `cloudflare.md`, `matt-design-system/*`) + a few driftCheck (`url-routing.md`, `messaging.md`, `ratings-feedback.md`).
+- **Guard:** verify each mention isn't an intentional reference before bulk-replace. BRAND-CASE (Conv 369) was "UI copy only".
 
-### [BRAND-DOCS] · standalone
+### [BRIDGE-UPLOAD]
 
-Docs-wide "PeerLoop" → "Peerloop" casing sweep — **pre-existing** inconsistency (NOT Conv-369-caused), surfaced by the Conv-369 r-end docs agent: ~30 docs still carry the old casing as generic prose, mostly manual/vendor (`resend.md`, `stripe.md`, `cloudflare.md`, `matt-design-system/*`) + a few driftCheck (`url-routing.md`, `messaging.md`, `ratings-feedback.md`). BRAND-CASE (Conv 369) was scoped "UI copy only." Verify each isn't an intentional reference before bulk-replace. Low priority.
+- **State:** 👀 watch (tooling)
+- **What:** `mcp__claude-in-chrome__file_upload` rejects filesystem paths (wants file contents via `files`), but the exposed schema only has `paths` → **no working browser file-upload** in a PLATO browser-run (thumbnails, avatars, homework).
+- **Fallback (Conv 379):** set course thumbnail via the app's `PUT /api/me/courses/[id]/thumbnail` (external URL, JSON). Document API-PUT as the standard for file-gated browser steps.
+- **Next:** re-test on a newer Chrome-in-Claude build.
+- **Refs:** `memory/reference_chrome_bridge_island_stale_cache` [BRIDGE-UPLOAD]. Surfaced Conv 379.
 
-### [BRIDGE-UPLOAD] · standalone (tooling watch)
+### [COMPDOC]
 
-`mcp__claude-in-chrome__file_upload` rejects filesystem paths ("MCP controller must read the file and pass contents via the `files` parameter"), but the exposed schema only has `paths` — so there is **no working browser file-upload** in a PLATO browser-run (thumbnails, avatars, homework attachments). Worked around Conv 379 by setting the course thumbnail via the app's `PUT /api/me/courses/[id]/thumbnail` (external URL, JSON). Re-test on a newer Chrome-in-Claude build; document the API-PUT fallback as the standard for file-gated browser steps. **Refs:** `memory/reference_chrome_bridge_island_stale_cache` [BRIDGE-UPLOAD]. Surfaced Conv 379.
-
-### [BLOCKPLAN] · standalone (cleanup decision) · low priority
-
-`CURRENT-BLOCK-PLAN.md` (docs-repo root) is an unfilled March template never used for any block — PLATO-SEQ (and prior multi-conv blocks) tracked in PLAN.md instead (Conv 382 Decision #3, PLAN.md is SoT per CLAUDE.md §Feature Tracking). Decide: adopt it consistently for multi-conv blocks, or remove it to cut surface. Low priority. Surfaced Conv 382.
-
-### [UXQ] · standalone (harness-UX note) · low priority
-
-`AskUserQuestion` tears down the option picker when the user selects "let me clarify" — the choices they wanted to discuss vanish. User flagged this directly Conv 385 ("it disappears just when the user says he wants to chat about it"). Workaround: re-render the options as durable prose. **Not fixable in this repo** — a CC harness behavior; keep as a watch/report-upstream note. Surfaced Conv 385.
-
-### [DEVSRV-KILL] · standalone (tooling hygiene) · low priority
-
-Scope ephemeral dev-server teardown to the spawned PID. Conv 393: during ephemeral `npm run dev` cleanup, a port-based kill (`lsof -ti :4321 | grep 'astro dev'`) killed a **pre-existing** astro dev on :4321 that this session did not start (my server had fallen back to :4322 because :4321 was occupied). Fix: capture the spawned PID and kill only that on teardown — never a broad `:port + astro dev` match. **Refs:** memory `feedback_persistent_dev_server_4321`. Surfaced Conv 393.
-
-
-### [FEEDBACK-DEPLOY] · ⏸️ Parked — gate: MVP-GOLIVE (prod repeat only; staging DONE Conv 394)
-
-**Fully activated on STAGING Conv 394** — 3 schema columns applied to staging D1 via non-destructive `ALTER` (`email_feedback_reminder` on `users`; `feedback_reminder_student_sent_at` + `feedback_reminder_teacher_sent_at` on `sessions`; all verified present), cron worker redeployed (`deploy:cron:staging`, version `37e506d5`, `*/15`). `RESEND_API_KEY` already set on `peerloop-cron-staging` (Conv 388) → the `sendFeedbackReminders` block fires (not skipped); first-tick prediction `sessions=0` (no completed-unrated sessions in the 72h window — stale seed data correctly excluded). **Remaining (prod only, gated behind MVP-GOLIVE):** apply the same 3 columns to the prod D1 (`ALTER`, or reseed) + `deploy:cron:prod`. Mirrors [SESSION-REMIND-DEPLOY]. **Refs:** `src/lib/feedback-reminders.ts`, `workers/cron/wrangler.toml`.
-
-### [RSYNC-GATE] · standalone (skill infra) · surfaced Conv 395
-
-`/r-start` **Step 5.7 Phase 2**'s `rsync -a --delete "$MIRROR/" "$LIVE/"` was **DENIED by the auto-mode classifier** ("Irreversible Local Destruction" — the destructive call sits immediately after a diff-gate whose result is an unseen tool result, so it "may proceed past its own intended confirmation gate"). **This will RECUR every conv** — it's a structural property of the step's shape, not a one-off. Conv 395 impact was nil (Phase 1 returned 0 changes → the rsync was a provable no-op; verified out-of-band with an independent `diff -rq` and **skipped, not forced**), but on a conv where the mirror genuinely differs the block lands mid-`/r-start` and **the memory sync doesn't happen**.
-- **Options to evaluate:** (a) move Phase 2 into a named script (`conv-memory-sync.sh`) whose shape reads as intentional rather than a raw `--delete`; (b) have Phase 1 write a decision sentinel Phase 2 checks, making the gate legible; (c) document the expected block in the skill so CC handles it deterministically instead of improvising; (d) a project `settings.json` Bash allow-rule for the specific invocation.
-- **Note the asymmetry:** `/r-commit` Step 1.5 + `/r-end` Step 5b run the same rsync in the **safe** direction (live→mirror) and were **not** blocked. Only mirror→live is sensitive.
-- **⚠️ CONFIRMED RECURRING (Conv 396).** Second occurrence — the block fired again at Conv 396's `/r-start`, same shape, same skip. Conv 396 was again harmless (Phase 1 returned a 0-change diff → provable no-op → verified out-of-band and skipped). Two clean convs in a row means the *first* conv with a genuinely-differing mirror is the one that silently loses the sync — so fix it before that lands, not after.
-- **🔻 CORRECTION (Conv 397) — it is INTERMITTENT, not "every conv".** The rsync ran **without any block** at Conv 397's `/r-start`. The earlier claims ("this will RECUR every conv — it's a structural property of the step's shape"; "now evidence, not prediction") are **falsified** and should not be relied on. Intermittent is **worse than reliable** for this failure mode: a block that fires every time gets noticed and handled, whereas one that fires 2 convs in 3 invites the assumption that a silent pass means the sync happened. The fix case is unchanged and slightly strengthened — the options (a)–(d) below all still apply, and none of them depend on the block being deterministic.
-- **Refs:** `.claude/skills/r-start/SKILL.md` Step 5.7 Phase 2, `[[feedback_msi_sync_user_checkpoint]]`.
-
-### [SCRATCH-DEBRIS] · standalone (cleanup) · trivial · surfaced Conv 395
-
-`.scratch/conv-tasks.md` still exists on MacMiniM4Pro despite being explicitly **retired by [CURTASKS] (Conv 351)** — `CURRENT-TASKS.md` replaced it, and `/r-start` Step 7.5 states the companion + its no-shrink reconciliation guard are retired. Verify nothing reads it (grep the skills), confirm it isn't machine-local state anyone depends on, delete. `.scratch/` is gitignored + machine-local, so MacMiniM4 may hold its own copy. **Refs:** `[[feedback_current_tasks_persistence]]`.
-
-### [RSFD] · standalone (skill infra) · low priority · [Opus]
-
-Port spt-docs' `/r-start-from-dirty` (retroactively wrap an already-dirty tree in a tracked Conv, for when `/r-start` was forgotten). **Conv-395 dependency audit: it is NOT a file copy.** Three deps are missing here — (1) `conv-start-core.sh` (peerloop's `/r-start` does increment/heartbeat **inline** at Steps 3/4/5, so there's no shared core to call); (2) `r-health.js`; (3) `event.js` + `.conv-events.jsonl` — **Peerloop has no event-log capture system at all**, and the skill's Step 6 retro-fire (which its own Rules call "the whole point") depends on it entirely. **Blocking decision before any build: does Peerloop want an event log?** Without one, a port just increments a counter over a dirty tree and the session's reasoning is still lost. Peerloop also has substrate spt lacks that a from-dirty variant must consciously handle: Step 0 `conv-session-lock.sh` (Conv 293), Step 5.6 `conv-branch-check.sh` (Conv 297), the ~150-line Step 5.7 memory sync. **Refs:** `~/projects/spt-docs/.claude/skills/r-start-from-dirty/SKILL.md`, `[[feedback_skill_sync_same_name_divergence]]`. Surfaced Conv 395.
-
-### [MEM-PRUNE] · 🔁 Recurring watch · receded (70%, below the 80% trigger)
-
-**Threshold-triggered, never "done"** — the standing watch is `[MEM-CAP]` in PLAN.md. Fires when `MEMORY.md` auto-load utilization crosses **80%** of the 200-line / 25 KB SessionStart cap on either axis (`/r-start` Step 5.7 Phase 2 emits the 🔴🔴🔴 alert); recedes below it. Remedy is **`/r-prune-memory`** — **NOT** `/r-prune-claude`, a different file with different cap mechanics.
-- **Utilization log:** Conv 211 baseline 53% lines / 73% bytes → tripped 80% bytes Conv 213 → Conv 394 inline re-flatten 20.6→19.1 KB → Conv 395 hit 79% (two new memories) → **Conv 396 full run: 20304 B (79%) → 17979 B (70%), 127 → 124 lines (62%).**
-- **Conv 396 run notes (for the next firing):** label-normalization (c) was a **no-op** — all pointers already use `[link]` since Conv 394, so don't budget for it. The biggest single win was **not** a pointer: the 5-line intro blockquote (910 B) duplicated `CLAUDE.md §Memory`, which is *always* loaded anyway → compressed to a one-liner for −760 B at zero information loss. **That lever is now spent.** 12 bloated pointers were re-flattened; the remaining ones are mostly ≤250 B, where the ~190 B pointer floor makes re-flattening low-yield. **Next firing will likely need extraction (a) or sub-file consolidation**, not more trimming.
-- **Refs:** `.claude/skills/r-prune-memory`, PLAN.md `[MEM-CAP]` (line ~102), `[[feedback_memory_index_load_bearing]]`.
-
-### [TURNLOG] · standalone (workflow guard) · surfaced Conv 396
-
-`.scratch/conv-turns.md` went **unmaintained for an entire conv** — CLAUDE.md §Conversation Turn Log requires prepending an entry at the end of *every* turn; Conv 396 wrote only Turn 1 (via `/r-start` Step 7.7) and turns 2–11 were reconstructed retroactively at `/r-end` COLLECT (the file now carries a "reconstructed" banner). **The failure is silent** — nothing verifies the file, and the user keeps it open in VS Code expecting a live log, so a *stale* file is worse than an absent one. Same **printed-but-not-verified** class that [CBG] fixed for branches: the rule is clear, nothing enforces it.
-- **Options to weigh:** (a) a Stop-hook checking whether `conv-turns.md` grew this turn — but note CLAUDE.md prefers **structural prevention over post-hoc detection**, and the QLINT Stop-hook was *retired* for exactly that reason (Conv 273), so this is the weakest option despite being the obvious one; (b) fold turn-logging into an already-mandatory step so it can't be skipped independently; (c) accept retroactive reconstruction at `/r-end` as the real contract and rewrite the CLAUDE.md rule to match, dropping the every-turn claim.
-- **Refs:** CLAUDE.md §Conversation Turn Log, `[[feedback_option_phrasing]]` (QLINT retirement precedent), `.claude/skills/r-start/SKILL.md` Step 7.7.
-
-### [EDITSAFE] · standalone (CC discipline) · surfaced Conv 396
-
-Three self-inflicted edit errors in one conv, **one common cause**: programmatic rewrites of structured markdown/JSON without anchoring on a uniquely-identifying match. All three were caught only by reading the result back — no guard fired.
-- **(1) JSON round-trip destroyed formatting.** `JSON.stringify(config, null, 2)` to add ONE key reformatted all of `.claude/config.json` — **461 insertions / 129 deletions**, wiping hand-formatting (blank-line grouping, compact one-line objects). Reverted; redone as a 3-line `Edit`.
-- **(2) Ambiguous marker matched the wrong occurrence.** A python `str.replace(marker, row+marker, 1)` inserted a task row into `CURRENT-TASKS.md`'s **header prose**, because the literal `> ## ⏸️ PARKED` appears twice — once as documentation in the format note, once as the real divider.
-- **(3) Status change deleted data.** Moving a recurring-watch task to `## ✅ Completed this conv` removed its backlog row entirely, leaving the standing trigger unrepresented.
-- **Candidate rule:** prefer `Edit` with a unique anchor over python/sed/serializer rewrites on `.claude/config.json`, `CURRENT-TASKS.md`, `PLAN.md`, `MEMORY.md`; for JSON specifically, **never round-trip through a serializer to change one key**. Decide whether this lands in CLAUDE.md or as a memory.
-
-### [A11Y] · 🔄 Active — linter ADOPTED Conv 399; **100 → 72 warnings (Conv 404)**; triage the rest incrementally
-
-**Permanent a11y linter adopted (Conv 399).** `eslint-plugin-jsx-a11y@6.10.2` wired into `eslint.config.js` at **warn** for `.tsx` (recommended set) + `.astro` (via `eslint-plugin-astro`'s jsx-a11y config, scoped to `.astro`). The ESLint-10 peer gap (jsx-a11y caps at `eslint ^9`; upstream fix stalled — jsx-eslint#1075, PRs #1079/#1081 open since Feb) is resolved with a self-healing package.json `overrides` pin (`{ "eslint-plugin-jsx-a11y": { "eslint": "$eslint" } }`) — mirrors our existing react-hooks posture. Researched + rejected the es-tooling fork `eslint-plugin-jsx-a11y-x` (natively eslint-10 but silently **drops `.astro` coverage** + young 0.x) and Oxlint (separate tool). Decision → `docs/decisions/06-testing-ci.md` § A11Y. **Lint gate stays GREEN** (warnings only, exit-0); tsc clean.
-- **Triage backlog — 100 `.tsx` warnings / 34 files** (0 `.astro` — shells; Astro dev Audit covers runtime): `label-has-associated-control` 61 · `click-events-have-key-events` 13 · `no-static-element-interactions` 11 · `no-autofocus` 8 · `aria-role` 5. Hottest: `creators/studio/HomeworkEditor` 14, `creators/studio/ResourcesEditor` 12, `community/AddCommunityResourceModal` 8, `teachers/workspace/AvailabilityCalendar` 6. Fix incrementally like `[LE-TRIAGE]`; clear warnings in files touched for other reasons.
-- **✅ Conv 404 — first triage pass, 100 → 72 (all 5 gates green).** Two behavioral primitives built + 8 sites migrated. Split: `label-has-associated-control` 61→**49** · `click-events-have-key-events` 13→**5** · `no-static-element-interactions` 11→**3** · `no-autofocus` 8 · `aria-role` 5 · 2 singletons. Total lint 195→167.
-  - **`HomeworkEditor` 14→1** (residual = accepted `[RHOOKS]` `set-state-in-effect`). 12 labels via `htmlFor`/`id`: static ids on the single-instance New Assignment form, `` `…-${assignment.id}` ``-scoped ids on the per-assignment edit form (renders inside `assignments.map`).
-  - **NEW `ui/ModalBackdrop.tsx`** — formalizes the idiom already correct at `Modal.tsx:92`: `aria-hidden="true"` + onClick, and deliberately **NO** `tabIndex`/`role="button"`. **A backdrop must never be focusable** — the "obvious" role=button fix is wrong here. Migrated 7 sites (`CreateCourseModal` `CurriculumEditor` `CreatorStudio` `AdminNavbar` `Header` `ExpectationsForm` `TestimonialsBrowse`), each keeping its exact `className` → zero visual change.
-  - **NEW `ui/ClickableRow.tsx`** — `role="button"` + tabIndex + Enter/Space (Space `preventDefault`ed) + focus ring + optional `aria-expanded`. For rows/cards/accordion headers that wrap block content, where a native `<button>` is invalid HTML. Migrated `HomeworkEditor`'s card header.
-  - **Both primitives are deliberately UNSTAMPED + UNREGISTERED** — they carry behavior, not design; no Figma counterpart, so a `data-prov` value or `figmaMatchNames` entry would be a false provenance claim. `prov:sweep` accepts this. If a behavioral tier is ever wanted, extend `matt-provenance.md §12e`.
-  - ⚠️ **`TestimonialsBrowse` is a known orphan** (Cat-B, parked behind `[RG-PUBLIC]`) — that edit landed on dead code, so the honest user-facing figure is **26** cleared, not 28. Process lesson: run the `[ORPHAN-DETECT]` reachability check on **every** file in a batch, not just the first.
-- **Next up (same mechanical `htmlFor`/`id` pattern):** `creators/studio/ResourcesEditor` 12 · `community/AddCommunityResourceModal` 8 · `teachers/workspace/AvailabilityCalendar` 6 · `admin/UsersAdmin` 5.
-- **Remaining interactive sites NOT migrated** (deliberately — each needs its own a11y contract, do NOT force `ClickableRow` on them): `NotificationCenter:310` + `ModerationDetailContent:265` + `AdminDataTable` row = genuine `ClickableRow` candidates; `AvailabilityCalendar:654` = already `role="gridcell"`, wants grid keyboard nav; `AdminDataTable:137` = a `stopPropagation` sink, not a control; `Modal.tsx:83` = `role="dialog"` container whose `handleBackdropClick` is **dead code** (the full-bleed overlay child covers it — cf. the Conv 306 fix), so the fix is deletion not decoration.
-- **Follow-on decisions deferred:** (1) escalate `recommended`→`strict` (adds `control-has-associated-label`, ~60 more) after recommended is triaged; (2) whether to ever gate any rule at `error` (like `rules-of-hooks`) once the backlog clears; (3) drop the `overrides` pin when upstream ships `eslint ^10`.
-- **Refs:** `../Peerloop/eslint.config.js`, `../Peerloop/package.json` (overrides + devDep), `../Peerloop/src/components/ui/{ModalBackdrop,ClickableRow}.tsx`, `docs/decisions/06-testing-ci.md` § A11Y, `[LE-TRIAGE]`, `[PROV-SWEEP-DEBT2]`, `.scratch/rdoc-report-conv397.json`.
-
-### [RHOOKS] · 🔄 Active — rules WIRED at warn Conv 400; triage the 105 warnings incrementally · [Opus]
-
-**Full `react-hooks` `recommended-latest` set adopted at warn (Conv 400).** `eslint.config.js` `.tsx` block now spreads `asWarn(reactHooks.configs['recommended-latest'].rules)` (17 rules; was only `rules-of-hooks`=error + `exhaustive-deps`=warn), then re-overrides `react-hooks/rules-of-hooks` back to `error` after the spread (genuine runtime crashes; **0 violations**). **No new dependency and no `overrides` pin** — react-hooks@7.1.1 already ships the `eslint ^10` peer (unlike jsx-a11y). Lint gate stays GREEN: **0 errors / 205 warnings** (105 react-hooks + 100 a11y); tsc 0, astro-check 0. Decision → `docs/decisions/06-testing-ci.md` § RHOOKS. Mirrors the `[A11Y]`/`[LE-TRIAGE]` warn-first adoption exactly.
-- **Triage backlog — 95 warnings** (was 105; 0 `.astro` — react-hooks is scoped to `**/*.{ts,tsx}`, open question answered **NO**). Current split: `set-state-in-effect` 93 (accepted baseline) · `purity` 1 · `preserve-manual-memoization` 1 — all `error`-rules at warn. **`static-components` + `immutability` fully cleared (0).**
-  - **✅ Batch 1 done (Conv 400):** cleared all 6 hoistable `static-components` (`MessagesCenter` `Spinner` + `EnrollButton` `InfoPill` → module scope) and all 4 `immutability` (reorder loader above its `useEffect` in `CreatorApplicationForm`/`StudentDashboard`/`Header`/`AvailabilityQuickView`). Behavior-preserving; lint 0-err, tsc 0. **Net −6, not −10:** the 4 immutability reorders each unmasked a latent `set-state-in-effect` (91→95) the error had been hiding — same load-on-mount pattern, folded into the set-state pass below.
-  - **✅ FilterContent DONE (Conv 400):** `TestimonialsBrowse` `FilterContent` converted from an inline component (`<FilterContent/>`) to a plain `{filterContent}` element value — clears the last 2 `static-components`, no prop-threading needed, and fixes the controlled-radio remount. 53 tests pass.
-  - **⏸️ Remaining deferred (leave-at-warn):** `purity` ×1 = `ModeratorDetailContent:83` (`Date.now()` countdown display); `preserve-manual-memoization` ×1 = `CoursesCatalog:211` (advisory).
-  - **✅ `set-state-in-effect` DECIDED (Conv 400) — accepted baseline, NOT a to-do list.** Categorized all 95: ~49 idiomatic fetch-on-mount + ~25 deliberate SSR-hydration-safety (client-only reads deferred to an effect; `current-user.ts`/`ThemeToggle` explicitly comment "match SSR output") + ~15 low-ROI prop-sync/`setPage`-reset. Rewriting them would introduce SSR/hydration bugs — the rule can't see SSR constraints. **Kept at warn as an accepted baseline (like `exhaustive-deps`/`[LE-TRIAGE]`); triage only new/egregious cases, don't chase to zero.** Decision → `docs/decisions/06-testing-ci.md`. The one genuine fix taken: **`useCurrentUser`+`useAuthStatus` → `useSyncExternalStore`** (`current-user.ts`; subscribe fns already existed, stable getSnapshot, getServerSnapshot=null/'loading' preserves hydration). Verified tsc 0 + 151 targeted tests pass. This is the reusable pattern for future client-store hydration hooks.
-  - **⏭️ Remaining (opportunistic only):** clear residual warnings in files touched for other reasons (`[LE-TRIAGE]`/`[A11Y]` model). No standalone sweep planned — the baseline is accepted.
-- **Follow-on decisions deferred:** whether any rule graduates to `error` (like `rules-of-hooks`) once its findings clear; nothing dropped to `off` without cause.
-- **Refs:** `../Peerloop/eslint.config.js`, `docs/decisions/06-testing-ci.md` §§ RHOOKS + RDOC + "react-hooks/exhaustive-deps Registered as warn", `[A11Y]`, `[LE-TRIAGE]`, `.scratch/rdoc-report-conv397.json`.
-
-### [KNIP] · 🔄 Active — oracle adopted Conv 398; gate-wiring deferred
-
-Adopted `knip@6.27.0` (devDep + `knip.json` + `npm run knip`) as the module-graph reachability oracle — closes grep's blind spots (`.astro`, relative-path imports, barrel passthroughs). **Done Conv 398:** installed, configured (cron-worker + `scripts/**` entries, `project: src/**`), first run adjudicated all 9 `[RDFIX]` candidates (converged with grep, now with `.astro` coverage) and independently reproduced the 14 parked `[ORPHAN-BACKLOG]` Cat-B files + kept `emails/styles.ts` correctly live.
-- **Remaining before it can be a hard gate:** (1) tune the dependency analysis — false-flags `zod`/`tailwindcss`/`@tailwindcss/forms`/`react-day-picker` (used via CSS `@plugin`/runtime, not JS import) + `cloudflare:` unlisted; (2) baseline the 14 Cat-B files (or wait for `[RG-PUBLIC]` cleanup) so gating doesn't fail on known-parked orphans — **same blocker as the hand-rolled `codecheck-orphan-components.mjs`, which knip would replace**; (3) wire into `/w-codecheck` (only NEW unused fails).
-- **Known dead exports KEPT by decision (Conv 398), knip will re-flag when the gate lands:** `CHART_BREAKPOINTS` (+ its barrel re-export line), `now()`/`parseTimestamp()` (`lib/db/index.ts`), `creators`/`getRelatedCourses`/`getFeaturedCreators` (`lib/mock-data.ts`), and `MONITORING_COLORS` (`discover/role-utils.ts` — newly orphaned by the Group-A `MEMBER_ROLE_COLORS` deletion). Plus `emails/styles.ts`'s 6 unused exports (file is live). Sweep whenever the gate is stood up.
-- **Refs:** `../Peerloop/knip.json`, `.claude/scripts/codecheck-orphan-components.mjs`, `[[feedback_orphaned_components_survive_migration]]`, `[ORPHAN-BACKLOG]`, `docs/decisions/06-testing-ci.md` § RDOC.
-
-### [EMAILDOC] · standalone (doc cleanup) · trivial · surfaced Conv 398
-
-Conv 398 deleted `src/emails/WelcomeEmail.tsx` + `PaymentReceiptEmail.tsx` (dead, zero importers). Both are still listed in `docs/reference/resend.md` + `docs/reference/DEVELOPMENT-GUIDE.md` — both **`manual`** category (editorial/vendor, user-owned), so the r-end docs agent left them by policy. Stale reference to now-deleted files — remove/annotate the two templates (verify each mention is the deleted template, not a live one). Low priority. **Refs:** `docs/reference/resend.md`, `docs/reference/DEVELOPMENT-GUIDE.md`.
-
-### [DEPEXP] · standalone (tooling hygiene) · low priority · surfaced Conv 399
-
-Investigative throwaway `npm install` probes (testing jsx-a11y / the fork / `overrides` in-place during `[A11Y]`) pulled newer transitive optional pins (`@emnapi` via knip's oxc-parser) into npm's resolution, then a later `npm ci` failed "package.json and package-lock.json out of sync" even though the committed lockfile was **byte-identical** to HEAD (it installed fine at conv start). Reconciled via `npm install` + `git restore package-lock.json`. **Habit to adopt:** run dependency experiments in a throwaway git worktree, or always reconcile (`npm install` to repopulate `node_modules`, then restore the committed lockfile) after in-place probes. Sibling of `[SCRATCH-DEBRIS]`/`[DEVSRV-KILL]` hygiene notes. **Refs:** `docs/sessions/2026-07/20260720_1245 Learnings.md` §5.
-
-### [PROV-SWEEP-DEBT2] · standalone (gate silently red) · surfaced Conv 404
-
-**`npm run prov:sweep` reports 10 issues (9 UNTRACKED errors + 1 drift item) — and it was 0 at Conv 244.** `[PROV-SWEEP-DEBT]` cleared it to 0 back then, so this is drift accumulated since: components that stamp `data-prov-name="X"` on their outermost element but were never added to `scripts/matt-inspired-registry.ts`. Offenders: `NavDrawer`, `NavMenuButton`, `communities/CommunitiesFilters`, `courses/CoursesFilters`, `feed/SignupCtaCard`, `settings/LayoutToggle`, `ui/MobileUpNav.astro`, `course/CourseJourneyStepper.astro`, `course/CourseSessionsActions.astro`.
-- **Verified NOT caused by `[A11Y]` Conv 404** — none of the 9 appears in that conv's diff (checked file-by-file), and the two new primitives are unstamped by design so they raise nothing.
-- **Why it matters:** `prov:sweep` is a real gate that has been failing unnoticed, which means the registry⟺marker⟺stamp conformity guarantee from `[PRIM-STAMP]` (Conv 217) is not currently holding. Each offender needs a registry entry (with `figmaMatchNames`) **or** its stamp removed if it isn't a vetted primitive — decide per component, don't bulk-register.
-- **Refs:** `../Peerloop/scripts/matt-inspired-registry.ts`, `npm run prov:sweep`, `docs/as-designed/matt-provenance.md §12c`, `plan/prim-registry/README.md`, `[PRIM-STAMP]`, `[PROV-SWEEP-DEBT]`.
-
-### [TASK-TOOLS-VERIFY] · 🔁 Watch — env var REVERTED Conv 405; re-verify at next launch · surfaced Conv 404
-
-**Conv 405 verdict: `CLAUDE_CODE_ENABLE_TASKS=0` did NOT restore `TodoWrite`, and it COST us the `Task*` tools.** Fresh CC **2.1.216** launch with the var live in `~/.claude/settings.json` `env`: no `TodoWrite`, no `Task*`, no `Grep`, no `Glob`. **The var has been REMOVED from `~/.claude/settings.json` (Conv 405)** — reverting to the documented default (Task* on, TodoWrite off). ⚠️ **UNVERIFIED — needs a relaunch.**
-- **Empirical timeline (transcript scan, 78 JSONLs, v2.1.183 → 2.1.216).** `Task*` usage was healthy every conv through **07-21 09:08 (v2.1.215)** and hits **0 from 07-21 11:55 onward** — i.e. Task* died in the Conv-403/404 window, not from a CC upgrade. `~/.claude/settings.json` mtime is 07-21 13:16 (the Conv-404 edit). Since `ENABLE_TASKS=0` is literally the "turn Task tools off" switch, Conv 404's remediation **caused a regression** while chasing a tool (`TodoWrite`) that has been deprecated since v2.1.142 anyway. The project already uses `TaskCreate`/`TaskList`/`TaskUpdate` throughout — **we do not need `TodoWrite`**; restoring `Task*` is the whole fix.
-- **Docs say the opposite of what we observed** (claude-code-guide agent, `code.claude.com/docs/en/tools-reference.md`): TodoWrite is "disabled by default as of v2.1.142 … set `CLAUDE_CODE_ENABLE_TASKS=0` to re-enable". We set exactly that and TodoWrite did **not** appear. So either the doc is wrong or something else suppresses it — **don't burn more time on TodoWrite**, it is not needed.
-- **⚠️ `Grep` / `Glob` are a SEPARATE, OLDER, still-UNEXPLAINED problem — not a Conv-403/404 artifact.** The transcript scan shows **zero** `Grep`/`Glob` calls across the *entire* retained window (06-22 → 07-21, v2.1.183 → 2.1.216). Ruled out locally: no `--tools`/`--disallowedTools` in the `peerloop` alias (plain `claude --add-dir ../Peerloop "$@"`); no `deny` rules in global/project/local settings; no `managed-settings.json` anywhere; `~/.claude.json` project `allowedTools: []`; ripgrep **14.1.1** present and working. Docs confirm both tools are **current and not deprecated** in 2.1.216 (changelog shows only bugfixes: Grep pagination v2.1.210, Glob null-byte v2.1.208), and that tool-search deferral is documented as **MCP-only** — yet this session's deferred pool contains built-ins (`Monitor`, `WebFetch`, `WebSearch`, `EnterPlanMode`, `Cron*`), so the deferral here is broader than documented. **Verdict: undocumented harness behavior → `/feedback` candidate.**
-- **Impact is degradation, not blockage:** Bash `grep`/`find`/`rg` are all permitted (rg 14.1.1 works), and the `Explore` agent covers fan-out search. Expect slower code navigation until resolved.
-- **Cross-machine gap (still OPEN):** the now-removed var lived in the **global** `~/.claude/settings.json`, a non-git-tracked home dotfile — MacMiniM4 never got it, so that machine needs no revert. But MacMiniM4 **does** still carry the Conv-403 `~/.zshrc` `env -u` guards (harmless no-ops, but stale) — clean them up next time we're on it.
-- **Do NOT re-open the Conv-403 `CLAUDE_CODE_CHILD_SESSION` theory** — falsified Conv 404 and fully unwound.
-- **Refs:** `memory/project_task_tools_child_session_leak.md` (`[TASK-TOOLS-DOWN]`), `DOC-DECISIONS.md` §3, `~/.claude/settings.json`, `code.claude.com/docs/en/tools-reference.md`.
-
-### [COMPDOC] · standalone (doc drift) · surfaced Conv 404 r-end
-
-**`docs/reference/_COMPONENTS.md` "UI Primitives (`src/components/ui/`)" section is badly stale.** It documents **6** entries against **29** actual files — 24 undocumented — and one documented entry, `Breadcrumbs.astro`, references a file that no longer exists anywhere in `src/`. The doc is **driftCheck** category (so it IS in the r-end docs agent's scope), self-describes as "GATHER Phase", and was last updated 2026-07-07.
-- **Pre-existing — NOT caused by Conv 404.** The docs agent deliberately declined to fix it in-pass: adding only that conv's two new primitives (`ModalBackdrop`, `ClickableRow`) to a doc already ~83% incomplete would have been an arbitrary partial edit — the manufactured-edit case the Conv-200 policy warns against. Correct call; it needs a real pass, not a drive-by.
-- **When picked up:** decide first whether this section should be hand-maintained at all, or become `generated` (a `src/components/ui/*` scan is trivial and would never drift again) — that choice is the actual work; the catalogue is downstream of it.
+- **State:** 📋 queued (doc drift)
+- **What:** `docs/reference/_COMPONENTS.md` "UI Primitives (`src/components/ui/`)" section badly stale — documents **6** of **29** files; `Breadcrumbs.astro` references a deleted file. Doc is **driftCheck** (in the r-end docs-agent scope), last updated 2026-07-07.
+- **Pre-existing** — not Conv-404-caused; docs agent correctly declined a drive-by partial edit (Conv-200 manufactured-edit policy).
+- **When picked up:** decide first whether this section stays hand-maintained or becomes `generated` (a `src/components/ui/*` scan would never drift) — that choice IS the work.
 - **Refs:** `docs/reference/_COMPONENTS.md`, `.claude/scripts/docs-registry.mjs doc-category`, `[A11Y]`, `[PROV-SWEEP-DEBT2]`.
 
-> ## ⏸️ PARKED (blocked behind a clear gate — out of active rotation)
->
-> Each revisits when its gate clears.
+### [COURSES-FIXES]
 
-### [TC-MERGE-TZ] · ⏸️ Parked — gate: before the brian-July-7 merge (rediscuss w/ specifics)
+- **State:** 📋 queued (deferred per-route bucket)
+- **What:** deferred bucket of per-route fixes captured while sweeping the Courses route(s) — batch later. Sibling of `[HOME-FIXES]`.
 
-Surface the **timecard implications of a *regular* (history-preserving) merge** of the client branch `brian-July-7` into `jfg-dev-14`, to be worked BEFORE that merge happens. **Cross-tz billing hazard:** the client (Brian) commits from **CST**; Fraser commits from **ET**. A regular merge imports Brian's CST-authored commits into `jfg-dev-14`'s history, and `r-timecard-day` buckets **all** branch activity for a day — so Brian's CST commits mix with Fraser's ET commits on the same day → day-boundary **overlap** and the client's own commits landing in the daily (billable) timecard where they don't belong / with wrong day attribution. NB: this is a *different* tz source than the "2 co-located ET dev machines" analysis (Conv 376), which correctly found no differential for Claude's own work — that conclusion stands; this is about **Brian's** commits entering history via merge. **To analyze when un-parked:** does `timecard-day.js` filter by author/branch? Exclude client commits by author (`PeerloopLLC`), or use `--squash` to keep them out of the daily buckets, or offset by committer tz? **Refs:** `.claude/scripts/timecard-day.js`, skills `r-timecard-day` / `r-timecard` / `w-timecard`, branch `brian-July-7` (author `PeerloopLLC`, CST). Surfaced Conv 376.
+### [DEPEXP]
 
-### [RG-PUBLIC] · ⏸️ Parked — gate: marketing redesign
+- **State:** 📋 queued · low priority (tooling hygiene)
+- **What:** in-place `npm install` probes (during `[A11Y]`) pulled newer transitive optional pins into resolution; a later `npm ci` then failed "out of sync" despite a byte-identical committed lockfile. Reconciled via `npm install` + `git restore package-lock.json`.
+- **Habit to adopt:** run dependency experiments in a throwaway git worktree, or always reconcile (`npm install` then restore the committed lockfile) after in-place probes.
+- **Refs:** `docs/sessions/2026-07/20260720_1245 Learnings.md §5`. Sibling of `[SCRATCH-DEBRIS]`/`[DEVSRV-KILL]`. Surfaced Conv 399.
 
-Public/marketing route group sweep (the only un-swept RG-* group; RTMIG-4 closed Conv 340 with it deferred). The 14 marketing pages live only in `/old/*`; root paths 404 by design. Revisit if/when the marketing redesign is scheduled. **Refs:** `plan/route-migration/README.md § RG-PUBLIC disposition`.
+### [DEVSRV-KILL]
 
-### [PREFLIP-WT] · ⏸️ Parked — gate: user say-so
+- **State:** 📋 queued · low priority (tooling hygiene)
+- **What:** scope ephemeral dev-server teardown to the spawned PID. Conv 393 a port-based kill (`lsof -ti :4321 | grep 'astro dev'`) killed a **pre-existing** astro dev on :4321 this session didn't start (ours had fallen back to :4322).
+- **Fix:** capture the spawned PID, kill only that on teardown — never a broad `:port + astro dev` match.
+- **Refs:** `memory/feedback_persistent_dev_server_4321`. Surfaced Conv 393.
 
-Tear down the preflip reference worktree (`~/projects/Peerloop-preflip` on :4331, `peerloop-ref` alias). Consequential + machine-local; the PLATO port-audit reason for keeping it has cleared. **Refs:** memory `project_preflip_worktree_reference`.
+### [EDITSAFE]
 
-### [BROWSER-SMOKE-2B] · ⏸️ Parked — gate: post-launch · [Opus]
+- **State:** 📋 queued (CC discipline)
+- **What:** three self-inflicted edit errors in one conv (Conv 396), one cause — programmatic rewrites of structured markdown/JSON without a uniquely-identifying anchor; all caught only by reading back.
+  - JSON round-trip: `JSON.stringify(config,null,2)` to add one key reformatted all of `.claude/config.json` (461 ins/129 del). Redone as a 3-line `Edit`.
+  - Ambiguous marker: `str.replace('> ## ⏸️ PARKED', …, 1)` hit the **header-prose** occurrence, not the real divider.
+  - Status change deleted data: moving a recurring-watch task to Completed removed its backlog row, orphaning the standing trigger.
+- **Candidate rule:** prefer `Edit` with a unique anchor over python/sed/serializer rewrites on `config.json`/`CURRENT-TASKS.md`/`PLAN.md`/`MEMORY.md`; never round-trip JSON through a serializer to change one key. Decide: CLAUDE.md or memory.
+- **Refs:** surfaced Conv 396.
 
-Evaluate an LLM-driven headless PLATO browser-mode smoke-walk executor. Do NOT resurrect Playwright E2E. **Refs:** `docs/decisions/06-testing-ci.md`.
+### [EMAILDOC]
 
-### [MINWIDTH-320] · ⏸️ Parked — gate: user say-so (on hold Conv 369)
+- **State:** 📋 queued · trivial (doc cleanup)
+- **What:** Conv 398 deleted `src/emails/WelcomeEmail.tsx` + `PaymentReceiptEmail.tsx` (dead). Both still listed in `docs/reference/resend.md` + `DEVELOPMENT-GUIDE.md` — both **manual** category, so the r-end docs agent left them by policy.
+- **Next:** remove/annotate the two templates (verify each mention is the deleted template, not a live one).
+- **Refs:** `docs/reference/resend.md`, `docs/reference/DEVELOPMENT-GUIDE.md`. Surfaced Conv 398.
 
-Lower the supported minimum screen width 375px → 320px (iPhone-SE class). 3 scoped overflow sites: `MembersFilters.tsx` + `CoursesFilters.tsx` filter rows (let search shrink via `min-w-0`, or wrap the cluster) + Home's legacy feed-card action button (`min-w-0`/`flex-wrap`); re-verify at 320px via the iframe harness. Optional — **put on hold Conv 369** pending user say-so. **Refs:** `docs/decisions/05-ui-ux-components.md` [MINWIDTH], `memory/reference_responsive_iframe_harness`.
+### [HOME-FIXES]
 
-### [ICON-LIC] · ⏸️ Parked — gate: MVP-GOLIVE (pre-launch legal/compliance)
+- **State:** 📋 queued (deferred per-route bucket)
+- **What:** deferred bucket of per-route fixes captured while sweeping the Home (`/`) route — batch later.
 
-Icon commercial-use compliance, surfaced Conv 370 during [ICN-NS]. **Two items:** (1) **Attribution NOTICE** — no `LICENSE`/`NOTICE`/`THIRD-PARTY-NOTICES` file exists, but `icons.tsx` = **Heroicons (MIT, Tailwind Labs)** and ~20 `MattIcon` SVGs = **Material Symbols (Apache 2.0, Google)** both require the notice retained → add a third-party-notices file (low effort). (2) **Brand-logo trademark review** — `brand-icons.tsx` (Google/Stripe/GitHub/X/LinkedIn/YouTube/Instagram) are trademarks, not licensed assets: check each against brand guidelines before launch — esp. **Google Sign-In** button rules, **Stripe** badge rules, and the `fill="currentColor"` monochrome recoloring (some brands mandate specific colors). The 39 `matt-catalogue` MattIcons are commissioned/owned — verify the designer agreement assigns IP. **NOT legal advice — needs counsel sign-off at launch.** **Refs:** `docs/as-designed/icon-system.md`, `src/components/icons/icon-provenance.ts`.
+### [KNIP]
+
+- **State:** 🔄 active
+- **What:** `knip@6.27.0` adopted (Conv 398) as the module-graph reachability oracle — closes grep's blind spots (`.astro`, relative imports, barrel passthroughs). Installed + configured (`knip.json`, cron-worker + `scripts/**` entries, `project: src/**`); first run adjudicated the 9 `[RDFIX]` candidates and reproduced the 14 parked `[ORPHAN-BACKLOG]` Cat-B files.
+- **Before it can be a hard gate:** (1) tune dependency analysis — false-flags `zod`/`tailwindcss`/`@tailwindcss/forms`/`react-day-picker` (CSS `@plugin`/runtime, not JS import) + `cloudflare:` unlisted; (2) baseline the 14 Cat-B files (or wait for `[RG-PUBLIC]`) — same blocker as `codecheck-orphan-components.mjs`, which knip would replace; (3) wire into `/w-codecheck` (only NEW unused fails).
+- **Known dead exports KEPT by decision (knip re-flags when gate lands):** `CHART_BREAKPOINTS`, `now()`/`parseTimestamp()` (`lib/db/index.ts`), `creators`/`getRelatedCourses`/`getFeaturedCreators` (`lib/mock-data.ts`), `MONITORING_COLORS` (`discover/role-utils.ts`), `emails/styles.ts`'s 6 exports (file live).
+- **Refs:** `../Peerloop/knip.json`, `.claude/scripts/codecheck-orphan-components.mjs`, `[[feedback_orphaned_components_survive_migration]]`, `[ORPHAN-BACKLOG]`, `docs/decisions/06-testing-ci.md §RDOC`.
+
+### [MEM-PRUNE]
+
+- **State:** 👀 watch (recurring) · receded (70%, below the 80% trigger)
+- **What:** threshold-triggered, never "done" — standing watch `[MEM-CAP]` in PLAN.md. Fires when `MEMORY.md` auto-load crosses **80%** of the 200-line / 25 KB SessionStart cap on either axis (`/r-start` Step 5.7 Phase 2 emits 🔴🔴🔴). Remedy is **`/r-prune-memory`** (NOT `/r-prune-claude`).
+- **Utilization log:** Conv 211 baseline 53%/73% → tripped 80% bytes Conv 213 → Conv 396 full run 20304 B (79%) → 17979 B (70%), 127 → 124 lines.
+- **Next firing:** the two big Conv-396 levers are spent (label-normalization is a no-op; the intro-blockquote dedup is done). Will likely need extraction or sub-file consolidation, not more trimming.
+- **Refs:** `.claude/skills/r-prune-memory`, PLAN.md `[MEM-CAP]` (~line 102), `[[feedback_memory_index_load_bearing]]`.
+
+### [MERGE-BRIAN-JULY7]
+
+- **State:** ⏸️ parked · `[Opus]` · **gate: the user's conversation with the client**
+- **HOLD (Conv 396, user's call):** integration is suspended until the user has talked to Brian about the **why** and **what** of his changes. User's position: *"I wanted the client to explore, but I am not going to keep all that he has done. I have to see its impact first and he has to explain his intentions… He is not in a position to know if they are destabilizing changes."* Do **not** transfer files, plan batches, or re-open the merge-mechanism debate until then. Findings below are complete and durable — resume from them.
+- **Task:** assess client branch `brian-July-7` for impact, integrate what's worth keeping into `jfg-dev-14`. **Discard nothing without review.** Client wants to discuss soon → have an assessment ready. Scope will grow.
+- **🆕 New client branch (Conv 400):** a newer `origin/brian-July-20` exists — **13 days newer** than `brian-July-7`. Re-scope against it (or diff the two) when this un-holds.
+
+**🚦 The admission gate** (every file passes before entering `jfg-dev*`; new-ness is not a pass):
+- **Gate 1 — Destabilizing?** NOT YET MEASURED. Apply his tree to a scratch branch, run all 5 gates; also check whether **his own branch** passes them. Known destabilizer in hand: the `CourseTabs.tsx` modify/delete.
+- **Gate 2 — Structural deps** (reporting/messaging/notification/admin)? User's instinct was right, verdict benign: the `Teachers → Peer Teachers` relabel reached admin+analytics+API (`AdminDashboard`, `TeachersAdmin`, `CoursePerformanceTable`, `AdminNavbar`, `api/admin/analytics/users.ts`) but is **display-string only** (SQL `teacher_certifications` untouched; `git grep "=== 'Teachers'"` → 0). Messaging/notifications/email untouched. `[COMM-BRAND]` schema change is additive.
+- **Gate 3 — Style-guide conflict?** One systemic miss: all **7 new `src/` files carry NO provenance marker** (violates §Page Provenance). Token conformance better than expected — only `CourseCoverPanel.tsx` deviates (2 hex + arbitrary px).
+
+**Branch facts (measured Conv 396):**
+- Merge-base `c50afd82` (Conv 370, 07-07); **53 ahead, 52 behind** `jfg-dev-14`. **66 files** (components 34, pages 14, images 6, lib 4, +migration/seed/layout). All 53 authored `brian@peerloop.com` — genuinely his, not CC work stranded by Conv-371.
+- **🔴 NOT UI-only:** new migration `migrations/0005_community_branding.sql` (`ALTER communities ADD accent_color, logo_url`) + `lib/community-branding.ts` + edits to `ssr/loaders/{courses,communities}.ts`, `mock-data.ts`, dev seed. `0005` is a **filename-collision risk** — clean today, but any `0005_*` we author before merging collides.
+- **Conflict surface:** 17 files touched on both branches; merge dry-run (`git merge-tree`) says **12 auto-merge clean**, only **5** need real resolution — `CourseTabs.tsx` (modify/delete), `CoursesCatalog.tsx`, `CoursesFilters.tsx`, `CourseHeader.tsx`, `course/[slug]/[...tab].astro`. The other 49 are his-only, zero risk.
+- **Themes:** `[COVER-STORY]`/`[COVER-STORY-MIRROR]` hero rework · `[TAB-*]` course-tab architecture · `[COMM-BRAND]` (the schema) · `[TCH-SEARCH]` · "Peer Teachers" relabel · bespoke SVG covers · hidden-but-retained surfaces (Popular Courses carousel, role tabs, Meet-Creator/Reviews/Resources tabs).
+
+**🔴 Biggest question — `CourseTabs.tsx` modify/delete:** Conv 392 `cfcfc8af` deleted 16 orphaned course-detail components (incl. `CourseTabs.tsx`, 389 lines) as dead after `/old` retired. Client forked *before* the purge and built 8+ tab-architecture commits on it. Both locally correct. **A design question, not a merge conflict** — does his tab architecture supersede the Matt `/course/[slug]` page, or does the *intent* get ported onto the page we kept? Likely more work than the other 65 files combined; expect the same class from the other 15 deleted components.
+
+**Integration mechanism (reasoned Conv 396, no decision):**
+- Keep **git** as the transfer vehicle, drive **per-theme**. Hand-moving files argued against: `git checkout <branch> -- <file>` is a wholesale overwrite, silently discarding our side on the 17 shared files.
+- **Batch unit = theme, sized so each commit passes all 5 gates** (themes cut across schema+lib+loaders+components).
+- Worktree of his branch wanted to **run/compare behavior**, not as transfer path (`git show <branch>:<path>` reads any file).
+- **`--squash` (no history) required** + load-bearing for the timecard fix: the `^jfg-dev` allowlist breaks the instant his commits land on a `jfg-dev*` branch with history. Caveat: squash records no merge parent → he must abandon `brian-July-7` after handoff and start from the delivered branch.
+
+**⚠️ Contamination / traceability:**
+- **Conv-number collision:** his CC labels commits "Conv 371/372…" — *different work* from ours; breaks same-number-in-both-repos traceability + confuses timecard buckets.
+- **Timecard (measured):** `brian-July-7` is local so `discoverCandidateBranches()` sweeps it. Contaminated days 07-07/08/09/11 — but **billable-minute delta = 0** on each (his commits fell inside our existing windows; luck, not design). `--exclude-branches` is CLI-only + inert; **author filter (`brian@peerloop.com`) is the only filter surviving a merge.** ⛔ Resolve `[TC-MERGE-TZ]` first.
+- **Docs repo CLEAN of his commits** — he worked code-only, no dual-repo. So his rationale exists **nowhere in git**, only his chat sessions; commits cite *"approved Option B / mockup"* → **request those artifacts from him**.
+- **Working model of the client:** not a coder, drives his own CC; treat as peer recipient of the same expert suggestions, but his directives ignore downstream codebase consequences → client-originated changes need a consequence audit user-originated ones don't.
+- **Refs:** `origin/brian-July-7`, `origin/brian-July-20`, `[TC-MERGE-TZ]`, CLAUDE.md §Schema Discrepancy Discipline, `[[project_jfg_dev_branches_are_snapshots]]`, `[[project_preflip_worktree_reference]]`, Conv 392 `cfcfc8af`. Surfaced Conv 396.
+
+### [MINWIDTH-320]
+
+- **State:** ⏸️ parked · **gate: user say-so** (on hold Conv 369)
+- **What:** lower supported min screen width 375px → 320px (iPhone-SE class). 3 scoped overflow sites: `MembersFilters.tsx` + `CoursesFilters.tsx` filter rows (`min-w-0` or wrap) + Home legacy feed-card action button (`min-w-0`/`flex-wrap`); re-verify at 320px via iframe harness. Optional.
+- **Refs:** `docs/decisions/05-ui-ux-components.md` [MINWIDTH], `memory/reference_responsive_iframe_harness`.
+
+### [ORPHAN-BACKLOG]
+
+- **State:** ⏸️ parked · `[Opus]` · **gate: marketing redesign (RG-PUBLIC)** — Cat-A+C DONE
+- **Done:** `[ORPHAN-DETECT]` surfaced 118 orphaned components. Conv 392 deleted all **Category A** (dead legacy, 74). Conv 393 resolved all **Category C** — deleted 3 (`error/ErrorPage`, `leaderboard/Leaderboard`+orphaned API, `context-actions/*`), **wired 1** (`invite/ModeratorInvite` was a LIVE bug: admin invite emails `/invite/mod/{token}`, RESEND live on staging, but no page → 404; built `src/pages/invite/mod/[token].astro`), swept 12 stray dead `.ts`. Detector now **53** (was 118); all 5 gates green.
+- **Remaining — Category B (52, parked):** `marketing/*` (48) + `stories/*` (2) + `testimonials/*` (2) + `creators/profiles/CreatorCard` — the old marketing site; keep until the redesign, then delete/replace. (12 dead `.ts` barrels deliberately LEFT with it; `icons/icon-provenance.ts` KEPT — it's the `prov:sweep` SoT.)
+- **Then — detector wiring:** snapshot residuals into `KNOWN_ORPHANS`, wire the detector into `/w-codecheck` as a hard gate (only NEW orphans fail). A `.ts` variant (scope `src/components/**` only — `src/lib/**` has entry points) can be productionized then.
+- **Refs:** `.claude/scripts/codecheck-orphan-components.mjs`, `[[feedback_orphaned_components_survive_migration]]`, `.claude/skills/w-codecheck`, `[KNIP]`.
+
+### [PLATO-SEQ]
+
+- **State:** ⏸️ parked · `[Opus]` · **gate: post-launch** — active work complete
+- **Done:** waypoint-sequenced PLATO API+browser test architecture. Phases 1–4b all ✅ (Convs 379–385) — waypoint producers, `plato:graph` (dependency-graph + provenance foundation), `plato:run` make-for-waypoints runner all built, validated, committed. History in git + `docs/sessions/` + `docs/as-designed/plato.md`.
+- **Outstanding — Phase 4c (post-launch, dup of `[BROWSER-SMOKE-2B]`):** agent-driven browser walker — auto-walk a pure-UI segment from a restored waypoint + self-verify, so a full journey chains API-produced waypoints (crossing Stripe/BBB a browser can't) with browser-verified UI segments. **Do NOT resurrect Playwright E2E.**
+- **To resume 4c:** browser-walk mechanics (actor-switch via `POST /api/auth/dev-login`; CUT-2 enroll = signed `checkout.session` with **no `payment_intent`** via `trigger-webhook.sh stripe-direct-raw`; CUT-3 = `bbb-meeting-ended`; click-by-`ref`/late-hydration gotchas; Genesis creds) in `.scratch/plato-waypoint-plan.md` + memory `[[reference_chrome_bridge_island_stale_cache]]`/`[[plato_walk_mocked_service_divergence]]`.
+- **Refs:** `docs/as-designed/plato.md`, `tests/plato/snapshots/README.md`, `PLAN.md §PLATO-SEQ`, `docs/decisions/06-testing-ci.md`.
+
+### [PREFLIP-WT]
+
+- **State:** ⏸️ parked · **gate: user say-so**
+- **What:** tear down the preflip reference worktree (`~/projects/Peerloop-preflip` on :4331, `peerloop-ref` alias). Consequential + machine-local; the PLATO port-audit reason for keeping it has cleared.
+- **Refs:** `memory/project_preflip_worktree_reference`.
+
+### [PROV-SWEEP-DEBT2]
+
+- **State:** 📋 queued (gate silently red)
+- **What:** `npm run prov:sweep` reports **10 issues** (9 UNTRACKED errors + 1 drift) — was 0 at Conv 244. Drift since: components stamp `data-prov-name="X"` on their outer element but were never added to `scripts/matt-inspired-registry.ts`. Offenders: `NavDrawer`, `NavMenuButton`, `communities/CommunitiesFilters`, `courses/CoursesFilters`, `feed/SignupCtaCard`, `settings/LayoutToggle`, `ui/MobileUpNav.astro`, `course/CourseJourneyStepper.astro`, `course/CourseSessionsActions.astro`.
+- **Verified NOT caused by `[A11Y]` Conv 404** (none in that diff; the 2 new primitives are unstamped).
+- **Why it matters:** a real gate failing unnoticed → the registry⟺marker⟺stamp conformity from `[PRIM-STAMP]` (Conv 217) isn't holding. Each offender needs a registry entry (with `figmaMatchNames`) **or** its stamp removed if not a vetted primitive — decide per component, don't bulk-register.
+- **Refs:** `../Peerloop/scripts/matt-inspired-registry.ts`, `npm run prov:sweep`, `docs/as-designed/matt-provenance.md §12c`, `plan/prim-registry/README.md`, `[PRIM-STAMP]`, `[PROV-SWEEP-DEBT]`. Surfaced Conv 404.
+
+### [RG-PUBLIC]
+
+- **State:** ⏸️ parked · **gate: marketing redesign**
+- **What:** public/marketing route-group sweep (the only un-swept RG-* group; RTMIG-4 closed Conv 340 with it deferred). The 14 marketing pages live only in `/old/*`; root paths 404 by design. Revisit if/when the redesign is scheduled. Also gates `[ORPHAN-BACKLOG]` Cat-B.
+- **Refs:** `plan/route-migration/README.md § RG-PUBLIC disposition`.
+
+### [RHOOKS]
+
+- **State:** 🔄 active · `[Opus]`
+- **What:** full `react-hooks` `recommended-latest` set adopted at **warn** (Conv 400) — `eslint.config.js` `.tsx` block spreads `asWarn(reactHooks.configs['recommended-latest'].rules)` (17 rules), then re-overrides `rules-of-hooks` back to `error` (0 violations). No new dep, no `overrides` pin (react-hooks@7.1.1 already ships `eslint ^10`). Gate GREEN. Triage incrementally.
+- **Backlog — 95 warnings** (0 `.astro`; scoped `**/*.{ts,tsx}`): `set-state-in-effect` 93 (accepted baseline) · `purity` 1 · `preserve-manual-memoization` 1. `static-components` + `immutability` fully cleared.
+  - **Batch 1 done (Conv 400):** 6 `static-components` hoisted + 4 `immutability` reorders + `FilterContent` inline→element-value. Net −6 (the 4 reorders unmasked latent `set-state-in-effect` the error had hidden).
+  - **`set-state-in-effect` DECIDED — accepted baseline, not a to-do list.** ~49 idiomatic fetch-on-mount + ~25 deliberate SSR-hydration-safety + ~15 low-ROI; rewriting risks SSR/hydration bugs. Kept at warn; triage only new/egregious cases. One genuine fix taken: `useCurrentUser`+`useAuthStatus` → `useSyncExternalStore` (reusable pattern for client-store hydration hooks).
+  - **Leave at warn:** `purity` = `ModeratorDetailContent:83` (`Date.now()` countdown); `preserve-manual-memoization` = `CoursesCatalog:211` (advisory).
+- **Next (opportunistic):** clear residual warnings in files touched for other reasons (`[LE-TRIAGE]`/`[A11Y]` model). No standalone sweep.
+- **Refs:** `../Peerloop/eslint.config.js`, `docs/decisions/06-testing-ci.md §§ RHOOKS/RDOC`, `[A11Y]`, `[LE-TRIAGE]`.
+
+### [RSFD]
+
+- **State:** 📋 queued · low priority · `[Opus]` (skill infra)
+- **What:** port spt-docs' `/r-start-from-dirty` (retroactively wrap an already-dirty tree in a tracked Conv). **Not a file copy** (Conv-395 audit): 3 deps missing here — `conv-start-core.sh` (peerloop inlines increment/heartbeat at Steps 3/4/5), `r-health.js`, and `event.js` + `.conv-events.jsonl` (**Peerloop has no event-log system**, which the skill's retro-fire Step 6 depends on entirely).
+- **Blocking decision before any build:** does Peerloop want an event log? Without one, a port just increments a counter over a dirty tree and the reasoning is still lost. Must also handle peerloop-only substrate: `conv-session-lock.sh`, `conv-branch-check.sh`, the ~150-line Step 5.7 memory sync.
+- **Refs:** `~/projects/spt-docs/.claude/skills/r-start-from-dirty/SKILL.md`, `[[feedback_skill_sync_same_name_divergence]]`. Surfaced Conv 395.
+
+### [RSYNC-GATE]
+
+- **State:** 📋 queued (skill infra)
+- **What:** `/r-start` Step 5.7 Phase 2's `rsync -a --delete "$MIRROR/" "$LIVE/"` gets **DENIED by the auto-mode classifier** ("Irreversible Local Destruction" — a destructive call right after a diff-gate whose result is an unseen tool result). **Intermittent** (corrected Conv 397 — NOT every conv), which is worse: a silent pass can be misread as "sync happened". On a conv where the mirror genuinely differs, the block lands mid-`/r-start` and the memory sync doesn't happen.
+- **Options:** (a) move Phase 2 into a named script (`conv-memory-sync.sh`) that reads as intentional; (b) Phase 1 writes a decision sentinel Phase 2 checks; (c) document the expected block so CC handles it deterministically; (d) a project `settings.json` allow-rule for the specific invocation.
+- **Asymmetry:** `/r-commit` Step 1.5 + `/r-end` Step 5b run the same rsync **live→mirror** (safe) and are never blocked. Only mirror→live is sensitive.
+- **Refs:** `.claude/skills/r-start/SKILL.md` Step 5.7 Phase 2, `[[feedback_msi_sync_user_checkpoint]]`. Surfaced Conv 395.
+
+### [SCRATCH-DEBRIS]
+
+- **State:** 📋 queued · trivial (cleanup)
+- **What:** `.scratch/conv-tasks.md` still exists despite being **retired by [CURTASKS] (Conv 351)** — `CURRENT-TASKS.md` replaced it. Verify nothing reads it (grep the skills), confirm it isn't depended-on machine-local state, delete. `.scratch/` is gitignored + machine-local, so MacMiniM4 may hold its own copy.
+- **Refs:** `[[feedback_current_tasks_persistence]]`. Surfaced Conv 395.
+
+### [SESSION-REMIND-DEPLOY]
+
+- **State:** ⏸️ parked · **gate: MVP-GOLIVE** (prod repeat only; staging DONE Conv 388)
+- **Done (staging, Conv 388):** reminder columns applied (reseed), `RESEND_API_KEY` set on `peerloop-cron-staging`, cron worker deployed (`d95ddb91`, `*/15`). Reminders now fire on staging instead of logging `skipped`.
+- **Remaining (prod, gated):** repeat both steps for production — `wrangler secret put RESEND_API_KEY --env production --config workers/cron/wrangler.toml` + `deploy:cron:prod` — when prod is unblocked.
+- **Refs:** `workers/cron/wrangler.toml`, `src/lib/session-reminders.ts`.
+
+### [TASK-TOOLS-VERIFY]
+
+- **State:** 👀 watch — investigation resolved Conv 406; one live probe pending
+- **Root cause FOUND (Conv 406, binary decompile).** `TaskCreate`/`TaskList`/`TaskUpdate`/`TaskGet` are gated by a second, **undocumented** switch beyond `CLAUDE_CODE_ENABLE_TASKS`: `uZ()` reads remote dynamic config `tengu_vellum_ash` and returns true if the **current model ID contains** any listed string. All four are `isEnabled(){return uH()&&!uZ()}`; `TodoWrite` is `!uH()&&!uZ()` — so `uZ()` kills **both**, a combination no local setting can produce. `uH()` (the documented env gate) is provably true now → **`uZ()` is true**. Binary identical across 2.1.214/215/216; `~/.claude/tasks/` last written 07-21 07:21 (after the 2.1.216 install) then stopped → **server-side gate, not a version bump, not our config.** `vellum` = 0 hits in the whole changelog. `CLAUDE_CODE_CHILD_SESSION=1` is harness-native (in no config file) → Conv-403 theory stays falsified.
+- **Grep/Glob = SEPARATE known upstream bug** (built-ins vanish from the registry under tool-search deferral; not ToolSearch-discoverable): issues #52121 + #63525, both OPEN. Older, unrelated to the Task gate. Both tools still shipped + documented.
+- **One live probe left:** the gate substring-matches the model ID `claude-opus-4-8[1m]`. If the list targets the **1M variant**, selecting the **non-1M Opus 4.8 via `/model`** (not `CLAUDE_CODE_DISABLE_1M_CONTEXT` — that flips detection but `mi()`/`kD()` keep the `[1m]` suffix, so it's void) would restore `Task*`. Negative → the gate targets Opus 4.8 broadly → no local workaround → `/feedback`.
+- **Decision (Conv 406): HARD-DETACH from the Task subsystem** — skills/CLAUDE.md/hook rewritten to write-through `CURRENT-TASKS.md` directly, no Task-tool reliance. So this watch no longer blocks work; keep it only to record the gate + run the `/model` probe if curious.
+- **Cross-machine:** MacMiniM4 still carries stale Conv-403 `~/.zshrc` `env -u` guards (harmless no-ops) — clean next time on it.
+- **Refs:** `memory/project_task_tools_child_session_leak.md`, `DOC-DECISIONS.md §3`, `code.claude.com/docs/en/tools-reference.md`. Surfaced Conv 404, root-caused Conv 406.
+
+### [TC-MERGE-TZ]
+
+- **State:** ⏸️ parked · **gate: before the brian-July-7 merge** (rediscuss w/ specifics)
+- **What:** surface the timecard implications of a *regular* (history-preserving) merge of `brian-July-7` into `jfg-dev-14`. **Cross-tz billing hazard:** client commits from **CST**, Fraser from **ET**; a regular merge imports his CST commits into history and `r-timecard-day` buckets all branch activity for a day → day-boundary overlap + his commits landing in the billable timecard. (Different tz source than the Conv-376 "2 co-located ET machines" analysis, whose no-differential conclusion stands.)
+- **Analyze when un-parked:** does `timecard-day.js` filter by author/branch? Exclude by author (`brian@peerloop.com`), or `--squash` to keep out of daily buckets, or offset by committer tz?
+- **Refs:** `.claude/scripts/timecard-day.js`, skills `r-timecard-day`/`r-timecard`/`w-timecard`, branch `brian-July-7`, `[MERGE-BRIAN-JULY7]`. Surfaced Conv 376.
+
+### [TURNLOG]
+
+- **State:** 📋 queued (workflow guard)
+- **What:** `.scratch/conv-turns.md` went **unmaintained for an entire conv** — CLAUDE.md §Conversation Turn Log requires an entry at the end of *every* turn; Conv 396 wrote only Turn 1 and turns 2–11 were reconstructed at `/r-end`. The failure is **silent** (nothing verifies the file), and the user keeps it open expecting a live log → a stale file is worse than an absent one. Same **printed-but-not-verified** class `[CBG]` fixed for branches.
+- **Options:** (a) a Stop-hook checking whether the file grew — but CLAUDE.md prefers **structural prevention over post-hoc detection** (QLINT Stop-hook was retired for this exact reason, Conv 273), so weakest despite obvious; (b) fold turn-logging into an already-mandatory step so it can't be skipped; (c) accept retroactive `/r-end` reconstruction as the real contract and rewrite the rule to match.
+- **Refs:** CLAUDE.md §Conversation Turn Log, `[[feedback_option_phrasing]]`, `.claude/skills/r-start/SKILL.md` Step 7.7. Surfaced Conv 396.
+
+### [UXQ]
+
+- **State:** 👀 watch (harness-UX, upstream) · low priority
+- **What:** `AskUserQuestion` tears down the option picker when the user selects "let me clarify" — the choices vanish. User flagged directly Conv 385. Workaround: re-render options as durable prose. **Not fixable in this repo** — a CC harness behavior; report-upstream note.
+- **Refs:** surfaced Conv 385.
+
+### [FEEDBACK-DEPLOY]
+
+- **State:** ⏸️ parked · **gate: MVP-GOLIVE** (prod repeat only; staging DONE Conv 394)
+- **Done (staging, Conv 394):** 3 schema columns applied to staging D1 via non-destructive `ALTER` (`email_feedback_reminder` on `users`; `feedback_reminder_student_sent_at` + `feedback_reminder_teacher_sent_at` on `sessions`), cron worker redeployed (`37e506d5`, `*/15`); `RESEND_API_KEY` already set → `sendFeedbackReminders` fires (not skipped).
+- **Remaining (prod, gated):** apply the same 3 columns to prod D1 (`ALTER` or reseed) + `deploy:cron:prod`. Mirrors `[SESSION-REMIND-DEPLOY]`.
+- **Refs:** `src/lib/feedback-reminders.ts`, `workers/cron/wrangler.toml`.
+
+### [BROWSER-SMOKE-2B]
+
+- **State:** ⏸️ parked · `[Opus]` · **gate: post-launch**
+- **What:** evaluate an LLM-driven headless PLATO browser-mode smoke-walk executor. **Do NOT resurrect Playwright E2E.** Duplicates `[PLATO-SEQ]` Phase 4c.
+- **Refs:** `docs/decisions/06-testing-ci.md`.
+
+### [ICON-LIC]
+
+- **State:** ⏸️ parked · **gate: MVP-GOLIVE** (pre-launch legal/compliance)
+- **What (surfaced Conv 370):** two items.
+  - **Attribution NOTICE** — no `LICENSE`/`NOTICE`/`THIRD-PARTY-NOTICES` file, but `icons.tsx` = Heroicons (MIT, Tailwind Labs) and ~20 `MattIcon` SVGs = Material Symbols (Apache 2.0, Google) both require the notice retained → add a third-party-notices file (low effort).
+  - **Brand-logo trademark review** — `brand-icons.tsx` (Google/Stripe/GitHub/X/LinkedIn/YouTube/Instagram) are trademarks: check each against brand guidelines (esp. Google Sign-In button rules, Stripe badge rules, `fill="currentColor"` recoloring). The 39 `matt-catalogue` MattIcons are commissioned — verify the designer agreement assigns IP.
+- **NOT legal advice — needs counsel sign-off at launch.**
+- **Refs:** `docs/as-designed/icon-system.md`, `src/components/icons/icon-provenance.ts`.
 
 ---
 
-## ✅ Completed this conv
+## ✅ Done this conv
 
-_(none yet — refreshed at /r-commit and /r-end as tasks close.)_
+_(none yet — cleared at each /r-start)_

@@ -2,7 +2,7 @@
 name: r-start
 description: Start a new conversation — check repos clean, pull both, increment conv, push, resume
 argument-hint: ""
-allowed-tools: Read, Write, Edit, Bash, Glob, Grep, TaskCreate
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
 # Start Conversation
@@ -397,7 +397,7 @@ If it reports `PRESENT`, a prior conv exited uncleanly while `/r-quiet-mode` was
    ⚠️  Leftover quiet-mode log from Conv {N} (unclean exit). It has unprocessed deferred work.
 
    A) Process it now — run the same off-processing (raise issues, run deferred processes,
-      TaskCreate followups), then delete the log
+      log followups into CURRENT-TASKS.md), then delete the log
    B) Discard it — delete without processing (its contents are lost)
    C) Keep it for now — leave the log in place and decide later
 
@@ -415,49 +415,51 @@ If it reports `PRESENT`, a prior conv exited uncleanly while `/r-quiet-mode` was
 ╚═══════════════════════════════════╝
 ```
 
-### Step 7: TodoWrite stays empty by design (active-only model — DEC-350-2)
+### Step 7: The task board is the write-through file (no Task-tool overlay — [TASK-TOOLS-DETACH], Conv 406)
 
-**Active-only TodoWrite ([CURTASKS], Conv 351).** `/r-start` does **NOT** hydrate the backlog into TodoWrite. `CURRENT-TASKS.md` (root of `peerloop-docs`, git-tracked) is the persistent backlog — read for the Step 8 resume display. TodoWrite holds only what is **actively in flight or just-completed this conv**. This ends the cross-machine staleness the old `RESUME-STATE → TodoWrite` transfer + machine-local `.scratch/conv-tasks.md` mirror suffered (the retired model carried the *whole* backlog into every terminal's TodoWrite, so a return to a machine after N convs elsewhere left it N convs stale).
+**Write-through, no tools ([CURTASKS] Conv 351; Task-tool detach Conv 406).** `CURRENT-TASKS.md` (root of `peerloop-docs`, git-tracked) **is** the task state — there is no `TodoWrite`/`TaskList` overlay to hydrate. The Task subsystem is server-gated OFF for this model (see `[TASK-TOOLS-VERIFY]`), so CC **edits `CURRENT-TASKS.md` directly** as tasks change. `/r-start` does not touch the board here beyond the Step 7.5 reset — it just reads it for the Step 8 resume display.
 
-**Dedup guard:** call `TaskList`. If tasks already exist (a prior `/r-start` in the same session without `/clear`), note `⏭️ TodoWrite already has {N} tasks — leaving as-is (dedup guard)` and continue. Otherwise TodoWrite is correctly **empty** — there is no transfer to do.
+**How tasks change during the conv (write-through):**
+- **Start a task:** flip its body's `- **State:**` bullet to `🔄 active`; if it wasn't already near the top of `## 🎯 Now`, move its TOC line up. The `### [CODE]` body itself never moves (it lives alphabetically under `## Tasks`).
+- **Discover a new task:** add a `### [CODE]` body under `## Tasks` (alphabetical position) **and** a line in `## 🎯 Now` (or `## ⏸️ Parked` if gated). Use a unique bracketed `[CODE]` (`memory/feedback_todowrite_mnemonic_codes.md`).
+- **Park / gate:** move its line from `## 🎯 Now` to `## ⏸️ Parked` and set `State: ⏸️ parked · gate: …`.
+- **Complete:** delete the body from `## Tasks`, remove its `## 🎯 Now` line, add a one-liner to `## ✅ Done this conv`.
 
-**How tasks enter TodoWrite during the conv:**
-- The user signals intent to start a backlog item (e.g. "let's begin VITE-DEDUP"). Read `CURRENT-TASKS.md`, find the matching `[CODE]` row, call `TaskList` for a collision check, then `TaskCreate` (reusing the row's `[CODE]` in the subject) followed by `TaskUpdate(in_progress)`.
-- New tasks discovered mid-conv: `TaskCreate` as usual; they land in `## 📋 Unordered backlog` at the next refresh (`/r-update-tasks` / `/r-commit` Step 0 / `/r-end`).
+Edit safely per `[EDITSAFE]` — unique anchors, no serializer round-trips, no ambiguous markers on this file.
 
 Display:
 
 ```
-📋 TodoWrite empty by design — backlog lives in CURRENT-TASKS.md ({N} tasks).
-   Pull a row into active work via TaskCreate when you start it.
+📋 Task board: CURRENT-TASKS.md — {A} active · {Q} queued · {W} watch · {P} parked ({N} total).
+   Write-through: edit the file directly as tasks change (Task tools are server-gated off).
 ```
 
-(`{N}` = count of `### [CODE]` H3 rows in the pre-computed CURRENT-TASKS.md surface.)
+(`{N}` = `### [CODE]` body count; `{A}/{Q}/{W}/{P}` from the pre-computed consistency probe / a quick scan of the `State:` bullets. If the numbers aren't cheaply to hand, just show `{N} total`.)
 
-**Crash recovery is now trivial.** `CURRENT-TASKS.md` is git-tracked and refreshed at every `/r-commit` + `/r-end`, so a crash mid-conv loses only the small in-flight TodoWrite set — the backlog is intact on disk. There is no `conv-tasks.md` stranded-backlog reconstruction to do (that file is retired); re-reading `CURRENT-TASKS.md` IS the recovery. The old crash-survivor branch is removed for this reason.
+**Crash recovery is trivial.** `CURRENT-TASKS.md` is git-tracked and re-tidied at every `/r-commit` + `/r-end`; a crash loses nothing beyond uncommitted edits. Re-reading the file IS the recovery.
 
-**Pre-cutover fallback** (transitional — retires once the cutover is stable): if `CURRENT-TASKS.md` does **not** exist but `RESUME-STATE.md` has a legacy `## Remaining` section with unchecked `- [ ]` items, fall back to the old transfer: reuse each item's existing `[CODE]` (or assign a unique 2–3-letter bracketed code mnemonically, appending a number on collision) and `TaskCreate` each. This only fires on a RESUME-STATE written before the cutover; normal post-cutover convs skip it silently.
+**Pre-cutover fallback** (transitional): if `CURRENT-TASKS.md` does **not** exist but `RESUME-STATE.md` has a legacy `## Remaining` section with unchecked `- [ ]` items, bootstrap the board from them — create a `### [CODE]` body + `## 🎯 Now` line for each (reuse an existing `[CODE]` or assign one mnemonically). Normal post-cutover convs skip this silently.
 
-### Step 7.5: Reset `## ✅ Completed this conv` in CURRENT-TASKS.md
+### Step 7.5: Reset `## ✅ Done this conv` in CURRENT-TASKS.md
 
-`CURRENT-TASKS.md`'s `## ✅ Completed this conv` block is written by `/r-end` (and `/r-commit` Step 0) with **that** conv's completions. At the start of a fresh conv it therefore still lists the **previous** conv's items under a header claiming "this conv" — a perennial mislabel. The prior conv's completions are already preserved elsewhere (the RESUME-STATE narrative folded into the Step 8 resume display + `docs/sessions/` + git history), so clearing the block here loses nothing and makes the header truthful: empty at fresh-conv start, refilled as tasks close.
+`CURRENT-TASKS.md`'s `## ✅ Done this conv` block is filled during a conv (and at `/r-commit` / `/r-end`) with **that** conv's completions. At the start of a fresh conv it therefore still lists the **previous** conv's items under a header claiming "this conv" — a perennial mislabel. The prior conv's completions are already preserved elsewhere (`docs/sessions/` + git history), so clearing the block here loses nothing and makes the header truthful: empty at fresh-conv start, refilled as tasks close.
 
-Reset it to the empty placeholder (Completed is the final section of the file, so print through its header then stop):
+Reset it to the empty placeholder (Done is the final section of the file, so print through its header then stop):
 
 ```bash
 CT=~/projects/peerloop-docs/CURRENT-TASKS.md
-if test -f "$CT" && grep -q '^## ✅ Completed this conv' "$CT"; then
+if test -f "$CT" && grep -q '^## ✅ Done this conv' "$CT"; then
   awk '
-    /^## ✅ Completed this conv/ { print; print ""; print "_(none yet — refreshed at /r-commit and /r-end as tasks close.)_"; exit }
+    /^## ✅ Done this conv/ { print; print ""; print "_(none yet — cleared at each /r-start)_"; exit }
     { print }
   ' "$CT" > "$CT.tmp" && mv "$CT.tmp" "$CT"
-  echo "🧹 Reset CURRENT-TASKS.md ✅ Completed-this-conv block (cleared last conv's completions)."
+  echo "🧹 Reset CURRENT-TASKS.md ✅ Done-this-conv block (cleared last conv's completions)."
 fi
 ```
 
-Idempotent — re-running on an already-reset block reproduces the placeholder. If `CURRENT-TASKS.md` has no `## ✅ Completed this conv` section (or doesn't exist — pre-cutover), the file is unchanged and no message prints. This is a working-tree edit committed at the next `/r-commit` or `/r-end` — **not** part of the Step 5 conv-start commit.
+Idempotent — re-running on an already-reset block reproduces the placeholder. If `CURRENT-TASKS.md` has no `## ✅ Done this conv` section (or doesn't exist — pre-cutover), the file is unchanged and no message prints. This is a working-tree edit committed at the next `/r-commit` or `/r-end` — **not** part of the Step 5 conv-start commit.
 
-**Retired here:** the `.scratch/conv-tasks.md` companion + its no-shrink reconciliation guard. The persistent, git-tracked `CURRENT-TASKS.md` (surfaced in the Step 8 pre-computed block and rendered in the resume display) replaces it as the single readable task surface. The conv-turns log seeded in Step 7.7 is a separate file and is unaffected.
+**Retired here:** the `.scratch/conv-tasks.md` companion + its no-shrink reconciliation guard. The persistent, git-tracked `CURRENT-TASKS.md` (surfaced in the Step 8 pre-computed block and rendered in the resume display) is the single readable task surface. The conv-turns log seeded in Step 7.7 is a separate file and is unaffected.
 
 ### Step 7.6: Delete RESUME-STATE.md (narrative consumed)
 
@@ -493,7 +495,7 @@ Write the header + a first entry for this `/r-start` run (newest-first ordering 
 
 ## Turn 1
 **Q:** /r-start
-**A:** {one-line terse summary of this /r-start run — counter increment, memory sync, CURRENT-TASKS.md surfaced (TodoWrite empty by design), and the recommended-action question asked at the end}
+**A:** {one-line terse summary of this /r-start run — counter increment, memory sync, CURRENT-TASKS.md task board surfaced, and the recommended-action question asked at the end}
 ```
 
 Thereafter, **at the end of every turn**, prepend a new `## Turn N` entry per the CLAUDE.md rule (question in full, reply terse). Note it in one line:
@@ -611,7 +613,8 @@ Rewrite `RESUME-STATE.md` as a single `# State — Conv MMM (date)` block (using
 - **Completed**: items from both blocks that are done
 - **Remaining**: items from both blocks that are still pending, deduplicated
 - **Key Context**: merged from both blocks, dropping stale entries
-- **TodoWrite Items**: carried from the latest block only (earlier ones are stale)
+
+(Any legacy `## Remaining` / task lists in these old blocks are ignored — task state lives in `CURRENT-TASKS.md`, not RESUME-STATE.)
 
 #### All-Done Cleanup
 
@@ -639,7 +642,7 @@ Read PLAN.md fully if the pre-computed context above is insufficient to identify
 
 **Hybrid plan-file mode:** Some blocks have their detail migrated to `plan/<block-slug>/`. The ACTIVE-table row in PLAN.md ends with `→ [plan/<slug>/README.md](plan/<slug>/README.md)` for those blocks. For any ACTIVE block that has a `→ [plan/...]` link AND is the identified WIP, read the linked file (or its specific phase file) for current focus + subtask checklist. Non-migrated blocks read inline from PLAN.md as today.
 
-**Task sequence comes from `CURRENT-TASKS.md` ([CURTASKS], Conv 351).** The pre-computed `CURRENT-TASKS.md` surface is the authoritative forward-looking task state: `## 🔥 Ordered` is the execution sequence (**top = next**), `## 📋 Unordered backlog` is the pending pool, the `> ## ⏸️ PARKED` block is out of rotation. Drive the **🎯 Recommended Action** from the **top `## 🔥 Ordered` entry** (or the PLAN.md WIP block if a block is mid-flight). `RESUME-STATE.md`'s narrative (Summary / Key Context) supplies the *why* + any blockers — fold it into **💡 Quick Context**. The `📍 Current Position` block still reads its WIP / last / next **block** framing from PLAN.md (block-level WHAT), but the per-task **⏭️ Remaining** list reflects `CURRENT-TASKS.md § 🔥 Ordered`. `[TASK-CODE]` in the final question is that top Ordered entry's `[CODE]`.
+**Task sequence comes from `CURRENT-TASKS.md` ([CURTASKS] Conv 351; Task-tool detach Conv 406).** The pre-computed `CURRENT-TASKS.md` surface is the authoritative forward-looking task state: the **`## 🎯 Now`** TOC is the execution sequence (**top = next**), the **`## ⏸️ Parked`** TOC is out of rotation (each with its gate), and the `### [CODE]` bodies under `## Tasks` hold the detail. Drive the **🎯 Recommended Action** from the **top `## 🎯 Now` entry whose body `State:` is not blocked** (or the PLAN.md WIP block if a block is mid-flight). `RESUME-STATE.md`'s narrative (Summary / Key Context) supplies the *why* + any blockers — fold it into **💡 Quick Context**. The `📍 Current Position` block reads its WIP / last / next **block** framing from PLAN.md (block-level WHAT); the per-task **⏭️ Remaining** list reflects `CURRENT-TASKS.md § 🎯 Now`. `[TASK-CODE]` in the final question is that top actionable `## 🎯 Now` entry's `[CODE]`.
 
 Present in this format:
 
@@ -680,7 +683,7 @@ Present in this format:
 - Include **specific file paths** and commands when relevant
 - Highlight **blockers** that need resolution before continuing
 - Keep context brief but sufficient to resume without reading entire PLAN.md
-- The forward-looking **task sequence** comes from `CURRENT-TASKS.md § 🔥 Ordered` (top = next); `RESUME-STATE.md` supplies **narrative context only** (post-cutover it no longer holds task data)
+- The forward-looking **task sequence** comes from `CURRENT-TASKS.md § 🎯 Now` (top = next); `RESUME-STATE.md` supplies **narrative context only** (post-cutover it no longer holds task data)
 - If RESUME-STATE.md exists with a single block, incorporate its narrative context
 - If RESUME-STATE.md has multiple blocks, run **Multi-Block Consolidation** before presenting (narrative merge only — task-data merge is moot under the narrative-only model)
 - **Recommended Action MUST be the last section** — it ends with a bold Yes/No question (`**Start [TASK-CODE] now? (yes / no)**`) on its own line so the user knows Claude is waiting for input. HALT after asking. Do not begin work until the user answers.

@@ -2,7 +2,7 @@
 name: r-end
 description: End conversation — collect, dispatch agents, commit and push using v2 commit format (H3 sections + Format v2 trailer)
 argument-hint: ""
-allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Agent, Skill, TaskCreate, TaskUpdate, TaskList, TaskGet
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Agent, Skill
 ---
 
 # End Conversation — v2 commit format (Collector + Agent Dispatch)
@@ -123,7 +123,7 @@ Scan the **entire conversation** and produce a structured extract file. This is 
 **Actions:**
 
 1. Run `git -C ~/projects/peerloop-docs diff --stat` and `git -C ~/projects/Peerloop diff --stat` to capture file changes
-2. Call `TaskList` to snapshot pending tasks
+2. Read `CURRENT-TASKS.md` (the write-through task board) for the §Tasks Extract snapshot — there is no Task-tool snapshot (subsystem server-gated off; see `[TASK-TOOLS-VERIFY]`)
 3. **Read any conv-scoped scratch notes** — glob `~/projects/peerloop-docs/.scratch/conv-{NNN}-*.md` (using the padded conv number from Step 1) and read every match. These are compaction-proof carriers a prior turn may have written to preserve decisions, rationale, or process learnings that would otherwise live only in chat history — and be lost to `/compact`. Treat their content as **first-class COLLECT input**: fold it into the relevant Extract sections (§Decisions, §Learnings, §Changes, §Uncategorized) alongside what you scan from the conversation. The glob is conv-scoped, so it never picks up `conv-turns.md` (different prefix) or other convs' notes. Leave the notes in place after reading (they are gitignored and conv-scoped; the user prunes `.scratch/` manually). If no files match, skip silently.
    **Also read `.scratch/conv-turns.md`** if present — the turn-by-turn re-orientation log (each user question captured in full + a terse reply / selected choice). It is a high-signal cross-check for the §Prompts & Actions and §Conv Prompts sections — verify no asked-about thread was dropped from the Extract. It is conv-scoped and re-seeded by `/r-start`, so leave it in place (no delete).
 4. Scan the conversation chronologically, populating each section below
@@ -222,9 +222,9 @@ Scan the **entire conversation** and produce a structured extract file. This is 
 - {Dependency added/removed, config change — or "None"}
 
 ## Tasks
-{TaskList snapshot — pending items only, or "No pending tasks"}
+{Pointer to the write-through board — do not duplicate its content into this point-in-time record.}
 
-- [ ] #{N}: {subject} — {description snippet}
+→ See `CURRENT-TASKS.md` (git-tracked): `## 🎯 Now` = execution order, `## ⏸️ Parked` = gated, `## ✅ Done this conv` = what closed this conv.
 
 ## Conv Prompts
 {Bulleted list of every user prompt from this conversation, verbatim (including typos). One bullet per prompt. This serves as a quick-scan index of what the user asked for.}
@@ -376,14 +376,14 @@ PRIORITIES (cheapest, most deterministic first):
 
 IMPORTANT CONSTRAINTS:
 - Do NOT touch PLAN.md or plan/COMPLETED.md (managed by update-plan agent)
-- Report gaps ONLY for driftCheck docs — the main context will TaskCreate them.
-  Never report a gap whose doc is manual/archival/vendor; "this vendor doc is
-  stale" is not a gap, it's by design.
+- Report gaps ONLY for driftCheck docs — the main context will record them in
+  CURRENT-TASKS.md. Never report a gap whose doc is manual/archival/vendor;
+  "this vendor doc is stale" is not a gap, it's by design.
 
 When done, respond with EXACTLY this format:
 DOCS-UPDATE COMPLETE
   Docs modified: {list or "none"}
-  Gaps found (for TaskCreate): {driftCheck-only list, or "none"}
+  Gaps found (for CURRENT-TASKS.md): {driftCheck-only list, or "none"}
 ```
 
 ---
@@ -397,30 +397,30 @@ After all 3 agents return:
    - `PLAN.md` — check if modified (git diff)
    - Note any missing outputs
 
-2. **Capture gaps from docs agent:** If the docs agent reported gaps, create a TaskCreate entry for each one.
+2. **Capture gaps from docs agent:** If the docs agent reported gaps, add a `### [CODE]` body + `## 🎯 Now` line to `CURRENT-TASKS.md` for each one (write-through — there is no `TaskCreate`).
 
 3. **Note any agent failures:** If an agent failed or returned an error, note which one and continue. Do NOT retry — proceed with remaining steps.
 
-4. **Surface issues (red alert) AND create tasks:** For EVERY issue found by any agent — gaps, failures, errors, warnings, unexpected behavior — display with red emoji prefix AND call TaskCreate so the issue is persisted to `CURRENT-TASKS.md` at Step 5:
+4. **Surface issues (red alert) AND record them in CURRENT-TASKS.md:** For EVERY issue found by any agent — gaps, failures, errors, warnings, unexpected behavior — display with red emoji prefix AND write it into `CURRENT-TASKS.md` immediately:
 
 ```
 🔴🔴🔴 {Agent name}: {Issue description}
-    → TaskCreate: {task subject}
+    → CURRENT-TASKS.md: [CODE] {task title}
 ```
 
-**CRITICAL: After displaying each red alert, immediately call TaskCreate** with the issue as the subject. This is not optional — issues that are only displayed but not written to TodoWrite vanish when the conv ends.
+**CRITICAL: After displaying each red alert, immediately edit `CURRENT-TASKS.md`** — add a `### [CODE]` body under `## Tasks` (with a `- **State:** 📋 queued` bullet) and a line in `## 🎯 Now`. This is not optional: a file edit is as verifiable as the old `TaskCreate` was, and issues that are only *displayed* vanish when the conv ends (the Conv 062 failure mode). The old Task subsystem is server-gated off (`[TASK-TOOLS-VERIFY]`), so the file edit **is** the persistence.
 
 This applies to: docs agent gap reports, agent failures, missing output files, file write errors, and anything unexpected in agent return values. If no issues were found, display nothing (no "all clear" message needed).
 
-5. **Surface uncategorized items (orange alert) AND create tasks:** Read the extract's §Uncategorized section. For each non-"None" entry, display with orange emoji prefix AND call TaskCreate:
+5. **Surface uncategorized items (orange alert) AND record them:** Read the extract's §Uncategorized section. For each non-"None" entry, display with orange emoji prefix AND write it into `CURRENT-TASKS.md`:
 
 ```
 🟠🟠🟠 Uncategorized: {observation}
     → Suggestion: {what to do}
-    → TaskCreate: {task subject}
+    → CURRENT-TASKS.md: [CODE] {task title}
 ```
 
-**CRITICAL: After displaying each orange alert, immediately call TaskCreate** with a subject that includes the suggestion. Every surfaced item — red or orange — must flow into TodoWrite so it persists to `CURRENT-TASKS.md` (via the Step 5 refresh). Displaying without TaskCreate is a known failure mode (Conv 062).
+**CRITICAL: After displaying each orange alert, immediately add a `### [CODE]` body + `## 🎯 Now` line to `CURRENT-TASKS.md`** with a subject that includes the suggestion. Every surfaced item — red or orange — must be written into the board so it persists. Displaying without recording is a known failure mode (Conv 062). Batch several alerts into one `Write` of the file if that's cleaner than many `Edit`s (per `[EDITSAFE]`).
 
 If §Uncategorized is "None", display nothing.
 
@@ -450,13 +450,13 @@ Agent 1 (learn-decide) appended consumed line numbers to `~/projects/peerloop-do
 
 ### Step 4c: REASSESS OPUS TAGS
 
-**Purpose:** Apply judgment, once per conv, to decide which pending tasks warrant an `[Opus]` suffix — so the model-tier call is made deliberately at session boundary rather than under-applied during foreground work. The tag perpetuates via the task's `[CODE]` row in `CURRENT-TASKS.md` (preserved verbatim by the preserve-then-overlay refresh), so tagging a task once carries forward until it's completed or explicitly re-scoped.
+**Purpose:** Apply judgment, once per conv, to decide which tasks warrant an `[Opus]` marker — so the model-tier call is made deliberately at session boundary rather than under-applied during foreground work. The marker lives on the task body's `- **State:**` bullet in `CURRENT-TASKS.md`, so tagging a task once carries forward until it's completed or explicitly re-scoped.
 
 **Actions:**
 
-1. Call `TaskList` to snapshot all pending + in_progress tasks (completed tasks do not carry forward — skip them).
+1. Read `CURRENT-TASKS.md`; consider every `### [CODE]` body that is not parked-and-dormant (skip completed / deep-parked as judgment allows).
 2. For each task, assess against the rubric below.
-3. For each task whose tag state should change, call `TaskUpdate` to set the new subject — append ` [Opus]` if it newly qualifies, or strip the trailing ` [Opus]` if a prior tag no longer applies (e.g., task scope shrank, or the Opus-worthy piece already landed and what remains is rote). Description is not modified.
+3. For each task whose tag state should change, **edit its body's `State:` bullet** — append ` · [Opus]` if it newly qualifies, or strip the trailing ` · [Opus]` if a prior tag no longer applies (task scope shrank, or the Opus-worthy piece already landed and what remains is rote). Use a targeted `Edit` per `[EDITSAFE]`.
 4. Report a summary.
 
 **Rubric — tag `[Opus]` only when the task involves ONE OR MORE of:**
@@ -478,15 +478,15 @@ Agent 1 (learn-decide) appended consumed line numbers to `~/projects/peerloop-do
 
 **Format & idempotency:**
 
-- Tag format is literally ` [Opus]` appended as a suffix to the subject (leading space, brackets, exact casing). Code prefix stays in front: `[AUTH] Refresh-token fallback review [Opus]`, not `[Opus] [AUTH] …`.
-- Never nest (no `[Opus] [Opus]`). If the suffix is already present, skip; if scope shrank, strip.
-- Only one `[Opus]` suffix per subject. No tiered prefixes (`[Sonnet]` / `[Haiku]`) — absence of `[Opus]` implies default tier.
+- Tag format is literally ` · [Opus]` on the body's `State:` bullet (e.g. `- **State:** 🔄 active · [Opus]`). The `### [CODE]` heading itself carries no tag (it stays a clean anchor).
+- Never nest (no `[Opus] · [Opus]`). If already present, skip; if scope shrank, strip.
+- Only one `[Opus]` per task. No tiered markers (`[Sonnet]` / `[Haiku]`) — absence of `[Opus]` implies default tier.
 
 **Report:**
 
 ```
 🎯 Opus Reassessment
-  Tagged:    {count} — {list of "#N subject" or "none"}
+  Tagged:    {count} — {list of "[CODE]" or "none"}
   Untagged:  {count} — {list or "none"}
   Unchanged: {count}
 ```
@@ -526,9 +526,8 @@ Display this inline. If the count of changes is zero across both tagged and unta
 
 **Timing note:** This step runs *before* the commit (Step 6). Any git HEADs or commit hashes referenced in Key Context describe the pre-commit state, not the final committed state. When referencing branch state, describe uncommitted changes as "will be committed in Step 6" rather than claiming specific commit hashes. `/r-start` consumers should treat Key Context as the conv's pre-close snapshot, not a post-commit record.
 
-1. Call `TaskList` to capture this conv's task state (in-progress / pending / completed).
-2. **Refresh `CURRENT-TASKS.md`** (the persistent task store) via **preserve-then-overlay** — the engine specified in `/r-update-tasks`. Either invoke the `r-update-tasks` skill or inline its logic: read the existing `CURRENT-TASKS.md`; parse the H3 `[CODE]` rows under `## 🔥 Ordered` and `## 📋 Unordered backlog`, **preserving** document order, the `> ## ⏸️ PARKED` divider, and every `Why:` line verbatim; overlay live statuses by `[CODE]` (force `· 🔄 Active ·` on in_progress Ordered rows; preserve the hand-set ★ Next / 📋 Planned / ⏸️ On hold symbol on pending rows; **never delete an unmatched row** — active-only TodoWrite means backlog/Parked rows routinely have no `TaskList` counterpart and MUST be preserved); append any new-this-conv pending/in-progress tasks to the backlog **immediately above the Parked divider**; move code-matched **completed** tasks to `## ✅ Completed this conv`; bump the `Last refreshed` date. `Write` the file (full overwrite, never `Edit`). **Run this BEFORE clearing TodoWrite (step 4)** — the overlay reads live statuses, so they must still be accurate.
-3. **Write `RESUME-STATE.md` (NARRATIVE only — [CURTASKS], Conv 351)** in the docs repo root. Task data (the old `## Remaining` / `## TodoWrite Items`) now lives in `CURRENT-TASKS.md`; RESUME-STATE is the per-conv **narrative** handoff the next `/r-start` reads for context, then deletes. **Keep the `Branch` line** — `conv-branch-check.sh` + `[RSTART-DIFFGATE]` depend on it. Format:
+1. **Validate + tidy `CURRENT-TASKS.md`** (the write-through task board). It is already current — CC edited it directly through the conv — so this is a **consistency pass, not a regenerate**: run `~/projects/peerloop-docs/.claude/scripts/current-tasks-check.sh` (or invoke the `r-update-tasks` skill) and fix any dangling TOC link / orphan body / slug mismatch it reports; move any body whose `State:` reads done to `## ✅ Done this conv`. **Never delete a queued/parked body** just because it saw no activity this conv (that is the normal case). There is no Task-tool overlay to reconcile (subsystem server-gated off, `[TASK-TOOLS-VERIFY]`) — the file IS the state.
+2. **Write `RESUME-STATE.md` (NARRATIVE only — [CURTASKS], Conv 351)** in the docs repo root. Task data now lives in `CURRENT-TASKS.md`; RESUME-STATE is the per-conv **narrative** handoff the next `/r-start` reads for context, then deletes. **Keep the `Branch` line** — `conv-branch-check.sh` + `[RSTART-DIFFGATE]` depend on it. Format:
 
 ```markdown
 # State — Conv {NNN} ({YYYY-MM-DD} ~{HH:MM})
@@ -550,8 +549,7 @@ Display this inline. If the count of changes is zero across both tagged and unta
 To continue: run `/r-start` — it reads `CURRENT-TASKS.md` for the task sequence and this narrative for context.
 ```
 
-4. Mark all this conv's tasks as completed via `TaskUpdate` (their state is now persisted in `CURRENT-TASKS.md`; clearing TodoWrite leaves the next conv to start empty — active-only model).
-5. Note `State Saved ✅ (CURRENT-TASKS.md refreshed; RESUME-STATE.md narrative written)`
+3. Note `State Saved ✅ (CURRENT-TASKS.md validated; RESUME-STATE.md narrative written)`
 
 ### Step 5b: Sync memory live → mirror
 
@@ -580,7 +578,7 @@ Run the generated-doc regen gate **before** the commit and **before** the drift-
 node ~/projects/peerloop-docs/.claude/scripts/regen-generated-docs.mjs
 ```
 
-For each `generated` registry group with a `regen` binding (currently `route-docs-generated` → the route maps + `tests/plato/route-map.generated.ts`), the gate re-runs that group's `commands` **only if** this conv's code changes touched any of its `inputs` globs (`src/pages/**`, `src/components/**`, `src/lib/**`), then stages the output in **both** repos. On convs that didn't touch route source it does nothing (so day-stamped generated docs like `page-connections.md` don't churn). This is what makes "regenerate stale route docs" a **deterministic step, not a recurring task** — generated docs are regenerated here, never `TaskCreate`d. Bindings live in `.claude/config.json` docsRegistry. (Conv 246 [DOCGEN].)
+For each `generated` registry group with a `regen` binding (currently `route-docs-generated` → the route maps + `tests/plato/route-map.generated.ts`), the gate re-runs that group's `commands` **only if** this conv's code changes touched any of its `inputs` globs (`src/pages/**`, `src/components/**`, `src/lib/**`), then stages the output in **both** repos. On convs that didn't touch route source it does nothing (so day-stamped generated docs like `page-connections.md` don't churn). This is what makes "regenerate stale route docs" a **deterministic step, not a recurring task** — generated docs are regenerated here, never tracked as a task in `CURRENT-TASKS.md`. Bindings live in `.claude/config.json` docsRegistry. (Conv 246 [DOCGEN].)
 
 ### Step 6: COMMIT (inline, v2 format)
 

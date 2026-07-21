@@ -37,8 +37,8 @@ You maintain **only `driftCheck` docs**. Everything else (`manual`, `archival`,
 > **Report drift-check gaps only.**
 > If you find undocumented endpoints, scripts, or tests in a `driftCheck` doc's
 > domain and won't fix them now — **report them** so the main context can
-> TaskCreate them. Do NOT report gaps against `manual`/`archival`/vendor docs
-> ("this vendor doc is stale" is by design, not a gap).
+> record them in `CURRENT-TASKS.md`. Do NOT report gaps against
+> `manual`/`archival`/vendor docs ("this vendor doc is stale" is by design, not a gap).
 
 Work through these steps in order. Skip any step where no relevant changes occurred.
 

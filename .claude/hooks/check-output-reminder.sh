@@ -1,5 +1,5 @@
 #!/bin/bash
-# PostToolUse hook: Remind to TodoWrite any issues from Bash commands
+# PostToolUse hook: Remind to log any issues from Bash commands into CURRENT-TASKS.md
 #
 # Two layers:
 # 1. SPECIFIC: Check commands (test, lint, tsc, astro, tailwind) get detailed
@@ -81,7 +81,7 @@ if [ -n "$CHECK_TYPE" ]; then
   esac
 
   if [ "$HAS_ISSUES" = true ]; then
-    echo "⚠️ CHECK OUTPUT HAS ISSUES: $ISSUE_SUMMARY — TodoWrite these NOW before continuing. Do not dismiss as pre-existing."
+    echo "⚠️ CHECK OUTPUT HAS ISSUES: $ISSUE_SUMMARY — add these to CURRENT-TASKS.md NOW before continuing. Do not dismiss as pre-existing."
   fi
   exit 0
 fi
@@ -91,7 +91,7 @@ fi
 if [ "$EXIT_CODE" != "0" ]; then
   # Extract just the command name for a concise message (first token or up to first pipe)
   CMD_SHORT=$(echo "$COMMAND" | sed 's/ |.*//; s/ 2>&1.*//' | head -c 80)
-  echo "⚠️ COMMAND FAILED (exit $EXIT_CODE): $CMD_SHORT — Diagnose the failure. If it reveals an issue, TodoWrite it."
+  echo "⚠️ COMMAND FAILED (exit $EXIT_CODE): $CMD_SHORT — Diagnose the failure. If it reveals an issue, add it to CURRENT-TASKS.md."
 fi
 
 exit 0

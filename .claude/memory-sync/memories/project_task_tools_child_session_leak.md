@@ -1,28 +1,31 @@
 ---
 name: project_task_tools_child_session_leak
-description: "[TASK-TOOLS-DOWN] Conv 405 — CLAUDE_CODE_ENABLE_TASKS=0 did NOT restore TodoWrite and DID kill Task*; var removed, default restored. Conv-403 'leaked CLAUDE_CODE_CHILD_SESSION' theory was FALSE. Grep/Glob absence is a separate, older, undocumented problem."
+description: "[TASK-TOOLS-VERIFY] Conv 406 ROOT-CAUSED: Task*/TodoWrite killed by an UNDOCUMENTED server-side gate uZ() reading remote config tengu_vellum_ash, matching the model ID — not our config, not a version bump. Project HARD-DETACHED to write-through CURRENT-TASKS.md. Grep/Glob = separate known upstream bug."
 metadata: 
   node_type: memory
   type: project
   originSessionId: 9a6745a4-1775-4651-9f13-259287c75ae1
-  modified: 2026-07-21T20:25:48.830Z
+  modified: 2026-07-21T21:41:53.445Z
 ---
 
-[TASK-TOOLS-DOWN] **Don't chase `TodoWrite` — it is deprecated and we don't need it.** Claude Code disabled `TodoWrite` by default in **v2.1.142**, superseding it with `TaskCreate`/`TaskGet`/`TaskList`/`TaskUpdate` (`code.claude.com/docs/en/tools-reference.md`). This project's CLAUDE.md and skills already use the `Task*` tools throughout, so **the only thing worth restoring is `Task*`**.
+[TASK-TOOLS-VERIFY] **Root cause FOUND (Conv 406, binary decompile of CC 2.1.214/215/216).** `TaskCreate`/`TaskList`/`TaskUpdate`/`TaskGet`/`TodoWrite` are killed by a **second, undocumented gate** beyond `CLAUDE_CODE_ENABLE_TASKS`:
 
-**⚠️ `CLAUDE_CODE_ENABLE_TASKS=0` is a trap — it makes things worse.** The docs say `0` re-enables `TodoWrite`. Conv 404 set it in `~/.claude/settings.json` `env`; Conv 405 launched fresh on CC 2.1.216 and observed: **no `TodoWrite`** (the doc's promise did not hold) **and no `Task*`** (the var did exactly what its name says — turned the Task tools off). Net effect: a working tool set was traded for nothing. **The var was REMOVED in Conv 405**, restoring the documented default (Task* on, TodoWrite off). Empirical proof it was the cause: a scan of 78 session JSONLs (v2.1.183 → 2.1.216) shows `Task*` used healthily every conv through **07-21 09:08**, then **zero** from 07-21 11:55 on — the Conv-403/404 window, not a CC upgrade.
+```js
+function uH(){ if(Z.CLAUDE_CODE_ENABLE_TASKS===false) return false; return true }          // the documented env gate
+function uZ(){ let e=Je("tengu_vellum_ash",[]); ...; let t=Di(); return e.some(r=>t.includes(r)) } // UNDOCUMENTED
+// Task*:      isEnabled(){ return  uH() && !uZ() }
+// TodoWrite:  isEnabled(){ return !uH() && !uZ() }
+```
 
-**⚠️ Two unrelated problems were conflated. `Grep`/`Glob` absence is OLDER and still unexplained.** The same 78-transcript scan shows **zero** `Grep`/`Glob` calls across the *entire* retained window (2026-06-22 → 07-21) — so it long predates Conv 403/404 and is not a task-tools issue. Ruled out: no `--tools`/`--disallowedTools` in the `peerloop` alias, no `permissions.deny` in any settings scope, no `managed-settings.json`, ripgrep 14.1.1 present and working. Docs confirm both tools are current in 2.1.216 (only bugfixes in the changelog) and that tool-search deferral is **MCP-only** — yet this session's deferred pool holds built-ins (`Monitor`, `WebFetch`, `EnterPlanMode`, `Cron*`), so the deferral is broader than documented. **Verdict: undocumented harness behavior, `/feedback` candidate.** Impact is degradation not blockage — Bash `grep`/`find`/`rg` and the `Explore` agent all work.
+`uZ()` reads **remote dynamic config `tengu_vellum_ash`** and returns true if the **current model ID (`Di()`) contains** any string in that list. Because it appears on **both** branches, a true `uZ()` kills `Task*` AND `TodoWrite` at once — a combination **no local setting can produce** (`ENABLE_TASKS` only swaps which family you get). `uH()` is provably true now (var removed Conv 405, verified absent) → **`uZ()` is true**. Binary **identical** across 2.1.214/215/216; `~/.claude/tasks/` last written 07-21 07:21 (AFTER the 2.1.216 install) then stopped → **server-side gate, NOT a version bump, NOT our config.** `vellum` = **0 hits** in the entire changelog (2.1.0→2.1.216). Sibling flag: `tengu_vellum_siding`.
 
-**⚠️ The Conv-403 root cause was WRONG — do not act on it or re-derive it.** Conv 403 blamed a `CLAUDE_CODE_CHILD_SESSION=1` + `AI_AGENT=…` leak from VS Code's frozen process env and prescribed `env -u` in the `~/.zshrc` launchers plus a Cmd-Q relaunch. Conv 404 falsified it with `ps -wwwE -p <pid>`:
+**One live probe left (untested):** the gate substring-matches `claude-opus-4-8[1m]`. If the list targets the **1M variant**, selecting the **non-1M Opus 4.8 via `/model`** would restore `Task*`. NOTE `CLAUDE_CODE_DISABLE_1M_CONTEXT=1` does **NOT** work for this — traced `mi()`/`Tb()`/`kD()`: that var flips 1M *detection* but the suffix is never stripped, so `Di()` still returns `[1m]`. Negative probe → gate targets Opus 4.8 broadly → no local workaround → `/feedback`.
 
-| Process | `CLAUDE_CODE_CHILD_SESSION` / `AI_AGENT` |
-|---|---|
-| the `claude` process itself | **absent** |
-| its parent `zsh -l` | **absent** |
-| VS Code | **absent** |
-| a **Bash-tool subprocess** | **present** |
+**✅ DECISION (Conv 406): the project HARD-DETACHED from the Task subsystem** — don't chase the tools back. CLAUDE.md §Task Persistence / §Issue Surfacing, the 3 lifecycle skills (`r-start`/`r-end`/`r-update-tasks`), the secondary skills, and `check-output-reminder.sh` were rewritten to **write-through `CURRENT-TASKS.md` directly** (a file edit is as verifiable as the old tool call). `CURRENT-TASKS.md` was also **redesigned** (TOC + stable alphabetical bodies). See [[feedback_current_tasks_persistence]]. So this watch no longer blocks work; keep it only to record the gate + optionally run the `/model` probe.
 
-**The probe was measuring the wrong process.** Those vars are injected by Claude Code *into the Bash tool's own child shells* — the harness marking its subprocesses. `echo $CLAUDE_CODE_CHILD_SESSION` from the Bash tool therefore prints `1` in **every** healthy session and can never diagnose anything. Both `peerloop()` and `spt()` were reverted to plain `claude …` in Conv 404 (backup `~/.zshrc.bak-conv404`). Do not re-add the guards. MacMiniM4 may still carry them — clean up when next on that machine.
+**Prior-conv history (still valid):**
+- `CLAUDE_CODE_ENABLE_TASKS=0` was a **trap** — Conv 404 set it chasing `TodoWrite`; it didn't restore TodoWrite and it *also* fired `uH()` OFF. Removed Conv 405. (We now know `uZ()` was suppressing TodoWrite regardless, so the experiment was confounded.)
+- **`Grep`/`Glob` absence is a SEPARATE, older upstream bug** — built-ins vanish from the registry under tool-search deferral and aren't ToolSearch-discoverable: issues **#52121** + **#63525**, both OPEN. Both tools still shipped + documented. Unrelated to `uZ()`.
+- **Conv-403 `CLAUDE_CODE_CHILD_SESSION` leak theory was FALSE** — that var is injected by the harness into the Bash tool's *own* child shells (present in every healthy session), so `echo $VAR` from Bash can never diagnose it. `env -u` guards reverted Conv 404; MacMiniM4 may still carry stale ones (harmless — clean when next on it).
 
-**How to apply:** (1) To diagnose a missing built-in tool, probe the **claude process's own env** (`ps -wwwE -p $(pgrep -n claude)`), never `echo $VAR` from the Bash tool — *the Bash tool's environment is not the session's environment*. (2) **Scan the session JSONLs** (`~/.claude/projects/<slug>/*.jsonl`, count `"name": *"<Tool>"` per file against each file's `"version"`) to date when a tool vanished — this is what separated the Task* regression from the older Grep/Glob one. Ignore `~/.claude.json` `toolUsage`: its counters froze on 2026-02-26 and are stale. (3) Check official docs before theorizing — `claude-code-guide` (agent) is the fast path — but **verify the doc's claim empirically**; the `ENABLE_TASKS=0` promise did not hold here. See [[feedback_current_tasks_persistence]], [[feedback_external_source_of_truth_first]].
+**How to apply:** (1) To diagnose a missing built-in, **decompile the installed binary** (`strings -a ~/.local/share/claude/versions/<v>`) and grep for the tool's `isEnabled(){…}` — that revealed `uZ()`. Also probe the *claude process's* env (`ps -wwwE -p $(pgrep -n claude)`), never `echo $VAR` from Bash. (2) **Scan session JSONLs** to date when a tool vanished (count `"name":"<Tool>"` per file vs each file's `"version"`). (3) Read the **local cached changelog** `~/.claude/cache/changelog.md` before theorizing a version cause. See [[feedback_current_tasks_persistence]], [[feedback_external_source_of_truth_first]].

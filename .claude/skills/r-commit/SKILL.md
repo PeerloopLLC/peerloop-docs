@@ -54,11 +54,11 @@ Commit changes in both peerloop-docs and Peerloop repos using the **v2 commit me
 
 ## Workflow
 
-### Step 0: Refresh CURRENT-TASKS.md (boundary refresh — [CURTASKS], Conv 351)
+### Step 0: Validate CURRENT-TASKS.md (boundary check — [CURTASKS] Conv 351; Task-tool detach Conv 406)
 
-Before reviewing changes, refresh `CURRENT-TASKS.md` (root of `peerloop-docs`) so the committed task state reflects current TodoWrite truth. Either invoke the `r-update-tasks` skill, or inline its **preserve-then-overlay** logic: read the existing `CURRENT-TASKS.md`; parse the H3 `[CODE]` rows under `## 🔥 Ordered` and `## 📋 Unordered backlog` (preserve document order, the `> ## ⏸️ PARKED` divider, and every `Why:` line verbatim); call `TaskList`; overlay live statuses by `[CODE]` (force `· 🔄 Active ·` on in_progress Ordered rows; preserve the hand-set ★ Next / 📋 Planned / ⏸️ On hold symbol on pending rows; **never delete an unmatched row** — active-only TodoWrite means backlog/Parked rows routinely have no `TaskList` counterpart); append new-this-conv pending/in-progress tasks **above the Parked divider**; move code-matched completed tasks to `## ✅ Completed this conv`; bump `Last refreshed`. `Write` the file.
+Before reviewing changes, sanity-check `CURRENT-TASKS.md` (root of `peerloop-docs`). It's a **write-through** board — CC edits it directly during the conv (no Task-tool overlay; subsystem server-gated off, see `[TASK-TOOLS-VERIFY]`), so this is a **consistency check, not a regenerate**: run `~/projects/peerloop-docs/.claude/scripts/current-tasks-check.sh` (or invoke the `r-update-tasks` skill). If it reports a dangling TOC link / orphan body / slug mismatch, fix it (per `[EDITSAFE]`); move any body whose `State:` reads done to `## ✅ Done this conv`. **Never delete a queued/parked body** for lack of activity — that's the normal case. If it reports `OK`, do nothing.
 
-**Skip silently** if `.conv-current` is missing (no active conv → no task state to refresh) or if `CURRENT-TASKS.md` doesn't exist (out-of-band; commit whatever's dirty without bothering). The refresh is a working-tree edit that the Step 2 `git add` picks up — the committed state then reflects task truth.
+**Skip silently** if `.conv-current` is missing (no active conv) or if `CURRENT-TASKS.md` doesn't exist. Any fix is a working-tree edit the Step 2 `git add` picks up.
 
 ### Step 0.5: Code-branch guard ([CBG], Conv 395) — HALT on mismatch
 

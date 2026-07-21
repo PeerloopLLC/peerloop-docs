@@ -35,7 +35,7 @@ Shared reference for the update-plan agent. Defines terminology, update actions,
 
 4. **Confirm completion** with brief message
 
-**Do NOT invent footer sections at the bottom of PLAN.md.** PLAN.md has no "Next Steps", no "Last Updated", no narrative trail. The canonical per-conv narrative lives in `docs/sessions/<YYYY-MM>/<timestamp> Extract.md`; "what's next" lives in TodoWrite → RESUME-STATE.md. Both the "Last Updated" trail and "Next Steps" footer were dropped Conv 211.
+**Do NOT invent footer sections at the bottom of PLAN.md.** PLAN.md has no "Next Steps", no "Last Updated", no narrative trail. The canonical per-conv narrative lives in `docs/sessions/<YYYY-MM>/<timestamp> Extract.md`; "what's next" lives in `CURRENT-TASKS.md` (task board) + `RESUME-STATE.md` (narrative). Both the "Last Updated" trail and "Next Steps" footer were dropped Conv 211.
 
 ---
 

@@ -2,14 +2,14 @@
 name: r-checkpoint
 description: Lightweight mid-conv checkpoint — capture what changed + why into a compaction-proof conv-scoped scratch note, then clear the slate with /compact (no agents, no commit, no push)
 argument-hint: "[optional short label for this checkpoint]"
-allowed-tools: Bash, Read, Write, Edit, Glob, TaskList
+allowed-tools: Bash, Read, Write, Edit, Glob
 ---
 
 # Checkpoint — capture work + why, then /compact
 
 **Purpose:** A cheap "I'm done with this slice of work, clear the slate for real work" skill. It records **what changed this conv and why** into a conv-scoped scratch note (`.scratch/conv-<NNN>-checkpoint.md`) — the compaction-proof channel that `/r-end` Step 2 auto-globs — so you can then run `/compact` and keep working **in the same conv** without paying for a full `/r-end` (3 agents + commit + push) or a new `/r-start` (counter increment + memory sync + task transfer + companion regen).
 
-**Why this exists:** Housekeeping and small captures shouldn't cost a full end-of-conv cycle. `/compact` keeps the session alive — TodoWrite tasks, the conv number, and `.conv-current` all persist — so you continue as the same conv. This skill makes sure the *decisions, rationale, and process learnings* (the things that live only in chat and would be summarized away by `/compact`) are written to disk first.
+**Why this exists:** Housekeeping and small captures shouldn't cost a full end-of-conv cycle. `/compact` keeps the session alive — the conv number and `.conv-current` persist, and `CURRENT-TASKS.md` is on disk regardless — so you continue as the same conv. This skill makes sure the *decisions, rationale, and process learnings* (the things that live only in chat and would be summarized away by `/compact`) are written to disk first.
 
 **Relationship to siblings:**
 - `/r-commit` — commits both repos and keeps working (heavier; writes git history). Use when you want a commit.
@@ -108,7 +108,7 @@ Display a compact confirmation:
 🗂️  Checkpoint saved → .scratch/conv-<NNN>-checkpoint.md ({N} sections total)
     Captured: {X decisions, Y learnings, Z changed files}
 
-Slate is ready. Your TodoWrite tasks + conv number persist through /compact.
+Slate is ready. CURRENT-TASKS.md (on disk) + conv number persist through /compact.
 
 Next:
   • type /compact to clear the slate and keep working in this conv

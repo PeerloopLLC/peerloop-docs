@@ -2,7 +2,7 @@
 name: w-sync-skills
 description: Scan another dual-repo project for skill changes and port improvements
 argument-hint: "[source-name] [skill-name] (default: scan all sources, all skills)"
-allowed-tools: Read, Write, Edit, Bash, Glob, Grep, TaskCreate
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
 # Sync Skills from Another Dual-Repo

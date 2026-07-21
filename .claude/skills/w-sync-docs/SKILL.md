@@ -2,7 +2,7 @@
 name: w-sync-docs
 description: Sync documentation with actual codebase — audit test docs, API docs, CLI docs for drift
 argument-hint: "[audit|fix] - default: audit"
-allowed-tools: Read, Edit, Write, Bash, Glob, Grep, Agent, TaskCreate, TaskUpdate
+allowed-tools: Read, Edit, Write, Bash, Glob, Grep, Agent
 ---
 
 # Documentation Sync
@@ -322,9 +322,9 @@ If argument is `fix`:
 6. **Update "Last Updated" dates** on every modified doc
 7. **Do NOT commit** — leave changes staged for the user to review
 
-### TodoWrite discipline
+### Issue-tracking discipline
 
-If any issue is found that you do NOT fix (e.g., a test file exists but you're unsure which section it belongs in), create a TodoWrite item. Never report an issue to the user without either fixing it or tracking it.
+If any issue is found that you do NOT fix (e.g., a test file exists but you're unsure which section it belongs in), record it in `CURRENT-TASKS.md` (a `### [CODE]` body + `## 🎯 Now` line). Never report an issue to the user without either fixing it or tracking it.
 
 ---
 

@@ -2,7 +2,7 @@
 name: r-quiet-mode
 description: Toggle quiet mode — direct hands-on work with deferred-work logged to .scratch, processed on exit
 argument-hint: "on | off"
-allowed-tools: Read, Write, Edit, Bash, Glob, Grep, TaskCreate, TaskUpdate, TaskList, TaskGet
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
 # Quiet Mode
@@ -78,14 +78,14 @@ Branch on the **Argument given** (`$ARGUMENTS`), trimmed and lowercased:
 
    ## Deferred processes
    <!-- things normally run now but held: gates (tsc/check/lint/test/build), prov:sweep,
-        route-doc regen, doc-drift checks, memory-save candidates, TodoWrite churn -->
+        route-doc regen, doc-drift checks, memory-save candidates, CURRENT-TASKS.md edits -->
 
    ## Tangential observations
    <!-- noticed-but-not-asked: code-quality nits off the path, stale docs, naming,
         adjacent bugs, refactor opportunities -->
 
    ## Deferred tasks / followups / cleanup
-   <!-- would-be TaskCreate items, cleanup steps, scaffolding to remove later -->
+   <!-- would-be CURRENT-TASKS.md entries, cleanup steps, scaffolding to remove later -->
 
    ## Issues surfaced inline (mirror)
    <!-- blocking/important issues raised to the user in the moment, copied here so the
@@ -130,7 +130,7 @@ Branch on the **Argument given** (`$ARGUMENTS`), trimmed and lowercased:
    - **The issue** — one line, concrete.
    - **My read** — EITHER it needs a user decision (state the options + a recommendation), OR an explanation of **why it is not actually an issue** (so the user can still veto). Never just list it; always take a position.
 
-   Format as a numbered list, then end with a single `👉👉👉` pause and **WAIT for the user**. Do NOT `TaskCreate` the issues, action dispositions, or delete the log yet — the user may dismiss some, redirect others, or ask to discuss. If there are genuinely zero issues in the log, say so explicitly ("No open issues in the log") and skip straight to step 5 (no pause needed).
+   Format as a numbered list, then end with a single `👉👉👉` pause and **WAIT for the user**. Do NOT record the issues in `CURRENT-TASKS.md`, action dispositions, or delete the log yet — the user may dismiss some, redirect others, or ask to discuss. If there are genuinely zero issues in the log, say so explicitly ("No open issues in the log") and skip straight to step 5 (no pause needed).
 
    ```
    🔔 Quiet mode OFF — processing log from Conv {CONV} (started {TIMESTAMP}).
@@ -144,8 +144,8 @@ Branch on the **Argument given** (`$ARGUMENTS`), trimmed and lowercased:
    ```
 
 5. **After the user responds — execute and finalize:**
-   - Action each issue per the user's disposition: `TaskCreate` the ones to track (unique bracketed mnemonic code each per `feedback_todowrite_mnemonic_codes.md`), apply fixes they ask for now, drop the ones they dismiss.
-   - `TaskCreate` the remaining deferred tasks / followups / cleanup items.
+   - Action each issue per the user's disposition: for the ones to track, add a `### [CODE]` body + `## 🎯 Now` line to `CURRENT-TASKS.md` (unique bracketed mnemonic code each per `feedback_todowrite_mnemonic_codes.md`), apply fixes they ask for now, drop the ones they dismiss.
+   - Add the remaining deferred tasks / followups / cleanup items to `CURRENT-TASKS.md` the same way.
    - Save any genuine memory-save candidates (check the memory dir first per `feedback_check_memory_before_directive_save.md`).
    - Address tangential observations you judge worth doing now; leave the rest as raised.
 

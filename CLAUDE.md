@@ -78,7 +78,7 @@ When you discover an issue, gap, warning, or unexpected behavior **during otherw
 
 ```
 🔴🔴🔴 {Brief issue description}
-    → {What you're doing about it: TodoWrite, fixing now, or flagging for user}
+    → {What you're doing about it: adding it to CURRENT-TASKS.md, fixing now, or flagging for user}
 ```
 
 This applies everywhere — skills, agents, normal coding work. The purpose is visual anchoring: in long output, these issues have historically been reported in text but missed by the user, leading to full codebase scans for problems that were already identified but buried in output.
@@ -92,7 +92,7 @@ For the §Uncategorized section in `/r-end` extracts, use orange:
 
 **Do NOT use these for expected behavior or status updates** — only for genuinely actionable findings during work that is focused on something else.
 
-**Never silently skip a discovered issue.** TodoWrite anything unresolved, and give **every** 🔴/🟠 alert an explicit disposition + owner (resolved now / task #N / your-call / FYI) — not a vague "handle at /r-end" promise. See `memory/feedback_surface_and_track_all_issues.md`.
+**Never silently skip a discovered issue.** Write anything unresolved **into `CURRENT-TASKS.md`** (a `### [CODE]` body + a `## 🎯 Now` line — a file edit is as verifiable as the old tool call was), and give **every** 🔴/🟠 alert an explicit disposition + owner (resolved now / task `[CODE]` / your-call / FYI) — not a vague "handle at /r-end" promise. See `memory/feedback_surface_and_track_all_issues.md`.
 
 ## User-Facing Questions
 
@@ -158,14 +158,14 @@ Hooks run at session start: machine detection (writes `~/.claude/.machine-name`)
 
 Work is tracked as **Conv** numbers (replacing Sessions, which ended at 393); same number in both repos' commits. Daily flow: `/r-start` (begin / resume), `/r-commit` (save + keep working), `/r-end` (close, with 3 parallel agents + commit/push). Multi-session blocks use `CURRENT-BLOCK-PLAN.md` at project root.
 
-**Commit-skill discipline:** `/r-commit` is autonomous (mid-conv snapshots are fine) — **except** on a `[CBG]` code-branch mismatch, where it HALTs and asks (Step 0.5; Conv 395); **`/r-end` always needs explicit approval**. `/r-end` Step-4 🔴/🟠 alerts must be TaskCreate'd, not just displayed. A post-`/r-end` fix = `/r-start` (no raw `/clear`) → fix → `/r-end`. See `memory/feedback_rend_discipline.md`.
+**Commit-skill discipline:** `/r-commit` is autonomous (mid-conv snapshots are fine) — **except** on a `[CBG]` code-branch mismatch, where it HALTs and asks (Step 0.5; Conv 395); **`/r-end` always needs explicit approval**. `/r-end` Step-4 🔴/🟠 alerts must be written into `CURRENT-TASKS.md`, not just displayed. A post-`/r-end` fix = `/r-start` (no raw `/clear`) → fix → `/r-end`. See `memory/feedback_rend_discipline.md`.
 
 → See [docs/reference/CLAUDE-OFFLOAD.md § Conversation Lifecycle](docs/reference/CLAUDE-OFFLOAD.md#conversation-conv-lifecycle) for the full r-*/w-* skill catalog + workflow table.
 
 ## Task Persistence
 
-- **Backlog lives in git-tracked `CURRENT-TASKS.md`** (docs-repo root), NOT RESUME-STATE ([CURTASKS], Conv 351). `RESUME-STATE.md` is narrative-only. **TodoWrite is active-only** — empty at `/r-start`; `TaskCreate` (reusing the row's `[CODE]`) only when an item is actually started. The backlog refresh (`/r-update-tasks`, `/r-commit`, `/r-end`) is a **preserve-then-overlay** checkpoint, not live-sync; crash recovery = re-read the git-tracked file. Detail in `memory/feedback_current_tasks_persistence.md`.
-- **Every task code is a unique 2–3-letter bracket** — every `TaskCreate` subject starts with a mnemonic `[CODE]` (e.g. `[PL] Plan update`); the user references tasks by that code. Collisions get a numeric suffix (`[GE]`→`[GE2]`). See `memory/feedback_todowrite_mnemonic_codes.md`.
+- **All task state lives in git-tracked `CURRENT-TASKS.md`** (docs-repo root), NOT RESUME-STATE ([CURTASKS], Conv 351; Task-tool detach Conv 406). `RESUME-STATE.md` is narrative-only. **Write-through, not tool-overlay** — the Task subsystem (`TaskCreate`/`TaskList`/`TaskUpdate`/`TodoWrite`) is server-gated OFF for this model (see `[TASK-TOOLS-VERIFY]`), so **edit `CURRENT-TASKS.md` directly** the moment a task changes: bodies live under `## Tasks` (alphabetical, never move); a `## 🎯 Now` TOC carries execution order (top = next) and `## ⏸️ Parked` carries gated items. Reprioritise/start/park by editing a TOC line + the body's `State:` bullet; complete by deleting the body and adding a line to `## ✅ Done this conv`. A file edit is as verifiable as a tool call — the forcing-function survives. `/r-update-tasks` / `/r-commit` / `/r-end` just re-tidy the file; crash recovery = re-read it. Detail in `memory/feedback_current_tasks_persistence.md`.
+- **Every task code is a unique 2–3-letter bracket** — every task's `### [CODE]` heading + `## 🎯 Now`/`## ⏸️ Parked` line uses a mnemonic `[CODE]` (e.g. `[PL]`); the user references tasks by that code. Collisions get a numeric suffix (`[GE]`→`[GE2]`). See `memory/feedback_todowrite_mnemonic_codes.md`.
 
 ## Test Suite Workflow
 
