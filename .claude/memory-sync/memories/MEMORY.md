@@ -36,7 +36,7 @@
 - [link](feedback_db_setup_shorthand.md) — "run the {local/staging} D1 {level} script" → `npm run db:setup:{target}:{level}`; machine name from `~/.claude/.machine-name`.
 - [link](project_schema_edit_remote_d1_propagation.md) — [D1-SCHEMA-REMOTE] `0001_schema.sql` edits do NOT reach an already-migrated remote D1 → `ALTER TABLE ADD COLUMN` or reseed. Conv 394.
 - [link](project_code_repo_shared_with_client.md) — [TC-BRANCH-GATE] CODE repo is SHARED with the client (`brian-July-7`, colliding `Conv NNN:` prefixes) — never bare-sweep branches there; allowlist `^jfg-dev`. Docs repo is ours alone. Conv 396.
-- [link](project_task_tools_child_session_leak.md) — [TASK-TOOLS-DOWN] TodoWrite/TaskCreate/List/Update/Get missing = session misflagged child via leaked `CLAUDE_CODE_CHILD_SESSION` from VS Code's frozen env; fix = `env -u` in `peerloop()` launcher + clean VS Code relaunch. Conv 403.
+- [link](project_task_tools_child_session_leak.md) — [TASK-TOOLS-DOWN] TodoWrite missing = **disabled by default since CC 2.1.142** (Task* supersede it); re-enable `CLAUDE_CODE_ENABLE_TASKS=0`. Conv-403 "leaked `CLAUDE_CODE_CHILD_SESSION`" theory FALSIFIED — that var is CC's own marker inside Bash-tool shells, so `echo $VAR` from Bash proves nothing; probe `ps -wwwE -p $(pgrep -n claude)`. Conv 403→404.
 
 ### Navigation & UI
 - [link](feedback_orphaned_components_survive_migration.md) — [ORPHAN-DETECT] Route migrations orphan page-level components while tsc/lint/tests stay GREEN (Conv 339/391). Verify route-reachability before trusting/editing a page component. Conv 392.

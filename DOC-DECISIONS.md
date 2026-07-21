@@ -527,14 +527,24 @@ The 4572-line `docs/DECISIONS.md` was split into a `docs/decisions/` folder: ele
 
 ## 3. Claude Code Workflow
 
-### Interactive `claude` Launchers Must Strip `CLAUDE_CODE_CHILD_SESSION` + `AI_AGENT` (Conv 403)
-**Date:** 2026-07-21 (Conv 403)
+### Interactive `claude` Launchers Must Strip `CLAUDE_CODE_CHILD_SESSION` + `AI_AGENT` (Conv 403) — ⚠️ SUPERSEDED (Conv 404)
+**Date:** 2026-07-21 (Conv 403) · **Superseded:** 2026-07-21 (Conv 404)
+
+> **⚠️ THE ROOT CAUSE BELOW IS FALSE — do not act on it.** Conv 404 falsified it by probing the **real** process environments with `ps -wwwE -p <pid>`: `CLAUDE_CODE_CHILD_SESSION` / `AI_AGENT` are **absent** from the `claude` process, from its parent `zsh -l`, and from VS Code. They appear **only inside Bash-*tool* subprocesses**, where Claude Code injects them to mark its own child shells. Conv 403 ran `echo $CLAUDE_CODE_CHILD_SESSION` from the Bash tool and read the harness's own marker as evidence of contamination — that probe prints `1` in *every healthy session* and can never diagnose anything.
+>
+> **Actual cause of the missing tools:** `TodoWrite` has been **disabled by default since Claude Code v2.1.142**, superseded by `TaskCreate`/`TaskGet`/`TaskList`/`TaskUpdate` (`code.claude.com/docs/en/tools-reference.md`, `…/agent-sdk/todo-tracking.md`). Re-enable with env-only **`CLAUDE_CODE_ENABLE_TASKS=0`** — added to `~/.claude/settings.json` `env` in Conv 404.
+>
+> **Status of the Conv-403 remediations — both undone.** The `env -u` guards were no-ops (they stripped vars that were never set) and were **reverted in Conv 404**: `peerloop()` and `spt()` are back to plain `claude …` (backup `~/.zshrc.bak-conv404`; `zsh -n` clean, both verified resolving in a fresh login shell). The prescribed Cmd-Q VS Code relaunch was **never necessary**. The "diagnostic fingerprint" below is **not** a fingerprint. **This decision is fully withdrawn — the launchers must NOT strip those vars.** **Residual unknown:** on CC 2.1.216 the `Task*` tools were *also* absent, as were `Grep`/`Glob` — unexplained by settings, CLI flags, or output styles. If it recurs, investigate the pruned tool set, not child-session status.
+>
+> **Transferable lesson:** *the Bash tool's environment is not the session's environment.* Probe `ps -wwwE -p $(pgrep -n claude)`, never `echo $VAR` from Bash. See `memory/project_task_tools_child_session_leak.md`.
+>
+> _Original Conv-403 text retained below as the historical record._
 
 The `peerloop()` and `spt()` `~/.zshrc` launchers now run `env -u CLAUDE_CODE_CHILD_SESSION -u AI_AGENT claude …`. Claude Code decides child-session status at startup via `Boolean(process.env.CLAUDE_CODE_CHILD_SESSION)`; a child session doesn't own the todo list, so `TodoWrite` + `TaskCreate/List/Update/Get` are withheld (only `TaskOutput/TaskStop` remain). These vars leaked in from **VS Code's frozen process env** — VS Code had been launched from inside a CC agent Bash context, inherited the markers, and injects them into every integrated terminal for its whole lifetime — so each `claude` was silently misclassified across whole convs, degrading task tracking to hand-editing `CURRENT-TASKS.md`. The `env -u` guard is durable and idempotent; the one-time cleanup of an already-polluted VS Code is a full Cmd-Q + relaunch (a running process's env is frozen at launch). Never launch VS Code from inside a Claude Code Bash call.
 
 **Rationale:** The launcher guard survives re-pollution regardless of VS Code's env state, so it prevents recurrence rather than treating one symptom; the restart clears the current pollution. Both together = immediate unblock + no recurrence. `~/.zshrc` is a home dotfile, not committed by r-end. Diagnostic fingerprint for a repeat: `AI_AGENT=claude-code_*_agent` is set *only* on a CC agent spawn.
 
-**See:** `memory/project_task_tools_child_session_leak.md` (`[TASK-TOOLS-DOWN]`); Conv 403 Decisions §1, Learnings §1.
+**See:** `memory/project_task_tools_child_session_leak.md` (`[TASK-TOOLS-DOWN]` — **rewritten Conv 404 with the corrected cause**); Conv 403 Decisions §1, Learnings §1 (both carry the falsified diagnosis; retained as archival session records).
 
 ---
 

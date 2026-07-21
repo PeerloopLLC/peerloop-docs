@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-07-21 (Conv 403, r-end). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-07-21 (Conv 404, r-commit — hand-refreshed; Task MCP tools unavailable, see `[TASK-TOOLS-VERIFY]`). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
@@ -146,12 +146,20 @@ Three self-inflicted edit errors in one conv, **one common cause**: programmatic
 - **(3) Status change deleted data.** Moving a recurring-watch task to `## ✅ Completed this conv` removed its backlog row entirely, leaving the standing trigger unrepresented.
 - **Candidate rule:** prefer `Edit` with a unique anchor over python/sed/serializer rewrites on `.claude/config.json`, `CURRENT-TASKS.md`, `PLAN.md`, `MEMORY.md`; for JSON specifically, **never round-trip through a serializer to change one key**. Decide whether this lands in CLAUDE.md or as a memory.
 
-### [A11Y] · 🔄 Active — linter ADOPTED Conv 399; triage the 100 warnings incrementally
+### [A11Y] · 🔄 Active — linter ADOPTED Conv 399; **100 → 72 warnings (Conv 404)**; triage the rest incrementally
 
 **Permanent a11y linter adopted (Conv 399).** `eslint-plugin-jsx-a11y@6.10.2` wired into `eslint.config.js` at **warn** for `.tsx` (recommended set) + `.astro` (via `eslint-plugin-astro`'s jsx-a11y config, scoped to `.astro`). The ESLint-10 peer gap (jsx-a11y caps at `eslint ^9`; upstream fix stalled — jsx-eslint#1075, PRs #1079/#1081 open since Feb) is resolved with a self-healing package.json `overrides` pin (`{ "eslint-plugin-jsx-a11y": { "eslint": "$eslint" } }`) — mirrors our existing react-hooks posture. Researched + rejected the es-tooling fork `eslint-plugin-jsx-a11y-x` (natively eslint-10 but silently **drops `.astro` coverage** + young 0.x) and Oxlint (separate tool). Decision → `docs/decisions/06-testing-ci.md` § A11Y. **Lint gate stays GREEN** (warnings only, exit-0); tsc clean.
 - **Triage backlog — 100 `.tsx` warnings / 34 files** (0 `.astro` — shells; Astro dev Audit covers runtime): `label-has-associated-control` 61 · `click-events-have-key-events` 13 · `no-static-element-interactions` 11 · `no-autofocus` 8 · `aria-role` 5. Hottest: `creators/studio/HomeworkEditor` 14, `creators/studio/ResourcesEditor` 12, `community/AddCommunityResourceModal` 8, `teachers/workspace/AvailabilityCalendar` 6. Fix incrementally like `[LE-TRIAGE]`; clear warnings in files touched for other reasons.
+- **✅ Conv 404 — first triage pass, 100 → 72 (all 5 gates green).** Two behavioral primitives built + 8 sites migrated. Split: `label-has-associated-control` 61→**49** · `click-events-have-key-events` 13→**5** · `no-static-element-interactions` 11→**3** · `no-autofocus` 8 · `aria-role` 5 · 2 singletons. Total lint 195→167.
+  - **`HomeworkEditor` 14→1** (residual = accepted `[RHOOKS]` `set-state-in-effect`). 12 labels via `htmlFor`/`id`: static ids on the single-instance New Assignment form, `` `…-${assignment.id}` ``-scoped ids on the per-assignment edit form (renders inside `assignments.map`).
+  - **NEW `ui/ModalBackdrop.tsx`** — formalizes the idiom already correct at `Modal.tsx:92`: `aria-hidden="true"` + onClick, and deliberately **NO** `tabIndex`/`role="button"`. **A backdrop must never be focusable** — the "obvious" role=button fix is wrong here. Migrated 7 sites (`CreateCourseModal` `CurriculumEditor` `CreatorStudio` `AdminNavbar` `Header` `ExpectationsForm` `TestimonialsBrowse`), each keeping its exact `className` → zero visual change.
+  - **NEW `ui/ClickableRow.tsx`** — `role="button"` + tabIndex + Enter/Space (Space `preventDefault`ed) + focus ring + optional `aria-expanded`. For rows/cards/accordion headers that wrap block content, where a native `<button>` is invalid HTML. Migrated `HomeworkEditor`'s card header.
+  - **Both primitives are deliberately UNSTAMPED + UNREGISTERED** — they carry behavior, not design; no Figma counterpart, so a `data-prov` value or `figmaMatchNames` entry would be a false provenance claim. `prov:sweep` accepts this. If a behavioral tier is ever wanted, extend `matt-provenance.md §12e`.
+  - ⚠️ **`TestimonialsBrowse` is a known orphan** (Cat-B, parked behind `[RG-PUBLIC]`) — that edit landed on dead code, so the honest user-facing figure is **26** cleared, not 28. Process lesson: run the `[ORPHAN-DETECT]` reachability check on **every** file in a batch, not just the first.
+- **Next up (same mechanical `htmlFor`/`id` pattern):** `creators/studio/ResourcesEditor` 12 · `community/AddCommunityResourceModal` 8 · `teachers/workspace/AvailabilityCalendar` 6 · `admin/UsersAdmin` 5.
+- **Remaining interactive sites NOT migrated** (deliberately — each needs its own a11y contract, do NOT force `ClickableRow` on them): `NotificationCenter:310` + `ModerationDetailContent:265` + `AdminDataTable` row = genuine `ClickableRow` candidates; `AvailabilityCalendar:654` = already `role="gridcell"`, wants grid keyboard nav; `AdminDataTable:137` = a `stopPropagation` sink, not a control; `Modal.tsx:83` = `role="dialog"` container whose `handleBackdropClick` is **dead code** (the full-bleed overlay child covers it — cf. the Conv 306 fix), so the fix is deletion not decoration.
 - **Follow-on decisions deferred:** (1) escalate `recommended`→`strict` (adds `control-has-associated-label`, ~60 more) after recommended is triaged; (2) whether to ever gate any rule at `error` (like `rules-of-hooks`) once the backlog clears; (3) drop the `overrides` pin when upstream ships `eslint ^10`.
-- **Refs:** `../Peerloop/eslint.config.js`, `../Peerloop/package.json` (overrides + devDep), `docs/decisions/06-testing-ci.md` § A11Y, `[LE-TRIAGE]`, `.scratch/rdoc-report-conv397.json`.
+- **Refs:** `../Peerloop/eslint.config.js`, `../Peerloop/package.json` (overrides + devDep), `../Peerloop/src/components/ui/{ModalBackdrop,ClickableRow}.tsx`, `docs/decisions/06-testing-ci.md` § A11Y, `[LE-TRIAGE]`, `[PROV-SWEEP-DEBT2]`, `.scratch/rdoc-report-conv397.json`.
 
 ### [RHOOKS] · 🔄 Active — rules WIRED at warn Conv 400; triage the 105 warnings incrementally · [Opus]
 
@@ -179,6 +187,21 @@ Conv 398 deleted `src/emails/WelcomeEmail.tsx` + `PaymentReceiptEmail.tsx` (dead
 ### [DEPEXP] · standalone (tooling hygiene) · low priority · surfaced Conv 399
 
 Investigative throwaway `npm install` probes (testing jsx-a11y / the fork / `overrides` in-place during `[A11Y]`) pulled newer transitive optional pins (`@emnapi` via knip's oxc-parser) into npm's resolution, then a later `npm ci` failed "package.json and package-lock.json out of sync" even though the committed lockfile was **byte-identical** to HEAD (it installed fine at conv start). Reconciled via `npm install` + `git restore package-lock.json`. **Habit to adopt:** run dependency experiments in a throwaway git worktree, or always reconcile (`npm install` to repopulate `node_modules`, then restore the committed lockfile) after in-place probes. Sibling of `[SCRATCH-DEBRIS]`/`[DEVSRV-KILL]` hygiene notes. **Refs:** `docs/sessions/2026-07/20260720_1245 Learnings.md` §5.
+
+### [PROV-SWEEP-DEBT2] · standalone (gate silently red) · surfaced Conv 404
+
+**`npm run prov:sweep` reports 10 issues (9 UNTRACKED errors + 1 drift item) — and it was 0 at Conv 244.** `[PROV-SWEEP-DEBT]` cleared it to 0 back then, so this is drift accumulated since: components that stamp `data-prov-name="X"` on their outermost element but were never added to `scripts/matt-inspired-registry.ts`. Offenders: `NavDrawer`, `NavMenuButton`, `communities/CommunitiesFilters`, `courses/CoursesFilters`, `feed/SignupCtaCard`, `settings/LayoutToggle`, `ui/MobileUpNav.astro`, `course/CourseJourneyStepper.astro`, `course/CourseSessionsActions.astro`.
+- **Verified NOT caused by `[A11Y]` Conv 404** — none of the 9 appears in that conv's diff (checked file-by-file), and the two new primitives are unstamped by design so they raise nothing.
+- **Why it matters:** `prov:sweep` is a real gate that has been failing unnoticed, which means the registry⟺marker⟺stamp conformity guarantee from `[PRIM-STAMP]` (Conv 217) is not currently holding. Each offender needs a registry entry (with `figmaMatchNames`) **or** its stamp removed if it isn't a vetted primitive — decide per component, don't bulk-register.
+- **Refs:** `../Peerloop/scripts/matt-inspired-registry.ts`, `npm run prov:sweep`, `docs/as-designed/matt-provenance.md §12c`, `plan/prim-registry/README.md`, `[PRIM-STAMP]`, `[PROV-SWEEP-DEBT]`.
+
+### [TASK-TOOLS-VERIFY] · 🔁 Watch — verify at next launch · surfaced Conv 404
+
+**Confirm whether `CLAUDE_CODE_ENABLE_TASKS=0` actually restores `TodoWrite`.** Added to `~/.claude/settings.json` `env` in Conv 404 on the strength of the official docs (`code.claude.com/docs/en/tools-reference.md` — TodoWrite "disabled by default as of v2.1.142" in favour of the Task tools). **Not yet verified** — env changes take effect only at the next `claude` launch. Check at the start of the next conv: if `TodoWrite` is present, the docs claim is confirmed and `[TASK-TOOLS-DOWN]` is fully closed.
+- **⚠️ If it does NOT come back, the corrected diagnosis is still incomplete.** The unexplained part: on CC 2.1.216 the `Task*` tools were *also* absent — **as were `Grep` and `Glob`** — which no setting, CLI flag, or output style accounts for. That pattern says the session's tool set is pruned more broadly than the TodoWrite default explains. Investigate the pruned tool set, **not** child-session status (that theory is falsified — see below).
+- **Cross-machine gap:** the var went into the **global** `~/.claude/settings.json`, which is a home dotfile and therefore **NOT** git-tracked — so MacMiniM4 will not get it. Either replicate it there, or move/duplicate it into the git-tracked project `.claude/settings.json` `env` block (the `CLAUDE_AFK_TIMEOUT_MS` precedent sets it in *both* scopes). Decide which.
+- **Conv-403 correction is done, don't redo it:** the "leaked `CLAUDE_CODE_CHILD_SESSION` from VS Code" root cause was falsified in Conv 404 (`ps -wwwE` shows the vars absent from the claude process, its parent zsh, and VS Code — they exist only inside Bash-*tool* subprocesses, where CC injects them). Both `~/.zshrc` launchers were reverted to plain `claude …` (backup `~/.zshrc.bak-conv404`); `DOC-DECISIONS.md` §3 + `TIMELINE.md` Conv-403 row carry SUPERSEDED notes; the memory is rewritten.
+- **Refs:** `memory/project_task_tools_child_session_leak.md` (`[TASK-TOOLS-DOWN]`), `DOC-DECISIONS.md` §3, `~/.claude/settings.json`, `.claude/settings.json`.
 
 > ## ⏸️ PARKED (blocked behind a clear gate — out of active rotation)
 >
@@ -212,6 +235,4 @@ Icon commercial-use compliance, surfaced Conv 370 during [ICN-NS]. **Two items:*
 
 ## ✅ Completed this conv
 
-### [MMB] · ✅ Resolved INTENTIONAL (Conv 403)
-
-Member directory `/members` "Monitoring" badge on Alex Rivera's card triaged as **intentional, designed behavior** — `getMemberBadges` pushes a `{ role: 'monitoring', label: 'Monitoring' }` fallback when a member has none of admin/mod/creator/teacher/student (`role-utils.ts:110`); `'monitoring'` is a first-class `MemberRole` (`types.ts:29`) with its own `MONITORING_COLORS` palette, all landed together in Conv 111 (`9a81450a`, "unified member directory"). Not a regression; Astro 7/vite 8 can't affect computed badge text. **Fix:** per `[[feedback_plato_expect_is_legacy_spec]]`, corrected the stale PLATO `expect` at `tests/plato/instances/member-directory.instance.ts:108` to reflect the Monitoring fallback badge (component unchanged, no code change).
+_(none yet — refreshed at /r-commit and /r-end as tasks close.)_
