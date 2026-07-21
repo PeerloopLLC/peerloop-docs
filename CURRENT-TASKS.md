@@ -1,6 +1,6 @@
 # Current Tasks — between convs
 
-> Last refreshed 2026-07-21 (Conv 401, r-end). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
+> Last refreshed 2026-07-21 (Conv 402, r-commit). Per-conv history lives in `docs/sessions/` + git; this file is forward-looking task state only.
 >
 > **Persistent home for Peerloop task state.** Tracked in git so both machines see the
 > same state via `/r-commit` push/pull. Edit by hand to reorder; the refresh (`/r-update-tasks`,
@@ -180,7 +180,9 @@ Conv 398 deleted `src/emails/WelcomeEmail.tsx` + `PaymentReceiptEmail.tsx` (dead
 
 **Prod-runtime attack surface CLEARED (Conv 401).** Triaged all 21 audit advisories → only **2 chains were production-runtime-reachable**: `resend→svix→uuid` (moderate) + `astro/@astrojs/react→devalue` (high). Both fixed via a **lockfile-only, in-range** `npm update resend devalue` (resend 6.10.0→6.17.2 cascading uuid ≥11.1.1; devalue 5.7.1→5.8.2, in-range of astro-6 `^5.6.3`) — no `package.json` edit, no major bumps, net −23 lockfile lines. `npm audit` **21→17**; all 5 gates green (6540 tests). **Deferred tail (17, all dev/tooling — none prod-reachable):** `undici`/`ws` (miniflare/wrangler CF-emulation), `@babel/core`/`esbuild`/`postcss` (build), `brace-expansion` (eslint), `fast-uri`/`js-yaml` (@astrojs/check chain); the `astro <=7.0.9` roll-up + `esbuild`/`vite` clear with the v7 migration (see `[ASTRO7]`). Revisit the dev tail opportunistically before MVP-GOLIVE. **Refs:** `~/projects/Peerloop/package-lock.json`, `[ASTRO7]`, `[DEPEXP]`.
 
-### [ASTRO7] · 🟢 DE-RISK DONE (Conv 401, all-green) — promotion deferred to own conv · [Opus]
+### [ASTRO7] · ✅ PROMOTED + VERIFIED (Conv 402, all-green) — applied to jfg-dev-14; all 3 risks cleared · [Opus]
+
+**✅ PROMOTED (Conv 402) — applied to `jfg-dev-14`, re-verified in-conv.** Added `compressHTML: true` to `astro.config.mjs` (Risk 2 neutralizer) + installed the measured bump set (astro `^7.1.3`, `@astrojs/cloudflare` `^14.1.4`, `@astrojs/react` `^6.0.1`, `@tailwindcss/vite` `^4.3.3`, `@astrojs/check` `^0.9.9`, `vitest` `^4.1.10`, `@vitest/ui` `^4.1.10` → **vite 8.1.5** deduped; no peer conflicts, no code edits). **5 gates green in-conv:** tsc 0 · astro-check 0/0/3-hints · lint 0-err/195-warn · build Complete (adapter-14 `_headers`) · **6540 tests pass**. **Live dev SSR smoke (vite-8 `[DSSR-SCOPE]`/`[VITE-DEDUP]` path) CLEAN** — `/`,`/login`,`/courses` 200 full renders, zero `useState`-null crashes (Astro 7 runs `astro dev` as a background daemon — `astro dev stop`). **`[AAP]` re-probe: NOT fixed by v7** (leak persists; PLAN.md updated). npm audit 17→7. **Staging remote-binding smoke DONE** — `dev:staging` daemon engaged `remoteBindings` (verified via env + `/courses` 267 KB staging vs 314 KB local); `/`,`/courses`,`/login` 200, zero D1 errors → **Risk 3 (adapter 13→14) FULLY CLEARED**. All 3 risks cleared. **No remaining work — [ASTRO7] complete** (a full `deploy:staging` is separately gated behind MVP-GOLIVE, not this task). Full record → `.scratch/astro7-assessment.md § Promotion (Conv 402)`.
 
 **✅ DE-RISK COMPLETE (Conv 401) — GREEN, zero code changes needed.** Threw a worktree spike (astro 7.1.3 + adapter 14.1.4 + react-int 6.0.1 + vite 8.1.5 + tailwind 4.3.3 + vitest 4.1.10): **no peer conflicts, no `.astro`/code edits**; `astro build` 0 err (Rust compiler clean across 90 `.astro`), tsc 0, astro-check 0, **6540 tests pass**, npm audit 17→7, adapter-14 built clean (KV sessions + `_headers`). Risks 1 (Rust compiler) + 3 (adapter 13→14) **CLEARED**. Spike torn down (reproducible in ~35s). **Remaining for the promotion conv:** (a) pin `compressHTML: true` in `astro.config.mjs` (v7 flips default `true`→`'jsx'`; preserves exact whitespace); (b) live dev + staging SSR smoke (vite-8 `optimizeDeps` / `[DSSR-SCOPE]` area not build-exercised) + `[AAP]` ClientRouter abs-path re-probe (v7 may fix it); (c) apply the bump set to `jfg-dev-14` + 5 gates + commit. Exact install cmd + full results in `.scratch/astro7-assessment.md`.
 
@@ -222,5 +224,4 @@ Icon commercial-use compliance, surfaced Conv 370 during [ICN-NS]. **Two items:*
 
 ## ✅ Completed this conv
 
-- **[NPMVULN]** (prod-runtime part) — cleared both production-reachable `npm audit` chains via a lockfile-only in-range bump (resend 6.10.0→6.17.2 → uuid ≥11.1.1; devalue 5.7.1→5.8.2). `npm audit` 21→17, **prod-runtime surface now 0**; all 5 gates green (6540 tests). Dev-tooling tail (17) deferred: astro-rollup → `[ASTRO7]`, rest dev-only. **Row stays Active for the deferred tail.**
-- **[ASTRO7]** (assessment) — assessed Astro 6→7 read-only: safe, coordinated 4-major migration + Rust-compiler swap, 6/9 breaking changes = zero exposure; deferred to its own conv. Assessment → `.scratch/astro7-assessment.md`. New Active-backlog row created.
+_(none yet — refreshed at /r-commit and /r-end as tasks close.)_
