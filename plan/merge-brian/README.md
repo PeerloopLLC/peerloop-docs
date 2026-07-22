@@ -2,7 +2,7 @@
 
 **Review target:** the **pivot snapshot `8a1e677f`** — the most recent commit of `origin/brian-July-7` (07-20 11:29), the state the user and Brian agreed was a good pivot point.
 **Focus:** see what Brian built at that snapshot, extract the *intent* of the changes worth keeping, and selectively reimplement them on `jfg-dev-14` with a consequence audit per adoption. **Nothing is merged as-is — ever** (user directive, Conv 407: *"I know I won't be merging any of his work as is"*). His branch is a **reference exhibit**, not a source.
-**Status:** 🔥 IN PROGRESS (Conv 407, fresh-docs restart) — infrastructure verified; `/course/[slug]` analysis re-running against the pivot snapshot
+**Status:** 🔥 IN PROGRESS (Conv 407, fresh-docs restart) — infrastructure verified + side-by-side environment operational (ours `:4321`, pivot `:4341`, identical dev datasets); `/course/[slug]` §1 brief DONE (pivot-grounded) — dispositions pending the side-by-side walk
 **Task-board body:** `CURRENT-TASKS.md § [MERGE-BRIAN-JULY7]` (branch facts, admission-gate history, timecard protection)
 
 > **Exploration branch — do not review.** `brian-July-20` is where the user moved Brian on 07-20 so he could keep exploring without git skills losing his work. Its commits post-date the pivot ([TAB-FIT], [SNAV-SCROLL], [CRS-MEMBERS], SubNav drag fix, Sidebar tweaks, feed changes) and are **out of scope until the next agreed pivot**. The *local* `brian-July-7` branch copy is also stale (28 behind origin) — `8a1e677f` is the only reference point.
@@ -23,7 +23,8 @@
 ## Infrastructure (machine-local, MacMiniM4Pro — mirrors [PREFLIP-WT])
 
 - **Reference worktree:** `~/projects/Peerloop-brian` — detached at **`8a1e677f`** (verified byte-identical to the `origin/brian-July-7` tip), deps installed (`npm ci`), local D1 seeded via `npm run db:setup:local:dev` (includes Brian's `0005`/`0006` migrations + his dev seed).
-- **Run it:** `cd ~/projects/Peerloop-brian && npm run dev -- --port 4341` — **ephemeral**, kill when done. Ours runs on `:4321` from `~/projects/Peerloop` for side-by-side.
+- **Run it:** `cd ~/projects/Peerloop-brian && npm run dev -- --port 4341` — **ephemeral**, kill when done (Astro 6, foreground). Ours runs on `:4321` from `~/projects/Peerloop` for side-by-side — Astro 7 daemonizes: stop via `astro dev stop`, never a port kill, and stop it before any local wrangler D1 op (miniflare store contention, measured Conv 407).
+- **Side-by-side data parity (Conv 407):** both local D1s seeded to `dev` level (identical datasets; dev password `Peerloop2`). **`:4341` login modal never renders** (merge-base-era auth UI, not being adopted — undiagnosed by choice): log in via the DevTools dev-login snippet (`fetch('/api/auth/dev-login', …)`) instead.
 - **Read any file at the pivot without the worktree:** `git -C ~/projects/Peerloop show 8a1e677f:<path>`.
 - **Teardown** (when the block closes): `git -C ~/projects/Peerloop worktree remove ~/projects/Peerloop-brian`.
 

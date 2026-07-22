@@ -540,7 +540,8 @@ Start of next conv:
 | `rTimecardDay.vaultPath` | r-timecard-day |
 | `rTimecardDay.h4Sections[]` (title, id, include predicate, h5Strategy, h6) | r-timecard-day |
 | `rTimecardDay.skipFilter`, `.dayWindow`, `.convMeta`, `.commitTagPrefixes`, `.legacy`, `.render`, `.reroute.*`, `.routineStrip.*` | r-timecard-day |
-| `rTimecardDay.codeBranchAllowPattern` (default `^jfg-dev`) — code-repo branch allowlist; docs repo deliberately unfiltered | r-timecard-day |
+| `rTimecardDay.codeBranchAllowPattern` (default `^jfg-dev`) — code-repo branch allowlist; docs repo deliberately branch-unfiltered | r-timecard-day |
+| `rTimecardDay.authorAllowPattern` (default `.` = allow-all; set `^fraser@meristics\.com$`) — author-email allowlist applied to every extracted commit, both repos; survives history-preserving merges of client branches (Conv 407) | r-timecard-day |
 
 ### Prefix Convention
 

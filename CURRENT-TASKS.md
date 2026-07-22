@@ -41,6 +41,7 @@
 20. [DEPEXP](#depexp) — dependency-probe hygiene
 21. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
 22. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
+23. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -273,6 +274,12 @@
 - **Remaining (prod, gated):** repeat both steps for production — `wrangler secret put RESEND_API_KEY --env production --config workers/cron/wrangler.toml` + `deploy:cron:prod` — when prod is unblocked.
 - **Refs:** `workers/cron/wrangler.toml`, `src/lib/session-reminders.ts`.
 
+### [SKILLDOC]
+
+- **State:** 📋 queued (doc drift)
+- **What:** `docs/as-designed/skills-system.md` (driftCheck) task-lifecycle sections (~311–313 skill-role table, ~503–515 "Task flow" diagram) still describe the **retired TodoWrite/TaskCreate overlay** ("clear TodoWrite", "preserve-then-overlay", "TaskCreate when an item is started") — pre-existing Conv-406 detach drift, surfaced by the r-end docs agent Conv 407. The agent declined a shallow patch (correctly): the fix needs re-grounding against the current r-start/r-commit/r-end SKILL.md bodies + the write-through board model.
+- **Refs:** `docs/as-designed/skills-system.md`, `[TASK-TOOLS-VERIFY]`, `[[feedback_current_tasks_persistence]]`. Surfaced Conv 407.
+
 ### [TASK-TOOLS-VERIFY]
 
 - **State:** 👀 watch — investigation resolved Conv 406; one live probe pending
@@ -294,6 +301,7 @@
 
 - **State:** 👀 watch (harness-UX, upstream) · low priority
 - **What:** `AskUserQuestion` tears down the option picker when the user selects "let me clarify" — the choices vanish. User flagged directly Conv 385. Workaround: re-render options as durable prose. **Not fixable in this repo** — a CC harness behavior; report-upstream note.
+- **Frequency:** 3 teardowns in Conv 407 alone (Fable 5, focus mode) — the durable-prose re-render workaround was exercised each time.
 - **Refs:** surfaced Conv 385.
 
 ### [FEEDBACK-DEPLOY]

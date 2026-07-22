@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-07-21 Conv 406 (hard-detached from the server-gated Task subsystem — write-through `CURRENT-TASKS.md` self-defended by a test suite, root cause `tengu_vellum_ash`; `CURRENT-TASKS.md` reformatted to two TOCs + alphabetical stable bodies — §3)
+**Last Updated:** 2026-07-22 Conv 407 (client branch = reference exhibit, intent-extraction methodology, no as-is adoption — §1; timecard author-allowlist at the extraction choke point + Fable-5 focus-off trial with the reasoning-gate contract — §3)
 
 ---
 
@@ -17,6 +17,17 @@ This document tracks decisions about **how the peerloop-docs repo itself works**
 ---
 
 ## 1. Repo Architecture
+
+### Client Branch Is a Reference Exhibit — Intent Extraction Screen-by-Screen, No As-Is Adoption (Conv 407)
+**Date:** 2026-07-22 (Conv 407)
+
+Nothing from the client's branch is merged, cherry-picked, or copied as-is — the branch is a **reference exhibit** mounted in a pinned worktree, and adopted intent is **reimplemented per mechanism** in our own commits. The review runs screen-by-screen with a separate site-wide shell track; every mechanism gets an explicit **ADOPT / ADAPT / REJECT** disposition with a one-line reason (the disposition list doubles as material for the client conversation). Schema/API changes on his branch are **feature-adoption decisions**, never file adoptions — if a schema change is wanted, we author our own folded into `migrations/0001_schema.sql` + reseed; his migration files never land. The review target is the **human-agreed pivot snapshot** (`8a1e677f`, tip of `origin/brian-July-7`); his later exploration branch (`brian-July-20`) is out of scope until the next agreed pivot — branch topology encodes a human agreement that containment math ("strict descendant, nothing lost") does not override. Discards the old per-theme transfer-batch plan (B1/B2/B4).
+
+**Rationale:** The client drives his own CC instance without seeing downstream consequences — his /course work collides with 9 of our course-route files, his breadcrumb changes have site-wide implications, and his colour changes conflict with role-based theming. Refines the Conv-396 squash-not-merge entry (below): integration is now a reimplementation of adopted *intent*, not even a squash of his diff.
+
+**See:** `plan/merge-brian/README.md` (review program + ground rules); PLAN.md MERGE-BRIAN block; Conv 407 Decisions §2+§3.
+
+---
 
 ### Client Work Enters `jfg-dev*` as Squashed Commits, Never a History-Preserving Merge (Conv 396)
 **Date:** 2026-07-19 (Conv 396)
@@ -526,6 +537,28 @@ The 4572-line `docs/DECISIONS.md` was split into a `docs/decisions/` folder: ele
 ---
 
 ## 3. Claude Code Workflow
+
+### Timecard Billing Protected by an Author Allowlist at the Commit-Extraction Choke Point (Conv 407)
+**Date:** 2026-07-22 (Conv 407)
+
+`timecard-day.js` now captures `%ae` per commit and filters every extracted commit through config `rTimecardDay.authorAllowPattern` (`^fraser@meristics\.com$`; default `'.'` = allow-all for backward compatibility) at the `extractCommitsFromBranch` choke point. This is the only filter that survives a **history-preserving merge** of a client branch into a `^jfg-dev` branch — `git log <branch>` walks full ancestry, so the branch allowlist alone would silently re-bill client commits on any past-day regeneration. Allowlist over denylist (a new client email would leak under a denylist). Verified against the canonical case in a throwaway worktree: post-merge filtered run byte-identical (billing AND rendered markdown) to the pre-merge baseline; allow-all run leaked 6 client commits.
+
+**Rationale:** Only authorship survives a merge; author census showed a clean single-author allowlist exists (docs 1241/1241 + code 936/937 = `fraser@meristics.com`). Consequence for the Conv-396 §1 squash entry: `--squash` is still preferred for history hygiene but is **no longer load-bearing for billing**; the CST day-boundary hazard is mooted.
+
+**See:** `.claude/scripts/timecard-day.js`; `.claude/config.json` `rTimecardDay.authorAllowPattern`; Conv 407 Decisions §1, Learnings §1.
+
+---
+
+### Fable 5 Trial Continues with Focus Mode OFF — Reasoning-Before-Options Is the Decision Gate (Conv 407)
+**Date:** 2026-07-22 (Conv 407)
+
+After the first Fable-5 conv produced three user-flagged misses (silent branch retarget; shallow grep-patches of a premise change; picker choices offered without pre-explained reasoning), the setup decision is **Fable 5 with focus mode OFF** as a trial for the next convs, over reverting to Opus 4.8 + focus (proven 406-conv calibration) or Fable 5 + focus with a written contract alone (rejected — relies on a behavioral fix). The **reasoning-gate contract** stays in force regardless of the setting: the user reads findings/reasoning to decide whether options deserve consideration at all, so every decision-bearing message must carry findings → interpretation → why each option exists → recommendation in prose, in that message; outcome-first compression is never applied to decision reasoning. Opus 4.8 remains a zero-cost `/model` rollback.
+
+**Rationale:** Written rules are probabilistic ("suggestions to you") — only harness settings are guarantees; focus-off makes an omitted reasoning step *detectable* while keeping Fable-5 capability, and `verbose:false` stubs bound the extra noise. The misses were a calibration failure (focus mode was constant across 406 prior convs; the model was the variable), not an immutable model trait.
+
+**See:** `memory/feedback_assess_ask_before_acting.md`; Conv 407 Decisions §5, Learnings §7.
+
+---
 
 ### Hard-Detach from the Server-Gated Task Subsystem — Write-Through `CURRENT-TASKS.md`, Self-Defended by a Test Suite (Conv 406)
 **Date:** 2026-07-21 (Conv 406)
