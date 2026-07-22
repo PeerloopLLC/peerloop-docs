@@ -41,7 +41,7 @@ REC=$(awk '
   sec=="park" && /^- \[/        { c=code_of($0); s=slug_of($0); if (c!="") print "PARK " c " " s }
   sec=="body" && /^### \[/      { cur=code_of($0); if (cur!="") print "BODY " cur; statedone=0 }
   sec=="body" && cur!="" && statedone==0 && /\*\*State:\*\*/ {
-    cls = (index($0,"parked")>0) ? "parked" : "now"
+    cls = (index($0,"⏸️")>0) ? "parked" : "now"
     print "STATE " cur " " cls; statedone=1
   }
 ' "$FILE")

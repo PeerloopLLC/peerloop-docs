@@ -19,36 +19,35 @@
 
 ## 🎯 Now  (execution order — top = next)
 
-1. [A11Y](#a11y) — accessibility lint triage
-2. [RHOOKS](#rhooks) — react-hooks lint triage
-3. [KNIP](#knip) — dead-export oracle → gate
-4. [PROV-SWEEP-DEBT2](#prov-sweep-debt2) — `prov:sweep` gate silently red (9 unregistered)
-5. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
-6. [EDITSAFE](#editsafe) — anchored-edit discipline
-7. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
-8. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
-9. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
-10. [HOME-FIXES](#home-fixes) — Home route fix bucket
-11. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
-12. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
-13. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
-14. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
-15. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
-16. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
-17. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
-18. [RSFD](#rsfd) — port `r-start-from-dirty`
-19. [DEPEXP](#depexp) — dependency-probe hygiene
-20. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
-21. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
+1. [MERGE-BRIAN-JULY7](#merge-brian-july7) — client branch assessment/integration
+2. [A11Y](#a11y) — accessibility lint triage
+3. [RHOOKS](#rhooks) — react-hooks lint triage
+4. [KNIP](#knip) — dead-export oracle → gate
+5. [PROV-SWEEP-DEBT2](#prov-sweep-debt2) — `prov:sweep` gate silently red (9 unregistered)
+6. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
+7. [EDITSAFE](#editsafe) — anchored-edit discipline
+8. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
+9. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
+10. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
+11. [HOME-FIXES](#home-fixes) — Home route fix bucket
+12. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
+13. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
+14. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
+15. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
+16. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
+17. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
+18. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
+19. [RSFD](#rsfd) — port `r-start-from-dirty`
+20. [DEPEXP](#depexp) — dependency-probe hygiene
+21. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
+22. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
 
 ## ⏸️ Parked  (gated — out of rotation)
 
-- [MERGE-BRIAN-JULY7](#merge-brian-july7) — gate: user ↔ client conversation
 - [ORPHAN-BACKLOG](#orphan-backlog) — gate: marketing redesign (RG-PUBLIC)
 - [PLATO-SEQ](#plato-seq) — gate: post-launch (Phase 4c)
 - [SESSION-REMIND-DEPLOY](#session-remind-deploy) — gate: MVP-GOLIVE (prod)
 - [FEEDBACK-DEPLOY](#feedback-deploy) — gate: MVP-GOLIVE (prod)
-- [TC-MERGE-TZ](#tc-merge-tz) — gate: before the brian-July-7 merge
 - [RG-PUBLIC](#rg-public) — gate: marketing redesign
 - [PREFLIP-WT](#preflip-wt) — gate: user say-so
 - [BROWSER-SMOKE-2B](#browser-smoke-2b) — gate: post-launch
@@ -158,23 +157,27 @@
 
 ### [MERGE-BRIAN-JULY7]
 
-- **State:** ⏸️ parked · `[Opus]` · **gate: the user's conversation with the client**
-- **HOLD (Conv 396, user's call):** integration is suspended until the user has talked to Brian about the **why** and **what** of his changes. User's position: *"I wanted the client to explore, but I am not going to keep all that he has done. I have to see its impact first and he has to explain his intentions… He is not in a position to know if they are destabilizing changes."* Do **not** transfer files, plan batches, or re-open the merge-mechanism debate until then. Findings below are complete and durable — resume from them.
-- **Task:** assess client branch `brian-July-7` for impact, integrate what's worth keeping into `jfg-dev-14`. **Discard nothing without review.** Client wants to discuss soon → have an assessment ready. Scope will grow.
-- **🆕 New client branch (Conv 400):** a newer `origin/brian-July-20` exists — **13 days newer** than `brian-July-7`. Re-scope against it (or diff the two) when this un-holds.
+- **State:** 🔄 active · `[Opus]` (HOLD lifted Conv 407 — client conversation happened; integration planning)
+- **HOLD LIFTED (Conv 407):** the user confirmed the Brian conversation has happened → integration may proceed. (The Conv-396 HOLD principle survives as method: his rationale still isn't in git — request the "approved Option B / mockup" artifacts his commits cite; client-originated changes get a consequence audit.)
+- **🧭 Client directives (Conv 407, from the user↔Brian conversation):** (1) **NO adoption "as is" — ever** (user: *"I know I won't be merging any of his work as is"*); his branch is a **reference exhibit**, adoption = selective reimplementation of intent with a consequence audit per change. (2) Watch areas he flagged: `/course/[slug]` page changes (implications for other detail pages), **breadcrumb/back-nav rework** (`[BACK-X]` `BackHeader.astro` — site-wide), **colour changes that may contradict role-based colour theming** (his `accent_color` community branding + `CourseCoverPanel` hex deviations are the known collision points).
+- **Task:** assess client branch for impact, integrate what's worth keeping into `jfg-dev-14`. **Discard nothing without review.** Scope will grow.
+- **🎯 Target = pivot snapshot `8a1e677f`** (tip of `origin/brian-July-7`, 07-20 11:29 — user + Brian **agreed this was a good pivot point**; settled Conv 407). `brian-July-20` is Brian's post-pivot **exploration branch** (user created it 07-20 to protect his work; he doesn't use git routinely) — its 7 extra commits (`[TAB-FIT]`, `[SNAV-SCROLL]`, `[CRS-MEMBERS]`, SubNav drag, Sidebar tweaks, feed changes) are **out of scope**, revisit at the next pivot. No moving-target problem: he explores there without moving our target. ⚠️ The *local* `brian-July-7` branch is 28 commits stale (tip 07-11) — use origin.
+- **Conflict census (measured Conv 407): same 9 files vs both the pivot `8a1e677f` and July-20** — `CourseTabs.tsx` (modify/delete), `CoursesCatalog.tsx`, `CoursesFilters.tsx`, `CourseHeader.tsx`, `course/[slug]/[...tab].astro`, `_course-tabs.ts`, `book.astro`, `success.astro`, `tests/unit/journey-loop-tabs.test.ts` — all course/tab-related. Informational only under no-as-is (nothing gets merged), but maps where reimplementation must reconcile with our work.
+- **✅ Timecard protection LANDED (Conv 407):** `[TC-MERGE-TZ]` resolved — author allowlist in `timecard-day.js` (verified against a real scratch merge; billing byte-identical). A history-preserving merge can no longer contaminate timecards; `--squash` still preferred for history hygiene.
+- **`0005_community_branding.sql` still collision-free** (our `migrations/` tops out at `0004_feed_activity_index.sql`, checked Conv 407).
 
 **🚦 The admission gate** (every file passes before entering `jfg-dev*`; new-ness is not a pass):
 - **Gate 1 — Destabilizing?** NOT YET MEASURED. Apply his tree to a scratch branch, run all 5 gates; also check whether **his own branch** passes them. Known destabilizer in hand: the `CourseTabs.tsx` modify/delete.
 - **Gate 2 — Structural deps** (reporting/messaging/notification/admin)? User's instinct was right, verdict benign: the `Teachers → Peer Teachers` relabel reached admin+analytics+API (`AdminDashboard`, `TeachersAdmin`, `CoursePerformanceTable`, `AdminNavbar`, `api/admin/analytics/users.ts`) but is **display-string only** (SQL `teacher_certifications` untouched; `git grep "=== 'Teachers'"` → 0). Messaging/notifications/email untouched. `[COMM-BRAND]` schema change is additive.
-- **Gate 3 — Style-guide conflict?** One systemic miss: all **7 new `src/` files carry NO provenance marker** (violates §Page Provenance). Token conformance better than expected — only `CourseCoverPanel.tsx` deviates (2 hex + arbitrary px).
+- **Gate 3 — Style-guide conflict?** (Conv-407 correction of the Conv-396 measurement — his later commits changed the picture.) Provenance: most new course-cluster files DO carry markers; only `CourseMembersTab.tsx` (post-pivot) + `TeachersTabList.tsx` are unmarked. Token conformance: worse than Conv 396 thought — `CourseMiniHeader.tsx` carries heavy raw hex on its dark scrim, `SubNavItem`/`SubNav` add hex + rgba shadows, `CourseCoverPanel.tsx` still deviates; per-mechanism audit in `plan/merge-brian/README.md §1`.
 
 **Branch facts (measured Conv 396):**
 - Merge-base `c50afd82` (Conv 370, 07-07); **53 ahead, 52 behind** `jfg-dev-14`. **66 files** (components 34, pages 14, images 6, lib 4, +migration/seed/layout). All 53 authored `brian@peerloop.com` — genuinely his, not CC work stranded by Conv-371.
-- **🔴 NOT UI-only:** new migration `migrations/0005_community_branding.sql` (`ALTER communities ADD accent_color, logo_url`) + `lib/community-branding.ts` + edits to `ssr/loaders/{courses,communities}.ts`, `mock-data.ts`, dev seed. `0005` is a **filename-collision risk** — clean today, but any `0005_*` we author before merging collides.
+- **🔴 NOT UI-only (pivot-snapshot census Conv 407: 96 files at `8a1e677f`):** TWO migrations now — `0005_community_branding.sql` (`ALTER communities ADD accent_color, logo_url`) **and** `0006_session_resource_files.sql` (`[SESS-FILES]`) — plus **two new API surfaces**: `api/storage/[...key].ts` (storage) + `api/me/communities/[slug]/logo.ts` (logo upload), edits to `api/sessions/index.ts` + communities/recommendations APIs, `lib/community-branding.ts`, `ssr/loaders/{courses,communities}.ts`, `mock-data.ts`, dev seed, and ~28 files of demo content (`public/docs/vibe-coding-101/*`, demo-logos, course cover SVGs). Under the no-as-is rule these are **feature adoption decisions**: if a feature is wanted we author our own schema change (fold into `0001` + reseed, per §Database Migrations) and reimplement the API; his migration files never land.
 - **Conflict surface:** 17 files touched on both branches; merge dry-run (`git merge-tree`) says **12 auto-merge clean**, only **5** need real resolution — `CourseTabs.tsx` (modify/delete), `CoursesCatalog.tsx`, `CoursesFilters.tsx`, `CourseHeader.tsx`, `course/[slug]/[...tab].astro`. The other 49 are his-only, zero risk.
 - **Themes:** `[COVER-STORY]`/`[COVER-STORY-MIRROR]` hero rework · `[TAB-*]` course-tab architecture · `[COMM-BRAND]` (the schema) · `[TCH-SEARCH]` · "Peer Teachers" relabel · bespoke SVG covers · hidden-but-retained surfaces (Popular Courses carousel, role tabs, Meet-Creator/Reviews/Resources tabs).
 
-**🔴 Biggest question — `CourseTabs.tsx` modify/delete:** Conv 392 `cfcfc8af` deleted 16 orphaned course-detail components (incl. `CourseTabs.tsx`, 389 lines) as dead after `/old` retired. Client forked *before* the purge and built 8+ tab-architecture commits on it. Both locally correct. **A design question, not a merge conflict** — does his tab architecture supersede the Matt `/course/[slug]` page, or does the *intent* get ported onto the page we kept? Likely more work than the other 65 files combined; expect the same class from the other 15 deleted components.
+**✅ RESOLVED (Conv 407 brief) — `CourseTabs.tsx` is dormant on his branch:** his course page **doesn't import it**; his real tab architecture is `[...tab].astro` + `_course-tabs.ts` + SubNav (permanent-chrome model). Only `discover/ExploreCourseTabs.tsx` imports it on his branch; his sole edit was a label sweep. The feared modify/delete design dilemma evaporates — full mechanism inventory in `plan/merge-brian/README.md §1`.
 
 **Integration mechanism (reasoned Conv 396, no decision):**
 - Keep **git** as the transfer vehicle, drive **per-theme**. Hand-moving files argued against: `git checkout <branch> -- <file>` is a wholesale overwrite, silently discarding our side on the 17 shared files.
@@ -184,10 +187,10 @@
 
 **⚠️ Contamination / traceability:**
 - **Conv-number collision:** his CC labels commits "Conv 371/372…" — *different work* from ours; breaks same-number-in-both-repos traceability + confuses timecard buckets.
-- **Timecard (measured):** `brian-July-7` is local so `discoverCandidateBranches()` sweeps it. Contaminated days 07-07/08/09/11 — but **billable-minute delta = 0** on each (his commits fell inside our existing windows; luck, not design). `--exclude-branches` is CLI-only + inert; **author filter (`brian@peerloop.com`) is the only filter surviving a merge.** ⛔ Resolve `[TC-MERGE-TZ]` first.
+- **Timecard (RESOLVED Conv 407):** author-allowlist filter now live in `timecard-day.js` (`authorAllowPattern` in config) — the only filter that survives a merge, verified end-to-end. The Conv-396 contamination analysis is historical context.
 - **Docs repo CLEAN of his commits** — he worked code-only, no dual-repo. So his rationale exists **nowhere in git**, only his chat sessions; commits cite *"approved Option B / mockup"* → **request those artifacts from him**.
 - **Working model of the client:** not a coder, drives his own CC; treat as peer recipient of the same expert suggestions, but his directives ignore downstream codebase consequences → client-originated changes need a consequence audit user-originated ones don't.
-- **Refs:** `origin/brian-July-7`, `origin/brian-July-20`, `[TC-MERGE-TZ]`, CLAUDE.md §Schema Discrepancy Discipline, `[[project_jfg_dev_branches_are_snapshots]]`, `[[project_preflip_worktree_reference]]`, Conv 392 `cfcfc8af`. Surfaced Conv 396.
+- **Refs:** **`plan/merge-brian/README.md` (the review program + dispositions — PLAN.md block MERGE-BRIAN)**, pivot `8a1e677f` = `origin/brian-July-7` tip (review target), `origin/brian-July-20` (out-of-scope exploration), `[TC-MERGE-TZ]`, CLAUDE.md §Schema Discrepancy Discipline, `[[project_jfg_dev_branches_are_snapshots]]`, `[[project_preflip_worktree_reference]]`, Conv 392 `cfcfc8af`. Surfaced Conv 396.
 
 ### [MINWIDTH-320]
 
@@ -280,13 +283,6 @@
 - **Cross-machine:** MacMiniM4 still carries stale Conv-403 `~/.zshrc` `env -u` guards (harmless no-ops) — clean next time on it.
 - **Refs:** `memory/project_task_tools_child_session_leak.md`, `DOC-DECISIONS.md §3`, `code.claude.com/docs/en/tools-reference.md`. Surfaced Conv 404, root-caused Conv 406.
 
-### [TC-MERGE-TZ]
-
-- **State:** ⏸️ parked · **gate: before the brian-July-7 merge** (rediscuss w/ specifics)
-- **What:** surface the timecard implications of a *regular* (history-preserving) merge of `brian-July-7` into `jfg-dev-14`. **Cross-tz billing hazard:** client commits from **CST**, Fraser from **ET**; a regular merge imports his CST commits into history and `r-timecard-day` buckets all branch activity for a day → day-boundary overlap + his commits landing in the billable timecard. (Different tz source than the Conv-376 "2 co-located ET machines" analysis, whose no-differential conclusion stands.)
-- **Analyze when un-parked:** does `timecard-day.js` filter by author/branch? Exclude by author (`brian@peerloop.com`), or `--squash` to keep out of daily buckets, or offset by committer tz?
-- **Refs:** `.claude/scripts/timecard-day.js`, skills `r-timecard-day`/`r-timecard`/`w-timecard`, branch `brian-July-7`, `[MERGE-BRIAN-JULY7]`. Surfaced Conv 376.
-
 ### [TURNLOG]
 
 - **State:** 📋 queued (workflow guard)
@@ -326,4 +322,4 @@
 
 ## ✅ Done this conv
 
-_(none yet — cleared at each /r-start)_
+- **[TC-MERGE-TZ]** — author-allowlist timecard protection built + verified: `%ae` captured in `timecard-day.js` extraction, `authorAllowRe` filter at the pipeline choke point, config `authorAllowPattern: ^fraser@meristics\.com$`. Canonical leak scenario reproduced (scratch merge of `brian-July-20` into a `^jfg-dev` branch → 6 brian commits leaked under allow-all) and neutralized (filtered run: 0 brian commits, billing + rendered markdown byte-identical to pre-merge baseline). CST-tz day-boundary hazard mooted by the filter. `--squash` still recommended for the merge itself.

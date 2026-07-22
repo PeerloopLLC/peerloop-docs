@@ -26,6 +26,7 @@
 - [link](feedback_verify_baselines_in_conv.md) — §Baseline Verification detail: Conv 101→102 (5 silently-broken time-fragile tests) + Conv 104 (10 `.astro` errors, astro-check gate added).
 - [link](feedback_memory_index_load_bearing.md) — §Memory detail: one-liners must expose distinctive markers not topic labels; `[link]` label convention (Conv 213); index-vs-body drift discipline; Conv 150/151.
 - [link](user_hands_off_pilot_workflow.md) — §User WIP File detail: "CC is sole author" architectural implications (sync trusts mirror, skill state needs no locking); USER-WIP.md carve-out (CC read-only).
+- [link](feedback_assess_ask_before_acting.md) — Conv 407 Fable-5: user named a branch, CC silently retargeted a newer one; grep-patched a premise change (Focus line survived 2 sweeps). Surface scope choices as questions; premise change ⇒ full-doc rewrite.
 
 ---
 

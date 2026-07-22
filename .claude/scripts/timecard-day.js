@@ -42,6 +42,11 @@ function loadCfg() {
     // Allowlist for CODE-repo branches (see isAllowedBranch). Docs repo is never
     // filtered — it holds the heartbeats and lives on `main`.
     codeBranchAllowRe: new RegExp(rt.codeBranchAllowPattern || '^jfg-dev'),
+    // Author allowlist — applied to every extracted commit, BOTH repos. Unlike
+    // the branch allowlist above, this survives a history-preserving merge of a
+    // client branch: client commits stay excluded by authorship, not
+    // reachability. Default '.' (allow all) for configs that don't set it.
+    authorAllowRe: new RegExp(rt.authorAllowPattern || '.'),
     commitTagPrefixes: rt.commitTagPrefixes || {
       userFacing: 'User-facing:', adminFacing: 'Admin-facing:',
       api: 'API:', page: 'Page:', role: 'Role:', infra: 'Infra:',
@@ -263,12 +268,15 @@ const COMMIT_DELIM = '---COMMIT---';
 const END_DELIM = '---END---';
 
 function extractCommitsFromBranch(repoRoot, repoName, branch, since, until) {
-  const fmt = `${COMMIT_DELIM}%n%H%n%h%n%ci%n%s%n%b%n${END_DELIM}`;
+  const fmt = `${COMMIT_DELIM}%n%H%n%h%n%ci%n%ae%n%s%n%b%n${END_DELIM}`;
   // `--name-only` appends the list of changed files after each commit's
   // formatted portion. The parser splits on COMMIT_DELIM (commit boundary)
   // and END_DELIM (formatted-content vs file-list boundary).
   const out = gitOut(repoRoot, ['log', branch, `--format=${fmt}`, `--since=${since}`, `--until=${until}`, '--reverse', '--name-only']);
-  return parseCommitStream(out, repoName, branch);
+  // Author-allowlist choke point: every commit entering the pipeline passes
+  // here, so filtering once covers discovery, dedup, anchoring, and rendering.
+  const allowRe = loadCfg().authorAllowRe;
+  return parseCommitStream(out, repoName, branch).filter((c) => allowRe.test(c.authorEmail));
 }
 
 function parseCommitStream(text, repoName, branch) {
@@ -280,14 +288,15 @@ function parseCommitStream(text, repoName, branch) {
     const tail = endIdx >= 0 ? blk.slice(endIdx + END_DELIM.length) : '';
     const lines = body.split('\n');
     // First non-empty line removed by split — the first real line is the full hash
-    // Format laid out: %H\n%h\n%ci\n%s\n%b
+    // Format laid out: %H\n%h\n%ci\n%ae\n%s\n%b
     // After leading '\n' from %n in format, lines[0] is empty. Skip it.
     let i = 0;
     while (i < lines.length && lines[i] === '') i++;
-    if (i + 4 > lines.length) continue;
+    if (i + 5 > lines.length) continue;
     const fullHash = lines[i++];
     const hash = lines[i++];
     const timestamp = lines[i++];
+    const authorEmail = lines[i++];
     const subject = lines[i++];
     const bodyText = lines.slice(i).join('\n').replace(/\n+$/, '');
     // filesChanged from the --name-only tail: lines after END_DELIM, trimmed,
@@ -303,6 +312,7 @@ function parseCommitStream(text, repoName, branch) {
       hash,
       timestampISO: toIso(timestamp),
       timestampMs: new Date(timestamp).getTime(),
+      authorEmail,
       subject,
       body: bodyText,
       filesChanged,
