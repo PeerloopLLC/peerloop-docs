@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-07-21 Conv 404 (a falsified memory keeps its filename — rewrite `description:` + body, never rename or delete — §3; the Conv-403 launcher-strip decision above it is ⚠️ SUPERSEDED and fully withdrawn)
+**Last Updated:** 2026-07-21 Conv 406 (hard-detached from the server-gated Task subsystem — write-through `CURRENT-TASKS.md` self-defended by a test suite, root cause `tengu_vellum_ash`; `CURRENT-TASKS.md` reformatted to two TOCs + alphabetical stable bodies — §3)
 
 ---
 
@@ -526,6 +526,26 @@ The 4572-line `docs/DECISIONS.md` was split into a `docs/decisions/` folder: ele
 ---
 
 ## 3. Claude Code Workflow
+
+### Hard-Detach from the Server-Gated Task Subsystem — Write-Through `CURRENT-TASKS.md`, Self-Defended by a Test Suite (Conv 406)
+**Date:** 2026-07-21 (Conv 406)
+
+All task tracking is rewritten to **write-through `CURRENT-TASKS.md` directly** — no `Task*`/`TodoWrite` overlay anywhere. Every `Task*` reference was stripped from the skills, CLAUDE.md, the `check-output-reminder.sh` hook, skill frontmatter, and memory (~15 files). Root cause that forced the break: a binary decompile found an **undocumented server-side gate** — `TaskCreate/List/Update/Get` are `isEnabled(){ return uH() && !uZ() }` and `TodoWrite` is `!uH() && !uZ()`, where `uZ()` reads remote dynamic config `tengu_vellum_ash` against the model ID (`vellum` = 0 hits in the whole changelog). Because `uZ()` sits on both branches it can suppress Task* **and** TodoWrite at once — a state no local setting produces — so no launcher fix, env var, or version pin can be trusted to keep the tools alive (this closes the Conv-404 "residual unknown" for `Task*`; the separate `Grep`/`Glob` absence is an older, still-open upstream registry bug #52121/#63525). Rejected: a tolerant fallback (skills prefer TaskList when present, else write-through) — the user wanted one clean mechanism, not a dual-path — and continuing to chase the gate. The detach is made **self-defending**: `test-task-board.sh` (5 scripts / 29 assertions — validator self-test, lifecycle harness, detach-invariant lint) runs at **r-commit Step 0 and r-end Step 5**, so a Task tool creeping back or an anchor reverting turns the suite red and blocks the commit; `r-update-tasks` stays on the fast `current-tasks-check.sh` for mid-conv tidies.
+
+**Rationale:** The Task tools held nothing the file didn't, and a file edit is exactly as verifiable as a tool call — both either happened or didn't; the failure mode is a *promise* ("I'll log it at /r-end"), which the r-end "CRITICAL: call TaskCreate" rule became at Conv 403 precisely because it named a tool that could silently vanish. Writing the board on every state change keeps that forcing-function intact while removing a dependency on a switch outside our control. Wiring the ~0.9s suite into both commit boundaries costs nothing and makes the detach regression-proof rather than convention-enforced.
+
+**See:** `CURRENT-TASKS.md`; `.claude/scripts/{current-tasks-check.sh,test-task-board.sh}`; `memory/project_task_tools_child_session_leak.md` (`[TASK-TOOLS-VERIFY]` — the one untested return path is a `/model` non-1M-Opus probe); Conv 406 Decisions §1+§3, Learnings §1+§3. Supersedes the Conv-404 `CLAUDE_CODE_ENABLE_TASKS` chase (below) as the standing policy.
+
+---
+
+### `CURRENT-TASKS.md` Reformatted as Two TOCs + Alphabetical Stable Bodies — Status Never Moves a Heading (Conv 406)
+**Date:** 2026-07-21 (Conv 406)
+
+`CURRENT-TASKS.md` uses four anchors: `## 🎯 Now` (ordered table of contents, top = next) and `## ⏸️ Parked` (gated TOC) drive **ordering via links**, while `## Tasks` holds the `### [CODE]` bodies **alphabetical and never-moving** (status lives on a `- **State:**` bullet, kept **off** the heading so the anchor never churns and TOC links never break), and `## ✅ Done this conv` collects what closed. All 32 tasks were converted from em-dash prose to terse bullets. Chosen over keeping the prior 3-anchor Ordered/Unordered/Completed format, in which a task's H3 block physically migrates between sections as its state changes.
+
+**Rationale:** Reprioritise / start / park become zero-movement edits — only a TOC line and a `State:` bullet change — which kills the churn of relocating H3 blocks and the merge noise it caused; bullets replace the prose walls the user found hard to read. Every parser (r-start Step 7.5/8, r-end Step 5, r-commit Step 0, r-update-tasks) and the new deterministic checker were re-pointed to the four anchors in the same batch.
+
+---
 
 ### A Falsified Memory Keeps Its Filename — Rewrite `description:` + Body, Never Rename or Delete (Conv 404)
 **Date:** 2026-07-21 (Conv 404)
