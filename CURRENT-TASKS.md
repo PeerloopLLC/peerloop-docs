@@ -42,6 +42,7 @@
 21. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
 22. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
 23. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
+24. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -290,6 +291,16 @@
 - **Cross-machine:** MacMiniM4 still carries stale Conv-403 `~/.zshrc` `env -u` guards (harmless no-ops) — clean next time on it.
 - **Refs:** `memory/project_task_tools_child_session_leak.md`, `DOC-DECISIONS.md §3`, `code.claude.com/docs/en/tools-reference.md`. Surfaced Conv 404, root-caused Conv 406.
 
+### [TSLASH]
+
+- **State:** 📋 queued
+- **What:** Trailing-slash URL variants are not treated as equivalent to their bare form, so route policy diverges between `/x` and `/x/`. **Measured Conv 408 on `:4321`:** signed-out `GET /profile` → `200` (correct — bare `/profile` is the PUBLIC auth-swap surface, Conv 349 `[PROF-MERGE]`), but signed-out `GET /profile/` → `302 /login?redirect=%2Fprofile%2F`. The slash form is being classified as a *subpath* and therefore auth-gated.
+- **Suspected cause:** `src/middleware.ts` `PROTECTED_SUBPATHS_ONLY = ['/profile']` — the "is this a subpath?" test presumably matches any path starting with `/profile/`, which `/profile/` itself satisfies with an empty remainder. Verify before fixing; the same class of test may exist in `PROTECTED_PREFIXES` / `PROTECTED_EXACT`.
+- **Scope (user directive, Conv 408): do NOT special-case `/profile`.** Handle trailing slashes **generally, for every route** — one normalization decision applied site-wide, not a per-route patch. Decide and record the policy: canonical-redirect `/x/` → `/x` (301) at the edge/middleware, vs. normalize-then-match internally, vs. Astro's own `trailingSlash` config (`'always' | 'never' | 'ignore'` in `astro.config.mjs`) — check what that config is currently set to first, since it may be the right single lever and interacts with the CF Workers adapter.
+- **Also check:** whether the same divergence hits auth-gated routes generally (`/learning/`, `/teaching/`, `/creating/`, `/messages/`) and whether any *canonical/SEO* surface double-serves content at both forms (duplicate-content risk on public pages like `/courses/`, `/@handle/`).
+- **Done test:** for a representative protected route, a public route, and `/profile`, the bare and trailing-slash forms produce the same auth outcome; policy documented; a test covers it.
+- Surfaced Conv 408 while investigating a separate (unreproduced) `/profile` → `/@handle` redirect report.
+
 ### [TURNLOG]
 
 - **State:** 📋 queued (workflow guard)
@@ -330,4 +341,4 @@
 
 ## ✅ Done this conv
 
-- **[TC-MERGE-TZ]** — author-allowlist timecard protection built + verified: `%ae` captured in `timecard-day.js` extraction, `authorAllowRe` filter at the pipeline choke point, config `authorAllowPattern: ^fraser@meristics\.com$`. Canonical leak scenario reproduced (scratch merge of `brian-July-20` into a `^jfg-dev` branch → 6 brian commits leaked under allow-all) and neutralized (filtered run: 0 brian commits, billing + rendered markdown byte-identical to pre-merge baseline). CST-tz day-boundary hazard mooted by the filter. `--squash` still recommended for the merge itself.
+_(none yet — cleared at each /r-start)_
