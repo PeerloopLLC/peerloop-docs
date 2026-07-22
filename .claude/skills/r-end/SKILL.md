@@ -526,7 +526,16 @@ Display this inline. If the count of changes is zero across both tagged and unta
 
 **Timing note:** This step runs *before* the commit (Step 6). Any git HEADs or commit hashes referenced in Key Context describe the pre-commit state, not the final committed state. When referencing branch state, describe uncommitted changes as "will be committed in Step 6" rather than claiming specific commit hashes. `/r-start` consumers should treat Key Context as the conv's pre-close snapshot, not a post-commit record.
 
-1. **Validate + tidy `CURRENT-TASKS.md`** (the write-through task board). It is already current — CC edited it directly through the conv — so this is a **consistency pass, not a regenerate**: run `~/projects/peerloop-docs/.claude/scripts/current-tasks-check.sh` (or invoke the `r-update-tasks` skill) and fix any dangling TOC link / orphan body / slug mismatch it reports; move any body whose `State:` reads done to `## ✅ Done this conv`. **Never delete a queued/parked body** just because it saw no activity this conv (that is the normal case). There is no Task-tool overlay to reconcile (subsystem server-gated off, `[TASK-TOOLS-VERIFY]`) — the file IS the state.
+1. **Validate + tidy `CURRENT-TASKS.md`** (the write-through task board) via the full test suite (~1s) — the conv-boundary regression gate for both the live board and the write-through tooling/detach:
+
+   ```bash
+   ~/projects/peerloop-docs/.claude/scripts/test-task-board.sh
+   ```
+
+   It is already current — CC edited it directly through the conv — so this is a **consistency pass, not a regenerate** (there is no Task-tool overlay to reconcile; subsystem server-gated off, `[TASK-TOOLS-VERIFY]` — the file IS the state). Branch on the outcome:
+   - **`✅ ALL TASK-BOARD TESTS PASSED`** → done.
+   - **Live-board `ISSUES:`** (dangling / orphan / slug / State-mismatch in the real board) → fix inline per `[EDITSAFE]`; move any body whose `State:` reads done to `## ✅ Done this conv`. **Never delete a queued/parked body** for lack of activity this conv (the normal case). Re-run to confirm green.
+   - **A test suite fails** (self-test / lifecycle / detach-lint) → a **tooling/skill regression** (e.g. a Task tool crept back into a frontmatter, an anchor reverted). Surface `🔴🔴🔴` and fix the offending script/skill before committing — do not close the conv on a red suite.
 2. **Write `RESUME-STATE.md` (NARRATIVE only — [CURTASKS], Conv 351)** in the docs repo root. Task data now lives in `CURRENT-TASKS.md`; RESUME-STATE is the per-conv **narrative** handoff the next `/r-start` reads for context, then deletes. **Keep the `Branch` line** — `conv-branch-check.sh` + `[RSTART-DIFFGATE]` depend on it. Format:
 
 ```markdown

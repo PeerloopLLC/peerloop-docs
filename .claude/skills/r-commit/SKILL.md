@@ -56,9 +56,24 @@ Commit changes in both peerloop-docs and Peerloop repos using the **v2 commit me
 
 ### Step 0: Validate CURRENT-TASKS.md (boundary check — [CURTASKS] Conv 351; Task-tool detach Conv 406)
 
-Before reviewing changes, sanity-check `CURRENT-TASKS.md` (root of `peerloop-docs`). It's a **write-through** board — CC edits it directly during the conv (no Task-tool overlay; subsystem server-gated off, see `[TASK-TOOLS-VERIFY]`), so this is a **consistency check, not a regenerate**: run `~/projects/peerloop-docs/.claude/scripts/current-tasks-check.sh` (or invoke the `r-update-tasks` skill). If it reports a dangling TOC link / orphan body / slug mismatch, fix it (per `[EDITSAFE]`); move any body whose `State:` reads done to `## ✅ Done this conv`. **Never delete a queued/parked body** for lack of activity — that's the normal case. If it reports `OK`, do nothing.
+Before reviewing changes, run the task-board test suite (~1s) — it validates the live board **and** the write-through tooling/detach in one shot:
 
-**Skip silently** if `.conv-current` is missing (no active conv) or if `CURRENT-TASKS.md` doesn't exist. Any fix is a working-tree edit the Step 2 `git add` picks up.
+```bash
+~/projects/peerloop-docs/.claude/scripts/test-task-board.sh
+```
+
+`CURRENT-TASKS.md` is a **write-through** board — CC edits it directly during the conv (no Task-tool overlay; subsystem server-gated off, see `[TASK-TOOLS-VERIFY]`), so this is a **consistency check, not a regenerate**. Branch on the outcome:
+
+- **`✅ ALL TASK-BOARD TESTS PASSED`** → do nothing, proceed to Step 0.5.
+- **Live-board validation fails** (`ISSUES:` — a dangling TOC link / orphan body / slug mismatch / State-mismatch in the real board) → **fix the board** inline per `[EDITSAFE]`; move any body whose `State:` reads done to `## ✅ Done this conv`. **Never delete a queued/parked body** for lack of activity — that's the normal case. Re-run to confirm green.
+- **A test suite fails** (self-test / lifecycle / detach-lint) → this is a **tooling or skill regression**, not a board-content issue. Surface it:
+  ```
+  🔴🔴🔴 Task-board test regression: {failing suite + assertion}
+      → A skill/format/checker change broke an invariant. Resolve before committing.
+  ```
+  Fix the offending script/skill (e.g. a Task tool crept back into a frontmatter, an anchor was reverted) and re-run. Do not commit a red suite.
+
+**Skip silently** if `.conv-current` is missing (no active conv) or if `CURRENT-TASKS.md` doesn't exist. Any board fix is a working-tree edit the Step 2 `git add` picks up.
 
 ### Step 0.5: Code-branch guard ([CBG], Conv 395) — HALT on mismatch
 
