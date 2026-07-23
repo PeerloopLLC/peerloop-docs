@@ -43,6 +43,7 @@
 22. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
 23. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
 24. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
+25. [RECEIPT](#receipt) — no payment receipt exists; Payment step links to the stale success page
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -290,6 +291,17 @@
 - **Decision (Conv 406): HARD-DETACH from the Task subsystem** — skills/CLAUDE.md/hook rewritten to write-through `CURRENT-TASKS.md` directly, no Task-tool reliance. So this watch no longer blocks work; keep it only to record the gate + run the `/model` probe if curious.
 - **Cross-machine:** MacMiniM4 still carries stale Conv-403 `~/.zshrc` `env -u` guards (harmless no-ops) — clean next time on it.
 - **Refs:** `memory/project_task_tools_child_session_leak.md`, `DOC-DECISIONS.md §3`, `code.claude.com/docs/en/tools-reference.md`. Surfaced Conv 404, root-caused Conv 406.
+
+### [RECEIPT]
+
+- **State:** 📋 queued
+- **What:** There is **no payment receipt anywhere in the app** — no page, no view. The journey band's "✓ Payment" step currently links to `/course/[slug]/success`, which is the post-Stripe *confirmation* page (it consumes `?session_id=`, self-heals a missed webhook, renders the expectations form). For an enrolment completed months ago that is a stale confirmation screen, not a record of payment.
+- **Why now:** Conv 408 MERGE-BRIAN mechanism 5 `[BAND-ACTION]` — the user chose to keep the Payment step clickable on the condition that it leads somewhere meaningful. That destination has to exist.
+- **Data is already there:** `transactions` (`migrations/0001_schema.sql:887`) carries `enrollment_id`, `amount_cents`, `stripe_payment_intent_id`, `stripe_charge_id`, `status`, `paid_at`, `refunded_at`, `refund_amount_cents`.
+- **Two implementation paths:** (a) cheap — link Stripe's hosted `receipt_url`, retrievable via `stripe_charge_id`; (b) durable — our own receipt view rendering the `transactions` row (works for refunds/partial refunds, no Stripe round-trip, brandable, and survives a provider change). Decide before building.
+- **Related but NOT the same thing:** a payment-receipt *email* is planned for MVP-GOLIVE (`plan/mvp-golive/README.md` line 94); its template `PaymentReceiptEmail.tsx` was deleted as dead code in Conv 398 and the stale doc references are `[EMAILDOC]`. The receipt *page* was tracked nowhere before this task.
+- **Done test:** a student with a completed enrolment can reach a receipt showing amount, date and status from the Payment step; refunded and partially-refunded states render correctly.
+- Surfaced Conv 408.
 
 ### [TSLASH]
 
