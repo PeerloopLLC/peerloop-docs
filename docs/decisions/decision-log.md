@@ -1739,3 +1739,21 @@ Components carrying an **interaction contract rather than a design** ship unstam
 **Rationale:** Registry entries require `figmaMatchNames` and all three `data-prov` values assert **design** provenance; these primitives have no Figma counterpart, so a stamp would be a false claim in a scheme whose whole value is trustworthy provenance. §12e is the documented extension point if a formal tier is ever wanted.
 
 **See:** `docs/decisions/05-ui-ux-components.md` entry; `docs/as-designed/matt-provenance.md` §12e; `docs/sessions/2026-07/20260721_1540 Decisions.md` §3.
+
+### MERGE-BRIAN §1 — /course/[slug] Client-Branch Dispositions: 8 ADAPT, 3 DROP, 0 ADOPT (Conv 408)
+**Date:** 2026-07-23 (Conv 408)
+
+The 12 `brian-July-7` mechanisms on `/course/[slug]` dispositioned ADOPT/ADAPT/DROP → **8 ADAPT, 3 DROP (2 soft), 0 ADOPT**. Intent harvested almost everywhere, implementation almost nowhere (raw colours on tokenised primitives, shell-wide blast radius, dead-code features, an un-rationalised behavioral API change). §1 ready to BUILD; full per-mechanism rationale in `plan/merge-brian/README.md`; disposition vocab renamed REJECT→DROP.
+
+**Rationale:** The client branch is a reference exhibit (Conv 407) — we extract intent screen-by-screen, never adopt as-is. Zero straight ADOPT matches the user's resistance to "intrusive, local-focussed" aesthetics.
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `plan/merge-brian/README.md`; `docs/sessions/2026-07/20260723_1910 Decisions.md` §1.
+
+### Keep One-Teacher-Per-Enrollment — Reject Client-Branch Teacher-Switching (Conv 408)
+**Date:** 2026-07-23 (Conv 408)
+
+MERGE-BRIAN mechanism 11: the client branch removes the `POST /api/sessions` teacher-match 403 and silently re-assigns `enrollment.assigned_teacher_id` on every booking. DROPped — our current one-teacher-per-enrollment 403 stays. No code change (already enforced).
+
+**Rationale:** Silent per-booking re-assignment has un-audited earnings/history/roster knock-ons, and the branch's cited "Conv 376 approved" rationale is git-absent. A marketplace-policy change is the user's explicit call; open ask on Brian's rationale gates reconsideration.
+
+**See:** `docs/decisions/04-auth.md` entry; `docs/sessions/2026-07/20260723_1910 Decisions.md` §2.

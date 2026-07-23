@@ -144,8 +144,7 @@ crd: R02 R04
 rdr: R01 A01"	"R02 /creator/[handle]
 btn: P02
 crd: R02
-lnk: M12 M01 P01 /creating
-tab: /settings/profile"	"R03 /session/[id]
+lnk: M12 M01 P01 /profile/edit /creating"	"R03 /session/[id]
 btn: P02
 crd: /course/[slug]
 lnk: P01
@@ -153,24 +152,24 @@ rdr: A01 M02 C02
 tab: /course/[slug]/sessions /course/[slug]/learn"	"R04 /teacher/[handle]
 btn: P02
 crd: /course/[slug]
-lnk: M12 M01 /teaching
-tab: /settings/profile /teaching/availability C02"	
+lnk: M12 M01 /profile/edit /teaching
+tab: /teaching/availability C02"	
 
 T - TEACHING					K - CREATING					X - ADMIN				
 "T01 /teaching/[...tab]
 btn: P02 R03
 crd: R01 /course/[slug]
-lnk: M01 T02
+lnk: M01 T02 /profile/payments
 rdr: /teaching /teaching/availability
-tab: /teaching/students /teaching/sessions /teaching/analytics /settings/payments C02"	"T02 /teaching/courses/[courseId]
+tab: /teaching/students /teaching/sessions /teaching/analytics C02"	"T02 /teaching/courses/[courseId]
 crd: /course/[slug] R01 R02
 lnk: M01 P01
 rdr: /teaching A01"				"K01 /creating/[...tab]
 btn: P02
 crd: /course/[slug] R01
-lnk: M01 /profile /teaching
+lnk: M01 /profile /teaching /profile/payments
 rdr: /creating /creating/studio A01 K03
-tab: /creating/communities /creating/analytics /settings/payments"	"K02 /creating/apply
+tab: /creating/communities /creating/analytics"	"K02 /creating/apply
 lnk: /creating
 rdr: A01"	"K03 /creating/communities/[slug]
 lnk: M01 /creating P01

@@ -294,7 +294,7 @@
 
 ### [RECEIPT]
 
-- **State:** 📋 queued
+- **State:** 📋 queued · [Opus]
 - **What:** There is **no payment receipt anywhere in the app** — no page, no view. The journey band's "✓ Payment" step currently links to `/course/[slug]/success`, which is the post-Stripe *confirmation* page (it consumes `?session_id=`, self-heals a missed webhook, renders the expectations form). For an enrolment completed months ago that is a stale confirmation screen, not a record of payment.
 - **Why now:** Conv 408 MERGE-BRIAN mechanism 5 `[BAND-ACTION]` — the user chose to keep the Payment step clickable on the condition that it leads somewhere meaningful. That destination has to exist.
 - **Data is already there:** `transactions` (`migrations/0001_schema.sql:887`) carries `enrollment_id`, `amount_cents`, `stripe_payment_intent_id`, `stripe_charge_id`, `status`, `paid_at`, `refunded_at`, `refund_amount_cents`.
@@ -305,7 +305,7 @@
 
 ### [TSLASH]
 
-- **State:** 📋 queued
+- **State:** 📋 queued · [Opus]
 - **What:** Trailing-slash URL variants are not treated as equivalent to their bare form, so route policy diverges between `/x` and `/x/`. **Measured Conv 408 on `:4321`:** signed-out `GET /profile` → `200` (correct — bare `/profile` is the PUBLIC auth-swap surface, Conv 349 `[PROF-MERGE]`), but signed-out `GET /profile/` → `302 /login?redirect=%2Fprofile%2F`. The slash form is being classified as a *subpath* and therefore auth-gated.
 - **Suspected cause:** `src/middleware.ts` `PROTECTED_SUBPATHS_ONLY = ['/profile']` — the "is this a subpath?" test presumably matches any path starting with `/profile/`, which `/profile/` itself satisfies with an empty remainder. Verify before fixing; the same class of test may exist in `PROTECTED_PREFIXES` / `PROTECTED_EXACT`.
 - **Scope (user directive, Conv 408): do NOT special-case `/profile`.** Handle trailing slashes **generally, for every route** — one normalization decision applied site-wide, not a per-route patch. Decide and record the policy: canonical-redirect `/x/` → `/x` (301) at the edge/middleware, vs. normalize-then-match internally, vs. Astro's own `trailingSlash` config (`'always' | 'never' | 'ignore'` in `astro.config.mjs`) — check what that config is currently set to first, since it may be the right single lever and interacts with the CF Workers adapter.

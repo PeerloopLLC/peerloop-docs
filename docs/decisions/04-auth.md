@@ -479,3 +479,10 @@ The "Welcome back / Log In Again" inline session-expired banner lived in the leg
 
 ---
 
+### Keep One-Teacher-Per-Enrollment — Reject Client-Branch Teacher-Switching (Conv 408)
+**Date:** 2026-07-23 (Conv 408)
+
+The current `POST /api/sessions` teacher-match 403 (a student enrolled with teacher A can only book with teacher A; `teacher_id` must match `enrollment.assigned_teacher_id`) **stays**. The client branch's change — removing that 403 and silently re-assigning `assigned_teacher_id` on every booking — is **DROPped**, not adopted.
+
+**Rationale:** Silent per-booking re-assignment has un-audited knock-ons across earnings attribution, session history, and teacher-roster expectations. The branch cited a "Conv 376 approved / product decision" rationale that exists **nowhere in git**. A marketplace-policy change of this size is the user's explicit call, not one inferred from a fork. No code change results (our code already enforces the rule); an open ask on Brian's rationale gates any reconsideration.
+

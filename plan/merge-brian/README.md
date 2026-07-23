@@ -2,7 +2,7 @@
 
 **Review target:** the **pivot snapshot `8a1e677f`** — the most recent commit of `origin/brian-July-7` (07-20 11:29), the state the user and Brian agreed was a good pivot point.
 **Focus:** see what Brian built at that snapshot, extract the *intent* of the changes worth keeping, and selectively reimplement them on `jfg-dev-14` with a consequence audit per adoption. **Nothing is merged as-is — ever** (user directive, Conv 407: *"I know I won't be merging any of his work as is"*). His branch is a **reference exhibit**, not a source.
-**Status:** 🔥 IN PROGRESS (Conv 407, fresh-docs restart) — infrastructure verified + side-by-side environment operational (ours `:4321`, pivot `:4341`, identical dev datasets); `/course/[slug]` §1 brief DONE (pivot-grounded) — dispositions pending the side-by-side walk
+**Status:** 🔥 IN PROGRESS (Conv 408) — infrastructure verified + side-by-side environment operational (ours `:4321`, pivot `:4341`; **dev seeds diverge ~52 lines — Conv 408 correction**, NOT identical); **§1 `/course/[slug]` disposition walk COMPLETE (Conv 408)** — all 12 mechanisms decided (8 ADAPT · 3 DROP incl. 2 soft · 0 ADOPT); ready to BUILD §1 next conv (no building this conv — deferred by user). §2–6 dispositions pending.
 **Task-board body:** `CURRENT-TASKS.md § [MERGE-BRIAN-JULY7]` (branch facts, admission-gate history, timecard protection)
 
 > **Exploration branch — do not review.** `brian-July-20` is where the user moved Brian on 07-20 so he could keep exploring without git skills losing his work. Its commits post-date the pivot ([TAB-FIT], [SNAV-SCROLL], [CRS-MEMBERS], SubNav drag fix, Sidebar tweaks, feed changes) and are **out of scope until the next agreed pivot**. The *local* `brian-July-7` branch copy is also stale (28 behind origin) — `8a1e677f` is the only reference point.
@@ -38,7 +38,7 @@
 
 | # | Review unit | Status |
 |---|---|---|
-| 1 | `/course/[slug]` detail | 🟢 brief DONE (pivot-grounded, Conv 407) — dispositions ⬜ pending side-by-side |
+| 1 | `/course/[slug]` detail | ✅ dispositions DONE (Conv 408) — 12 mechanisms: 8 ADAPT · 3 DROP · 0 ADOPT; ready to BUILD next conv |
 | 2 | `/courses` catalog | ⬜ |
 | 3 | `/community/[slug]` + `/communities` (+`[COMM-BRAND]` feature decision) | ⬜ |
 | 4 | **Site-wide shell track** (`[BACK-X]` back-nav, `SubNav`/`SubNavItem`, `Sidebar`, forms, `AppLayout`) | ⬜ |
@@ -68,7 +68,7 @@ Reference measurements (Conv 407, all vs the pivot unless noted): 96 changed fil
 
 ## 1 · `/course/[slug]` review
 
-**Brief generated Conv 407, analyzed entirely at the pivot snapshot `8a1e677f`** (dual-checkout read; `brian-July-20` excluded by instruction). Dispositions ⬜ pending side-by-side review (ours `:4321`, pivot `:4341`).
+**Brief generated Conv 407, analyzed entirely at the pivot snapshot `8a1e677f`** (dual-checkout read; `brian-July-20` excluded by instruction). ✅ **Dispositions DONE (Conv 408)** — all 12 decided from live side-by-side (ours `:4321`, pivot `:4341`): 8 ADAPT · 3 DROP · 0 ADOPT.
 
 ### Architecture in one paragraph
 
@@ -81,7 +81,7 @@ Our page keeps a state-rich full `CourseHeader` hero (default/scheduled variants
 - **Homework never existed on his branch** — `[HW-SUBMIT-UI]` (our Conv 387) post-dates his fork. His 4-tab merge therefore collides with our Modules + My Sessions + **Homework** trio; Homework's placement in any adopted IA needs an explicit decision.
 - **Sessions tab visibility flips**: ours is enrolled-gated; his is public/browseable (states/actions render enrolled-only).
 
-### Mechanism inventory (dispositions ⬜ pending)
+### Mechanism inventory (dispositions DONE — Conv 408)
 
 | Mechanism | Data/API deps | Site-wide ripple | Token/colour | Disposition |
 |---|---|---|---|---|

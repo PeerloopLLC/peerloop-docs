@@ -210,6 +210,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [4. Authentication & Authorization](04-auth.md)
 
+- [Keep One-Teacher-Per-Enrollment — Reject Client-Branch Teacher-Switching (Conv 408)](04-auth.md#keep-one-teacher-per-enrollment--reject-client-branch-teacher-switching-conv-408)
 - [AUTHBUG Fix: Login Gates Visible Success on Real Auth, Reload-Fallback from Cookies, Logout Clears Auth Cache (Conv 365)](04-auth.md#authbug-fix-login-gates-visible-success-on-real-auth-reload-fallback-from-cookies-logout-clears-auth-cache-conv-365)
 - [Enumeration-Endpoint Auth Mirrors the Action It Feeds — Homework Grading List = Reviewer Predicate (Conv 346)](04-auth.md#enumeration-endpoint-auth-mirrors-the-action-it-feeds--homework-grading-list--reviewer-predicate-conv-346)
 - [Per-User Private File Downloads Use `Cache-Control: private, no-store` (Conv 345)](04-auth.md#per-user-private-file-downloads-use-cache-control-private-no-store-conv-345)
@@ -252,6 +253,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [MERGE-BRIAN §1 — /course/[slug] Client-Branch Dispositions: 8 ADAPT, 3 DROP, 0 ADOPT (Conv 408)](05-ui-ux-components.md#merge-brian-1--courseslug-client-branch-dispositions-8-adapt-3-drop-0-adopt-conv-408)
 - [[A11Y] Two Behavioral Primitives Split by a11y Contract — `ModalBackdrop` (Never Focusable) vs `ClickableRow` (Conv 404)](05-ui-ux-components.md#a11y-two-behavioral-primitives-split-by-a11y-contract--modalbackdrop-never-focusable-vs-clickablerow-conv-404)
 - [Behavioral Primitives Are Neither `data-prov`-Stamped Nor Registry-Registered (Conv 404)](05-ui-ux-components.md#behavioral-primitives-are-neither-data-prov-stamped-nor-registry-registered-conv-404)
 - [Universal Auto-Derived Feature → Static Perk, Not a Vestigial Toggle (DIPLOMA-UI-GAPS, Conv 391)](05-ui-ux-components.md#universal-auto-derived-feature--static-perk-not-a-vestigial-toggle-diploma-ui-gaps-conv-391)
