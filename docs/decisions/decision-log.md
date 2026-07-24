@@ -1775,3 +1775,12 @@ The payment receipt is our own printable `/receipt/[id]` page rendered from the 
 **Rationale:** Owning the view handles refunds/partial refunds (done-test requires both), needs no Stripe round-trip, is brandable, and survives a payment-provider change (default-durable per §Solution Quality). Owner-only access enforced in SQL (`WHERE e.student_id = ?` → non-owner gets an indistinguishable "Not Found"); logged-out → `302 /login?redirect=`.
 
 **See:** `docs/decisions/01-architecture.md` entry; `docs/sessions/2026-07/20260724_1031 Decisions.md` §2, Learnings §2; Conv 410.
+
+### [SESS-TAB] Merged Curriculum-First Modules Tab — Canonical /modules, "My Sessions" Folds In (Conv 411)
+**Date:** 2026-07-24 (Conv 411)
+
+MERGE-BRIAN §1 mechanism M2 merges the off-strip "My Sessions" surface into one curriculum-first, public in-strip **Modules** tab at canonical route `/modules`, strip position 2 (after About). Off-strip `/sessions` 301→`/modules`; session-family internal hrefs retarget. Rejected: route `/sessions` (session-centric but names a public curriculum surface "sessions") and `/curriculum` (new noun + most redirect wiring).
+
+**Rationale:** Curriculum-first + public → the module is the honest public unit; `/modules` is the existing public URL so no public link breaks; the merged tab is the operational heart so it leads the browse tabs. The now-redundant "My Sessions" sub-row entry is dropped.
+
+**See:** `docs/decisions/11-new-routing.md` entry; `docs/sessions/2026-07/20260724_1239 Decisions.md` §1, Learnings §1/§4; Conv 411.

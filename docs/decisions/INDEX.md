@@ -552,6 +552,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [11. New Routing](11-new-routing.md)
 
+- [[SESS-TAB] Merged Curriculum-First Modules Tab — Canonical /modules, "My Sessions" Folds In (MERGE-BRIAN M2, Conv 411)](11-new-routing.md#sess-tab-merged-curriculum-first-modules-tab--canonical-modules-my-sessions-folds-in-merge-brian-m2-conv-411)
 - [OLD-PORTED-CLEANUP — Full `/old` Retirement (60 Pages Deleted, 14 RG-PUBLIC Kept, Dashboard Comparison-Keep Revoked)](11-new-routing.md#old-ported-cleanup--full-old-retirement-60-pages-deleted-14-rg-public-kept-dashboard-comparison-keep-revoked)
 - [OLD-RETIRE-DEFAULT — `/old/*` + AppNavbar Are Retire-by-Default](11-new-routing.md#old-retire-default--old--appnavbar-are-retire-by-default)
 - [RG-DISCOVER — `/feed` + `/feeds` Retired (Supersedes FEED-DETAIL Port)](11-new-routing.md#rg-discover--feed--feeds-retired-supersedes-feed-detail-port)

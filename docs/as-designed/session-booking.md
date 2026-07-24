@@ -285,7 +285,7 @@ Teachers can bypass the traditional booking wizard by sending an instant session
 
 ### Course Sessions Tab Display (Conv 025)
 
-The `/course/{slug}/sessions` tab (`course-tabs/SessionsTabContent.tsx`) renders sessions grouped by status:
+The student session list — historically the off-strip `/course/{slug}/sessions` tab — was **merged into the curriculum-first `/course/{slug}/modules` tab** (Conv 411 [SESS-TAB]; `MySessionsTab.astro` → `ModulesTab.astro`), and `/sessions` now 301s to `/modules`. The merged Modules tab surfaces each module's session inline (curriculum-first) plus a past-sessions tail, still styling each session by status:
 
 | Section | Statuses | Style |
 |---------|----------|-------|

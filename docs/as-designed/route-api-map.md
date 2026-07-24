@@ -11,7 +11,7 @@
 
 - **Pages scanned:** 67
 - **API endpoints found in UI:** 218
-- **Routes reachable from navbar:** 53
+- **Routes reachable from navbar:** 54
 - **Unreachable routes:** 35
 
 ## 1. Route → API Endpoints

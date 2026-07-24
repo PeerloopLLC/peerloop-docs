@@ -54,9 +54,8 @@ Routes referenced in code but **no matching .astro page exists:**
 | `/course/[slug]/benefits` | `/course/[slug]/[...tab]`, `/course/[slug]/book`, `/course/[slug]/success` |
 | `/course/[slug]/feed` | `/course/[slug]/success` |
 | `/course/[slug]/learn` | `/course/[slug]/[...tab]`, `/course/[slug]/book`, `/courses`, `/learning/[...tab]`, `/session/[id]` |
-| `/course/[slug]/modules` | `/course/[slug]/[...tab]`, `/course/[slug]/book`, `/course/[slug]/success` |
+| `/course/[slug]/modules` | `/course/[slug]/[...tab]`, `/course/[slug]/book`, `/course/[slug]/success`, `/session/[id]` |
 | `/course/[slug]/reviews` | `/course/[slug]/[...tab]` |
-| `/course/[slug]/sessions` | `/session/[id]` |
 | `/course/intro-to-claude-code` | `/dev/primitives` |
 | `/creating` | `/creating/[...tab]`, `/creating/apply`, `/creating/communities/[slug]`, `/creator/[handle]`, `[Sidebar]` |
 | `/creating/analytics` | `/creating/[...tab]` |
@@ -546,7 +545,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/course/[slug]/benefits` (link) ⚠️
 - `/course/[slug]/book` (tab)
 - `/course/[slug]/learn` (tab) ⚠️
-- `/course/[slug]/modules` (link) ⚠️
+- `/course/[slug]/modules` (redir) ⚠️
 - `/course/[slug]/reviews` (link) ⚠️
 - `/courses` (link)
 - `/diploma/[id]` (link)
@@ -1153,7 +1152,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/course/[slug]` (card) ⚠️
 - `/course/[slug]/book` (redir)
 - `/course/[slug]/learn` (tab) ⚠️
-- `/course/[slug]/sessions` (tab) ⚠️
+- `/course/[slug]/modules` (link) ⚠️
 - `/courses` (link)
 - `/login` (redir)
 - `/messages` (btn)

@@ -5,6 +5,19 @@
 
 This section tracks the routing restructure initiative to reorganize pages and consolidate layouts.
 
+### [SESS-TAB] Merged Curriculum-First Modules Tab — Canonical /modules, "My Sessions" Folds In (MERGE-BRIAN M2, Conv 411)
+**Date:** 2026-07-24 (Conv 411)
+
+MERGE-BRIAN §1 mechanism M2 merges the off-strip "My Sessions" surface into the Modules tab as a single curriculum-first, public in-strip tab. Three open IA decisions were settled: **canonical route `/modules`**, **tab label "Modules"**, **strip position 2 (after About)** — all via AskUserQuestion (recommended options). The off-strip `/sessions` route now **301→`/modules`**; the session-family internal hrefs retarget (journey Sessions step, `buildCoursePrimaryCta` / `buildCourseSessionActions` fallbacks, `isSessionsContext`, `SessionCompletedView` link). Rejected: route `/sessions` (matches the client branch's session-centric CTA vocab but names a public curriculum surface "sessions") and route `/curriculum` (new neutral noun, most redirect wiring + new vocab).
+
+**Rationale:** Curriculum-first + public means the module is the honest public unit; `/modules` is the existing public URL so no public link breaks (only the off-strip `/sessions` 301s in); the merged tab is the operational heart, so it leads the browse tabs. The redundant "My Sessions" sub-row entry (on /book + /session/[id]) is dropped once the surface promotes into the strip — reconciliation, not addition.
+
+**Consequences:** `[...tab].astro` + `_course-tabs.ts` retargeting; Modules→position 2 and enrolled-gate dropped (overlay self-gates); `MySessionsTab.astro` deleted and its `matt-inspired-registry.ts` entry removed (prov:sweep baseline unchanged). M2 committed `5ac9493d`; §1 now 8 of 9 ADAPT built; M3 `[SESS-FILES]` (per-module file strips) tracked as the remaining fast-follow.
+
+**See:** `src/pages/course/[slug]/[...tab].astro`, `src/pages/course/[slug]/_course-tabs.ts`, `src/components/course/ModulesTab.astro`; `plan/merge-brian/README.md §1`; Conv 411.
+
+---
+
 ### OLD-PORTED-CLEANUP — Full `/old` Retirement (60 Pages Deleted, 14 RG-PUBLIC Kept, Dashboard Comparison-Keep Revoked)
 **Date:** 2026-06-26 (Conv 339)
 
