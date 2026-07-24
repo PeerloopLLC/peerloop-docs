@@ -1784,3 +1784,21 @@ MERGE-BRIAN §1 mechanism M2 merges the off-strip "My Sessions" surface into one
 **Rationale:** Curriculum-first + public → the module is the honest public unit; `/modules` is the existing public URL so no public link breaks; the merged tab is the operational heart so it leads the browse tabs. The now-redundant "My Sessions" sub-row entry is dropped.
 
 **See:** `docs/decisions/11-new-routing.md` entry; `docs/sessions/2026-07/20260724_1239 Decisions.md` §1, Learnings §1/§4; Conv 411.
+
+### [RESTAB-RETIRE] Resources Tab Retired to /modules After Closing 2 Parity Gaps (MERGE-BRIAN M3, Conv 412)
+**Date:** 2026-07-24 (Conv 412)
+
+MERGE-BRIAN §1 mechanism M3 re-surfaced course resource files as per-module + course-wide file strips on the Modules tab, making the standalone Resources tab redundant. Before retiring it, a field-by-field parity diff against the deleted pre-flip `ResourcesTabContent.tsx` (a Conv-188 DISC-DROP regression) surfaced 2 gaps M3 had dropped — per-file descriptions and role-aware visibility — both closed on the Modules strips (making them a faithful superset). Then retired: `/resources` **301→`/modules`**, removed from the tab strip, orphaned `ResourcesTab.astro` deleted, registry regenerated. Rejected: 301 immediately, keep/rebuild a populated Resources tab, ship M3 leaving the empty tab.
+
+**Rationale:** Retiring a regressed surface is only safe once its function is fully re-delivered — the parity diff proved 2 gaps had to close first. A dedicated flat list would duplicate the curriculum-contextualized strips.
+
+**See:** `docs/decisions/11-new-routing.md` entry; `docs/sessions/2026-07/20260724_1455 Decisions.md` §1, Learnings §1/§2; Conv 412.
+
+### M3 `session_resources.display_order` Folded Into 0001; Brian's `in_room` NOT Adopted (MERGE-BRIAN M3, Conv 412)
+**Date:** 2026-07-24 (Conv 412)
+
+Brian's `0006_session_resource_files.sql` added `display_order` + `in_room` to `session_resources`. Per MERGE-BRIAN ground rule 5, `display_order` was authored in `0001_schema.sql` + reseeded; `in_room` was dropped entirely — an unimplemented promise on his branch (badge label + sort key with no BBB pre-upload behind it).
+
+**Rationale:** `session_resources` already existed; only the ordering column was missing. Shipping `in_room` would tell students a file is "in the room" when nothing puts it there.
+
+**See:** `docs/decisions/02-database.md` entry; `docs/sessions/2026-07/20260724_1455 Decisions.md` §2, Learnings §4; Conv 412.

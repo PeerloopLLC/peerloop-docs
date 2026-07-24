@@ -3,6 +3,17 @@
 
 ## 2. Database & Data Model (High Impact)
 
+### M3 `session_resources.display_order` Folded Into 0001; Brian's `in_room` NOT Adopted (MERGE-BRIAN M3, Conv 412)
+**Date:** 2026-07-24 (Conv 412)
+
+Brian's `0006_session_resource_files.sql` added two columns to `session_resources` (`display_order`, `in_room`). Per MERGE-BRIAN ground rule 5 (his migration never lands), `display_order` was authored ourselves in `0001_schema.sql` + reseeded; `in_room` was **dropped entirely** — it is an unimplemented promise on his branch (a badge label + sort key with no BBB pre-upload behind it). The file overlay in `fetchCourseModulesView` orders by `display_order`, gates on `is_public` (OR'd with enrollment / creator-admin-moderator role), and resolves each file to a guaranteed non-null href (upload → download route, external → URL, neither → dropped).
+
+**Rationale:** `session_resources` already existed; only the one real ordering column was missing. Shipping `in_room` would tell students a file is "in the room" when nothing puts it there.
+
+**Consequences:** Pre-launch `0001` edit + dev reseed (r2_key/size/mime/display_order + res-n8n-003); `in_room` deferred to a future scoped BBB-preload effort if ever wanted.
+
+**See:** `migrations/0001_schema.sql`, `migrations-dev/0001_seed_dev.sql`, `src/lib/ssr/loaders/courses.ts`; `docs/sessions/2026-07/20260724_1455 Decisions.md` §2, Learnings §4; Conv 412.
+
 ### A New Notification Type Costs a Full SQLite Table Rebuild — Feedback-Reminder Nudge Went Email-Only (FEEDBACK-NUDGE, Conv 394)
 **Date:** 2026-07-13 (Conv 394)
 

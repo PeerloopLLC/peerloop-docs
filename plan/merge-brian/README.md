@@ -68,7 +68,7 @@ Reference measurements (Conv 407, all vs the pivot unless noted): 96 changed fil
 
 ## 1 · `/course/[slug]` review
 
-**Brief generated Conv 407, analyzed entirely at the pivot snapshot `8a1e677f`** (dual-checkout read; `brian-July-20` excluded by instruction). ✅ **Dispositions DONE (Conv 408)** — all 12 decided from live side-by-side (ours `:4321`, pivot `:4341`): 9 ADAPT · 3 DROP · 0 ADOPT. **Tier A+B BUILT Conv 409** (M1/M4/M5 + M6/M7/M12) + **Tier C M10/[RECEIPT] BUILT Conv 410** + **Tier C M2 `[SESS-TAB]` BUILT Conv 411** — see Build logs below. Only Tier C **M3 `[SESS-FILES]`** remains (fast-follow, own conv).
+**Brief generated Conv 407, analyzed entirely at the pivot snapshot `8a1e677f`** (dual-checkout read; `brian-July-20` excluded by instruction). ✅ **Dispositions DONE (Conv 408)** — all 12 decided from live side-by-side (ours `:4321`, pivot `:4341`): 9 ADAPT · 3 DROP · 0 ADOPT. **Tier A+B BUILT Conv 409** (M1/M4/M5 + M6/M7/M12) + **Tier C M10/[RECEIPT] BUILT Conv 410** + **Tier C M2 `[SESS-TAB]` BUILT Conv 411** + **Tier C M3 `[SESS-FILES]` BUILT Conv 412** (+ Resources-tab retirement) — see Build logs below. **All 9 ADAPT built → §1 COMPLETE (Conv 412);** only the 3 DROPs unbuilt (2 soft/revisitable).
 
 ### Build log — Tier A (Conv 409, all 5 gates green)
 

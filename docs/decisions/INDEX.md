@@ -128,6 +128,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [2. Database & Data Model (High Impact)](02-database.md)
 
+- [M3 `session_resources.display_order` Folded Into 0001; Brian's `in_room` NOT Adopted (MERGE-BRIAN M3, Conv 412)](02-database.md#m3-session_resourcesdisplay_order-folded-into-0001-brians-in_room-not-adopted-merge-brian-m3-conv-412)
 - [A New Notification Type Costs a Full SQLite Table Rebuild — Feedback-Reminder Nudge Went Email-Only (FEEDBACK-NUDGE, Conv 394)](02-database.md#a-new-notification-type-costs-a-full-sqlite-table-rebuild--feedback-reminder-nudge-went-email-only-feedback-nudge-conv-394)
 - [Course Completion Is a "Diploma" (Derived From the Enrollment, No Table); Certificates Are Teach-Readiness Only (DIPLOMA, Conv 389)](02-database.md#course-completion-is-a-diploma-derived-from-the-enrollment-no-table-certificates-are-teach-readiness-only-diploma-conv-389)
 - [Adopt Per-User Timezone Model A — Store `users.timezone`, Render Viewer-Local (TZ-MODEL, Conv 371)](02-database.md#adopt-per-user-timezone-model-a--store-userstimezone-render-viewer-local-tz-model-conv-371)
@@ -552,6 +553,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [11. New Routing](11-new-routing.md)
 
+- [[RESTAB-RETIRE] Resources Tab Retired to /modules After Closing 2 Parity Gaps (MERGE-BRIAN M3, Conv 412)](11-new-routing.md#restab-retire-resources-tab-retired-to-modules-after-closing-2-parity-gaps-merge-brian-m3-conv-412)
 - [[SESS-TAB] Merged Curriculum-First Modules Tab — Canonical /modules, "My Sessions" Folds In (MERGE-BRIAN M2, Conv 411)](11-new-routing.md#sess-tab-merged-curriculum-first-modules-tab--canonical-modules-my-sessions-folds-in-merge-brian-m2-conv-411)
 - [OLD-PORTED-CLEANUP — Full `/old` Retirement (60 Pages Deleted, 14 RG-PUBLIC Kept, Dashboard Comparison-Keep Revoked)](11-new-routing.md#old-ported-cleanup--full-old-retirement-60-pages-deleted-14-rg-public-kept-dashboard-comparison-keep-revoked)
 - [OLD-RETIRE-DEFAULT — `/old/*` + AppNavbar Are Retire-by-Default](11-new-routing.md#old-retire-default--old--appnavbar-are-retire-by-default)

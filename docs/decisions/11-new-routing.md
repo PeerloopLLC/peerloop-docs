@@ -5,6 +5,19 @@
 
 This section tracks the routing restructure initiative to reorganize pages and consolidate layouts.
 
+### [RESTAB-RETIRE] Resources Tab Retired to /modules After Closing 2 Parity Gaps (MERGE-BRIAN M3, Conv 412)
+**Date:** 2026-07-24 (Conv 412)
+
+MERGE-BRIAN §1 mechanism M3 re-surfaced course resource files as per-module + course-wide file strips on the Modules tab, making the standalone Resources tab redundant *and* misleading. Before retiring it, a field-by-field parity diff against the **deleted pre-flip `ResourcesTabContent.tsx`** (a Conv-188 [RESTAB] DISC-DROP regression) surfaced 2 gaps M3 had silently dropped — **per-file descriptions** and **role-aware visibility** (`canSeeAllResources`: creator/admin/moderator see files while unenrolled). Both were closed on the Modules strips (making them a faithful superset), then the tab was retired: `/resources` **301→`/modules`**, removed from `VALID_TABS` / `TAB_LABELS` / `buildCourseExploreTabs`, orphaned `ResourcesTab.astro` deleted, matt-sourced registry regenerated. Rejected: 301 immediately (before parity), keep/rebuild a populated Resources tab (duplicates the curriculum-contextualized strips), and ship M3 leaving the empty tab.
+
+**Rationale:** Retiring a regressed surface is only safe once its function is fully re-delivered — the parity diff (not eyeballing) proved 2 gaps had to close first. A dedicated flat resource list would duplicate the curriculum-contextualized Modules strips.
+
+**Consequences:** `/course/[slug]/modules` is now the single files surface; `/resources` is a permanent redirect; **6 public explore tabs (was 7)**. §1 is now 9 of 9 ADAPT built = COMPLETE. Committed code `ff462e5a`.
+
+**See:** `src/components/course/ModulesTab.astro`, `src/lib/ssr/loaders/courses.ts`, `src/pages/course/[slug]/[...tab].astro`, `src/pages/course/[slug]/_course-tabs.ts`; `docs/sessions/2026-07/20260724_1455 Decisions.md` §1, Learnings §1/§2; Conv 412.
+
+---
+
 ### [SESS-TAB] Merged Curriculum-First Modules Tab — Canonical /modules, "My Sessions" Folds In (MERGE-BRIAN M2, Conv 411)
 **Date:** 2026-07-24 (Conv 411)
 
