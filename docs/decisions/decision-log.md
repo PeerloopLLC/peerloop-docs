@@ -1757,3 +1757,12 @@ MERGE-BRIAN mechanism 11: the client branch removes the `POST /api/sessions` tea
 **Rationale:** Silent per-booking re-assignment has un-audited earnings/history/roster knock-ons, and the branch's cited "Conv 376 approved" rationale is git-absent. A marketplace-policy change is the user's explicit call; open ask on Brian's rationale gates reconsideration.
 
 **See:** `docs/decisions/04-auth.md` entry; `docs/sessions/2026-07/20260723_1910 Decisions.md` §2.
+
+### Cosmetic Change to a `@matt-source` Component Stays a Strict-B Drift, Not an `@matt-inspired` Flip (Conv 409)
+**Date:** 2026-07-24 (Conv 409)
+
+A cosmetic edit to a `@matt-source` component keeps the `@matt-source` stamp and records the departure as a **Strict-B drift** — no side-effect flip to `@matt-inspired`. Flipping `CourseHeader` added 2 `prov:sweep` errors (prim-registry still lists it `matt-sourced 517:8934`; the sweep demands stamp↔registry match). A true reclassify is a PROV-REGISTRY change under `[PROV-SWEEP-DEBT2]`. Applied to `CourseHeader`/`MattCourseFeed`/`SubNavItem` in the MERGE-BRIAN §1 Tier A+B build.
+
+**Rationale:** Provenance stamp and registry are one coupled system; changing the stamp without the registry breaks the `prov:sweep` gate, and re-classification is its own backlog concern rather than a cosmetic-pass side effect.
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `docs/sessions/2026-07/20260724_0742 Decisions.md` §3, Learnings §2.

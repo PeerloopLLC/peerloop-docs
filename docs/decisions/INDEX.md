@@ -253,6 +253,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [Cosmetic Change to a `@matt-source` Component Stays a Strict-B Drift, Not an `@matt-inspired` Flip (MERGE-BRIAN, Conv 409)](05-ui-ux-components.md#cosmetic-change-to-a-matt-source-component-stays-a-strict-b-drift-not-an-matt-inspired-flip-merge-brian-conv-409)
 - [MERGE-BRIAN §1 — /course/[slug] Client-Branch Dispositions: 8 ADAPT, 3 DROP, 0 ADOPT (Conv 408)](05-ui-ux-components.md#merge-brian-1--courseslug-client-branch-dispositions-8-adapt-3-drop-0-adopt-conv-408)
 - [[A11Y] Two Behavioral Primitives Split by a11y Contract — `ModalBackdrop` (Never Focusable) vs `ClickableRow` (Conv 404)](05-ui-ux-components.md#a11y-two-behavioral-primitives-split-by-a11y-contract--modalbackdrop-never-focusable-vs-clickablerow-conv-404)
 - [Behavioral Primitives Are Neither `data-prov`-Stamped Nor Registry-Registered (Conv 404)](05-ui-ux-components.md#behavioral-primitives-are-neither-data-prov-stamped-nor-registry-registered-conv-404)

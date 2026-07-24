@@ -3,6 +3,17 @@
 
 ## 5. UI/UX & Components
 
+### Cosmetic Change to a `@matt-source` Component Stays a Strict-B Drift, Not an `@matt-inspired` Flip (MERGE-BRIAN, Conv 409)
+**Date:** 2026-07-24 (Conv 409)
+
+A cosmetic edit to a `@matt-source` component (one that departs from the 1:1 Figma frame) **keeps the `@matt-source` stamp** and records the departure as a **Strict-B drift** — it does **not** flip to `@matt-inspired`. Flipping `CourseHeader` (compressed hero) to `@matt-inspired` added 2 `prov:sweep` errors because the prim-registry still lists it as `matt-sourced 517:8934`, and the sweep demands the stamp match the registry. A true reclassify is a PROV-REGISTRY change tracked under `[PROV-SWEEP-DEBT2]`, not a side effect of a cosmetic pass. Applied to `CourseHeader` / `MattCourseFeed` / `SubNavItem` in the MERGE-BRIAN §1 Tier A+B build.
+
+**Rationale:** Provenance markers and the prim-registry are one coupled system; changing the stamp without the registry breaks the `prov:sweep` gate. Re-classification is its own concern with its own backlog, so a visual compaction shouldn't silently re-assert a page's design origin.
+
+**Consequences:** prov:sweep unchanged at its 9-err/1-drift baseline; drift documented in-source. Full reclassify deferred to `[PROV-SWEEP-DEBT2]`.
+
+**See:** `src/components/entity/CourseHeader.tsx`, `src/components/SubNavItem.astro`, `src/components/course/MattCourseFeed.tsx`; `docs/sessions/2026-07/20260724_0742 Decisions.md` §3, Learnings §2.
+
 ### [A11Y] Two Behavioral Primitives Split by a11y Contract — `ModalBackdrop` (Never Focusable) vs `ClickableRow` (Conv 404)
 **Date:** 2026-07-21 (Conv 404)
 
