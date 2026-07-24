@@ -2,7 +2,7 @@
 
 **Review target:** the **pivot snapshot `8a1e677f`** — the most recent commit of `origin/brian-July-7` (07-20 11:29), the state the user and Brian agreed was a good pivot point.
 **Focus:** see what Brian built at that snapshot, extract the *intent* of the changes worth keeping, and selectively reimplement them on `jfg-dev-14` with a consequence audit per adoption. **Nothing is merged as-is — ever** (user directive, Conv 407: *"I know I won't be merging any of his work as is"*). His branch is a **reference exhibit**, not a source.
-**Status:** 🔥 IN PROGRESS (Conv 408) — infrastructure verified + side-by-side environment operational (ours `:4321`, pivot `:4341`; **dev seeds diverge ~52 lines — Conv 408 correction**, NOT identical); **§1 `/course/[slug]` disposition walk COMPLETE (Conv 408)** — all 12 mechanisms decided (8 ADAPT · 3 DROP incl. 2 soft · 0 ADOPT); **§1 Tier A+B BUILT (Conv 409)** — M1/M4/M5 (cosmetic) + M6/M7/M12 (shared-primitive, all opt-in), all 5 gates green + live-verified (see §1 Build log). §1 Tier C (M2/M3/M10 + [RECEIPT], schema-bearing) pending; §2–6 dispositions pending.
+**Status:** 🔥 IN PROGRESS (Conv 408) — infrastructure verified + side-by-side environment operational (ours `:4321`, pivot `:4341`; **dev seeds diverge ~52 lines — Conv 408 correction**, NOT identical); **§1 `/course/[slug]` disposition walk COMPLETE (Conv 408)** — all 12 mechanisms decided (8 ADAPT · 3 DROP incl. 2 soft · 0 ADOPT); **§1 Tier A+B BUILT (Conv 409)** — M1/M4/M5 (cosmetic) + M6/M7/M12 (shared-primitive, all opt-in), all 5 gates green + live-verified (see §1 Build log). **§1 Tier C M10 + [RECEIPT] BUILT (Conv 410)** — community logo/affiliation + own durable receipt view, all gates green + live-verified; §1 Tier C **M2/M3 (the coupled IA rebuild) deferred to its own conv**; §2–6 dispositions pending.
 **Task-board body:** `CURRENT-TASKS.md § [MERGE-BRIAN-JULY7]` (branch facts, admission-gate history, timecard protection)
 
 > **Exploration branch — do not review.** `brian-July-20` is where the user moved Brian on 07-20 so he could keep exploring without git skills losing his work. Its commits post-date the pivot ([TAB-FIT], [SNAV-SCROLL], [CRS-MEMBERS], SubNav drag fix, Sidebar tweaks, feed changes) and are **out of scope until the next agreed pivot**. The *local* `brian-July-7` branch copy is also stale (28 behind origin) — `8a1e677f` is the only reference point.
@@ -38,7 +38,7 @@
 
 | # | Review unit | Status |
 |---|---|---|
-| 1 | `/course/[slug]` detail | ✅ dispositions DONE (Conv 408) — 12 mechanisms: 8 ADAPT · 3 DROP · 0 ADOPT. **Tier A+B BUILT Conv 409** (M1/M4/M5 cosmetic + M6/M7/M12 shared-primitive, all opt-in); Tier C (M2/M3/M10 + [RECEIPT], schema-bearing) pending |
+| 1 | `/course/[slug]` detail | ✅ dispositions DONE (Conv 408) — 12 mechanisms: 8 ADAPT · 3 DROP · 0 ADOPT. **Tier A+B BUILT Conv 409** (M1/M4/M5 + M6/M7/M12) + **Tier C M10/[RECEIPT] BUILT Conv 410** (logo/affiliation + own receipt view); Tier C **M2/M3 (coupled IA rebuild) deferred to own conv** |
 | 2 | `/courses` catalog | ⬜ |
 | 3 | `/community/[slug]` + `/communities` (+`[COMM-BRAND]` feature decision) | ⬜ |
 | 4 | **Site-wide shell track** (`[BACK-X]` back-nav, `SubNav`/`SubNavItem`, `Sidebar`, forms, `AppLayout`) | ⬜ |
@@ -68,7 +68,7 @@ Reference measurements (Conv 407, all vs the pivot unless noted): 96 changed fil
 
 ## 1 · `/course/[slug]` review
 
-**Brief generated Conv 407, analyzed entirely at the pivot snapshot `8a1e677f`** (dual-checkout read; `brian-July-20` excluded by instruction). ✅ **Dispositions DONE (Conv 408)** — all 12 decided from live side-by-side (ours `:4321`, pivot `:4341`): 8 ADAPT · 3 DROP · 0 ADOPT. **Tier A+B BUILT Conv 409** (M1/M4/M5 + M6/M7/M12) — see Build log below.
+**Brief generated Conv 407, analyzed entirely at the pivot snapshot `8a1e677f`** (dual-checkout read; `brian-July-20` excluded by instruction). ✅ **Dispositions DONE (Conv 408)** — all 12 decided from live side-by-side (ours `:4321`, pivot `:4341`): 8 ADAPT · 3 DROP · 0 ADOPT. **Tier A+B BUILT Conv 409** (M1/M4/M5 + M6/M7/M12) + **Tier C M10/[RECEIPT] BUILT Conv 410** — see Build log below. Tier C M2/M3 deferred to own conv.
 
 ### Build log — Tier A (Conv 409, all 5 gates green)
 
@@ -85,6 +85,15 @@ The 9 ADAPT mechanisms split into three dependency tiers; the user chose **Tier 
 - **M12 `MattCourseFeed` BUILT** — composer collapsed from a 3-row "Post Something" card to a **compact single row** (avatar + `field-sizing:content` growing input + Post; outer `gap-32`→`gap-16` so the feed starts higher) + **skeleton ghost-card** loaders replacing the one-line "loading" message. **Retokenised** — skeletons use `bg-border-default` (opacity), NOT Brian's raw `bg-neutral-100`. Kept the `@matt-source` stamp (composer redesign documented as a drift, same call as M1). DOM-verified: composer rows=1.
 
 **Gates (both tiers, this conv):** tsc ✓ · astro check 0-err ✓ · lint 0-err ✓ · build ✓ · full suite 6540 pass ✓ (3 updated: 2 `journey-loop-tabs` label assertions for the relabel + 1 pre-existing `EarningsDetail` `/settings/payments`→`/profile/payments` Conv-408 residue) · prov:sweep unchanged at its 9-err/1-drift `[PROV-SWEEP-DEBT2]` baseline. Tier A + hero also SSR/DOM-verified live (`:4321`), Tier B DOM-verified.
+
+### Build log — Tier C partial (Conv 410): M10 + [RECEIPT]
+
+Tier C (schema-bearing) was sliced (Conv 410, user): the two **independent, completable** mechanisms shipped this conv; M2 `[SESS-TAB]` + M3 `[SESS-FILES]` (a coupled, fixture-gated IA rebuild) were deferred to their own conv. All 5 gates green (tsc · astro check 0-err · lint 0-err · build · **full suite 6541 pass**, +1 new test) + **live-verified on `:4321`**.
+
+- **M10 `[COMM-BAND]` BUILT — logo + affiliation only.** Authored `communities.logo_url` (folded into `0001_schema.sql`; distinct from the pre-existing `cover_image_url` banner + `icon` emoji — documented in the column comment) + reseeded the three dev communities with square `picsum` logos. Course loader (`fetchCourseTabData`) now joins `courses.progression_id → progressions → communities` for `{name, slug, logoUrl, memberCount}` (added to `CourseTabData`); `CourseHeader.tsx` gained a `community` prop rendering a subtle **"part of X · N members"** affiliation line (logo + link to `/community/[slug]`) in the shared identity cluster — wired on `[...tab]`/`success`/`book`. **DROPPED** (per disposition): `accent_color`, `community-branding.ts` palette, the settings picker — all dead code on his branch, and the role-theming collision the user flagged. His `0005` never lands. Provenance: `CourseHeader` keeps its `@matt-source` stamp (the affiliation is an additive Peerloop element, documented). Live: `/course/intro-to-n8n` → "part of Automation Majors · 98 members" + logo.
+- **`[RECEIPT]` BUILT — own durable receipt view (M5 dep).** The M5 Payment step's dangling target now resolves: new `/receipt/[id]` page ([id] = enrollment id, mirrors `/diploma/[id]`) + `loaders/receipt.ts`. **Path chosen: our own view** (renders the `transactions` row — handles refunds/partial refunds, no Stripe round-trip, brandable) over Stripe's hosted `receipt_url`. **PRIVATE** (unlike the public Diploma): logged-out → `302 /login?redirect=`; owner-only via `WHERE e.student_id = ?` (a non-owner gets an indistinguishable "Not Found" — no enumeration leak). Discriminated loader result (`ok` / `no-payment` for free enrollments / `not-found`). `LandingLayout`, printable (`@media print`), `@matt-inspired`. M5's Payment step retargeted in `_course-tabs.ts` (`href: j.enrollmentId ? /receipt/${id} : /success` fallback); `journey-loop-tabs.test.ts` updated (fallback case + new receipt-href case). Live-verified: completed ("Paid" $249.00), partially-refunded (gross $249 − refund $100 = **net $149**), auth guard (302), ownership guard (Not Found).
+
+**Remaining §1 = Tier C M2 `[SESS-TAB]` + M3 `[SESS-FILES]`** (own conv) — the curriculum-first Sessions-tab rebuild (fixture-gated: booked-not-completed `sessions.module_id`=NULL) + M3's `display_order` column + file strips folded into it.
 
 ### Architecture in one paragraph
 

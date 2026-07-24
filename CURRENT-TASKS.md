@@ -43,7 +43,6 @@
 22. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
 23. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
 24. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
-25. [RECEIPT](#receipt) — no payment receipt exists; Payment step links to the stale success page
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -161,7 +160,7 @@
 ### [MERGE-BRIAN-JULY7]
 
 - **State:** 🔄 active · `[Opus]` (HOLD lifted Conv 407 — client conversation happened; integration planning)
-- **📦 §1 BUILD progress (Conv 409):** **Tier A+B BUILT** — Tier A cosmetic: M1 hero-compress (`CourseHeader.tsx`, 360→166px) · M5 band-compact + `actionable` links (`CourseJourneyStepper.astro` + `_course-tabs.ts`) · M4 "Peer Teachers" relabel + count-gated search island (`TeachersTabList.tsx`). Tier B shared-primitive (all **opt-in**): M6 `[TAB-SCROLL]` (`SubNav preserveScroll` + script) · M7 `[TAB-FLOAT/COMPACT]` (`SubNavItem dense` — tokenised, no gradient; chip 40→36px, 7 tabs/row) · M12 `MattCourseFeed` (compact composer + tokenised skeletons). All 5 gates green + live DOM-verified; prov:sweep unchanged at `[PROV-SWEEP-DEBT2]` baseline. **Remaining §1:** Tier C (M2 `[SESS-TAB]` / M3 `[SESS-FILES]` / M10 `[COMM-BAND]` + `[RECEIPT]` — schema-bearing, own conv). Detail: `plan/merge-brian/README.md §1 Build log`.
+- **📦 §1 BUILD progress (Conv 409–410):** **Tier A+B BUILT (409)** — Tier A cosmetic: M1 hero-compress (`CourseHeader.tsx`, 360→166px) · M5 band-compact + `actionable` links (`CourseJourneyStepper.astro` + `_course-tabs.ts`) · M4 "Peer Teachers" relabel + count-gated search island (`TeachersTabList.tsx`). Tier B shared-primitive (all **opt-in**): M6 `[TAB-SCROLL]` (`SubNav preserveScroll` + script) · M7 `[TAB-FLOAT/COMPACT]` (`SubNavItem dense` — tokenised, no gradient) · M12 `MattCourseFeed` (compact composer + tokenised skeletons). **Tier C M10 + [RECEIPT] BUILT (410):** M10 `[COMM-BAND]` (`communities.logo_url` + reseed + loader join + `CourseHeader` affiliation line; `accent_color`/palette/picker DROPPED) · `[RECEIPT]` (own durable `/receipt/[id]` view, owner-only + printable; M5 Payment step retargeted off `/success`). All 5 gates green + live-verified; prov:sweep unchanged at `[PROV-SWEEP-DEBT2]` baseline. **Remaining §1:** Tier C **M2 `[SESS-TAB]` + M3 `[SESS-FILES]`** — the coupled, fixture-gated curriculum-first IA rebuild, deferred to its own conv. Detail: `plan/merge-brian/README.md §1 Build log`.
 - **HOLD LIFTED (Conv 407):** the user confirmed the Brian conversation has happened → integration may proceed. (The Conv-396 HOLD principle survives as method: his rationale still isn't in git — request the "approved Option B / mockup" artifacts his commits cite; client-originated changes get a consequence audit.)
 - **🧭 Client directives (Conv 407, from the user↔Brian conversation):** (1) **NO adoption "as is" — ever** (user: *"I know I won't be merging any of his work as is"*); his branch is a **reference exhibit**, adoption = selective reimplementation of intent with a consequence audit per change. (2) Watch areas he flagged: `/course/[slug]` page changes (implications for other detail pages), **breadcrumb/back-nav rework** (`[BACK-X]` `BackHeader.astro` — site-wide), **colour changes that may contradict role-based colour theming** (his `accent_color` community branding + `CourseCoverPanel` hex deviations are the known collision points).
 - **Task:** assess client branch for impact, integrate what's worth keeping into `jfg-dev-14`. **Discard nothing without review.** Scope will grow.
@@ -293,17 +292,6 @@
 - **Cross-machine:** MacMiniM4 still carries stale Conv-403 `~/.zshrc` `env -u` guards (harmless no-ops) — clean next time on it.
 - **Refs:** `memory/project_task_tools_child_session_leak.md`, `DOC-DECISIONS.md §3`, `code.claude.com/docs/en/tools-reference.md`. Surfaced Conv 404, root-caused Conv 406.
 
-### [RECEIPT]
-
-- **State:** 📋 queued · [Opus]
-- **What:** There is **no payment receipt anywhere in the app** — no page, no view. The journey band's "✓ Payment" step currently links to `/course/[slug]/success`, which is the post-Stripe *confirmation* page (it consumes `?session_id=`, self-heals a missed webhook, renders the expectations form). For an enrolment completed months ago that is a stale confirmation screen, not a record of payment.
-- **Why now:** Conv 408 MERGE-BRIAN mechanism 5 `[BAND-ACTION]` — the user chose to keep the Payment step clickable on the condition that it leads somewhere meaningful. That destination has to exist.
-- **Data is already there:** `transactions` (`migrations/0001_schema.sql:887`) carries `enrollment_id`, `amount_cents`, `stripe_payment_intent_id`, `stripe_charge_id`, `status`, `paid_at`, `refunded_at`, `refund_amount_cents`.
-- **Two implementation paths:** (a) cheap — link Stripe's hosted `receipt_url`, retrievable via `stripe_charge_id`; (b) durable — our own receipt view rendering the `transactions` row (works for refunds/partial refunds, no Stripe round-trip, brandable, and survives a provider change). Decide before building.
-- **Related but NOT the same thing:** a payment-receipt *email* is planned for MVP-GOLIVE (`plan/mvp-golive/README.md` line 94); its template `PaymentReceiptEmail.tsx` was deleted as dead code in Conv 398 and the stale doc references are `[EMAILDOC]`. The receipt *page* was tracked nowhere before this task.
-- **Done test:** a student with a completed enrolment can reach a receipt showing amount, date and status from the Payment step; refunded and partially-refunded states render correctly.
-- Surfaced Conv 408.
-
 ### [TSLASH]
 
 - **State:** 📋 queued · [Opus]
@@ -354,4 +342,5 @@
 
 ## ✅ Done this conv
 
-- **[MERGE-BRIAN-JULY7]** §1 **Tier A+B BUILT**. Tier A cosmetic: M1 hero-compress (360→166px, DOM-measured — caught + fixed a `py-28` undefined-token bug that fell through to stock Tailwind 112px) · M5 band-compact + actionable-only links · M4 "Peer Teachers" relabel + gated-search island (`TeachersTabList.tsx`). Tier B shared-primitive (all opt-in): M6 `SubNav preserveScroll` + script · M7 `SubNavItem dense` (tokenised, no gradient; chip 40→36px, 7 tabs/row) · M12 compact composer + tokenised skeletons. All 5 gates green; live DOM/SSR-verified (`:4321`) + side-by-side screenshots vs pivot `:4341`. 3 tests realigned (2 relabel + 1 pre-existing `EarningsDetail` Conv-408 residue). Reconciliations: no band-end CTA (kept in hero); `CourseHeader`/`MattCourseFeed`/`SubNavItem` keep `@matt-source` (departures documented as drifts — full `@matt-inspired` flip deferred to `[PROV-SWEEP-DEBT2]`); M5 Payment→receipt deferred to `[RECEIPT]`.
+- **[RECEIPT]** — built the payment receipt (own durable view): `/receipt/[id]` renders the `transactions` row (amount/date/status + full/partial-refund states), **owner-only** (`WHERE e.student_id=?`, logged-out → 302 login, non-owner → indistinguishable Not Found), printable `@matt-inspired` page + `loaders/receipt.ts` (discriminated `ok`/`no-payment`/`not-found`). Retargeted MERGE-BRIAN §1 M5's Payment journey step off the stale `/success` page. 5 gates green (suite 6541, +1 test) + live-verified (completed/partial-refund/auth/ownership guards). Conv 410.
+- **[MERGE-BRIAN §1 · M10 `[COMM-BAND]`]** — community affiliation (logo + "part of X · N members") on the course header: `communities.logo_url` folded into `0001` + dev reseed, loader join `progression_id→progressions→communities`, `CourseHeader` `community` prop wired on `[...tab]`/`success`/`book`. Dropped `accent_color`/palette/picker per disposition. 5 gates green + live-verified (`/course/intro-to-n8n`). Conv 410. (Parent [MERGE-BRIAN-JULY7] stays active — Tier C M2/M3 remain.)
