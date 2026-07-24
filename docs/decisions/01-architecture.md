@@ -3,6 +3,15 @@
 
 ## 1. Architecture & Design (Highest Impact)
 
+### [RECEIPT] Owns a Durable `/receipt/[id]` View Rendered from the `transactions` Row, Not Stripe's Hosted `receipt_url` (Conv 410)
+**Date:** 2026-07-24 (Conv 410)
+
+**Decision:** The payment receipt is our own printable `/receipt/[id]` page (`@matt-inspired`, `LandingLayout`) rendered from the local `transactions` row via an owner-scoped SSR loader, **not** a link out to Stripe's hosted `receipt_url` (which would be reached via `stripe_charge_id`). The MERGE-BRIAN §1 M5 Payment journey step was retargeted to `/receipt/[id]` (with a `/success` fallback when no `enrollmentId`). Chosen over the cheap "link Stripe hosted" option (Option 2).
+
+**Rationale:** Owning the view handles refunds/partial refunds (the done-test explicitly requires rendering both), needs no Stripe round-trip, is brandable, and survives a payment-provider change — default-durable per §Solution Quality. The receipt becomes an addressable platform record independent of Stripe.
+
+**Consequences:** New `src/pages/receipt/[id].astro` + `src/lib/ssr/loaders/receipt.ts` (owner-scoped, discriminated `ok`/`no-payment`/`not-found` result); owner-only access enforced in SQL (`WHERE e.student_id = ?` → non-owner gets an indistinguishable "Not Found"), logged-out → `302 /login?redirect=`. See the private-record-page loader pattern in `docs/sessions/2026-07/20260724_1031 Learnings.md` §2; Conv 410.
+
 ### `completeSession` Threads an Optional `waitUntil` Param — Webhook Callers Pass `ctx.waitUntil`, Others Await (Fixes Fire-and-Forget Drop, Conv 384)
 **Date:** 2026-07-11 (Conv 384)
 

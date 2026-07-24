@@ -13,13 +13,13 @@
 | Course | 3 |
 | Creating | 3 |
 | General | 1 |
-| Other | 28 |
+| Other | 29 |
 | Profile | 3 |
 | Session | 1 |
 | Social | 2 |
 | Student | 1 |
 | Teaching | 2 |
-| **Total** | **66** |
+| **Total** | **67** |
 
 ## Link Type Legend
 
@@ -47,10 +47,10 @@ Routes referenced in code but **no matching .astro page exists:**
 | `/blog` | `[Footer]` |
 | `/careers` | `[Footer]` |
 | `/community-guidelines` | `/invite/mod/[token]` |
-| `/community/[slug]` | `/community/[slug]/[...tab]` |
+| `/community/[slug]` | `/community/[slug]/[...tab]`, `/course/[slug]/[...tab]`, `/course/[slug]/book`, `/course/[slug]/success` |
 | `/contact` | `[Footer]` |
 | `/cookies` | `[Footer]` |
-| `/course/[slug]` | `/`, `/admin/enrollments`, `/community/[slug]/[...tab]`, `/course/[slug]/[...tab]`, `/course/[slug]/book`, `/course/[slug]/success`, `/courses`, `/creating/[...tab]`, `/dev/primitives`, `/diploma/[id]`, `/learning/[...tab]`, `/session/[id]`, `/teacher/[handle]`, `/teaching/[...tab]`, `/teaching/courses/[courseId]`, `/verify/[id]` |
+| `/course/[slug]` | `/`, `/admin/enrollments`, `/community/[slug]/[...tab]`, `/course/[slug]/[...tab]`, `/course/[slug]/book`, `/course/[slug]/success`, `/courses`, `/creating/[...tab]`, `/dev/primitives`, `/diploma/[id]`, `/learning/[...tab]`, `/receipt/[id]`, `/session/[id]`, `/teacher/[handle]`, `/teaching/[...tab]`, `/teaching/courses/[courseId]`, `/verify/[id]` |
 | `/course/[slug]/benefits` | `/course/[slug]/[...tab]`, `/course/[slug]/book`, `/course/[slug]/success` |
 | `/course/[slug]/feed` | `/course/[slug]/success` |
 | `/course/[slug]/learn` | `/course/[slug]/[...tab]`, `/course/[slug]/book`, `/courses`, `/learning/[...tab]`, `/session/[id]` |
@@ -68,7 +68,7 @@ Routes referenced in code but **no matching .astro page exists:**
 | `/for-creators` | `[Footer]` |
 | `/help` | `/profile/[...tab]`, `[Footer]` |
 | `/how-it-works` | `[Footer]` |
-| `/learning` | `/course/[slug]/book`, `/learning/[...tab]`, `[Sidebar]` |
+| `/learning` | `/course/[slug]/book`, `/learning/[...tab]`, `/receipt/[id]`, `[Sidebar]` |
 | `/learning/sessions` | `/learning/[...tab]` |
 | `/pricing` | `[Footer]` |
 | `/privacy` | `[Footer]` |
@@ -220,13 +220,14 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 | 57 | `/old/testimonials` | Other | LandingLayout | Public | `src/pages/old/testimonials.astro` |
 | 58 | `/onboarding` | Auth | AppLayout | Public | `src/pages/onboarding.astro` |
 | 59 | `/profile/[...tab]` | Other | AppLayout | Auth required | `src/pages/profile/[...tab].astro` |
-| 60 | `/reset-password` | Auth | AppLayout | Public | `src/pages/reset-password.astro` |
-| 61 | `/session/[id]` | Session | AppLayout | Auth required | `src/pages/session/[id].astro` |
-| 62 | `/signup` | Auth | AppLayout | Auth required | `src/pages/signup.astro` |
-| 63 | `/teacher/[handle]` | Profile | AppLayout | Public | `src/pages/teacher/[handle]/index.astro` |
-| 64 | `/teaching/[...tab]` | Teaching | AppLayout | Redirect | `src/pages/teaching/[...tab].astro` |
-| 65 | `/teaching/courses/[courseId]` | Teaching | AppLayout | Auth required | `src/pages/teaching/courses/[courseId].astro` |
-| 66 | `/verify/[id]` | Other | LandingLayout | Public | `src/pages/verify/[id].astro` |
+| 60 | `/receipt/[id]` | Other | LandingLayout | Auth required | `src/pages/receipt/[id].astro` |
+| 61 | `/reset-password` | Auth | AppLayout | Public | `src/pages/reset-password.astro` |
+| 62 | `/session/[id]` | Session | AppLayout | Auth required | `src/pages/session/[id].astro` |
+| 63 | `/signup` | Auth | AppLayout | Auth required | `src/pages/signup.astro` |
+| 64 | `/teacher/[handle]` | Profile | AppLayout | Public | `src/pages/teacher/[handle]/index.astro` |
+| 65 | `/teaching/[...tab]` | Teaching | AppLayout | Redirect | `src/pages/teaching/[...tab].astro` |
+| 66 | `/teaching/courses/[courseId]` | Teaching | AppLayout | Auth required | `src/pages/teaching/courses/[courseId].astro` |
+| 67 | `/verify/[id]` | Other | LandingLayout | Public | `src/pages/verify/[id].astro` |
 
 ## Per-Page Details
 
@@ -463,6 +464,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/invite/mod/[token]` (redir)
 - `/messages` (redir)
 - `/profile/[...tab]` (btn)
+- `/receipt/[id]` (redir)
 - `/reset-password` (btn)
 - `/session/[id]` (redir)
 - `/teaching/courses/[courseId]` (redir)
@@ -539,6 +541,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 
 **Outbound (page-specific):**
 - `/` (link)
+- `/community/[slug]` (card) ⚠️
 - `/course/[slug]` (redir) ⚠️
 - `/course/[slug]/benefits` (link) ⚠️
 - `/course/[slug]/book` (tab)
@@ -559,6 +562,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Layout:** AppLayout | **Auth:** Public (adapts) | **File:** `src/pages/course/[slug]/book.astro`
 
 **Outbound (page-specific):**
+- `/community/[slug]` (card) ⚠️
 - `/course/[slug]` (redir) ⚠️
 - `/course/[slug]/benefits` (link) ⚠️
 - `/course/[slug]/book` (tab)
@@ -587,6 +591,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Layout:** AppLayout | **Auth:** Public (adapts) | **File:** `src/pages/course/[slug]/success.astro`
 
 **Outbound (page-specific):**
+- `/community/[slug]` (card) ⚠️
 - `/course/[slug]` (card) ⚠️
 - `/course/[slug]/benefits` (link) ⚠️
 - `/course/[slug]/book` (tab)
@@ -1038,6 +1043,17 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/signup` (btn)
 
 **Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
+
+**Inbound from:** None
+
+#### `/receipt/[id]`
+
+**Layout:** LandingLayout | **Auth:** Auth required | **File:** `src/pages/receipt/[id].astro`
+
+**Outbound (page-specific):**
+- `/course/[slug]` (card) ⚠️
+- `/learning` (link) ⚠️
+- `/login` (redir)
 
 **Inbound from:** None
 

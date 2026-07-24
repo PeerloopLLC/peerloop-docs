@@ -1766,3 +1766,12 @@ A cosmetic edit to a `@matt-source` component keeps the `@matt-source` stamp and
 **Rationale:** Provenance stamp and registry are one coupled system; changing the stamp without the registry breaks the `prov:sweep` gate, and re-classification is its own backlog concern rather than a cosmetic-pass side effect.
 
 **See:** `docs/decisions/05-ui-ux-components.md` entry; `docs/sessions/2026-07/20260724_0742 Decisions.md` §3, Learnings §2.
+
+### [RECEIPT] Owns a Durable `/receipt/[id]` View Rendered from the `transactions` Row, Not Stripe's Hosted `receipt_url` (Conv 410)
+**Date:** 2026-07-24 (Conv 410)
+
+The payment receipt is our own printable `/receipt/[id]` page rendered from the local `transactions` row via an owner-scoped SSR loader, not a link out to Stripe's hosted `receipt_url`. The MERGE-BRIAN §1 M5 Payment journey step was retargeted to `/receipt/[id]` (with a `/success` fallback when no `enrollmentId`). Chosen over the cheap "link Stripe hosted" option.
+
+**Rationale:** Owning the view handles refunds/partial refunds (done-test requires both), needs no Stripe round-trip, is brandable, and survives a payment-provider change (default-durable per §Solution Quality). Owner-only access enforced in SQL (`WHERE e.student_id = ?` → non-owner gets an indistinguishable "Not Found"); logged-out → `302 /login?redirect=`.
+
+**See:** `docs/decisions/01-architecture.md` entry; `docs/sessions/2026-07/20260724_1031 Decisions.md` §2, Learnings §2; Conv 410.

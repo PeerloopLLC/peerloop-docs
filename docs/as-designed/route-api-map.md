@@ -9,10 +9,10 @@
 
 ## Quick Stats
 
-- **Pages scanned:** 66
+- **Pages scanned:** 67
 - **API endpoints found in UI:** 218
-- **Routes reachable from navbar:** 49
-- **Unreachable routes:** 34
+- **Routes reachable from navbar:** 53
+- **Unreachable routes:** 35
 
 ## 1. Route → API Endpoints
 
@@ -435,6 +435,8 @@ Which API calls does each page make?
 | GET | `/api/tags` | src/components/settings/InterestsSettings.tsx |
 | GET | `/api/users/check-handle` | src/components/settings/ProfileSettings.tsx |
 
+**`/receipt/[id]`** — *no API calls detected*
+
 **`/verify/[id]`** — *no API calls detected*
 
 ### Profile
@@ -808,6 +810,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/old/terms` — ℹ️ no-nav by design
 - `/old/testimonials` — ℹ️ no-nav by design
 - `/profile/[...tab]` — ℹ️ no-nav by design
+- `/receipt/[id]` — ⚠️ no discovered path
 - `/reset-password` — ⚠️ no discovered path
 - `/teaching/[...tab]` — ℹ️ no-nav by design
 

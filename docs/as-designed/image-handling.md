@@ -27,6 +27,10 @@ Peerloop stores images in Cloudflare R2 and renders them with standard HTML `<im
 | `courses` | `thumbnail_url` | R2 upload | `POST /api/me/courses/[id]/thumbnail` |
 | `course_modules` | `thumbnail_url` | Not yet used | None |
 | `team_members` | `avatar_url` | Seed data | None |
+| `communities` | `cover_image_url` | Seed data | None |
+| `communities` | `logo_url` | Seed data | None (upload flow TBD — Conv 410 [COMM-BAND]) |
+
+> `communities.icon` is an emoji or icon **name**, not an image URL, so it is intentionally omitted from this table.
 
 ### Rendering
 

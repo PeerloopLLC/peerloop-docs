@@ -14,7 +14,7 @@ btn: A01
 lnk: /faq P01
 ⊘ no footer
 ⊘ no navbar"	"M04 /certificates/[id]
-btn: M29
+btn: M30
 lnk: M01
 ⊘ no footer
 ⊘ no navbar"	"M05 /communities
@@ -47,7 +47,7 @@ rdr: A01
 ⊘ no footer
 ⊘ no navbar"										
 "M11 /learning/[...tab]
-btn: /discover/courses R03 M29 P02
+btn: /discover/courses R03 M30 P02
 crd: /course/[slug]
 lnk: M01 /learning/sessions M09
 rdr: /learning
@@ -103,11 +103,16 @@ lnk: M01
 btn: A01 A04
 crd: R01
 lnk: /help A03
-rdr: M01 /profile"	"M29 /verify/[id]
+rdr: M01 /profile"	"M29 /receipt/[id]
+crd: /course/[slug]
+lnk: /learning
+rdr: A01
+⊘ no footer
+⊘ no navbar"	"M30 /verify/[id]
 crd: /course/[slug] R01
 lnk: M01
 ⊘ no footer
-⊘ no navbar"											
+⊘ no navbar"										
 
 D - DISCOVERY					P - PERSONAL					S - SETTINGS				
 					"P01 /courses
@@ -127,16 +132,18 @@ crd: R02 /course/[slug] R01
 lnk: M01 P01
 rdr: M05 /community/[slug] A01
 tab: K03"					"C01 /course/[slug]/[...tab]
+crd: /community/[slug]
 crm: R03
 lnk: P01 M01 M09 /course/[slug]/reviews /course/[slug]/modules /course/[slug]/benefits
 rdr: /course/[slug] A04
 tab: /course/[slug]/learn C02"	"C02 /course/[slug]/book
 btn: P02
+crd: /community/[slug]
 crm: R03
 lnk: /course/[slug]/modules /course/[slug]/benefits /learning
 rdr: P01 /course/[slug] A01
 tab: /course/[slug]/learn C02"	"C03 /course/[slug]/success
-crd: /course/[slug]
+crd: /course/[slug] /community/[slug]
 crm: R03
 lnk: P01 /course/[slug]/modules /course/[slug]/benefits
 tab: C02 /course/[slug]/feed"			"R01 /@[handle]
@@ -175,7 +182,7 @@ rdr: A01"	"K03 /creating/communities/[slug]
 lnk: M01 /creating P01
 rdr: /creating/communities A01 /creating/studio K03"			"X01 /admin
 lnk: X17 X06 X08 X15"	X02 /admin/analytics	X03 /admin/announcements	X04 /admin/availability-settings	"X05 /admin/certificates
-btn: M29"
+btn: M30"
 										X06 /admin/courses	"X07 /admin/creator-applications
 btn: P02"	"X08 /admin/enrollments
 btn: P02

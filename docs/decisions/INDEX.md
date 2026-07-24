@@ -27,6 +27,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [1. Architecture & Design (Highest Impact)](01-architecture.md)
 
+- [[RECEIPT] Owns a Durable `/receipt/[id]` View Rendered from the `transactions` Row, Not Stripe's Hosted `receipt_url` (Conv 410)](01-architecture.md#receipt-owns-a-durable-receiptid-view-rendered-from-the-transactions-row-not-stripes-hosted-receipt_url-conv-410)
 - [[ASTRO7] Astro 6.3.7→7.1.3 Promoted to jfg-dev-14 — vite 8, adapter 14, compressHTML Pinned (Conv 402)](01-architecture.md#astro7-astro-637713-promoted-to-jfg-dev-14--vite-8-adapter-14-compresshtml-pinned-conv-402)
 - [[NPMVULN] Dev-Tail Accepted as Residual — RESOLVED; audit Stays at 7, wrangler Lever Deferred (Conv 402)](01-architecture.md#npmvuln-dev-tail-accepted-as-residual--resolved-audit-stays-at-7-wrangler-lever-deferred-conv-402)
 - [`completeSession` Threads an Optional `waitUntil` Param — Webhook Callers Pass `ctx.waitUntil`, Others Await (Fixes Fire-and-Forget Drop, Conv 384)](01-architecture.md#completesession-threads-an-optional-waituntil-param--webhook-callers-pass-ctxwaituntil-others-await-fixes-fire-and-forget-drop-conv-384)

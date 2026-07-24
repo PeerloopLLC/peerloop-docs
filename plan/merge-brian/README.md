@@ -2,7 +2,7 @@
 
 **Review target:** the **pivot snapshot `8a1e677f`** — the most recent commit of `origin/brian-July-7` (07-20 11:29), the state the user and Brian agreed was a good pivot point.
 **Focus:** see what Brian built at that snapshot, extract the *intent* of the changes worth keeping, and selectively reimplement them on `jfg-dev-14` with a consequence audit per adoption. **Nothing is merged as-is — ever** (user directive, Conv 407: *"I know I won't be merging any of his work as is"*). His branch is a **reference exhibit**, not a source.
-**Status:** 🔥 IN PROGRESS (Conv 408) — infrastructure verified + side-by-side environment operational (ours `:4321`, pivot `:4341`; **dev seeds diverge ~52 lines — Conv 408 correction**, NOT identical); **§1 `/course/[slug]` disposition walk COMPLETE (Conv 408)** — all 12 mechanisms decided (8 ADAPT · 3 DROP incl. 2 soft · 0 ADOPT); **§1 Tier A+B BUILT (Conv 409)** — M1/M4/M5 (cosmetic) + M6/M7/M12 (shared-primitive, all opt-in), all 5 gates green + live-verified (see §1 Build log). **§1 Tier C M10 + [RECEIPT] BUILT (Conv 410)** — community logo/affiliation + own durable receipt view, all gates green + live-verified; §1 Tier C **M2/M3 (the coupled IA rebuild) deferred to its own conv**; §2–6 dispositions pending.
+**Status:** 🔥 IN PROGRESS (Conv 408) — infrastructure verified + side-by-side environment operational (ours `:4321`, pivot `:4341`; **dev seeds diverge ~52 lines — Conv 408 correction**, NOT identical); **§1 `/course/[slug]` disposition walk COMPLETE (Conv 408)** — all 12 mechanisms decided (9 ADAPT · 3 DROP incl. 2 soft · 0 ADOPT); **§1 Tier A+B BUILT (Conv 409)** — M1/M4/M5 (cosmetic) + M6/M7/M12 (shared-primitive, all opt-in), all 5 gates green + live-verified (see §1 Build log). **§1 Tier C M10 + [RECEIPT] BUILT (Conv 410)** — community logo/affiliation + own durable receipt view, all gates green + live-verified; §1 Tier C **M2/M3 (the coupled IA rebuild) deferred to its own conv**; §2–6 dispositions pending.
 **Task-board body:** `CURRENT-TASKS.md § [MERGE-BRIAN-JULY7]` (branch facts, admission-gate history, timecard protection)
 
 > **Exploration branch — do not review.** `brian-July-20` is where the user moved Brian on 07-20 so he could keep exploring without git skills losing his work. Its commits post-date the pivot ([TAB-FIT], [SNAV-SCROLL], [CRS-MEMBERS], SubNav drag fix, Sidebar tweaks, feed changes) and are **out of scope until the next agreed pivot**. The *local* `brian-July-7` branch copy is also stale (28 behind origin) — `8a1e677f` is the only reference point.
@@ -38,7 +38,7 @@
 
 | # | Review unit | Status |
 |---|---|---|
-| 1 | `/course/[slug]` detail | ✅ dispositions DONE (Conv 408) — 12 mechanisms: 8 ADAPT · 3 DROP · 0 ADOPT. **Tier A+B BUILT Conv 409** (M1/M4/M5 + M6/M7/M12) + **Tier C M10/[RECEIPT] BUILT Conv 410** (logo/affiliation + own receipt view); Tier C **M2/M3 (coupled IA rebuild) deferred to own conv** |
+| 1 | `/course/[slug]` detail | ✅ dispositions DONE (Conv 408) — 12 mechanisms: 9 ADAPT · 3 DROP · 0 ADOPT. **Tier A+B BUILT Conv 409** (M1/M4/M5 + M6/M7/M12) + **Tier C M10/[RECEIPT] BUILT Conv 410** (logo/affiliation + own receipt view); Tier C **M2/M3 (coupled IA rebuild) deferred to own conv** |
 | 2 | `/courses` catalog | ⬜ |
 | 3 | `/community/[slug]` + `/communities` (+`[COMM-BRAND]` feature decision) | ⬜ |
 | 4 | **Site-wide shell track** (`[BACK-X]` back-nav, `SubNav`/`SubNavItem`, `Sidebar`, forms, `AppLayout`) | ⬜ |
@@ -68,7 +68,7 @@ Reference measurements (Conv 407, all vs the pivot unless noted): 96 changed fil
 
 ## 1 · `/course/[slug]` review
 
-**Brief generated Conv 407, analyzed entirely at the pivot snapshot `8a1e677f`** (dual-checkout read; `brian-July-20` excluded by instruction). ✅ **Dispositions DONE (Conv 408)** — all 12 decided from live side-by-side (ours `:4321`, pivot `:4341`): 8 ADAPT · 3 DROP · 0 ADOPT. **Tier A+B BUILT Conv 409** (M1/M4/M5 + M6/M7/M12) + **Tier C M10/[RECEIPT] BUILT Conv 410** — see Build log below. Tier C M2/M3 deferred to own conv.
+**Brief generated Conv 407, analyzed entirely at the pivot snapshot `8a1e677f`** (dual-checkout read; `brian-July-20` excluded by instruction). ✅ **Dispositions DONE (Conv 408)** — all 12 decided from live side-by-side (ours `:4321`, pivot `:4341`): 9 ADAPT · 3 DROP · 0 ADOPT. **Tier A+B BUILT Conv 409** (M1/M4/M5 + M6/M7/M12) + **Tier C M10/[RECEIPT] BUILT Conv 410** — see Build log below. Tier C M2/M3 deferred to own conv.
 
 ### Build log — Tier A (Conv 409, all 5 gates green)
 
