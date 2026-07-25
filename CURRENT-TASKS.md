@@ -19,31 +19,33 @@
 
 ## 🎯 Now  (execution order — top = next)
 
-1. [MERGE-BRIAN-JULY7](#merge-brian-july7) — client branch assessment/integration
-2. [A11Y](#a11y) — accessibility lint triage
-3. [RHOOKS](#rhooks) — react-hooks lint triage
-4. [KNIP](#knip) — dead-export oracle → gate
-5. [PROV-SWEEP-DEBT2](#prov-sweep-debt2) — `prov:sweep` gate silently red (9 unregistered)
-6. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
-7. [EDITSAFE](#editsafe) — anchored-edit discipline
-8. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
-9. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
-10. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
-11. [HOME-FIXES](#home-fixes) — Home route fix bucket
-12. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
-13. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
-14. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
-15. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
-16. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
-17. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
-18. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
-19. [RSFD](#rsfd) — port `r-start-from-dirty`
-20. [DEPEXP](#depexp) — dependency-probe hygiene
-21. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
-22. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
-23. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
-24. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
-25. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
+1. [MF-SKEW](#mf-skew) — ⭐ NEXT CONV (user directive): full wrangler upgrade — "cannot have the dev tooling this brittle"
+2. [MERGE-BRIAN-JULY7](#merge-brian-july7) — client branch assessment/integration
+3. [A11Y](#a11y) — accessibility lint triage
+4. [RHOOKS](#rhooks) — react-hooks lint triage
+5. [KNIP](#knip) — dead-export oracle → gate
+6. [PROV-SWEEP-DEBT2](#prov-sweep-debt2) — `prov:sweep` gate silently red (9 unregistered)
+7. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
+8. [EDITSAFE](#editsafe) — anchored-edit discipline
+9. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
+10. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
+11. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
+12. [HOME-FIXES](#home-fixes) — Home route fix bucket
+13. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
+14. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
+15. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
+16. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
+17. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
+18. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
+19. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
+20. [RSFD](#rsfd) — port `r-start-from-dirty`
+21. [DEPEXP](#depexp) — dependency-probe hygiene
+22. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
+23. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
+24. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
+25. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
+26. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
+27. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -135,6 +137,13 @@
 - **If it recurs:** verify current-ness via `curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:4321/matt` (404 = current code); tell the user to hard-refresh (Cmd+Shift+R) / private window / use `127.0.0.1`. Consider a `memory/reference_devserver_stale_daemon` note. Related: `[DEVSRV-KILL]`.
 - **Refs:** `memory/feedback_persistent_dev_server_4321`. Surfaced Conv 414.
 
+### [DL-FILENAME]
+
+- **State:** 📋 queued · low priority (polish) · surfaced Conv 415
+- **What:** `/api/resources/[id]/download` sets `Content-Disposition: attachment; filename="${resource.name || getFilenameFromKey(r2_key)}"`. Because `resource.name` is a human title with **no file extension** (e.g. "n8n Node Reference"), downloaded files save without `.pdf`/`.zip`, so the OS/browser may not open them in the right app. The `r2_key` *does* carry the real filename (`node-reference.pdf`).
+- **Fix:** prefer `getFilenameFromKey(r2_key)` (has the extension) for the download filename, or append the extension (from the key/mime) to `resource.name`. Decide which reads better. Check the sibling `api/community-resources/[id]/download.ts` for the same pattern.
+- **Refs:** `src/pages/api/resources/[id]/download.ts` (~line 102), `getFilenameFromKey` in `@lib/r2`, `[R2-SEED]`. Surfaced Conv 415 while verifying the seeded downloads.
+
 ### [EDITSAFE]
 
 - **State:** 📋 queued (CC discipline)
@@ -210,6 +219,17 @@
 - **Docs repo CLEAN of his commits** — he worked code-only, no dual-repo. So his rationale exists **nowhere in git**, only his chat sessions; commits cite *"approved Option B / mockup"* → **request those artifacts from him**.
 - **Working model of the client:** not a coder, drives his own CC; treat as peer recipient of the same expert suggestions, but his directives ignore downstream codebase consequences → client-originated changes need a consequence audit user-originated ones don't.
 - **Refs:** **`plan/merge-brian/README.md` (the review program + dispositions — PLAN.md block MERGE-BRIAN)**, pivot `8a1e677f` = `origin/brian-July-7` tip (review target), `origin/brian-July-20` (out-of-scope exploration), `[TC-MERGE-TZ]`, CLAUDE.md §Schema Discrepancy Discipline, `[[project_jfg_dev_branches_are_snapshots]]`, `[[project_preflip_worktree_reference]]`, Conv 392 `cfcfc8af`. Surfaced Conv 396.
+
+### [MF-SKEW]
+
+- **State:** 🎯 NEXT-CONV FOCUS (env / tooling) · surfaced Conv 415 — **user directive (Conv 415): "Next conv we are going to take on the full wrangler upgrade. I cannot have the dev tooling this brittle."** Do it FIRST next conv, as a focused pass with all 5 gates.
+- **What:** the `wrangler` CLI bundles miniflare **4.20260521**; `@astrojs/cloudflare` (→ `@cloudflare/vite-plugin`) bundles the newer **4.20260714**. Once a live `astro dev` (newer miniflare) writes `.wrangler/state/v3`, the older wrangler CLI crashes on ANY local op: `*** kj::Exception … table _cf_ALARM has 3 columns but 2 values supplied (SQLITE_ERROR)`. So any `wrangler … --local` (d1 execute, r2 put, migrations) run WHILE a dev server is up fails deterministically. R2 puts worked briefly until the dev server re-touched the alarm store, then also crashed.
+- **Impact:** blocked `db:seed:r2:local` (Conv 415 R2 dev-seed) from running against the live dev server; will also bite any manual `db:*:local` run while `astro dev` is up. The standard flow (setup BEFORE starting dev) is unaffected — state is wrangler-written, no skew.
+- **Fix options:** (a) upgrade `wrangler` to ≥ the dev-server miniflare (align versions) — cleanest; (b) pin the vite-plugin miniflare down to match wrangler; (c) document "stop `astro dev` before any `wrangler --local` op" + `rm -rf .wrangler/state/v3` recovery. Decide the durable one.
+- **Conv-415 upgrade attempt (option a) — BALLOONED, deferred:** user chose "upgrade wrangler." Findings: (1) **two wranglers** — project `node_modules` = **4.94.0** (miniflare 4.20260521), but a **global** nvm wrangler **4.58.0** shadows it on PATH; both < 714 so both skew, and alignment must fix BOTH (or force scripts to `node_modules/.bin/wrangler`). (2) `wrangler@latest` **4.114.0** bundles miniflare **4.20260722** (3-col, compatible with dev's 714 — no overshoot). BUT it peer-requires `@cloudflare/workers-types@^5.x`; project is on **v4** (`4.20260523.1`) → a **MAJOR bump (4→5)** of a package in `tsconfig.json` `types` → codebase-wide `tsc` fallout. So option (a) is a major types migration, not a one-liner — needs its own pass with all 5 gates. **Explore first:** the minimal wrangler in 4.95–4.113 whose miniflare ≥ 4.20260714 but that still peers `workers-types` v4 (avoids the major bump). Failed install left package.json/lock unchanged (clean).
+- **Interim workflow rule:** stop `astro dev` before any `wrangler --local` op (the standard flow — setup before starting dev — is unaffected).
+- **Recovery when stuck:** clear `.wrangler/state/v3` (or ≥ the DO/alarm store) then re-run `db:setup:local:dev` with no dev server running.
+- **Refs:** `scripts/seed-r2-dev.mjs`, `package.json db:seed:r2:local`, `[R2-SEED]`. Surfaced Conv 415.
 
 ### [MINWIDTH-320]
 
@@ -359,4 +379,5 @@
 
 ## ✅ Done this conv
 
-- **[TAB-THEME]** — Matt/Brian tab colour-theme toggle (MERGE-BRIAN §1 follow-up; revisits M7's dropped colours). Added 3 style-guide tokens (`--brian-sky #2A93D5` / `--brian-pale #DFE6EE` / `--brian-ink #102A43`; `#0777b6` was already `--americana-blue`) + bridge utilities; a `--Tab-*` CSS-var switch keyed off `data-tab-theme` (default `'matt'` = byte-identical no-op); `SubNavItem` reads the vars (0 raw colour → prov-clean); new `tab_theme` user column + `PATCH /api/me/profile` validation; `AppLayout` SSR-sets the root attr **site-wide** (piggybacks the `nav_layout` query, FOUC-free); `TabThemeToggle.tsx` on /profile Preferences (mapping A "Solid selected"; instant flip + background PATCH → cross-device). Registered in `matt-inspired-registry` (prov net-zero, 9-err/1-drift baseline held). **5 gates green (suite 6552, +2)** + Playwright live-verified: matt→brian flip recolours the selected tab `rgb(241,249,255)`→`rgb(7,119,182)`, survives reload (SSR), and applies on `/course`. Uncommitted (code repo, 11 files + `TabThemeToggle.tsx`). Optional follow-ups: extend the root attr to `AdminLayout`/`LandingLayout`; `#2a93d5` is in the guide but unused by mapping A. Conv 414.
+- **[R2-SEED]** — dev R2 placeholder-blob seeding, so upload-type course files download real bytes in dev instead of 404→`download.json`. Root cause: SQL seed inserts `session_resources` metadata (r2_key) but can't upload blobs; local R2 had 0 objects. Built `scripts/seed-r2-dev.mjs` (generates a valid blank PDF / empty ZIP / text placeholder per r2_key, PUTs via `wrangler r2 object put --local`) + `db:seed:r2:local`, wired into `db:setup:local:dev`. **Validated end-to-end** via a clean reseed (`rm -rf .wrangler/state/v3` → `db:setup:local:dev`): 7/7 blobs seeded, `res-n8n-003` fetches back as a 329 B `%PDF-1.4`. Uncovered `[MF-SKEW]` (wrangler↔dev-server miniflare version skew blocks live-seeding — still open). Uncommitted (2 files: script + package.json). Conv 415.
+- **[STEP-LINK]** — Persistent link affordance on the enrollment-journey stepper (`CourseJourneyStepper.astro`, MERGE-BRIAN §1 · M5 follow-up). Linked steps (`canLink` → Payment/Sessions/Diploma-when-certified) now underline their **label** at rest (`underline decoration-1 underline-offset-2`, strengthening to `decoration-2` on hover) so a student can tell a clickable step from a static done-Enroll — both paint green — without hovering and on touch. Static (done Enroll) + locked (Diploma) steps stay un-underlined. Decoration inherits each label's own currentColor (green/blue) → no new colour token, prov unchanged. Applied to **both** orientations (horizontal band + vertical rail), scoped to the text label (never the status circle); shared `linkUnderline` const so the two sites can't drift. **5 gates green (suite 6552)** + live-verified via Playwright DOM-truth: Payment/Sessions `text-decoration: underline 1px`, Enroll/Diploma `none` + screenshot. Uncommitted (code repo, 1 file). Conv 415.
