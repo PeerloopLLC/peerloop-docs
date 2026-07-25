@@ -3,6 +3,21 @@
 
 ## 5. UI/UX & Components
 
+### [HERO] CourseHeader Collapsed to One State-Derived Band, Container-Query Shrink-to-Wrap Reflow (Conv 413)
+**Date:** 2026-07-24 (Conv 413)
+
+The `/course/[slug]` hero (`CourseHeader.tsx`) is refined on two axes:
+- **Structure:** the `variant`/`headerHref` props and the dead `enrolled` branch are removed; the hero derives its state from data — `isEnrolled` (pill), `scheduledSession` (session column vs includes+CTA). One slim state-derived band (no `min-h-[360px]`), collapsing the accidental M1-era height divergence (scheduled was 360px, default was slim). The `enrolled` variant was dead code (no call site passed it) and its "used by /success" doc was stale. `variant=` dropped from all 3 call sites (`[...tab].astro`, `book.astro`, `success.astro`). Rejected: unify the size only, keeping the `variant` prop machinery.
+- **Responsive reflow:** the content row reflows on the hero's **own width** via a **CSS container query** (`@container` on `<header>` + `@lg:flex-row`) — the **first `@container` usage in the codebase**. This is the durable answer to SIDEBAR-COLLIDE: viewport breakpoints (`sm:`/`lg:`) can't know the sidebar ate width, so they clip the right column in the ~640–780px band. Rejected: raise the viewport breakpoint to `xl:`/`lg:`. The container query was then refined to **shrink-to-wrap** — `shrink-0` removed from both right columns (label/includes wrap), left cluster `min-w-0`, scheduled col `text-right` — so the hero stays side-by-side and compact (~198px) at all tablet/desktop widths and stacks only at true mobile (`@lg`), rather than stacking to a "very deep" 332px in a mid band. Rejected: a literal 2-line label (leaves the 332px stack) or reverting the reflow (restores the clip).
+
+Compaction also applied: 1-line tagline (`line-clamp-1`), single-row chips (`flex-nowrap overflow-hidden`), session label 20→16px. Playwright-verified uniform **198px** side-by-side across 640–1280 with the label wrapping when tight and zero clipping 500px+; scheduled hero went 360→244→198px across the conv. Tailwind v4.3.3 has `@container` as core.
+
+**Rationale:** Collapsing the variants dissolves the premise (dead code + accidental divergence) rather than papering over the size. Only a container query reflows correctly through the sidebar-collide zone, and shrinking the right column (so its text wraps) keeps the hero compact at every width while honoring the user's "wrap the label" instinct — whereas stacking over-corrects into a deep, janky non-monotonic reflow.
+
+**Consequences:** Simpler component (3 call sites lose `variant`); one slim band; stale doc fixed; new `@container` + `@lg:` reflow pattern established as the sidebar-collide answer. Known optional follow-up: chips truncate at true-mobile (<~450px) via the single-row `overflow-hidden` (🟠, could wrap to 2 rows on mobile only).
+
+**See:** `src/components/entity/CourseHeader.tsx`, `src/pages/course/[slug]/[...tab].astro`, `book.astro`, `success.astro`; `docs/sessions/2026-07/20260724_1743 Decisions.md` §§1–3, Learnings §§4–5; Conv 413 (code `387b4a33`).
+
 ### Cosmetic Change to a `@matt-source` Component Stays a Strict-B Drift, Not an `@matt-inspired` Flip (MERGE-BRIAN, Conv 409)
 **Date:** 2026-07-24 (Conv 409)
 

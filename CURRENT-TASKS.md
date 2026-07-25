@@ -43,6 +43,7 @@
 22. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
 23. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
 24. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
+25. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -91,6 +92,13 @@
 - **Fallback (Conv 379):** set course thumbnail via the app's `PUT /api/me/courses/[id]/thumbnail` (external URL, JSON). Document API-PUT as the standard for file-gated browser steps.
 - **Next:** re-test on a newer Chrome-in-Claude build.
 - **Refs:** `memory/reference_chrome_bridge_island_stale_cache` [BRIDGE-UPLOAD]. Surfaced Conv 379.
+
+### [CHIPWRAP]
+
+- **State:** 📋 queued · low priority (optional mobile nicety)
+- **What:** Course-hero (`CourseHeader`) metadata chips truncate at true-mobile (<~450px) via the chips-single-row `flex-nowrap overflow-hidden` (Conv 413 [HERO]). Cosmetic clip, not a break; cleanly cut at the card edge.
+- **Optional fix:** allow the chip row to wrap onto 2 rows on mobile ONLY (e.g. drop `flex-nowrap`/`overflow-hidden` under a low container breakpoint) so full metadata shows on phones.
+- **Gate:** user say-so — the desktop/tablet compaction is the priority and is DONE. Surfaced Conv 413.
 
 ### [COMPDOC]
 

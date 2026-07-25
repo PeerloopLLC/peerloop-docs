@@ -1802,3 +1802,12 @@ Brian's `0006_session_resource_files.sql` added `display_order` + `in_room` to `
 **Rationale:** `session_resources` already existed; only the ordering column was missing. Shipping `in_room` would tell students a file is "in the room" when nothing puts it there.
 
 **See:** `docs/decisions/02-database.md` entry; `docs/sessions/2026-07/20260724_1455 Decisions.md` §2, Learnings §4; Conv 412.
+
+### [HERO] CourseHeader Collapsed to One State-Derived Band, Container-Query Shrink-to-Wrap Reflow (Conv 413)
+**Date:** 2026-07-24 (Conv 413)
+
+The `/course/[slug]` hero (`CourseHeader.tsx`) is refined on two axes. **Structure:** `variant`/`headerHref` props + the dead `enrolled` branch removed; state now derives from data (`isEnrolled`, `scheduledSession`), one slim band, collapsing the accidental M1-era height divergence; `variant=` dropped from all 3 call sites and the stale "used by /success" doc fixed. Rejected: unify size only, keeping the prop machinery. **Responsive reflow:** the content row reflows on the hero's own width via the **first `@container` (CSS container query) usage in the codebase** (`@container` + `@lg:flex-row`) — the durable answer to SIDEBAR-COLLIDE (viewport breakpoints can't know the sidebar ate width, so they clipped the right column in the ~640–780px band). Then refined to **shrink-to-wrap**: `shrink-0` removed from both right columns (text wraps), left cluster `min-w-0`, scheduled col `text-right` — keeping the hero side-by-side and compact (~198px) at all tablet/desktop widths and stacking only at true mobile (`@lg`), rather than stacking to a "very deep" 332px. Rejected: raise the viewport breakpoint, a literal 2-line label, or reverting the reflow. Playwright-verified uniform 198px 640–1280; scheduled hero 360→244→198px.
+
+**Rationale:** Collapsing the variants dissolves the premise (dead code + accidental divergence) rather than papering over it. Only a container query reflows correctly through the sidebar-collide zone; shrinking the right column keeps the hero compact at every width while honoring the "wrap the label" instinct, whereas stacking over-corrects into a deep, janky non-monotonic reflow.
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `docs/sessions/2026-07/20260724_1743 Decisions.md` §§1–3, Learnings §§4–5; Conv 413 (code `387b4a33`).
