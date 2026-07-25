@@ -425,8 +425,8 @@ Which API calls does each page make?
 | DELETE | `/api/me/account` | src/components/settings/SecuritySettings.tsx |
 | GET | `/api/me/onboarding-profile` | src/components/settings/InterestsSettings.tsx |
 | POST | `/api/me/onboarding-profile` | src/components/settings/InterestsSettings.tsx |
+| PATCH | `/api/me/profile` | src/components/settings/TabThemeToggle.tsx |
 | GET | `/api/me/profile` | src/components/settings/ProfileSettings.tsx |
-| PATCH | `/api/me/profile` | src/components/settings/ProfileSettings.tsx |
 | GET | `/api/me/settings` | src/components/settings/NotificationSettings.tsx |
 | PATCH | `/api/me/settings` | src/components/settings/NotificationSettings.tsx |
 | POST | `/api/stripe/connect` | src/components/settings/StripeConnectSettings.tsx |

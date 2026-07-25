@@ -1811,3 +1811,12 @@ The `/course/[slug]` hero (`CourseHeader.tsx`) is refined on two axes. **Structu
 **Rationale:** Collapsing the variants dissolves the premise (dead code + accidental divergence) rather than papering over it. Only a container query reflows correctly through the sidebar-collide zone; shrinking the right column keeps the hero compact at every width while honoring the "wrap the label" instinct, whereas stacking over-corrects into a deep, janky non-monotonic reflow.
 
 **See:** `docs/decisions/05-ui-ux-components.md` entry; `docs/sessions/2026-07/20260724_1743 Decisions.md` §§1–3, Learnings §§4–5; Conv 413 (code `387b4a33`).
+
+### [TAB-THEME] Matt/Brian Tab Colour Toggle — Brian's Colours Adopted on Our Flat Shape via a User-Preference Runtime Theme (MERGE-BRIAN M7, Conv 414)
+**Date:** 2026-07-25 (Conv 414)
+
+Revisiting MERGE-BRIAN mechanism M7 (deferred Conv 409), Brian's tab **palette** is adopted but not his floating-pill/elevation **shape** (the raised capsule reads as a badge, reserved for badge-like labels). The 4-colour palette collapsed to **3 new style-guide tokens** (`--brian-sky`/`--brian-pale`/`--brian-ink`) because `#0777b6` was already `--americana-blue`/Primary-Default. `SubNavItem` references a `--Tab-*` semantic switch (`:root`/matt = exact prior values → byte-identical default; `[data-tab-theme='brian']` overrides), keeping the `@matt-source` primitive at 0 raw colour and prov-clean. Flat mapping **A "Solid selected"** chosen from a `.scratch` mockup. Persistence = new `users.tab_theme` column (DEFAULT `'matt'`, CHECK `matt|brian`), SSR-read in `AppLayout` → `data-tab-theme` on `<html>` (piggybacks the `nav_layout` query, FOUC-free); `TabThemeToggle` on /profile Preferences flips the attribute instantly (no reload) + PATCHes in the background. Scope **site-wide** (`AdminLayout`/`LandingLayout` left Matt for v1). Rejected: full pill treatment; DB-with-reload; per-device localStorage; course-only scope; mappings B/C.
+
+**Rationale:** Colour is non-structural so it can flip without a reload; the user wanted it cross-device. Tokenising the raw values keeps the shared primitive prov-clean, and the SSR-set root attribute defaulting to current values gives a zero-regression, FOUC-free themeable primitive — the repo's first real toggleable theme.
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `docs/sessions/2026-07/20260725_0904 Decisions.md` §§1-4, Learnings §§1-5; Conv 414 (code `de090a18`).

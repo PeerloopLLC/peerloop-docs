@@ -3,6 +3,15 @@
 
 ## 5. UI/UX & Components
 
+### [TAB-THEME] Matt/Brian Tab Colour Toggle — Brian's Colours Adopted on Our Flat Shape via a User-Preference Runtime Theme (MERGE-BRIAN M7, Conv 414)
+**Date:** 2026-07-25 (Conv 414)
+
+Revisiting MERGE-BRIAN mechanism M7 (deferred Conv 409), Brian's tab **palette** is adopted but not his floating-pill/elevation **shape** — the raised capsule reads as a badge and stays reserved for badge-like labels; only the colours were wanted. The 4-colour palette collapsed to **3 new style-guide tokens** (`--brian-sky #2A93D5`, `--brian-pale #DFE6EE`, `--brian-ink #102A43`) because `#0777b6` was already `--americana-blue`/Primary-Default. `SubNavItem`'s state colours reference a `--Tab-*` semantic switch (`:root`/matt defined to the *exact* prior values → byte-identical default render; `[data-tab-theme='brian']` overrides) so the primitive stays **0 raw colour** and prov-clean — tokenising first is what dissolves the M7 objection. Flat colour→state mapping **A "Solid selected"** chosen from a `.scratch` mockup (solid `#0777b6` chip + white label; `#dfe6ee` hover; `#102a43` default label; `#2a93d5` added to the guide but unused by tabs). Persistence = a new `users.tab_theme` column (DEFAULT `'matt'`, CHECK `matt|brian`), SSR-read in `AppLayout` → `data-tab-theme` on `<html>` (piggybacks the existing `nav_layout` query, FOUC-free), with a `TabThemeToggle` on /profile Preferences that flips the attribute **instantly** (no reload) and PATCHes in the background. Scope is **site-wide** (all top-strip tabs; `AdminLayout`/`LandingLayout` left on Matt for v1). Rejected: full pill treatment; DB-column-with-reload (LayoutToggle clone); per-device localStorage (ThemeToggle-style); course-only scope; mappings B (underline) / C (soft tint).
+
+**Rationale:** Colour is non-structural so it can flip without a reload (unlike nav placement); the user wanted the preference to follow them across devices. Adding the raw values as named tokens keeps the shared `@matt-source` primitive prov-clean. The SSR-set root attribute defaulting to current values gives a zero-regression, FOUC-free themeable primitive — the repo's first real toggleable theme (dark-mode is parked, LayoutToggle reloads).
+
+**See:** `docs/sessions/2026-07/20260725_0904 Decisions.md` §§1-4, Learnings §§1-5; Conv 414 (code `de090a18`).
+
 ### [HERO] CourseHeader Collapsed to One State-Derived Band, Container-Query Shrink-to-Wrap Reflow (Conv 413)
 **Date:** 2026-07-24 (Conv 413)
 

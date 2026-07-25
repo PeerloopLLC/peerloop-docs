@@ -255,6 +255,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [[TAB-THEME] Matt/Brian Tab Colour Toggle — Brian's Colours Adopted on Our Flat Shape via a User-Preference Runtime Theme (MERGE-BRIAN M7, Conv 414)](05-ui-ux-components.md#tab-theme-mattbrian-tab-colour-toggle--brians-colours-adopted-on-our-flat-shape-via-a-user-preference-runtime-theme-merge-brian-m7-conv-414)
 - [[HERO] CourseHeader Collapsed to One State-Derived Band, Container-Query Shrink-to-Wrap Reflow (Conv 413)](05-ui-ux-components.md#hero-courseheader-collapsed-to-one-state-derived-band-container-query-shrink-to-wrap-reflow-conv-413)
 - [Cosmetic Change to a `@matt-source` Component Stays a Strict-B Drift, Not an `@matt-inspired` Flip (MERGE-BRIAN, Conv 409)](05-ui-ux-components.md#cosmetic-change-to-a-matt-source-component-stays-a-strict-b-drift-not-an-matt-inspired-flip-merge-brian-conv-409)
 - [MERGE-BRIAN §1 — /course/[slug] Client-Branch Dispositions: 8 ADAPT, 3 DROP, 0 ADOPT (Conv 408)](05-ui-ux-components.md#merge-brian-1--courseslug-client-branch-dispositions-8-adapt-3-drop-0-adopt-conv-408)

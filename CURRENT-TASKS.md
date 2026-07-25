@@ -56,6 +56,7 @@
 - [BROWSER-SMOKE-2B](#browser-smoke-2b) — gate: post-launch
 - [MINWIDTH-320](#minwidth-320) — gate: user say-so
 - [ICON-LIC](#icon-lic) — gate: MVP-GOLIVE
+- [DEVSRV-STALE](#devsrv-stale) — gate: recurs (stale astro-dev daemon / cache serving old site)
 
 ---
 
@@ -126,6 +127,13 @@
 - **What:** scope ephemeral dev-server teardown to the spawned PID. Conv 393 a port-based kill (`lsof -ti :4321 | grep 'astro dev'`) killed a **pre-existing** astro dev on :4321 this session didn't start (ours had fallen back to :4322).
 - **Fix:** capture the spawned PID, kill only that on teardown — never a broad `:port + astro dev` match.
 - **Refs:** `memory/feedback_persistent_dev_server_4321`. Surfaced Conv 393.
+
+### [DEVSRV-STALE]
+
+- **State:** ⏸️ parked · watch · gate: recurs
+- **What:** Conv 414 — user hit an "old version" of the site on :4321 (`/matt` + `/discover` as real routes = **pre-flip**, dissolved Conv 197). Current code verified correct via curl (`/matt`→404). Root cause not pinned: a stale `astro dev` **daemon** persists across sessions (`npm run dev` reported "already running pid 9015"), OR the pre-flip worktree server (`~/projects/Peerloop-preflip` @ 608346a2) bound to 4321, OR Brave's localhost cache.
+- **If it recurs:** verify current-ness via `curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:4321/matt` (404 = current code); tell the user to hard-refresh (Cmd+Shift+R) / private window / use `127.0.0.1`. Consider a `memory/reference_devserver_stale_daemon` note. Related: `[DEVSRV-KILL]`.
+- **Refs:** `memory/feedback_persistent_dev_server_4321`. Surfaced Conv 414.
 
 ### [EDITSAFE]
 

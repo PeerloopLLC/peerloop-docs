@@ -647,7 +647,7 @@ Ultra-lightweight endpoint for version polling. Returns the user's `data_version
 
 ### GET /api/me/profile
 
-Get current user's profile for editing. Includes profile info, privacy settings, email notification preferences, the nav-layout preference, and the per-user timezone.
+Get current user's profile for editing. Includes profile info, privacy settings, email notification preferences, the nav-layout preference, the tab-theme preference, and the per-user timezone.
 
 **Response (200):**
 ```json
@@ -675,6 +675,7 @@ Get current user's profile for editing. Includes profile info, privacy settings,
   "email_payment": true,
   "email_marketing": false,
   "nav_layout": "top",
+  "tab_theme": "matt",
   "timezone": "America/New_York",
   "canTeachCourses": false,
   "canCreateCourses": true,
@@ -693,7 +694,7 @@ Get current user's profile for editing. Includes profile info, privacy settings,
 
 ### PATCH /api/me/profile
 
-Update current user's profile (partial updates). Supports all profile fields plus email notification preferences, the nav-layout preference, and the per-user timezone.
+Update current user's profile (partial updates). Supports all profile fields plus email notification preferences, the nav-layout preference, the tab-theme preference, and the per-user timezone.
 
 **Request Body:**
 ```json
@@ -719,6 +720,7 @@ Update current user's profile (partial updates). Supports all profile fields plu
   "email_payment": true,
   "email_marketing": false,
   "nav_layout": "rail",
+  "tab_theme": "brian",
   "timezone": "Asia/Tokyo"
 }
 ```
@@ -739,6 +741,7 @@ Update current user's profile (partial updates). Supports all profile fields plu
 | `marketing_opt_out` | Boolean |
 | `email_*` | Boolean (7 notification preference fields) |
 | `nav_layout` | `'top'` or `'rail'` (per-user nav placement; `AppLayout` maps `'rail'` → internal `'left'` rail) |
+| `tab_theme` | `'matt'` or `'brian'` (per-user SubNav tab-colour theme; `AppLayout` SSR-sets `data-tab-theme` on `<html>` site-wide) |
 | `timezone` | Valid IANA zone id (validated via ICU), or `null`/`''` to clear back to "unknown" (UTC fallback) ([TZ-MODEL] Phase 0) |
 
 **Response (200):**
