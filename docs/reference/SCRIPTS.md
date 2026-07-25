@@ -89,6 +89,7 @@ All commands run from the code repo: `cd ../Peerloop && npm run <name>`
 | `npm run db:seed:stripe:staging` | Staging | Apply Stripe sandbox account IDs (opt-in, from `0002_seed_stripe.sql`) |
 | `npm run db:seed:booking:local` | Local | Apply booking test scenario (from `0003_seed_booking_test.sql`) |
 | `npm run db:seed:booking:staging` | Staging | Apply booking test scenario (from `0003_seed_booking_test.sql`) |
+| `npm run db:seed:r2:local` | Local | Seed local R2 with placeholder blobs for `session_resources` files (via `scripts/seed-r2-dev.mjs`; runs as final step of `db:setup:local:dev`) |
 | `npm run db:seed:prod` | Production | 🚫 **BLOCKED** — dev seed cannot be applied to production |
 | `npm run db:studio:local` | Local | Open D1 Studio (browser GUI) |
 | `npm run db:studio:staging` | Staging | Open D1 Studio |
@@ -582,6 +583,27 @@ node scripts/seed-feeds.mjs --staging --clean    # Staging D1 + Stream DEV app
 
 ---
 
+#### `scripts/seed-r2-dev.mjs`
+
+Seed the local R2 (miniflare) bucket with placeholder blobs so dev course-file downloads work. (Conv 415 [R2-SEED])
+
+```bash
+node scripts/seed-r2-dev.mjs
+# or: npm run db:seed:r2:local
+```
+
+**What it does:**
+- Queries local D1 for every `session_resources` row with a non-NULL `r2_key` (external-link rows have NULL and are skipped)
+- PUTs a small, type-appropriate placeholder at each `r2_key` via `wrangler r2 object put --local` — a valid blank single-page PDF (`.pdf`), an empty 22-byte ZIP (`.zip`/`.xlsx`/`.docx`/`.pptx` — OOXML are ZIP containers), or a text stub otherwise; passes `--content-type` from the row's `mime_type`
+- Idempotent (re-PUT overwrites); re-run after any local R2 reset
+- Retries transient miniflare state races (the wrangler CLI's older bundled miniflare can crash opening `.wrangler/state` written by a running dev-server's newer miniflare — the [MF-SKEW] `_cf_ALARM` schema skew; harmless in the normal setup flow where no dev server is up)
+
+**Why:** the SQL dev seed (`migrations-dev/0001_seed_dev.sql`) inserts `session_resources` metadata rows with an `r2_key` but can't upload the actual blob (SQL can't write R2), so every upload-type course file 404'd at `/api/resources/:id/download` and the browser saved the 404 JSON as `download.json`. Downloads work unchanged in staging/prod, where real files are uploaded through the app.
+
+**Called by:** `npm run db:seed:r2:local`, and (transitively) `npm run db:setup:local:dev`
+
+---
+
 ### PLATO Snapshot Scripts
 
 #### `scripts/plato-restore.js`
@@ -876,6 +898,7 @@ npx tsx scripts/codemods/migrate-test-json-as-any.ts --limit=20
 | `gen:registries` | `scripts/gen-registries.ts` (emits `scripts/matt-sourced-registry.generated.ts`) |
 | `db:seed:feeds:local` | `scripts/seed-feeds.mjs --local --clean` |
 | `db:seed:feeds:staging` | `scripts/seed-feeds.mjs --staging --clean` |
+| `db:seed:r2:local` | `scripts/seed-r2-dev.mjs` |
 | `plato:restore` | `scripts/plato-restore.js` |
 | `plato:snapshot:restore` | `scripts/plato-restore-snapshot.js` |
 | `plato:capture` | `scripts/plato-capture.js` |

@@ -3,6 +3,19 @@
 
 ## 5. UI/UX & Components
 
+### [STEP-LINK] Course-Detail Hover and Link Affordances — Persistent Underline for Links, Neutral Hover Tint, Variant-Aware Pale-Tonal Darker-Green Hover (Conv 415)
+**Date:** 2026-07-25 (Conv 415)
+
+Three `/course/[slug]` interaction-affordance refinements (MERGE-BRIAN §1 follow-up), sharing one design-system insight: on an all-green course page the pale-green surfaces collide and opacity-dim hovers vanish.
+
+- **Link affordance ([STEP-LINK]):** linked `CourseJourneyStepper` steps (Payment→receipt, Sessions→modules, Diploma-when-certified) get a **persistent underline** on the *label* at rest (`underline decoration-1 underline-offset-2`, hover→`decoration-2`, shared `linkUnderline` const, both orientations, decoration inherits the label colour). Only a resting cue answers "which can I click?" at a glance / on touch — the codebase's hover-only `hover:underline` convention fails at rest and on touch. Rejected: trailing chevron `›`; hover-only pill+underline. No new token → prov clean.
+- **Modules-tab hover = neutral tint:** the green hover tint `bg-course-background` is byte-identical to the `variant="course"` Button base fill (page-wide), so a hovered ghost element read as a resting CTA. The 4 Modules-tab hovers changed to the dominant `hover:bg-neutral-50` (41-use convention); course buttons untouched. No light green can separate from the pale-green button — a neutral tint reads unambiguously as feedback, never a CTA. Rejected: solid dark-green CTA restyle page-wide; a stronger-green tint. Also cleared a prior blue-on-green (`bg-student-background`) clash.
+- **Sticky course CTA hover = subtle darker-green tint, variant-aware:** the pale sticky "Go to Session" CTA (a Button primitive at `property1="Small"`, which draws NO CSS `:hover`) got `actionHover` in `SubNav.astro` made variant-aware — `course` → `transition-colors hover:bg-course-primary/20 hover:border-course-primary/20` (deeper pale green ≈ #D6E5CC, dark text kept); other variants keep `hover:opacity-90`. Uses an existing token via opacity modifier (prov-clean). Rejected: solid-fill hover (sticky-only or page-wide). Applies to every sticky SubNav action (course + community).
+
+**Rationale:** Underline is the codebase's link vocabulary and good a11y (not colour-alone). For hovers, opacity-dim blends a pale-on-white element toward the page background → invisible; pale tonal buttons need a colour hover (darken the bg via an opacity-modifier token), and a neutral tint is the only value that can't be mistaken for the course CTA surface. All three add affordance without a new colour token.
+
+**See:** `src/components/course/CourseJourneyStepper.astro`, `src/components/course/ModulesTab.astro`, `src/components/SubNav.astro`; `docs/sessions/2026-07/20260725_1439 Decisions.md` §§1-3, Learnings §§1-2; Conv 415 (code `ed70e19a`).
+
 ### [TAB-THEME] Matt/Brian Tab Colour Toggle — Brian's Colours Adopted on Our Flat Shape via a User-Preference Runtime Theme (MERGE-BRIAN M7, Conv 414)
 **Date:** 2026-07-25 (Conv 414)
 

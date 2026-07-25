@@ -255,6 +255,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [[STEP-LINK] Course-Detail Hover and Link Affordances — Persistent Underline for Links, Neutral Hover Tint, Variant-Aware Pale-Tonal Darker-Green Hover (Conv 415)](05-ui-ux-components.md#step-link-course-detail-hover-and-link-affordances--persistent-underline-for-links-neutral-hover-tint-variant-aware-pale-tonal-darker-green-hover-conv-415)
 - [[TAB-THEME] Matt/Brian Tab Colour Toggle — Brian's Colours Adopted on Our Flat Shape via a User-Preference Runtime Theme (MERGE-BRIAN M7, Conv 414)](05-ui-ux-components.md#tab-theme-mattbrian-tab-colour-toggle--brians-colours-adopted-on-our-flat-shape-via-a-user-preference-runtime-theme-merge-brian-m7-conv-414)
 - [[HERO] CourseHeader Collapsed to One State-Derived Band, Container-Query Shrink-to-Wrap Reflow (Conv 413)](05-ui-ux-components.md#hero-courseheader-collapsed-to-one-state-derived-band-container-query-shrink-to-wrap-reflow-conv-413)
 - [Cosmetic Change to a `@matt-source` Component Stays a Strict-B Drift, Not an `@matt-inspired` Flip (MERGE-BRIAN, Conv 409)](05-ui-ux-components.md#cosmetic-change-to-a-matt-source-component-stays-a-strict-b-drift-not-an-matt-inspired-flip-merge-brian-conv-409)
@@ -406,6 +407,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [6. Testing & CI/CD](06-testing-ci.md)
 
+- [[R2-SEED] Dev R2 Placeholder-Blob Seeding — Makes Uploaded Course Files Demoable in Local Dev (Conv 415)](06-testing-ci.md#r2-seed-dev-r2-placeholder-blob-seeding--makes-uploaded-course-files-demoable-in-local-dev-conv-415)
 - [Adopt `eslint-plugin-jsx-a11y` at `warn` (upstream + `overrides` peer pin), Not the ESLint-10-Native Fork — the Fork Silently Drops `.astro` Coverage (A11Y, Conv 399)](06-testing-ci.md#adopt-eslint-plugin-jsx-a11y-at-warn-upstream--overrides-peer-pin-not-the-eslint-10-native-fork--the-fork-silently-drops-astro-coverage-a11y-conv-399)
 - [Adopt `knip` as the Durable Module-Graph Reachability Oracle — "Absent From the Build = Dead" Closes grep's Blind Spots (KNIP, Conv 398)](06-testing-ci.md#adopt-knip-as-the-durable-module-graph-reachability-oracle--absent-from-the-build--dead-closes-greps-blind-spots-knip-conv-398)
 - [React Doctor = Occasional External Audit (e.g. Pre-Go-Live), NOT Toolbelt Tooling; Its Real Yield Was Two Coverage Gaps We Already Owned (RDOC, Conv 397)](06-testing-ci.md#react-doctor--occasional-external-audit-eg-pre-go-live-not-toolbelt-tooling-its-real-yield-was-two-coverage-gaps-we-already-owned-rdoc-conv-397)
@@ -484,6 +486,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [8. Deployment & Infrastructure](08-deployment-infra.md)
 
+- [[MF-SKEW] wrangler vs astro-dev Miniflare Version Skew — Full wrangler Upgrade Deferred to a Focused Task (Conv 415)](08-deployment-infra.md#mf-skew-wrangler-vs-astro-dev-miniflare-version-skew--full-wrangler-upgrade-deferred-to-a-focused-task-conv-415)
 - [Applying an In-Place `0001` Column to a Data-Bearing Remote D1 — Prefer a Surgical ALTER When the Data Must Be Preserved (FEEDBACK-DEPLOY, Conv 394)](08-deployment-infra.md#applying-an-in-place-0001-column-to-a-data-bearing-remote-d1--prefer-a-surgical-alter-when-the-data-must-be-preserved-feedback-deploy-conv-394)
 - [In-Place `0001` Edits Drift Un-Reset Staging DBs — Prefer a Full Reseed Over a Surgical ALTER (PROF500, Conv 363)](08-deployment-infra.md#in-place-0001-edits-drift-un-reset-staging-dbs--prefer-a-full-reseed-over-a-surgical-alter-prof500-conv-363)
 - [Staging Is the Deploy Target; Production Is a Gated Launch Event](08-deployment-infra.md#staging-is-the-deploy-target-production-is-a-gated-launch-event)

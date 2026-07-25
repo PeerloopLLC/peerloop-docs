@@ -3,6 +3,17 @@
 
 ## 6. Testing & CI/CD
 
+### [R2-SEED] Dev R2 Placeholder-Blob Seeding — Makes Uploaded Course Files Demoable in Local Dev (Conv 415)
+**Date:** 2026-07-25 (Conv 415)
+
+`migrations-dev/0001_seed_dev.sql` inserts `session_resources` rows with an `r2_key`/size/mime, but SQL can't PUT to R2, so local R2 has **0 objects** and `/api/resources/:id/download` returns `404 {"error":"File not found in storage"}` — the `download` attribute then saves that JSON error as a phantom `download.json`. Fix: a new `scripts/seed-r2-dev.mjs` PUTs a type-appropriate placeholder per `r2_key` (valid blank PDF / empty ZIP / text, via `wrangler r2 object put --local`), wired into `db:setup:local:dev` as `db:seed:r2:local`. Validated via a clean reseed (7/7 objects; `res-n8n-003` fetches back as a 329 B `%PDF-1.4`). Rejected: fix the failure UX only (drop the `download` attr / friendlier 404); do both; leave as-is.
+
+**Rationale:** Makes the whole upload-file feature demoable in dev without touching staging/prod (which have real uploads). Failure-UX hardening was deliberately NOT taken — revisit only if a genuinely-missing blob bites in prod.
+
+**Consequences:** Uncovered [MF-SKEW] (running the seed against a live dev server hit a Miniflare version-skew crash — see `08-deployment-infra.md`). `[DL-FILENAME]` flagged: the download `Content-Disposition` filename lacks a file extension (tracked task). The pre-existing `r2:list:local` npm script is broken (`list` isn't a valid `r2 object` subcommand in this wrangler) — fix/remove when the [MF-SKEW] wrangler upgrade lands.
+
+**See:** `scripts/seed-r2-dev.mjs`, `package.json` (`db:seed:r2:local`), `migrations-dev/0001_seed_dev.sql`; `docs/sessions/2026-07/20260725_1439 Decisions.md` §4, Learnings §4; Conv 415 (code `ed70e19a`).
+
 ### `set-state-in-effect` Is an Accepted Baseline, Not a To-Do List — Most Are Idiomatic Fetch-on-Mount or SSR-Hydration-Safety (RHOOKS triage, Conv 400)
 **Date:** 2026-07-20 (Conv 400)
 

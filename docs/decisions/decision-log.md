@@ -1820,3 +1820,30 @@ Revisiting MERGE-BRIAN mechanism M7 (deferred Conv 409), Brian's tab **palette**
 **Rationale:** Colour is non-structural so it can flip without a reload; the user wanted it cross-device. Tokenising the raw values keeps the shared primitive prov-clean, and the SSR-set root attribute defaulting to current values gives a zero-regression, FOUC-free themeable primitive — the repo's first real toggleable theme.
 
 **See:** `docs/decisions/05-ui-ux-components.md` entry; `docs/sessions/2026-07/20260725_0904 Decisions.md` §§1-4, Learnings §§1-5; Conv 414 (code `de090a18`).
+
+### [STEP-LINK] Course-Detail Hover and Link Affordances — Persistent Underline for Links, Neutral Hover Tint, Variant-Aware Pale-Tonal Darker-Green Hover (Conv 415)
+**Date:** 2026-07-25 (Conv 415)
+
+Three `/course/[slug]` interaction-affordance refinements sharing one design-system insight (pale-green surfaces collide, opacity-dim hovers vanish on an all-green page): (1) **[STEP-LINK]** linked `CourseJourneyStepper` steps get a **persistent underline** on the label at rest (`decoration-1`, hover→`decoration-2`, shared `linkUnderline` const, both orientations) — only a resting cue reads as clickable at a glance/on touch, and underline is the codebase's link vocabulary + a11y-safe (rejected: chevron; hover-only). (2) the 4 **Modules-tab hovers** move from `bg-course-background` (byte-identical to the `variant="course"` Button base fill page-wide, so a hovered ghost looked like a resting CTA) to the dominant `hover:bg-neutral-50` — no light green can separate from the pale-green button; also cleared a prior blue-on-green clash (rejected: solid dark-green CTA restyle; stronger-green tint). (3) the pale sticky **course CTA** (a Button primitive at `property1="Small"`, which draws NO CSS `:hover`) got a variant-aware `actionHover` in `SubNav.astro`: `course` → `hover:bg-course-primary/20 hover:border-course-primary/20` (≈#D6E5CC, dark text kept), other variants keep `hover:opacity-90` (rejected: solid-fill hover, sticky-only or page-wide).
+
+**Rationale:** Opacity-dim blends a pale-on-white element toward the page background → invisible; pale tonal buttons need a colour hover via an opacity-modifier token, and a neutral tint is the only value that can't be mistaken for the course CTA surface. No new colour token in any of the three.
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `docs/sessions/2026-07/20260725_1439 Decisions.md` §§1-3, Learnings §§1-2; Conv 415 (code `ed70e19a`).
+
+### [R2-SEED] Dev R2 Placeholder-Blob Seeding — Makes Uploaded Course Files Demoable in Local Dev (Conv 415)
+**Date:** 2026-07-25 (Conv 415)
+
+`migrations-dev/0001_seed_dev.sql` inserts `session_resources` rows with an `r2_key` but SQL can't PUT to R2, so local R2 has 0 objects and `/api/resources/:id/download` 404s (the browser then saves the JSON error as `download.json`). New `scripts/seed-r2-dev.mjs` PUTs a type-appropriate placeholder per `r2_key` (blank PDF / empty ZIP / text via `wrangler r2 object put --local`), wired into `db:setup:local:dev` as `db:seed:r2:local`; validated by a clean reseed (7/7, 329 B `%PDF-1.4`). Rejected: fix the failure UX only; both; leave as-is.
+
+**Rationale:** Makes the upload-file feature demoable in dev without touching staging/prod (real uploads). Uncovered [MF-SKEW]; `[DL-FILENAME]` (download filename lacks extension) flagged as a task.
+
+**See:** `docs/decisions/06-testing-ci.md` entry; `docs/sessions/2026-07/20260725_1439 Decisions.md` §4, Learnings §4; Conv 415 (code `ed70e19a`).
+
+### [MF-SKEW] wrangler vs astro-dev Miniflare Version Skew — Full wrangler Upgrade Deferred to a Focused Task (Conv 415)
+**Date:** 2026-07-25 (Conv 415)
+
+`wrangler --local` (miniflare 4.20260521) and `astro dev` (miniflare 4.20260714) share `.wrangler/state/v3`; the newer migrated `_cf_ALARM` 2→3 columns on disk, crashing the older wrangler (forward-incompat). Stopping the dev server is necessary but not sufficient — recovery is `rm -rf .wrangler/state/v3` + reseed. Aligning versions via `wrangler@latest` (4.114) peer-requires `@cloudflare/workers-types@^5` (project on v4, in `tsconfig` global `types` → codebase-wide tsc impact) and must also resolve a global-nvm-wrangler-4.58-shadows-local-4.94 PATH split → **deferred** to a focused next-conv task (chosen mechanism: upgrade wrangler; rejected: npm override, document-only). Lead: a wrangler in 4.95–4.113 whose miniflare ≥ 4.20260714 but peers workers-types v4.
+
+**Rationale:** Multi-conv-scope carve-out — the "focused step" ballooned into a major types migration; do it deliberately with all 5 gates. The immediate download is already fixed by the reseed. Interim rule: stop `astro dev` before any `wrangler --local` op.
+
+**See:** `docs/decisions/08-deployment-infra.md` entry; `docs/sessions/2026-07/20260725_1439 Decisions.md` §5, Learnings §§3,5; Conv 415.

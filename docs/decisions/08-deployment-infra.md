@@ -3,6 +3,19 @@
 
 ## 8. Deployment & Infrastructure
 
+### [MF-SKEW] wrangler vs astro-dev Miniflare Version Skew — Full wrangler Upgrade Deferred to a Focused Task (Conv 415)
+**Date:** 2026-07-25 (Conv 415)
+
+`wrangler … --local` and `astro dev` (`@astrojs/cloudflare` → `@cloudflare/vite-plugin`) both run **Miniflare**, persisting to the same `.wrangler/state/v3` SQLite (incl. an internal `_cf_ALARM` table). wrangler bundles miniflare **4.20260521**, the dev server **4.20260714** — the newer migrated `_cf_ALARM` 2→3 columns **on disk**, so the older wrangler crashes opening it (`table _cf_ALARM has 3 columns but 2 values supplied`; forward-incompat). It's a persisted-schema conflict, not a live lock: **stopping the dev server is necessary but NOT sufficient** — recovery is `rm -rf .wrangler/state/v3` then reseed with no dev server up.
+
+Aligning the two versions was scoped but **deferred**: `npm i -D wrangler@latest` (4.114, miniflare 4.20260722) peer-requires `@cloudflare/workers-types@^5`, but the project is on **v4** and that package sits in `tsconfig.json`'s global `types` array → a major bump reshapes type-checking codebase-wide. A **global nvm wrangler 4.58** also shadows the project's `node_modules` 4.94 on PATH, so alignment must fix both. Chosen mechanism: upgrade wrangler (rejected: an npm `override`, fragile given miniflare↔workerd coupling; document-only). Chosen timing: defer to a focused next-conv task (rejected: explore-minimal-wrangler now; push-full-upgrade now). Lead for that task: find a wrangler in **4.95–4.113** whose miniflare ≥ 4.20260714 but still peers workers-types v4.
+
+**Rationale:** Multi-conv-scope carve-out — the "focused step" ballooned into a major types migration; do it deliberately with all 5 gates, not mid-review. The immediate broken download is already fixed by the [R2-SEED] reseed.
+
+**Consequences:** Interim workflow rule — **stop `astro dev` before any `wrangler --local` op** (the standard flow, setup before starting dev, is unaffected). Recorded as [MF-SKEW], next-conv #1 focus, per user directive ("cannot have the dev tooling this brittle").
+
+**See:** `scripts/seed-r2-dev.mjs`, `package.json`, `.wrangler/state/v3`; `docs/sessions/2026-07/20260725_1439 Decisions.md` §5, Learnings §§3,5; Conv 415.
+
 ### Applying an In-Place `0001` Column to a Data-Bearing Remote D1 — Prefer a Surgical ALTER When the Data Must Be Preserved (FEEDBACK-DEPLOY, Conv 394)
 **Date:** 2026-07-13 (Conv 394)
 

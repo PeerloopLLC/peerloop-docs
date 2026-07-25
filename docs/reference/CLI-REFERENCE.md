@@ -320,6 +320,7 @@ npm run db:setup:local:dev
 1. Runs `db:setup:local` (reset + migrate)
 2. Applies dev seed (test users, courses, etc.)
 3. Runs `db:seed:feeds:local` (`scripts/seed-feeds.mjs` — Stream.io activities + D1 `feed_activities`; creds-resilient: skips gracefully if Stream API credentials are absent from `.dev.vars`)
+4. Runs `db:seed:r2:local` (`scripts/seed-r2-dev.mjs` — PUTs placeholder blobs into local R2 for every seeded `session_resources.r2_key`, so dev course-file downloads work)
 
 **Use when:**
 - Starting fresh development
@@ -478,6 +479,20 @@ Runs `node scripts/seed-feeds.mjs --local --clean`. Creates 19 activities across
 **Prerequisites:** Stream API credentials must be in `.dev.vars` (the script skips gracefully if absent). Now runs automatically as the final step of `npm run db:setup:local:dev`; run standalone only to re-seed feeds without resetting the rest of the DB.
 
 **Staging variant:** `npm run db:seed:feeds:staging` — same script targeting staging D1 + shared DEV Stream app.
+
+---
+
+### `npm run db:seed:r2:local`
+
+Seed the local R2 (miniflare) bucket with placeholder blobs so dev course-file downloads work. (Conv 415 [R2-SEED])
+
+```bash
+npm run db:seed:r2:local
+```
+
+Runs `node scripts/seed-r2-dev.mjs`. For every local D1 `session_resources` row with a non-NULL `r2_key`, PUTs a small type-appropriate placeholder at that key via `wrangler r2 object put --local` (valid blank PDF / empty ZIP for OOXML / text stub). The SQL dev seed inserts resource metadata but can't upload blobs, so without this every upload-type file 404'd at `/api/resources/:id/download` (the browser saved the error as `download.json`). Idempotent; re-run after any local R2 reset.
+
+**Prerequisites:** Local D1 must be seeded first (`db:seed:local`). Now runs automatically as the final step of `npm run db:setup:local:dev`; run standalone only to re-seed R2 without resetting the rest. Local-only — staging/prod use real uploaded files.
 
 ---
 

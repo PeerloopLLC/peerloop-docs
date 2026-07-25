@@ -21,6 +21,7 @@ migrations-dev/          # DEV ONLY (never applied to production)
 └── 0003_seed_booking_test.sql  # Booking test scenario (opt-in)
 
 scripts/seed-feeds.mjs   # Stream.io + D1 feed_activities seed (Conv 018)
+scripts/seed-r2-dev.mjs  # Local R2 placeholder-blob seed for session_resources files (Conv 415)
 tests/plato/             # PLATO API-driven seed (local only, see § PLATO Seed)
 ```
 
@@ -59,12 +60,12 @@ Applied ONLY to local and staging:
 | Level | Local | Staging | Seeds |
 |-------|-------|---------|-------|
 | Base | `db:setup:local` | `db:setup:staging` | core |
-| + Dev | `db:setup:local:dev` | `db:setup:staging:dev` | core + dev (+ Stream feeds, **local only**) |
+| + Dev | `db:setup:local:dev` | `db:setup:staging:dev` | core + dev (+ Stream feeds + R2 blobs, **local only**) |
 | + Stripe | `db:setup:local:stripe` | `db:setup:staging:stripe` | core + dev + stripe |
 | + Booking | `db:setup:local:booking` | `db:setup:staging:booking` | core + dev + stripe + booking |
 | + Feeds | `db:setup:local:feeds` | `db:setup:staging:feeds` | core + dev + stripe + booking + Stream feeds |
 
-All commands prefixed with `npm run`. Each level chains through the previous one (additive). The Stripe seed (`migrations-dev/0002_seed_stripe.sql`) links dev users to real Stripe test-mode Express accounts, required for testing checkout/enrollment flows. The Feeds seed (`scripts/seed-feeds.mjs`) creates Stream.io activities + D1 `feed_activities` rows for smart feed testing — it is the **canonical** source of `feed_activities` (no longer seeded via SQL in `migrations-dev/`). As of Conv 271, `db:setup:local:dev` chains `db:seed:feeds:local` as its final step (creds-resilient: skips if Stream credentials are absent), so local dev setups include feeds by default; `db:setup:staging:dev` does **not** (staging feeds still require the explicit `+ Feeds` level).
+All commands prefixed with `npm run`. Each level chains through the previous one (additive). The Stripe seed (`migrations-dev/0002_seed_stripe.sql`) links dev users to real Stripe test-mode Express accounts, required for testing checkout/enrollment flows. The Feeds seed (`scripts/seed-feeds.mjs`) creates Stream.io activities + D1 `feed_activities` rows for smart feed testing — it is the **canonical** source of `feed_activities` (no longer seeded via SQL in `migrations-dev/`). As of Conv 271, `db:setup:local:dev` chains `db:seed:feeds:local` (creds-resilient: skips if Stream credentials are absent), so local dev setups include feeds by default; `db:setup:staging:dev` does **not** (staging feeds still require the explicit `+ Feeds` level). As of Conv 415, `db:setup:local:dev` also chains `db:seed:r2:local` as its final step (`scripts/seed-r2-dev.mjs` — PUTs placeholder blobs into local R2 for every seeded `session_resources.r2_key` so dev course-file downloads work; local only, staging/prod use real uploads).
 
 ### PLATO Seed (parallel path — local only)
 
@@ -235,7 +236,7 @@ Survives `npm run db:setup:local:dev` resets. Apply the same pattern for any fut
 Dev seed data contains hardcoded timestamps (originally from 2024). Rather than updating every INSERT, a `TIMESTAMP FRESHNESS` section at the end of `0001_seed_dev.sql` uses `strftime()`-relative UPDATEs to shift time-sensitive records to recent dates on every `db:setup:local:dev` run.
 
 **Three parts:**
-- **Part A — Feed Activities:** placeholder. The Smart Feed activities are no longer seeded here — the Conv-271 consolidation moved them to `scripts/seed-feeds.mjs` (canonical), which mints real Stream activity ids and dual-writes them (a pure-SQL row can't, so the old `stream-fa-NNN` placeholder rows dangled). The script runs as the last step of `db:setup:local:dev` (and `:feeds`).
+- **Part A — Feed Activities:** placeholder. The Smart Feed activities are no longer seeded here — the Conv-271 consolidation moved them to `scripts/seed-feeds.mjs` (canonical), which mints real Stream activity ids and dual-writes them (a pure-SQL row can't, so the old `stream-fa-NNN` placeholder rows dangled). The script runs near the end of `db:setup:local:dev` (and `:feeds`), before the `db:seed:r2:local` R2-blob seed.
 - **Part B — Booking/Availability:** UPDATE sweep for sessions, invites, overrides, intro sessions, notifications, credits, and contacts
 - **Part C — Discovery Rails Freshness (Conv 272):** id-targeted UPDATEs that rebase Discovery Rail source rows (courses / communities / progressions / community_resources / enrollments / community_members) relative to the seed date so the two time-windowed rail signals populate — `new` (created within 30 days) and `trending` (enrollment/community-join velocity within 7 days). Without these, every source row carries a historical INSERT date and 4 of the 6 rails return empty. Each freshened row is chosen to have no conflicting dependent (or the whole dependent sub-tree is freshened in step) so a freshen can't invert a timeline.
 
