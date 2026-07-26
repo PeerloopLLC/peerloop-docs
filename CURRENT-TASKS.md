@@ -19,44 +19,44 @@
 
 ## 🎯 Now  (execution order — top = next)
 
-> **MESSAGES mini-plan (Conv 417, user-sequenced).** Items 1–6 are one ordered programme —
-> M1→M6. Hard dependency M1→M2 (M2's symptom *is* M1's race). Soft dependency M3→M4/M5
-> (M4/M5 can't start until the icon variant exists). M4 and M5 are independently shippable, so
-> the programme can legitimately stop after M4.
+> **MESSAGES mini-plan (Conv 417, user-sequenced).** One ordered programme, M1→M6.
+> **M1 `[MSGBOOT]` ✅ Conv 417 · M2 `[CANMSG]` ✅ Conv 418** — items 1–4 below are the
+> remainder (M3→M6). Soft dependency M3→M4/M5 (M4/M5 can't start until the icon variant
+> exists). M4 and M5 are independently shippable, so the programme can legitimately stop
+> after M4.
 
-1. [CANMSG](#canmsg) — **M2** retire/batch the per-row can-message fan-out (M1 ✅, now unblocked)
-2. [MSG-ICON](#msg-icon) — **M3** icon variant of `MessageUserButton` (unblocks 19 sites)
-3. [MSG-ADOPT-A](#msg-adopt-a) — **M4** adopt on 11 high-consequence sites
-4. [MSG-ADOPT-B](#msg-adopt-b) — **M5** adopt on 10 list/profile sites
-5. [MSG-CLEANUP](#msg-cleanup) — **M6** messages-area debt sweep
-6. [MERGE-BRIAN-JULY7](#merge-brian-july7) — client branch assessment/integration
-7. [A11Y](#a11y) — accessibility lint triage
-8. [RHOOKS](#rhooks) — react-hooks lint triage
-9. [KNIP](#knip) — dead-export oracle → gate
-10. [PROV-SWEEP-DEBT2](#prov-sweep-debt2) — `prov:sweep` gate silently red (9 unregistered)
-11. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
-12. [EDITSAFE](#editsafe) — anchored-edit discipline
-13. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
-14. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
-15. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
-16. [HOME-FIXES](#home-fixes) — Home route fix bucket
-17. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
-18. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
-19. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
-20. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
-21. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
-22. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
-23. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
-24. [RSFD](#rsfd) — port `r-start-from-dirty`
-25. [DEPEXP](#depexp) — dependency-probe hygiene
-26. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
-27. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
-28. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
-29. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
-30. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
-31. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
-32. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
-33. [DEVSRV-STALE](#devsrv-stale) — un-parked: stale/bricked astro dev daemon recurred
+1. [MSG-ICON](#msg-icon) — **M3** icon variant of `MessageUserButton` (unblocks 19 sites)
+2. [MSG-ADOPT-A](#msg-adopt-a) — **M4** adopt on 11 high-consequence sites
+3. [MSG-ADOPT-B](#msg-adopt-b) — **M5** adopt on 10 list/profile sites
+4. [MSG-CLEANUP](#msg-cleanup) — **M6** messages-area debt sweep
+5. [MERGE-BRIAN-JULY7](#merge-brian-july7) — client branch assessment/integration
+6. [A11Y](#a11y) — accessibility lint triage
+7. [RHOOKS](#rhooks) — react-hooks lint triage
+8. [KNIP](#knip) — dead-export oracle → gate
+9. [PROV-SWEEP-DEBT2](#prov-sweep-debt2) — `prov:sweep` gate silently red (10 unregistered)
+10. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
+11. [EDITSAFE](#editsafe) — anchored-edit discipline
+12. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
+13. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
+14. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
+15. [HOME-FIXES](#home-fixes) — Home route fix bucket
+16. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
+17. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
+18. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
+19. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
+20. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
+21. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
+22. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
+23. [RSFD](#rsfd) — port `r-start-from-dirty`
+24. [DEPEXP](#depexp) — dependency-probe hygiene
+25. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
+26. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
+27. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
+28. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
+29. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
+30. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
+31. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
+32. [DEVSRV-STALE](#devsrv-stale) — un-parked: stale/bricked astro dev daemon recurred
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -105,34 +105,6 @@
 - **Fallback (Conv 379):** set course thumbnail via the app's `PUT /api/me/courses/[id]/thumbnail` (external URL, JSON). Document API-PUT as the standard for file-gated browser steps.
 - **Next:** re-test on a newer Chrome-in-Claude build.
 - **Refs:** `memory/reference_chrome_bridge_island_stale_cache` [BRIDGE-UPLOAD]. Surfaced Conv 379.
-
-### [CANMSG]
-
-- **State:** 📋 queued · [Opus] — **M2** of the MESSAGES mini-plan · **unblocked** (M1 `[MSGBOOT]` ✅ Conv 417)
-- **⚠️ Re-measure before deciding.** The Conv-417 numbers below were taken *before* M1 landed. M1
-  fixed the cold-load half (icons now render on first load, firing the full N requests), so the
-  fan-out is now N on **every** load rather than N on warm loads only — slightly worse, and the
-  reason this is next.
-- **What:** retire or batch the per-row `useCanMessage` fan-out.
-- **Measured (Conv 417, `/community/ai-for-you/members`, 5 members):** warm load fires
-  **5 `GET /api/me/can-message/:userId` requests — one per member row** (the hook is called inside
-  `MemberRow`, `CommunityMembersTab:62`). Cold load fires **0** and renders **0** icons — that half
-  is `[MSGBOOT]`.
-- **Why it's near-vacuous:** under **open messaging (Conv 110)** `canMessage` is true for any
-  authenticated member messaging any non-deleted member (`src/lib/messaging.ts` — admin/moderator
-  short-circuit, then an existence + not-soft-deleted check). So it is N round-trips to compute
-  `true`, and the **server gates the POST anyway** — the client check is advisory, not a control.
-- **Two options to weigh:** (a) **drop the client gate** — always render the affordance and let
-  `POST /api/conversations` reject the rare invalid case (simplest, matches the open-messaging
-  policy); (b) **batch it** — `getMessageableFlags(db, senderId, recipientIds[])` already exists
-  server-side but has no batch endpoint; add one and resolve a whole list in a single call.
-  Prefer (a) unless the policy is expected to tighten again.
-- **Call sites:** `community/CommunityMembersTab:62`, `profile/PublicProfile:171` (→ `users/UserCard`),
-  `teachers/profiles/TeacherProfileHeader:23`, `creators/profiles/CreatorProfileHeader:26`.
-- **Done-test:** members page fires ≤1 can-message request (0 under option a) and renders its icons
-  on the **first** load.
-- **Refs:** `src/lib/useCanMessage.ts`, `src/lib/messaging.ts`, `src/pages/api/me/can-message/[userId].ts`,
-  `[MSGBOOT]`.
 
 ### [CHIPWRAP]
 
@@ -310,6 +282,11 @@
     holds only `matt/`, `MessageUserButton.tsx`, `types.ts`; no `src/pages/old/messages*`).
   - `[RHOOKS]` warning at `NewConversationModal:54` (`setState` in the debounced-search effect) —
     either fix locally or fold into the standing `[RHOOKS]` task.
+  - **`GET /api/me/can-message/:userId` has no UI caller** since `[CANMSG]` (Conv 418) made the
+    check local. Deliberately KEPT — it is a valid API surface, still tested
+    (`tests/api/me/can-message/[userId].test.ts`), and the same `canMessage()` lib call is the
+    authoritative gate on `POST /api/conversations`. Decide here whether to keep or delete it;
+    if kept, note that `[KNIP]` will flag it when that gate lands.
   - Registry / `prov:sweep` re-check for `MessageUserButton` + any M3 variant.
 - **Done-test:** no stale refs, 5 gates green, `prov:sweep` no worse than the `[PROV-SWEEP-DEBT2]` baseline.
 
@@ -351,7 +328,7 @@
 ### [PROV-SWEEP-DEBT2]
 
 - **State:** 📋 queued (gate silently red)
-- **What:** `npm run prov:sweep` reports **10 issues** (9 UNTRACKED errors + 1 drift) — was 0 at Conv 244. Drift since: components stamp `data-prov-name="X"` on their outer element but were never added to `scripts/matt-inspired-registry.ts`. Offenders: `NavDrawer`, `NavMenuButton`, `communities/CommunitiesFilters`, `courses/CoursesFilters`, `feed/SignupCtaCard`, `settings/LayoutToggle`, `ui/MobileUpNav.astro`, `course/CourseJourneyStepper.astro`, `course/CourseSessionsActions.astro`.
+- **What:** `npm run prov:sweep` reports **11 issues** (10 UNTRACKED errors + 1 drift) — was 0 at Conv 244. Drift since: components stamp `data-prov-name="X"` on their outer element but were never added to `scripts/matt-inspired-registry.ts`. Offenders: `NavDrawer`, `NavMenuButton`, `communities/CommunitiesFilters`, `courses/CoursesFilters`, `feed/SignupCtaCard`, `settings/LayoutToggle`, `ui/MobileUpNav.astro`, `course/CourseJourneyStepper.astro`, `course/CourseSessionsActions.astro`, **`course/CourseReviewComposer.tsx`** (10th, added Conv 416, spotted Conv 418 — the gate drifts by one every time a stamped component ships unregistered, which is the recurring cost of leaving it red).
 - **Verified NOT caused by `[A11Y]` Conv 404** (none in that diff; the 2 new primitives are unstamped).
 - **Related tooling weakness (Conv 412):** `scripts/gen-registries.ts`'s marker regex `/@matt-source\s+\d+:\d+/` matches the marker-with-node **anywhere in a file, incl. prose** — so a `@matt-inspired` component that *references* another's source node in its docstring gets falsely registered as matt-sourced (hit `messages/matt/Avatar.tsx`, whose prose named the UserIcon node it wraps). Mitigated Conv 412 by rewording Avatar's prose; the durable fix is to require the marker to be a standalone provenance line (align with `prov-sweep.ts`'s accept-rule). Low priority.
 - **Why it matters:** a real gate failing unnoticed → the registry⟺marker⟺stamp conformity from `[PRIM-STAMP]` (Conv 217) isn't holding. Each offender needs a registry entry (with `figmaMatchNames`) **or** its stamp removed if not a vetted primitive — decide per component, don't bulk-register.
@@ -483,31 +460,15 @@
 
 ## ✅ Done this conv
 
-- **[MSG-INPLACE]** — course "Ask … a Question" buttons no longer navigate away. New shared
-  `MessageUserButton` island (`src/components/messages/MessageUserButton.tsx`) opens the existing
-  `NewConversationModal` in place; wired into the Peer Teachers + Meet the Creator tabs, signed-out
-  viewers keep the `/messages?to=` login bounce. Also fixed `NewConversationModal` silently swallowing
-  a failed POST (now an error toast), and added a **discard guard** — dismissing with unsent text
-  (backdrop / Escape / ×) now raises a "Discard message?" `ConfirmModal` instead of silently binning
-  the draft; the send path is never guarded. +8 tests (suite 6560), 5 gates green, live-verified as
-  David Rodriguez on `/course/intro-to-n8n` (no nav, recipient preselected, live POST 200 + toast,
-  prompt stacks above the composer, Cancel preserves the draft, no-draft closes clean).
-- **[MSG-EXIT]** — opt-in "Open in Messages" escape hatch in the composer. Renders as a real `<a>`
-  (middle/cmd-click open a tab, unguarded since the draft survives); a plain click with unsent text
-  routes through the same discard prompt. OFF by default so it never renders inside `MessagesCenter`
-  where it would link to the current page. Needed no new plumbing — `/messages?to=` is already
-  thread-aware (`MessagesCenter:104-110`). +3 tests (suite 6563), 5 gates green, live-verified:
-  exit → real thread with prior messages, guard holds on draft, opt-out holds on `/messages`.
-- **[MSG-SWEEP]** — full census of message affordances (23 found) with per-site dispositions
-  → recorded in `[MSG-ADOPT-A]` / `[MSG-ADOPT-B]`. Adoption deferred by user decision;
-  the 6-step MESSAGES mini-plan (M1–M6) is now sequenced at the top of `## 🎯 Now`.
-- **[MSGBOOT] (M1)** — current-user bootstrap race fixed. `getCurrentUser()` returning `null` was
-  being read as "logged out" when it actually meant "not resolved yet" (the singleton hydrates from
-  localStorage first). Both consumers now wait on the existing `authStatus` three-state via
-  `useAuthStatus()` — the same pattern `StudentDashboard`/`ProgressionNudge`/`useCreatorGate`
-  already use, so no new architecture. Fixed **two live symptoms**: `/messages` deep links bounced
-  to `/` on a first visit, and `useCanMessage` silently hid every message affordance
-  (`CommunityMembersTab`, `UserCard`, `TeacherProfileHeader`, `CreatorProfileHeader`).
-  +5 tests (suite 6568), 5 gates green. Live-verified on **fresh browser contexts**: cold deep-link
-  → thread with content ✅ · cold members page → 5 icons on first load (was 0) ✅ · genuine visitor
-  still redirected to `/login` ✅.
+- **[CANMSG]** — **M2** of the MESSAGES mini-plan. Retired the per-row `useCanMessage` fan-out by
+  making the answer derivable on the client rather than by batching it. Chose the durable route
+  (option **C**): the check was only non-vacuous because three loaders could surface a soft-deleted
+  user, so `u.deleted_at IS NULL` was added to the community-member directory and the
+  teacher/creator profile lookups — matching what `/@handle` already did — and only then was the
+  network call removed. `useCanMessage` is now a pure `useAuthStatus` + `useCurrentUser` derivation
+  (no effect, no fetch, `[MSGBOOT]` three-state cover preserved). Fixes a latent defect on the way:
+  the member directory could list a soft-deleted user linking to a `/@handle` that 404s.
+  **Measured `/community/ai-for-you/members`: 4 requests → 0, cold and warm, icons unchanged at 4.**
+  5 gates green (suite **6573**, +5: 2 rewritten hook tests + 3 new loader tests in
+  `tests/ssr/soft-deleted-users.test.ts`). `GET /api/me/can-message/:userId` deliberately kept but
+  now UI-unused → noted on `[MSG-CLEANUP]`.
