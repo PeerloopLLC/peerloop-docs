@@ -33,6 +33,8 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `npm run format:check` | Check formatting without changes |
 | `npm run verify` | Run all 5 gates: typecheck → check → lint → test → build |
 | `npm run check:tailwind` | Check for Tailwind v4 compatibility issues |
+| `npm run check:icons` | Static icon-sizing guard — fails only on **new** bare-numeric dimension classes vs a committed baseline (`--update-baseline`, `--verbose`) |
+| `npm run icons:scan` | Runtime icon measurement — measures 26 routes at two root font sizes and diffs against a baseline (needs dev server + dev seed) |
 | `npm run knip` | Report unused files, exports, and dependencies (module-graph reachability oracle, Astro-aware) |
 
 ---
@@ -182,6 +184,8 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `npm run prov:sweep` | Validate Matt design-system provenance markers for collision/drift (see [SCRIPTS.md](SCRIPTS.md#scriptsprov-sweepts)) |
 | `npm run prov:page-report` | DOM page-conformity report — rendered-page check for unvetted UI (see [SCRIPTS.md](SCRIPTS.md#scriptsprov-page-reportts)) |
 | `npm run prim:treewalk` | Static primitive-candidate surveyor — walks a page's import graph from source and nominates raw markup that should be a vetted primitive (usage: `npm run prim:treewalk -- <entry-file>`; see [SCRIPTS.md](SCRIPTS.md#scriptsprim-treewalkts)) |
+| `npm run check:icons` | Static icon-sizing guard, new-violations-only vs `scripts/icon-sizing-baseline.json` (see [SCRIPTS.md](SCRIPTS.md#scriptscheck-icon-sizingts)) |
+| `npm run icons:scan` | Runtime icon measurement at two root font sizes, diffed against `scripts/icon-scan-baseline.json` (see [SCRIPTS.md](SCRIPTS.md#scriptsicon-scanmjs)) |
 
 ---
 

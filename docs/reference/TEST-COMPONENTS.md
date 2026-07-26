@@ -2,7 +2,8 @@
 
 React component tests using Vitest and React Testing Library.
 
-**Last Updated:** 2026-07-26 (Conv 419 — [MSG-ADOPT-B]/[COURSETAB-HASH]: `messages/MessageUserButton.test.tsx` grew **21→24** in place (+3 for `icon` widening to `string | ReactNode` — a node renders verbatim with no MattIcon substituted, a string still resolves to a MattIcon, and the node carries onto the signed-out anchor; needed because the 3 profile-header `Button` sites sit in a row of siblings carrying 16px `ui/icons` glyphs). +1 **new** file `useRoleTabs.test.ts` (6 — the `ready` gate that fixed the `/courses#student` deep link, the same three-state bootstrap race as [MSGBOOT]; 3 of the 6 fail if the gate is reverted). Messages 25→28 cases; new root-level entry. Grand total files **88→89**, cases **2,257→2,266**.)
+**Last Updated:** 2026-07-26 (Conv 419b — [MKTDEAD] dead-marketing purge: **−10 files** deleted with the 56 provably-dead components they covered. Marketing 9→1 files / 389→49 cases (−`AboutPage` 31, `ContactPage` 57, `FaqPage` 40, `ForCreatorsPage` 42, `HowItWorksPage` 34, `PricingPage` 38, `PrivacyPolicyPage` 51, `TermsOfServicePage` 47; **`BecomeATeacherPage` 49 deliberately KEPT** — `/become-a-teacher` is live). Stories 1→0 / 43→0 and Testimonials 1→0 / 53→0, both categories removed. The 14 `/old/*` marketing pages have rendered "Coming soon." stubs for a long time, so the bundler had been tree-shaking these components out — confirmed via sourcemap `sources`, not inferred. Grand total files **89→79**, cases **2,266→1,830**. Also corrected the `**Total:**` line, which had lagged at 88 since the previous Conv-419 entry.)
+**Prev:** 2026-07-26 (Conv 419 — [MSG-ADOPT-B]/[COURSETAB-HASH]: `messages/MessageUserButton.test.tsx` grew **21→24** in place (+3 for `icon` widening to `string | ReactNode` — a node renders verbatim with no MattIcon substituted, a string still resolves to a MattIcon, and the node carries onto the signed-out anchor; needed because the 3 profile-header `Button` sites sit in a row of siblings carrying 16px `ui/icons` glyphs). +1 **new** file `useRoleTabs.test.ts` (6 — the `ready` gate that fixed the `/courses#student` deep link, the same three-state bootstrap race as [MSGBOOT]; 3 of the 6 fail if the gate is reverted). Messages 25→28 cases; new root-level entry. Grand total files **88→89**, cases **2,257→2,266**.)
 **Prev:** 2026-07-26 (Conv 418 — [MSG-ICON]/[MSG-ADOPT-A]: `messages/MessageUserButton.test.tsx` grew **11→21** in place (+5 for the `appearance="bare"` icon trigger — a bare `<button>` rendering the call site's own icon as children with `className` passed through and a required `title`, deliberately not the `Button` primitive; +5 for `signedIn` becoming optional and resolving from `useAuthStatus()` when omitted, with an explicit prop still winning). Messages 15→25 cases, files unchanged (2). Grand total files **88** (unchanged), cases **2,247→2,257**. No new component test files.)
 **Prev:** 2026-07-26 (Conv 417 — [MSG-INPLACE]/[MSG-EXIT]: +1 **new** file `messages/MessageUserButton.test.tsx` (11 — the in-place composer island: button-not-link when signed in, `/messages?to=` anchor fallback when signed out, recipient preselected on open, POST → close → toast with no navigation, the discard guard's cancel/confirm/nothing-typed paths, the opt-in "Open in Messages" exit + its typed-draft guard, error toast on a failed POST, and one case pinning the exit as opt-**out** on the `/messages` mount) → Messages 1→2 files / 4→15. Grand total files **87→88**, cases **2,236→2,247**.)
 **Prev:** 2026-07-13 (Conv 393 — [ORPHAN-BACKLOG] Category C + dead-.ts sweep: deleted 4 orphaned component test files whose components/utils were removed as dead code. Context Actions 1→0 files / 11→0 (−`ContextActionsPanel` 11, category removed), Explore 3→1 / 83→37 (−`community-role-utils` 24, −`feed-role-utils` 22), Leaderboard 1→0 / 35→0 (−`Leaderboard` 35, category removed). Grand total files **91→87**, cases **2,328→2,236**.)
@@ -17,7 +18,7 @@ React component tests using Vitest and React Testing Library.
 **Prev:** 2026-06-26 (Conv 339 — [SESSHIST]/[OLD-PORTED-CLEANUP] retired `teaching/SessionHistory.test.tsx` (42) and added `teaching/TeacherSessionsList.test.tsx` (32); Teaching cases 154→144, file count unchanged (4).)
 **Prev:** 2026-06-15 (Conv 286 — two changes: [TESTCOMP-DRIFT] reconciled the doc against on-disk via a verified `vitest run` (removed stale `booking/SessionJoinableView.test.tsx`; corrected 5 drifted per-file counts: SessionBooking 32→31, EnrollButton 13→17, CreatorTeacherList 21→18, Messages 19→17, ModeratorQueue 61→59), then [NUDGE-TC-V2] added a new Progression category `progression/ProgressionNudge.test.tsx` (15). Net: 93→95 files / 2,262→2,498 cases.)
 
-**Total:** 88 test files
+**Total:** 79 test files
 
 ---
 
@@ -191,19 +192,13 @@ All components use mocked API responses via `vi.mock()`.
 
 ---
 
-## Marketing Page Components (9 files)
+## Marketing Page Components (1 file)
+
+The other 8 files here were deleted in Conv 419 ([MKTDEAD]) along with the `src/components/marketing/` tree — the `/old/*` marketing pages they covered have rendered "Coming soon." stubs for a long time, so the components were already being tree-shaken out of the build.
 
 | Component | Test File | Tests |
 |-----------|-----------|:-----:|
-| AboutPage | `tests/components/marketing/AboutPage.test.tsx` | 31 |
 | BecomeATeacherPage | `tests/components/marketing/BecomeATeacherPage.test.tsx` | 49 |
-| ContactPage | `tests/components/marketing/ContactPage.test.tsx` | 57 |
-| FaqPage | `tests/components/marketing/FaqPage.test.tsx` | 40 |
-| ForCreatorsPage | `tests/components/marketing/ForCreatorsPage.test.tsx` | 42 |
-| HowItWorksPage | `tests/components/marketing/HowItWorksPage.test.tsx` | 34 |
-| PricingPage | `tests/components/marketing/PricingPage.test.tsx` | 38 |
-| PrivacyPolicyPage | `tests/components/marketing/PrivacyPolicyPage.test.tsx` | 51 |
-| TermsOfServicePage | `tests/components/marketing/TermsOfServicePage.test.tsx` | 47 |
 
 ---
 
@@ -261,14 +256,6 @@ All components use mocked API responses via `vi.mock()`.
 
 ---
 
-## Stories Components (1 file)
-
-| Component | Test File | Tests |
-|-----------|-----------|:-----:|
-| StoriesBrowse | `tests/components/stories/StoriesBrowse.test.tsx` | 43 |
-
----
-
 ## Teachers Components (1 file)
 
 | Component | Test File | Tests |
@@ -285,14 +272,6 @@ All components use mocked API responses via `vi.mock()`.
 | MyStudents | `tests/components/teaching/MyStudents.test.tsx` | 43 |
 | TeacherAnalytics | `tests/components/teaching/TeacherAnalytics.test.tsx` | 31 |
 | TeacherSessionsList | `tests/components/teaching/TeacherSessionsList.test.tsx` | 34 |
-
----
-
-## Testimonials Components (1 file)
-
-| Component | Test File | Tests |
-|-----------|-----------|:-----:|
-| TestimonialsBrowse | `tests/components/testimonials/TestimonialsBrowse.test.tsx` | 53 |
 
 ---
 
@@ -322,20 +301,18 @@ All components use mocked API responses via `vi.mock()`.
 | Invite | 1 | 36 |
 | Learning | 1 | 2 |
 | Layout | 2 | 11 |
-| Marketing | 9 | 389 |
+| Marketing | 1 | 49 |
 | Messages | 2 | 28 |
 | Moderation | 1 | 59 |
 | Onboarding | 2 | 42 |
 | Progression | 1 | 15 |
 | Recommendations | 2 | 20 |
 | Settings | 4 | 126 |
-| Stories | 1 | 43 |
 | Teachers | 1 | 4 |
 | Teaching | 4 | 146 |
-| Testimonials | 1 | 53 |
 | UI | 2 | 10 |
 | Shared hooks | 1 | 6 |
-| **Total** | **89** | **2,266** |
+| **Total** | **79** | **1,830** |
 
 ---
 

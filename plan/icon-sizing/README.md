@@ -1,9 +1,10 @@
 # ICON-SIZING — finish the icon-size token migration, with proof
 
-**Focus:** Migrate ~2,000 dimension classnames onto the Conv-419 icon token axis, and be able to
+**Focus:** Migrate ~1,700 dimension classnames onto the Conv-419 icon token axis, and be able to
 *demonstrate* no page shipped a mis-sized icon — not merely believe it.
-**Status:** 🔥 IN PROGRESS (Conv 419 — foundation + standard done; Phases 1–2 built)
-**Task code:** `[ICON-TOK]` · related `[ICON-4PX]` (residue), `[RG-PUBLIC]` (gates one file)
+**Status:** 🔥 IN PROGRESS (Conv 419 — foundation + standard done; Phases 1–2 built; baseline **1,694** after the
+same conv's `[MKTDEAD]` dead-code purge, down from 1,863)
+**Task code:** `[ICON-TOK]` · related `[ICON-4PX]` (residue), `[RG-PUBLIC]` (gates one file), `[MKTDEAD]` (shrank the baseline)
 
 ---
 
@@ -17,8 +18,9 @@ and `h-5` renders 20px, in identical syntax, and nothing in the source says whic
 That shipped 4px icons, two near-invisible 4px checkboxes, and five `ui/icons.tsx` component
 **defaults** that made every un-overridden chevron in the app 4px.
 
-Conv 419 fixed the unambiguous half (43 sites), built the token axis, and agreed the standard. What
-remains is the bulk migration — and the harder problem, which is proving it landed.
+Conv 419 fixed the unambiguous half (43 sites — **honestly 38**: the reachability check afterwards
+showed 5 had landed on dead code, which `[MKTDEAD]` then deleted), built the token axis, and agreed
+the standard. What remains is the bulk migration — and the harder problem, which is proving it landed.
 
 ## The standard (decided Conv 419)
 
@@ -36,19 +38,31 @@ Rationale, ratios and the verified measurements live in
 
 ## Scale
 
-| | count |
-|---|---|
-| `.astro` pages (route-matrix) | 67 |
-| icon-component usages | **860** (199 `MattIcon` + 661 `ui/icons`) |
-| `ui/icons.tsx` exports | 98 |
-| bare-numeric `w-`/`h-`/`size-`, overridden ten | **878** ← ambiguous, mean N px |
-| bare-numeric, non-overridden N | **546** ← ambiguous, mean N × 4 px |
-| arbitrary `size-[Npx]` / `w-[Npx]` / `h-[Npx]` | **605** |
-| routes swept so far | 18 of 67 |
+Re-measured **after** `[MKTDEAD]` (Conv 419) deleted 80 dead-marketing files; the pre-purge figures
+are kept alongside because 169 baseline violations — a full **10%** — lived in code no route could
+reach, and a census that counts them over-scopes the migration.
 
-**Latent trap:** those 546 non-overridden uses (`h-5`, `h-6`, `h-10`) are correct *today* purely
+| | count | pre-`[MKTDEAD]` |
+|---|---|---|
+| `.astro` pages (route-matrix) | 67 | 67 |
+| icon-component usages | **626** (198 `MattIcon` + 428 `ui/icons`) | 860 |
+| `ui/icons.tsx` exports | 98 | 98 |
+| **`check:icons` baseline total** | **1,694** | 1,863 |
+| — bare-numeric, overridden ten | **898** ← ambiguous, mean N px | — |
+| — bare-numeric, non-overridden N | **558** ← ambiguous, mean N × 4 px | — |
+| — arbitrary px *on an icon component* | **192** | — |
+| — icon usage with **no size class at all** | **46** | 51 |
+| arbitrary `size-[Npx]`/`w-[Npx]`/`h-[Npx]` site-wide | 562 | 605 |
+| routes swept so far | 18 of 67 | — |
+
+**Latent trap:** those 558 non-overridden uses (`h-5`, `h-6`, `h-10`) are correct *today* purely
 because 5, 6 and 10 aren't in the override set. Adding any of them later 4×-shrinks all of them
 silently. Migration removes that landmine.
+
+**The 46 no-size-class usages are the sharpest finding** — icons with no sizing input at all, falling
+back to intrinsic SVG size or 100% of their container. Found *statically*; **never measured**, because
+runtime only sees where you navigate. They are the literal form of the user's "under-specified
+classname" concern, and should lead Phase 4's tranches.
 
 ---
 
@@ -94,27 +108,45 @@ Order is set by dependencies, not preference.
 
 ### Phase 1 — Static guard ✅ BUILT (Conv 419)
 
-`npm run check:icons` (`scripts/check-icon-sizing.ts`). **Must come first:** migrating 2,000 sites
+`npm run check:icons` (`scripts/check-icon-sizing.ts`). **Must come first:** migrating ~1,700 sites
 without it means new violations land behind the sweep faster than it advances.
 
 Rules: bare-numeric `w-`/`h-`/`size-` (both ambiguity classes) · icon usages with no size class ·
 arbitrary px on an icon component. **New-violations-only**, against a committed baseline
 (`scripts/icon-sizing-baseline.json`) — the same shape as `KNOWN_ORPHANS`, because a hard gate would
-be red on day one with 878 pre-existing hits. The baseline shrinks as phases land; it must never grow.
+be red on day one. `--update-baseline` is the only mutation path, so growth is always a reviewable
+diff. The baseline shrinks as phases land; it must never grow. **First movement was not a migration:**
+`[MKTDEAD]` took it **1,863 → 1,694** by deleting dead code, which is also the measurement that proved
+10% of the census was unreachable.
+
+- [ ] **Lint rule banning bare numbers on `w-`/`h-`/`size-`.** `check:icons` only refuses *new*
+      violations relative to a baseline a developer can re-generate. Without an editor-visible rule the
+      next `h-4 w-4` lands unnoticed and is discovered by measurement again. (Ships with Phase 6's
+      warn→error promotion, or earlier if the migration outpaces it.)
 
 ### Phase 2 — Runtime scanner + captured baseline ✅ BUILT (Conv 419)
 
-`npm run icons:scan` (`scripts/icon-scan.mjs`). Crawls routes at both root font sizes, measures every
+`npm run icons:scan` (`scripts/icon-scan.mjs`). Crawls 26 routes at both root font sizes, measures every
 icon-ish element, applies the absolute invariants, and writes/diffs a baseline. **Must precede
 migration** — there is no "before" afterwards.
 
+The `inline-ratio` invariant first produced **38 false positives** (course thumbnails, 48px avatars,
+empty-state illustrations) by keying on "is there text nearby". Re-keying on **geometry** — does the
+icon *vertically overlap* its text (beside) or not (stacked above) — took it to zero. A checker that
+cries wolf gets ignored, which is the same failure new-violations-only baselining exists to prevent.
+
+⚠️ **The instrument was built after the change it was meant to measure.** Conv 419's 43-site
+`[ICON-4PX]` migration is already *inside* both baselines, so it went unverified against a before-state
+and this block cannot retroactively answer "did it break anything". Everything from Phase 4 onward does
+have a genuine before; that gap is confined to those 43 sites.
+
 ### Phase 3 — Classify by role 📋
 
-Tag every dimension site inline / standalone / neither. **This is the judgment and the bulk of the
-work.** Conv 419 tried a text-adjacency heuristic and it misclassified even the profile-header
-Message buttons, which are plainly icon+label — so this needs reading, assisted by tooling, not
-tooling alone. Settled sub-case: the 5 `ui/icons.tsx` defaults stay rem permanently, because a
-default cannot know its call site.
+Tag each of the **1,694** baselined sites inline / standalone / neither. **This is the judgment and the
+bulk of the work, and it needs reading rather than grepping** — Conv 419 tried a text-adjacency
+heuristic and it misclassified even the profile-header Message buttons, which are plainly icon+label.
+Tooling assists; it does not decide. Settled sub-case: the 5 `ui/icons.tsx` defaults stay rem
+permanently, because a default cannot know its call site.
 
 Also settles the not-an-icon set: `size-[6px]`/`[8px]` status + unread **dots**, `size-[22px]`
 toggle **knob**, `size-[36px]` hit-target **containers**, 16px **avatars**. Snapping those to the
@@ -123,9 +155,19 @@ ladder would double a dot.
 ### Phase 4 — Migrate in tranches 📋
 
 By role, then by value, re-running both scanners after each tranche. Not one sweep. Suggested order:
-`ui/icons.tsx` defaults → standalone → inline → the arbitrary-px 605. Every bare-numeric class has a
-deterministic true value (overridden → N px, else → N × 4 px), so the mechanical part scripts cleanly;
-the classification from Phase 3 is what decides the target family.
+the **46 no-size-class** usages → `ui/icons.tsx` defaults → standalone → inline → the arbitrary px.
+Every bare-numeric class has a deterministic true value (overridden → N px, else → N × 4 px), so the
+mechanical part scripts cleanly; the classification from Phase 3 is what decides the target family.
+
+- [ ] **Mandatory per-tranche reachability check.** Run `.claude/scripts/codecheck-orphan-components.mjs`
+      over every file in a tranche **before** editing it. Conv 419 measured that **5 of its 43 icon
+      fixes landed on dead code** — hitting `TestimonialsBrowse`, the same file Conv 404's `[A11Y]`
+      batch already wasted a fix on 15 convs earlier. tsc/lint/tests/build are all green over dead
+      code, so nothing else in the pipeline catches it. (Cheaper now that `[MKTDEAD]` made the detector
+      PASS, so any hit is a genuine new orphan.)
+- [ ] **`[ICON-4PX]` residue** — `/become-a-teacher`, 11 measured findings, gated behind the parked
+      `[RG-PUBLIC]`. A deliberate park, not a blocker; fold into whichever tranche runs when the
+      marketing redesign is scheduled.
 
 ### Phase 5 — Completeness proof 📋
 
@@ -136,8 +178,9 @@ container that didn't follow its icon.
 ### Phase 6 — Tighten the guard 📋
 
 Once no arbitrary px remains on icon elements, promote those rules from warn to error and drive the
-baseline to zero. Decide then whether the `--spacing-*` numeric override should be renamed outright
-so no number can ever be misread again — the deeper fix this block only works around.
+baseline to zero. Ship the **bare-number lint rule** listed under Phase 1 here if it hasn't landed
+earlier. Decide then whether the `--spacing-*` numeric override should be renamed outright so no
+number can ever be misread again — the deeper fix this block only works around.
 
 ---
 

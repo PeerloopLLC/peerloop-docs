@@ -144,7 +144,7 @@ marketing redesign lands; **revisit** RG-ADMIN if the admin surface gets a desig
 
 > **RG-PUBLIC disposition DECIDED Conv 336 — keep FULLY DEFERRED until the marketing redesign.** The 14 marketing pages (about, blog, careers, contact, cookies, faq, for-creators, help, how-it-works, pricing, privacy, stories, terms, testimonials) live only in `/old/*`; their root paths 404 by design (route-404-honesty). **Known + ACCEPTED consequence:** the app-wide `Footer.astro` links to those root paths (`/privacy`, `/terms`, `/help`, `/cookies`, …) which therefore **404 sitewide** — this is intentional-pending-redesign, NOT a bug to "fix" by porting pages or repointing to `/old` (the user explicitly chose to leave it). Re-raise only when the marketing redesign is scheduled.
 
-> **Conv 392 cross-ref — marketing COMPONENTS confirmed orphaned + parked.** The systematic orphan detector (`.claude/scripts/codecheck-orphan-components.mjs`) flagged **52 marketing components** (`FeaturedCreators` + its `CreatorCard` dependency, marketing cards, etc.) as unreachable from any live route — classified **Category-B, parked behind RG-PUBLIC** (they die *with* the marketing redesign, NOT deletable independently). Detail + full orphan-cleanup backlog in the § OLD-PORTED-CLEANUP Conv-392 entry below.
+> **Conv 392 cross-ref — marketing COMPONENTS confirmed orphaned + parked → ✅ DELETED Conv 419 (`[MKTDEAD]`).** The systematic orphan detector (`.claude/scripts/codecheck-orphan-components.mjs`) flagged **52 marketing components** (`FeaturedCreators` + its `CreatorCard` dependency, marketing cards, etc.) as unreachable from any live route — classified **Category-B, parked behind RG-PUBLIC**. **Conv 419 reversed the "NOT deletable independently" call and deleted them** (80 files; sourcemap oracle found 56, not 52). **This does NOT unpark RG-PUBLIC** — the 14 marketing *pages* are untouched and still render their "Coming soon." stubs; only the unreachable component residue behind them is gone, so the redesign starts from a clean slate rather than inheriting 56 stale components it would never reuse. Detail in the § OLD-PORTED-CLEANUP Conv-419 entry below.
 
 ## Cross-cutting / shared-surface handling — the backward-pointer (DECIDED Conv 304)
 
@@ -290,11 +290,14 @@ anchor persists. No `/_archive` folder — it would duplicate git, fight tsc/lin
     (verified `/old/dashboard` gone since Conv 339, TriageStrip unmounted since Conv 258) + corrected the stale
     `index.astro` comment and `project_role_studios` memory. **Kept `CreatorCard`** (marketing `FeaturedCreators`
     dependency).
-  - ⏭️ **Follow-ups:** **Category-B** (52 marketing orphans) — parked behind **RG-PUBLIC** (see the RG-PUBLIC
-    disposition cross-ref above; die with the marketing redesign); **Category-C** (4: `error/ErrorPage`,
+  - ✅ **Category-B** (52 marketing orphans) — was parked behind **RG-PUBLIC**; **DELETED Conv 419 `[MKTDEAD]`**
+    (see the Conv-419 entry below).
+  - ⏭️ **Follow-ups:** **Category-C** (4: `error/ErrorPage`,
     leaderboard, `invite/ModeratorInvite`, context-actions) ✅ **DONE Conv 393** (3 deleted + ModeratorInvite
-    wired — see the Conv 393 entry below); **wire the detector into `/w-codecheck`** once **B** resolves and the
-    53 residuals baseline into `KNOWN_ORPHANS` (it exits 1 until then) — and, alongside that, productionize the
+    wired — see the Conv 393 entry below); **wire the detector into `/w-codecheck`** — **now unblocked and
+    cheaper than planned:** B resolved Conv 419 and the detector **PASSes at 0**, so it can go in as a hard
+    gate with **no `KNOWN_ORPHANS` baseline at all** (the "53 residuals, exits 1 until then" premise is void)
+    — and, alongside that, productionize the
     scoped **`.ts`** detector variant validated Conv 393 (re-derive from the component detector, `src/components/**`
     scope) if a `.ts` gate is wanted; a stray dead **`.ts`**-util sweep
     (the component-only detector misses `.ts`) ✅ **DONE Conv 393** (12 deleted, `src/components/**`-scoped).
@@ -326,6 +329,30 @@ anchor persists. No `/_archive` folder — it would duplicate git, fight tsc/lin
     `icons/icon-provenance.ts` (tooling-read by `prov:sweep`, not imported → the `.ts`-detector equivalent of a
     `KNOWN_ORPHANS` allowlist entry). tsc 0 danglers. Also re-verified importers at delete time — Conv 392's
     "keep `courses/course-tabs/types.ts` because live tabs import it" rationale had silently expired (now 0 importers).
+
+- ✅ **Conv 419 — `[MKTDEAD]`: Category-B deleted, ledger CLOSED** (the last open orphan category; recovery
+  `git checkout 608346a2 -- <path>`):
+  - **The premise was already true.** The user's ask was to stub the dead public pages with "Coming Soon" so
+    they stop tripping sweeps — but all 14 `/old/*` marketing pages have rendered `"Coming soon."` stubs for a
+    long time, and *that is why* their components are orphaned. Nothing user-facing was stale; the residue was
+    the entire cost. So option 1 (stub them) was a no-op and the real choice was park-vs-delete.
+  - **Deleted 80 files** — 56 components + 13 tests + 11 barrels. Components **334 → 278**. Rationale for
+    reversing the Conv-392 park: the bundler had been tree-shaking them out all along, so "keep until the
+    redesign" bought nothing while costing recurring sweep collisions (twice documented), and a fresh design
+    will not reuse them (Conv 239 Matt phase-out). Git history is the recovery path.
+  - **🔴 Oracle correction — the bundler is authoritative, and knip does NOT replace route-reachability.**
+    Three oracles disagreed: knip `--include files` = **14**, our route detector = **53**, sourcemap `sources`
+    union = **56** (ground truth). Both failure modes are barrels, in opposite directions: a **dead** barrel
+    keeps its re-exports "alive" for knip (`marketing/index.ts` kept `FaqPage`); a **live** barrel with an
+    unconsumed re-export hides dead files from route-reachability (`admin-intel/index.ts` hid 3). Only the
+    bundler resolves both, because tree-shaking *is* the question. A first spike that name-matched minified
+    `dist/` output was wrong in **both** directions and was discarded.
+  - **Method for re-runs (~2 min):** temporarily enable `vite.build.sourcemap` in `astro.config.mjs`, build,
+    union the `sources` arrays of every `dist/**/*.map`, restore the config. Immune to minification and barrels.
+    The route detector stays as the cheap pre-sweep check; knip keeps unused-*exports* + dependency scope.
+  - **Aftermath measured:** orphan detector **PASSes for the first time** · knip unused files **0** · the
+    `[ICON-TOK]` static baseline fell **1,863 → 1,694** (169 violations, 10%, had lived in dead code) ·
+    `[KNIP]` blocker (2) cleared · the `/w-codecheck` detector wiring is now baseline-free (above).
 
 ## Status legend
 

@@ -27,6 +27,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [1. Architecture & Design (Highest Impact)](01-architecture.md)
 
+- [[MKTDEAD] Dead Code Is Deleted, Not Parked — the 56 Orphaned Marketing/Admin-Intel Components Removed (Conv 419)](01-architecture.md#mktdead-dead-code-is-deleted-not-parked--the-56-orphaned-marketingadmin-intel-components-removed-conv-419)
 - [[RECEIPT] Owns a Durable `/receipt/[id]` View Rendered from the `transactions` Row, Not Stripe's Hosted `receipt_url` (Conv 410)](01-architecture.md#receipt-owns-a-durable-receiptid-view-rendered-from-the-transactions-row-not-stripes-hosted-receipt_url-conv-410)
 - [[ASTRO7] Astro 6.3.7→7.1.3 Promoted to jfg-dev-14 — vite 8, adapter 14, compressHTML Pinned (Conv 402)](01-architecture.md#astro7-astro-637713-promoted-to-jfg-dev-14--vite-8-adapter-14-compresshtml-pinned-conv-402)
 - [[NPMVULN] Dev-Tail Accepted as Residual — RESOLVED; audit Stays at 7, wrangler Lever Deferred (Conv 402)](01-architecture.md#npmvuln-dev-tail-accepted-as-residual--resolved-audit-stays-at-7-wrangler-lever-deferred-conv-402)
@@ -183,6 +184,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [3. API & Data Fetching (Medium-High Impact)](03-api-data-fetching.md)
 
+- [[MSG-CLEANUP] `GET /api/me/can-message/:userId` Deleted — an Endpoint With No Caller Is Removed, Not Kept as a "Valid Surface" (Conv 419)](03-api-data-fetching.md#msg-cleanup-get-apimecan-messageuserid-deleted--an-endpoint-with-no-caller-is-removed-not-kept-as-a-valid-surface-conv-419)
 - [[CANMSG] Fix the Data Sources, Then Delete the Guard — Every User-Listing Loader Filters `deleted_at IS NULL`; `useCanMessage` Is a Pure Client Derivation (Conv 418)](03-api-data-fetching.md#canmsg-fix-the-data-sources-then-delete-the-guard--every-user-listing-loader-filters-deleted_at-is-null-usecanmessage-is-a-pure-client-derivation-conv-418)
 - [Shared Admin Response Types Co-Locate in One Route File, Imported Cross-Route (CERT-ROWSHAPE, Conv 391)](03-api-data-fetching.md#shared-admin-response-types-co-locate-in-one-route-file-imported-cross-route-cert-rowshape-conv-391)
 - [Role-Aware Multi-Scope Endpoints Accept Caller-Declared `?scope=...` Query Param](03-api-data-fetching.md#role-aware-multi-scope-endpoints-accept-caller-declared-scope-query-param)
@@ -257,6 +259,8 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [[ICON-TOK] Icon Size Is Its Own Token Axis, Split Three Ways by Role — `--icon-*` (rem) / `--icon-inline-*` (em) / Fixed px (Conv 419)](05-ui-ux-components.md#icon-tok-icon-size-is-its-own-token-axis-split-three-ways-by-role----icon--rem----icon-inline--em--fixed-px-conv-419)
+- [[ICON-TOK] Matt's Figma "Icon Size" Collection Is Credited Inside a CC-Owned Ladder, Not Adopted Wholesale (Conv 419)](05-ui-ux-components.md#icon-tok-matts-figma-icon-size-collection-is-credited-inside-a-cc-owned-ladder-not-adopted-wholesale-conv-419)
 - [[MSG-ADOPT-A] A Prop Most Call Sites Would Pass a Constant For Is Optional With a Hook-Derived Default — `MessageUserButton.signedIn` (Conv 418)](05-ui-ux-components.md#msg-adopt-a-a-prop-most-call-sites-would-pass-a-constant-for-is-optional-with-a-hook-derived-default--messageuserbuttonsignedin-conv-418)
 - [[MSG-ICON] A Second Trigger Shape Is an `appearance` Discriminated Prop Union, Not a Second Component or a Flat Options Bag (Conv 418)](05-ui-ux-components.md#msg-icon-a-second-trigger-shape-is-an-appearance-discriminated-prop-union-not-a-second-component-or-a-flat-options-bag-conv-418)
 - [[MSG-INPLACE] Per-User Messaging Composes In Place via an Opt-In Shared Island, With a Discard Guard and an Opt-In "Open in Messages" Exit (Conv 417)](05-ui-ux-components.md#msg-inplace-per-user-messaging-composes-in-place-via-an-opt-in-shared-island-with-a-discard-guard-and-an-opt-in-open-in-messages-exit-conv-417)
@@ -413,6 +417,8 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [6. Testing & CI/CD](06-testing-ci.md)
 
+- [[MKTDEAD] The Bundler Is the Orphan Oracle — Sourcemap `sources` Union Is Ground Truth; knip Does Not Replace Route-Reachability (Conv 419)](06-testing-ci.md#mktdead-the-bundler-is-the-orphan-oracle--sourcemap-sources-union-is-ground-truth-knip-does-not-replace-route-reachability-conv-419)
+- [[ICON-TOK] Icon-Sizing Verification Is Two Gates — a New-Violations-Only Static Guard Plus a Two-Root-Font Runtime Scan (Conv 419)](06-testing-ci.md#icon-tok-icon-sizing-verification-is-two-gates--a-new-violations-only-static-guard-plus-a-two-root-font-runtime-scan-conv-419)
 - [[R2-SEED] Dev R2 Placeholder-Blob Seeding — Makes Uploaded Course Files Demoable in Local Dev (Conv 415)](06-testing-ci.md#r2-seed-dev-r2-placeholder-blob-seeding--makes-uploaded-course-files-demoable-in-local-dev-conv-415)
 - [Adopt `eslint-plugin-jsx-a11y` at `warn` (upstream + `overrides` peer pin), Not the ESLint-10-Native Fork — the Fork Silently Drops `.astro` Coverage (A11Y, Conv 399)](06-testing-ci.md#adopt-eslint-plugin-jsx-a11y-at-warn-upstream--overrides-peer-pin-not-the-eslint-10-native-fork--the-fork-silently-drops-astro-coverage-a11y-conv-399)
 - [Adopt `knip` as the Durable Module-Graph Reachability Oracle — "Absent From the Build = Dead" Closes grep's Blind Spots (KNIP, Conv 398)](06-testing-ci.md#adopt-knip-as-the-durable-module-graph-reachability-oracle--absent-from-the-build--dead-closes-greps-blind-spots-knip-conv-398)

@@ -1995,7 +1995,9 @@ Get session and engagement metrics.
 
 ## Intel
 
-Admin intel endpoints provide lightweight attention metrics overlaid on member-facing pages. Used by `AdminCourseTab`, `AdminCommunityTab`, `AdminMemberSummary`, `AdminBadge`, and `AdminDashboardCard` components in `src/components/admin-intel/`.
+Admin intel endpoints provide lightweight attention metrics overlaid on member-facing pages. Consumed by `AdminMemberSummary` (via the `useAdminIntel` hook) and `AdminBadge` in `src/components/admin-intel/`, plus direct fetches from `CoursesCatalog` / `CommunitiesCatalog` for the batch badge-count endpoints.
+
+> **Conv 419 ([MKTDEAD]):** `AdminCourseTab`, `AdminCommunityTab` and `AdminDashboardCard` were deleted as dead code (unreachable from any route, confirmed via the build's sourcemap `sources`). The endpoints they called — `GET /api/admin/intel/course/:id`, `/community/:id` and `/dashboard` — are **still live and tested**, but currently have no `src/` caller.
 
 ### GET /api/admin/intel/course/:id
 

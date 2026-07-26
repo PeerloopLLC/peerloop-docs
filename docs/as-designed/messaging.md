@@ -3,7 +3,7 @@
 **Type:** Architecture Decision
 **Status:** ✅ DECIDED (MVP) / ⏸️ ON-HOLD (CHAT, SUBCOM)
 **Created:** 2026-01-19
-**Updated:** 2026-07-26 (Conv 418 -- `useCanMessage` became a local derivation with no network call, backed by `deleted_at IS NULL` at the three unfiltered loaders; in-place composer adopted on 11 more affordances across §C/§D/§E/§H)
+**Updated:** 2026-07-26 (Conv 419 -- `[MSG-ADOPT-B]`/M5 converted the last 10 list/profile affordances, so in-place-composer adoption is **complete** except the by-design `SessionRoom` exclusion; `[MSG-CLEANUP]`/M6 deleted `GET /api/me/can-message/:userId`. Conv 418 -- `useCanMessage` became a local derivation with no network call, backed by `deleted_at IS NULL` at the three unfiltered loaders; in-place composer adopted on 11 more affordances across §C/§D/§E/§H)
 **Prev:** 2026-07-26 (Conv 417 -- in-place composer on the course page; §E surfaces re-pointed at their current components, §"URL Pattern Normalization" gains its first documented exception)
 **Prev:** 2026-03-05 (Session 345 -- all 3 phases complete, surface catalog fully covered)
 **Related:** `docs/reference/stream.md`, `docs/reference/cloudflare.md`, `docs/POLICIES.md` section 4
@@ -57,23 +57,24 @@ Every UI surface showing a user is a potential messaging entry point. This catal
 
 | Surface | File | Viewer | User Shown | Msg Btn | Relationship |
 |---------|------|--------|-----------|:---:|--------------|
-| Universal profile `/@[handle]` | `users/UserCard.tsx` | Any auth'd | Any user | YES | Must validate per policy |
-| Creator profile `/creator/[handle]` | `creators/profiles/CreatorProfileHeader.tsx` | Any auth'd | Creator | YES | Enrolled student, their teacher, admin |
-| Teacher profile `/teacher/[handle]` | `teachers/profiles/TeacherProfileHeader.tsx` | Any auth'd | Teacher | YES | Enrolled student, their creator, admin |
+| Universal profile `/@[handle]` | `users/UserCard.tsx` | Any auth'd | Any user | YES | **In-place composer** (Conv 419) — keeps the default `appearance="button"` (`Button` chrome) with its own 16px icon node |
+| Creator profile `/creator/[handle]` | `creators/profiles/CreatorProfileHeader.tsx` | Any auth'd | Creator | YES | **In-place composer** (Conv 419) — `appearance="button"`, own icon node |
+| Teacher profile `/teacher/[handle]` | `teachers/profiles/TeacherProfileHeader.tsx` | Any auth'd | Teacher | YES | **In-place composer** (Conv 419) — `appearance="button"`, own icon node |
 
 #### B. Student Dashboards
 
 | Surface | File | Viewer | Users Shown | Msg Btn | Relationship |
 |---------|------|--------|------------|:---:|--------------|
-| Enrollment card -- teacher info | `dashboard/StudentDashboard.tsx` | Student | Assigned teacher | YES | Inherently valid (own teacher) |
+| Enrollment card -- teacher info | `dashboard/EnrollmentCard.tsx` (rendered by `dashboard/StudentDashboard.tsx`) | Student | Assigned teacher | YES | **In-place composer** (`appearance="bare"`, Conv 419) |
+| Course progress card -- teacher info | `courses/CourseProgressCard.tsx` | Student | Assigned teacher | YES | **In-place composer** (`appearance="bare"`, Conv 419) |
 
 #### C. Teacher Dashboards & Workspace
 
 | Surface | File | Viewer | Users Shown | Msg Btn | Relationship |
 |---------|------|--------|------------|:---:|--------------|
-| Full student list | `teachers/workspace/MyStudents.tsx` | Teacher | Assigned students | YES | Inherently valid |
-| Dashboard student cards | `dashboard/TeacherStudentList.tsx` | Teacher | Assigned students | YES | Inherently valid |
-| Upcoming sessions | `dashboard/TeacherUpcomingSessions.tsx` | Teacher | Session students | YES | Inherently valid |
+| Full student list | `teachers/workspace/MyStudents.tsx` | Teacher | Assigned students | YES | **In-place composer** (`appearance="bare"`, Conv 419) |
+| Dashboard student cards | `dashboard/TeacherStudentList.tsx` | Teacher | Assigned students | YES | **In-place composer** (`appearance="bare"`, Conv 419) |
+| Upcoming sessions | `dashboard/TeacherUpcomingSessions.tsx` | Teacher | Session students | YES | **In-place composer** (`appearance="bare"`, Conv 419) |
 | Session history | `teachers/workspace/TeacherSessionsList.tsx` | Teacher | Past students | YES | **In-place composer** (`appearance="bare"`, Conv 418) — replaced `SessionHistory.tsx`, retired Conv 339 |
 
 #### D. Video Session Screens
@@ -99,7 +100,7 @@ Every UI surface showing a user is a potential messaging entry point. This catal
 
 | Surface | File | Viewer | Users Shown | Msg Btn | Relationship |
 |---------|------|--------|------------|:---:|--------------|
-| Members tab | `community/CommunityMembersTab.tsx` | Community member | All members | YES | `useCanMessage` per member (extracted `MemberRow`) — local since Conv 418, no per-row request; soft-deleted members no longer listed |
+| Members tab | `community/CommunityMembersTab.tsx` | Community member | All members | YES | **In-place composer** (`appearance="bare"`, Conv 419); `useCanMessage` per member (extracted `MemberRow`) — local since Conv 418, no per-row request; soft-deleted members no longer listed |
 
 #### G. Discovery / Browse Pages
 
@@ -162,7 +163,11 @@ All messaging surfaces use `/messages?to=${user.id}` consistently. Fixed:
 
 Conv 418 added an `appearance="bare"` variant (`[MSG-ICON]`) — a bare `<button>` rendering the call site's own icon as children with its `className` passed through verbatim and a required `title`, deliberately **not** the `Button` primitive, whose pill radius/border/padding would fight the site's styling — and adopted it at 11 affordances across 9 files (`[MSG-ADOPT-A]`): `SessionBooking` ×2, `SessionParticipantCard`, `TeacherSessionsList`, and the 6 admin detail panels (7). `signedIn` is now optional and resolves from `useAuthStatus()` when omitted, so a call site with no viewer knowledge passes nothing; the two course tabs still pass it explicitly because they know server-side.
 
-**Still plain `/messages?to=` links — 10 files, tracked as `[MSG-ADOPT-B]`:** `users/UserCard.tsx`, `teachers/profiles/TeacherProfileHeader.tsx`, `creators/profiles/CreatorProfileHeader.tsx`, `community/CommunityMembersTab.tsx`, `dashboard/EnrollmentCard.tsx`, `dashboard/TeacherStudentList.tsx`, `dashboard/TeacherUpcomingSessions.tsx`, `dashboard/CreatorTeacherList.tsx`, `teachers/workspace/MyStudents.tsx`, `courses/CourseProgressCard.tsx`. `booking/SessionRoom.tsx` is excluded by design (see §D). M5 is optional — it trades scroll position rather than correctness — so this list may legitimately stay as-is.
+**Conv 419 (`[MSG-ADOPT-B]`, M5) converted the last 10 — adoption is now complete.** `users/UserCard.tsx`, `teachers/profiles/TeacherProfileHeader.tsx`, `creators/profiles/CreatorProfileHeader.tsx`, `community/CommunityMembersTab.tsx`, `dashboard/EnrollmentCard.tsx`, `dashboard/TeacherStudentList.tsx`, `dashboard/TeacherUpcomingSessions.tsx`, `dashboard/CreatorTeacherList.tsx`, `teachers/workspace/MyStudents.tsx`, `courses/CourseProgressCard.tsx`. All 10 live-verified across 3 seed users. `booking/SessionRoom.tsx` remains excluded **by design** (see §D) and is the only surface still on a plain link.
+
+Seven took `appearance="bare"`; the **three profile-header sites** (`UserCard`, `TeacherProfileHeader`, `CreatorProfileHeader`) deliberately did **not** — they sit in a row of chromed siblings (e.g. `Book a Session`), so they keep the default `appearance="button"` and the `Button` primitive. That imposes `property1="Small"` padding and a 20px `MattIcon`, which was wrong beside their 16px siblings, so `icon` was widened from `string` to `string | ReactNode`: a call site can now pass its own glyph node and it renders verbatim with no MattIcon substituted. Measured against the sibling `Book a Session` button — 12px/14px/39px, identical.
+
+Two "Learning with X" judgment calls (`EnrollmentCard`, `CourseProgressCard`) were resolved to the modal **on evidence**, not preference: `POST /api/conversations` is find-or-create (`index.ts:212`), so the composer appends to the existing thread rather than duplicating it.
 
 `?to=` is thread-aware on arrival (`MessagesCenter`): an existing conversation selects that thread, otherwise the composer opens preselected.
 

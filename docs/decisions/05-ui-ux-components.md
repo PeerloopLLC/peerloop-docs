@@ -3,6 +3,38 @@
 
 ## 5. UI/UX & Components
 
+### [ICON-TOK] Icon Size Is Its Own Token Axis, Split Three Ways by Role — `--icon-*` (rem) / `--icon-inline-*` (em) / Fixed px (Conv 419)
+**Date:** 2026-07-26 (Conv 419)
+
+Icon sizing gets a **dedicated token axis** rather than reusing the spacing scale or arbitrary `size-[Npx]`:
+
+- **`--icon-{12,14,16,18,20,24,28,32,40,48,64}`** (rem) — standalone glyphs and fixed chrome.
+- **`--icon-inline-{sm,md,lg}`** (em) — icons rendered *beside text*, so they track the label rather than the document root. `md` = 1.15em, anchored on 14px body text.
+- **Fixed px** — dots, avatars, hit-targets and component defaults, which must not scale.
+
+Re-exported through `src/styles/tokens-tailwind-bridge.css` as `--spacing-icon-*`, because Tailwind v4 resolves `size-*` from the spacing namespace. **The spacing scale keeps its numeric names** — the Conv-174 `--spacing-*` override redefines exactly ten values (`4,8,12,16,20,24,32,40,48,64`) from Tailwind's `N × 4px` to a literal `N px` while everything else keeps the multiplier, so `h-4` renders 4px but `h-5` renders 20px. That ambiguity is why bare-numeric dimension classes are no longer an acceptable way to size an icon.
+
+Rejected: arbitrary `size-[Npx]` everywhere (unambiguous but permanently untokenized, and pinned against user font size); reusing the spacing scale via `size-16` (tokenized *and* rem — it would have worked — but it cannot express the shipped 14/18/28 and it keeps the N-vs-N×4 ambiguity); renaming the `--spacing-*` override so no number can collide (cleanest, but touches all 4,711 spacing sites).
+
+**Rationale:** There were **no icon-size tokens at all**, so the real choice was "wrong tokens vs no tokens", not "tokens vs arbitrary values". The type scale is entirely rem, so an icon pinned in px beside growing text halves in relative size for exactly the user who enlarged it — answering "*should* icons scale with font size?" as **yes for text-adjacent, no for fixed chrome**. `em` beats `rem` for the inline family because it tracks the actual label: a converted site measured 16.1px beside 14px text, 24.1px at a 24px root, and **27.6px when only the label was raised to 24px** — the third measurement is the one `rem` cannot produce.
+
+**Consequences:** New token axis + Tailwind bridge; 43 sites migrated (38 on reachable code — see `[MKTDEAD]`); `docs/as-designed/matt-design-system/05-color-and-tokens.md`'s never-implemented Conv-172 `--Icon-Size-*` proposal marked superseded; the ~1,694-site migration promoted to the **ICON-SIZING** PLAN block (`plan/icon-sizing/README.md`, 6 dependency-ordered phases). Two guards shipped with it (see `06-testing-ci.md` § `[ICON-TOK]` verification). Open: 40 of the 43 migrated sites remain on `rem` pending per-site inline/standalone classification; the `em` ratios are anchored on 14px body text and will shift beside `text-body-small` / `text-h2`.
+
+**See:** `src/styles/tokens-primitives.css`, `src/styles/tokens-tailwind-bridge.css`; `docs/sessions/2026-07/20260726_1657 Decisions.md` §1, Learnings §2; Conv 419.
+
+### [ICON-TOK] Matt's Figma "Icon Size" Collection Is Credited Inside a CC-Owned Ladder, Not Adopted Wholesale (Conv 419)
+**Date:** 2026-07-26 (Conv 419)
+
+Matt **did** formalize icon sizes — his Figma "Icon Size" collection is Small 20 / Medium 24, and `05-color-and-tokens.md` proposed `--Icon-Size-Medium`/`--Icon-Size-Small` (Conv 172) which was never implemented. The `--icon-*` ladder ships **eleven numeric steps**, with 20 and 24 marked `✓ Matt` and the other nine marked CC-owned.
+
+Rejected: adopting only Matt's two values (would mean re-snapping shipped design rather than naming it — 16px is the single most-used icon size in the app at 72 sites and is not in his set, and 14/18/28 also ship); semantic `sm`/`md`/`lg` naming mirroring his modes (reserved instead for the `--icon-inline-*` family, where the name means "relative to the label").
+
+**Rationale:** Mirrors how `--space-N` flags its four Matt-extracted values inside a scaffolded ladder, and how Conv 306/313 minted CC-owned `Button` variants alongside Matt's — the designer source is *credited* so a future reconciliation knows which values are his, without letting an incomplete collection veto values that are already in production.
+
+**Consequences:** The doc section was rewritten so the Conv-172 proposal and the implementation no longer contradict each other; provenance is machine-checkable if Matt returns.
+
+**See:** `docs/as-designed/matt-design-system/05-color-and-tokens.md`; `docs/sessions/2026-07/20260726_1657 Decisions.md` §2; Conv 419.
+
 ### [MSG-ADOPT-A] A Prop Most Call Sites Would Pass a Constant For Is Optional With a Hook-Derived Default — `MessageUserButton.signedIn` (Conv 418)
 **Date:** 2026-07-26 (Conv 418)
 

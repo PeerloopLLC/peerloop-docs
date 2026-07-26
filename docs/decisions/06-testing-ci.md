@@ -3,6 +3,41 @@
 
 ## 6. Testing & CI/CD
 
+### [MKTDEAD] The Bundler Is the Orphan Oracle — Sourcemap `sources` Union Is Ground Truth; knip Does Not Replace Route-Reachability (Conv 419)
+**Date:** 2026-07-26 (Conv 419)
+
+Three oracles were compared on the same question ("which components are dead?") and disagreed: **knip `--include files` = 14**, **`codecheck-orphan-components.mjs` route-reachability = 53**, **sourcemap `sources` union = 56**. The sourcemap union is **authoritative**; the route detector stays as the cheap pre-sweep check (a strict subset with zero false alarms); knip keeps unused-*exports* and dependency scope.
+
+**Barrels defeat import-graph reachability in both directions**, which is why the two cheap oracles disagree:
+- A **dead** barrel keeps its re-exports "alive" for knip — `marketing/index.ts` is itself unimported, but counts as an importer of `FaqPage`, so knip saw 14 rather than 56.
+- A **live** barrel with an unconsumed re-export hides dead files from route-reachability — `admin-intel/index.ts` is reachable, so the 3 dead files it re-exports looked reachable too.
+
+Only the bundler resolves both, because tree-shaking *is* the question being asked.
+
+**Method (~2 min, re-runnable):** temporarily set `vite.build.sourcemap` in `astro.config.mjs` → `npm run build` → union the `sources` arrays of every `dist/**/*.map` → restore the config. Immune to minification and to barrels. Rejected: name-matching component names against minified `dist/` output — tried first and was wrong in **both** directions (it produced a spurious "64 orphans" count).
+
+**Rationale:** For any claim about what actually ships, the source text is a proxy and the bundler is the fact — the same lesson as DOM-measuring rendered CSS rather than grepping class names.
+
+**Consequences:** `[KNIP]`'s claim that it "would replace `codecheck-orphan-components.mjs`" is **corrected** — it does not; the two answer different questions. Method recorded so the oracle can be re-run rather than re-derived. Drove the `[MKTDEAD]` deletion (see `01-architecture.md`).
+
+**See:** `docs/sessions/2026-07/20260726_1657 Decisions.md` §4, Learnings §6; Conv 419.
+
+### [ICON-TOK] Icon-Sizing Verification Is Two Gates — a New-Violations-Only Static Guard Plus a Two-Root-Font Runtime Scan (Conv 419)
+**Date:** 2026-07-26 (Conv 419)
+
+The `[ICON-TOK]` migration ships with its own verification, because neither "does it compile" nor "do pages look right" answers *"is an icon poorly sized because a class was missed or under-specified?"*:
+
+- **`npm run check:icons`** (`scripts/check-icon-sizing.ts`) — static guard over a committed baseline (1,863 at introduction, 1,694 after `[MKTDEAD]`), **new-violations-only**, with `--update-baseline` as the only mutation path so baseline growth is always a reviewable diff. Its first run found **51 icon usages with no size class at all** — the user's exact stated concern, invisible to every other gate.
+- **`npm run icons:scan`** (`scripts/icon-scan.mjs`) — measures 26 routes **at two root font sizes**. The double run is the completeness proof, not just extra coverage: a post-migration *inline* icon that does not move between a 16px and a 24px root is provably still pinned to px.
+
+The `inline-ratio` rule keys on **geometry** — does the icon *vertically overlap* its text (beside) or not (stacked above)? Its first formulation keyed on "is there text nearby" and produced 38 findings that were nearly all course thumbnails, 48px avatars and empty-state illustrations; re-keying on overlap took false positives to **zero**.
+
+**Rationale:** A checker that cries wolf gets ignored — the same failure new-violations-only baselining exists to prevent, so a noisy rule would have defeated the guard it shipped inside. Two-root-font scanning converts a coverage *argument* into a measurement.
+
+**Consequences:** `package.json` gains `check:icons` + `icons:scan`; two baselines committed. **Caveat recorded:** `icons:scan` was built in the same conv as the 43-site change it exists to catch regressions in, so its baseline already contains that change — there is no true "before" state for `[ICON-4PX]`, and the tool is only load-bearing going forward.
+
+**See:** `scripts/check-icon-sizing.ts`, `scripts/icon-scan.mjs`, `plan/icon-sizing/README.md`; `docs/sessions/2026-07/20260726_1657 Learnings.md` §§4, 7; Conv 419.
+
 ### [R2-SEED] Dev R2 Placeholder-Blob Seeding — Makes Uploaded Course Files Demoable in Local Dev (Conv 415)
 **Date:** 2026-07-25 (Conv 415)
 

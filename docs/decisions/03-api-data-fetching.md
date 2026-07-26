@@ -3,6 +3,17 @@
 
 ## 3. API & Data Fetching (Medium-High Impact)
 
+### [MSG-CLEANUP] `GET /api/me/can-message/:userId` Deleted — an Endpoint With No Caller Is Removed, Not Kept as a "Valid Surface" (Conv 419)
+**Date:** 2026-07-26 (Conv 419)
+
+Resolves the keep-or-delete call `[CANMSG]` deferred to M6. The endpoint and its 7 tests were **removed**; 6 docs updated. Rejected: keeping it as a valid-but-untested-by-UI API surface.
+
+**Rationale:** It has had **zero `src/` callers** since `[CANMSG]` rewrote `useCanMessage` as a pure client derivation, and `canMessage()` in `src/lib/messaging.ts` was always the authoritative gate — so **enforcement is untouched** by the deletion; only an unreferenced read-only echo of it went away. Keeping it would have meant carrying it as a permanent `[KNIP]` exception, i.e. paying maintenance and lint-suppression cost forever for a surface nothing calls.
+
+**Consequences:** `docs/reference/API-MESSAGES.md`'s permission-endpoint section replaced with a statement of *where enforcement lives*. `API-USERS.md`'s follow endpoint now **owns** the "visitors-and-self-get-a-value" convention it had previously been documented as *mirroring*.
+
+**See:** `docs/sessions/2026-07/20260726_1657 Decisions.md` §5; Conv 419.
+
 ### [CANMSG] Fix the Data Sources, Then Delete the Guard — Every User-Listing Loader Filters `deleted_at IS NULL`; `useCanMessage` Is a Pure Client Derivation (Conv 418)
 **Date:** 2026-07-26 (Conv 418)
 
@@ -12,7 +23,7 @@ A client-side guard is only removable as "vacuous" once every loader feeding it 
 2. **Then the guard** — `useCanMessage` rewritten as a pure `useAuthStatus` + `useCurrentUser` derivation (no effect, no fetch), keeping the `[MSGBOOT]` three-state contract. Result **4 requests → 0**, cold and warm, icons unchanged; signed-out = 0, own-profile = 0, other-profile = 1.
 3. **Then the sibling the sweep missed** (`[CMDEL]`, same conv) — scoping step 1 to *the surfaces rendering the hook* left `GET /api/me/communities/[slug]/members` (the creator's management list) as the one member-listing query still unfiltered, an inconsistency the sweep itself created. `AND u.deleted_at IS NULL` added there too, plus a test. The case for leaving it — "the creator needs to see the row to act on it" — was settled by reading the consumer: `CommunityManagement.tsx` renders a **read-only** list with no row actions, and its `Members (n)` count (array length) would otherwise disagree with the community Members tab. **Scope a consistency fix by the data surface, not by the guard's call sites.**
 
-Rejected: dropping the gate outright (a real rare-case regression on three surfaces, failing only at POST); a batch endpoint over `getMessageableFlags` (keeps a round-trip to compute `true`, and needs the hook lifted out of `MemberRow`). `GET /api/me/can-message/:userId` is retained but now has no UI caller — keep-or-delete deferred to `[MSG-CLEANUP]` (M6). New `tests/ssr/soft-deleted-users.test.ts` (3 tests) pins the three filters *because* the client derivation now depends on them.
+Rejected: dropping the gate outright (a real rare-case regression on three surfaces, failing only at POST); a batch endpoint over `getMessageableFlags` (keeps a round-trip to compute `true`, and needs the hook lifted out of `MemberRow`). `GET /api/me/can-message/:userId` is retained but now has no UI caller — keep-or-delete deferred to `[MSG-CLEANUP]` (M6), and **resolved as delete in Conv 419** (see the `[MSG-CLEANUP]` entry above). New `tests/ssr/soft-deleted-users.test.ts` (3 tests) pins the three filters *because* the client derivation now depends on them.
 
 **Rationale:** The `deleted_at` filters are correct independently of messaging — `/@handle` already treated deleted users as not-found, so the other three loaders were simply inconsistent with it. Fixing the source made the removal provably equivalent rather than a behaviour change, at the cost of three one-line SQL changes. General convention: **before deleting a check as vacuous, enumerate its call sites and prove at each one that the guarded condition cannot arise; if it can, fix the loader first, then pin it with a test that says why it exists.**
 

@@ -38,6 +38,8 @@ All commands run from the code repo: `cd ../Peerloop && npm run <name>`
 | `npm run prov:sweep` | Provenance collision-detection validator (Matt design-system attribution drift) |
 | `npm run prov:page-report` | DOM page-conformity report — rendered-page check for unvetted UI (runtime companion to `prov:sweep`) |
 | `npm run prim:treewalk` | Static primitive-candidate surveyor — source-graph walk that nominates raw markup for vetting (static primary to `prov:page-report`'s runtime backstop) |
+| `npm run check:icons` | Static icon-sizing guard — bare-numeric `w-`/`h-`/`size-` classes, new-violations-only against a committed baseline (exit 1 on regression) |
+| `npm run icons:scan` | Runtime icon measurement — 26 routes at two root font sizes, diffed against a committed baseline (informational; needs dev server + dev seed) |
 
 ### Testing
 
@@ -496,6 +498,55 @@ npm run prim:treewalk -- <entry> --include-shell   # also walk @layouts/* chrome
 
 ---
 
+#### `scripts/check-icon-sizing.ts`
+
+Static icon-sizing guard (Conv 419 [ICON-TOK], Phase 1 of `plan/icon-sizing/README.md`) — the **static** half of the icon-size pair. `tokens-tailwind-bridge.css` overrides ten Tailwind spacing values (4, 8, 12, 16, 20, 24, 32, 40, 48, 64) from `N × 4px` to a literal `N px`, so `h-4` renders 4px while `h-5` renders 20px — identical syntax, two meanings, decided by set membership. That shipped 4px icons and two near-invisible 4px checkboxes.
+
+```bash
+npm run check:icons
+npm run check:icons -- --verbose           # list every violation, not just new ones
+npm run check:icons -- --update-baseline   # re-snapshot scripts/icon-sizing-baseline.json
+```
+
+**What it does:**
+- Walks `git ls-files src` (`.ts`/`.tsx`/`.astro`), skipping `src/styles/` and comment lines (a comment naming `h-4 w-4` is documentation, not a violation)
+- **R1 `bare-numeric-*`** — any bare-numeric `w-`/`h-`/`size-N`, reported as `bare-numeric-overridden` (means N px, reads as N×4) or `bare-numeric-multiplier` (means N×4, and breaks if N is ever added to the override set)
+- **R2 `icon-no-size-class`** — an icon component (`MattIcon`, `*Icon`, `*Logo`) rendered with no size class at all, so it falls back to intrinsic size or 100% of its container. Found **51** such usages on the first run — the failure mode runtime scanning only catches where you happen to navigate
+- **R3 `icon-arbitrary-px`** — arbitrary `size-[Npx]` on an icon component; informational until the migration's final phase
+- **New-violations-only.** ~1,400 bare-numeric classes pre-date the rule, so a hard gate would be red on day one and immediately ignored. Compares per-file counts against `scripts/icon-sizing-baseline.json` (same shape as `KNOWN_ORPHANS` in the orphan detector) so a violation *moving within* a file isn't a regression. `--update-baseline` is the only supported mutation path, which keeps baseline growth a reviewable diff
+
+**Exit code:** 0 = no new violations; 1 = regression (so it can join `/w-codecheck`).
+
+**Called by:** `npm run check:icons`
+
+---
+
+#### `scripts/icon-scan.mjs`
+
+Runtime icon measurement (Conv 419 [ICON-TOK], Phase 2) — the **runtime** half. `check:icons` has total coverage but no truth: a class can be present, unique and still wrong for its context. This drives Playwright over the app and measures the rendered DOM.
+
+```bash
+npm run icons:scan                      # compare against the baseline
+npm run icons:scan -- --update          # write/refresh scripts/icon-scan-baseline.json
+npm run icons:scan -- --routes /a,/b    # limit to specific routes
+npm run icons:scan -- --json out.json   # dump raw measurements
+```
+
+**What it does:**
+- Visits 26 seeded routes (5 viewers via `POST /api/auth/dev-login`, plus 2 logged-out) and measures every `svg` / `img` / checkbox / radio: box size, parent font size, display, overflow
+- **Runs each route at two root font sizes (16px and 24px).** This is the completeness proof, and the reason the script exists rather than a threshold sweep: after migration, an *inline* icon whose rendered size does not change between the two roots is provably still pinned to px — a missed site. It also catches containers that didn't grow with their icon
+- Invariants: `too-small` (<12px), `too-large` (>64px svg), `overflows-parent`, `inline-ratio` (an inline glyph <0.7× or >2.2× its label's font size), `inline-did-not-scale`
+- **"Inline" is decided by geometry, not by nearby text** — the icon must *vertically overlap* its label (beside it) rather than sit above it. The first version keyed on "is there text in the same parent" and produced 38 findings that were nearly all course thumbnails, 48px avatars and empty-state illustrations; re-keying on overlap took false positives to zero
+- Baseline-and-diff: migration deliberately changes sizes (px → rem/em), so a bare "did anything change" diff is noise — capture before, classify each delta after
+
+**Requires:** a running dev server (`ICON_SCAN_URL`, default `http://localhost:4321` — use `localhost`, not `127.0.0.1`; the astro dev daemon binds `[::1]` only) and dev seed data (`npm run db:setup:local:dev`) for the dynamic route segments. Run from inside `~/projects/Peerloop` so Playwright resolves from `./node_modules`.
+
+**Coverage caveat:** 67 `.astro` pages exist and this reaches a subset; modal / empty / error states need PLATO rather than a URL.
+
+**Called by:** `npm run icons:scan`
+
+---
+
 #### `scripts/matt-inspired-registry.ts`
 
 Hand-maintained registry of *unmarked* provenance candidates (components + token CSS) — the domain boundary that cannot be auto-derived after the namespace dissolution. The **Matt-inspired** half of the two vetted-primitive registries defined in `matt-provenance.md §12a` (the other half is generated — see `gen-registries.ts` below). Each entry's `name` doubles as its `data-prov-name` runtime-stamp value (§12b). Pure data module consumed by `prov-sweep.ts`; no app importers, so it stays outside the type-check gate's runtime path.
@@ -895,6 +946,8 @@ npx tsx scripts/codemods/migrate-test-json-as-any.ts --limit=20
 | `prov:sweep` | `scripts/prov-sweep.ts` (imports `scripts/matt-inspired-registry.ts` + `scripts/matt-sourced-registry.generated.ts`) |
 | `prov:page-report` | `scripts/prov-page-report.ts` |
 | `prim:treewalk` | `scripts/prim-treewalk.ts` (imports both vetted-primitive registries) |
+| `check:icons` | `scripts/check-icon-sizing.ts` (baseline: `scripts/icon-sizing-baseline.json`) |
+| `icons:scan` | `scripts/icon-scan.mjs` (baseline: `scripts/icon-scan-baseline.json`) |
 | `gen:registries` | `scripts/gen-registries.ts` (emits `scripts/matt-sourced-registry.generated.ts`) |
 | `db:seed:feeds:local` | `scripts/seed-feeds.mjs --local --clean` |
 | `db:seed:feeds:staging` | `scripts/seed-feeds.mjs --staging --clean` |

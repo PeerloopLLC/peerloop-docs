@@ -3,6 +3,21 @@
 
 ## 1. Architecture & Design (Highest Impact)
 
+### [MKTDEAD] Dead Code Is Deleted, Not Parked — the 56 Orphaned Marketing/Admin-Intel Components Removed (Conv 419)
+**Date:** 2026-07-26 (Conv 419)
+
+**Decision:** All 56 bundler-confirmed orphaned components were **deleted** (80 files total: 56 components + 13 tests + 11 barrels), rather than stubbed, allowlisted into `KNOWN_ORPHANS`, or parked until the `[RG-PUBLIC]` redesign. The general rule: **prefer deleting dead code to parking it, unless the parking has a dated, concrete consumer.**
+
+The triggering premise — "these public pages are hopelessly out of date, replace their contents with Coming Soon" — was **already true**: all 14 `/old/*` marketing pages had rendered "Coming soon." stubs for a long time, and that stubbing is precisely *why* the components behind them were orphaned. Nothing user-facing was stale; the residue was the entire cost.
+
+Rejected: stub with "Coming Soon" (a no-op); allowlist + defer to `[RG-PUBLIC]`; do both.
+
+**Rationale:** The bundler had been tree-shaking these out all along, so "keep until the redesign" bought nothing while costing recurring sweep collisions — twice documented, most recently 5 of 43 `[ICON-4PX]` fixes landing on unreachable files, one of them `TestimonialsBrowse`, the same file Conv 404's `[A11Y]` batch had already wasted a fix on 15 convs earlier. A fresh design will not reuse them (Conv 239 Matt phase-out). Git history is the recovery path. Dead code stays invisible to every green gate — tsc, lint, tests and build all pass over it — so it looks alive to every tool and every sweep, and the cost compounds as wasted edits, inflated censuses and detector noise.
+
+**Consequences:** 334 → 278 components; the orphan detector **PASSes for the first time**; knip unused files 0; the `[ICON-TOK]` baseline dropped 1863 → 1694 (−169, ~10% of it was dead code); `[ORPHAN-BACKLOG]` Cat-B resolved; `[KNIP]` blocker (2) cleared. Follow-on convention: run the reachability check over any batch *before* editing it (`[ICON-TOK]` Phase 4 mandates it per tranche).
+
+**See:** `docs/decisions/06-testing-ci.md` § `[MKTDEAD]` orphan oracle; `docs/sessions/2026-07/20260726_1657 Decisions.md` §3, Learnings §§5-6; Conv 419.
+
 ### [RECEIPT] Owns a Durable `/receipt/[id]` View Rendered from the `transactions` Row, Not Stripe's Hosted `receipt_url` (Conv 410)
 **Date:** 2026-07-24 (Conv 410)
 

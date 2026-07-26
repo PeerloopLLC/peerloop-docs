@@ -1910,3 +1910,57 @@ A client-side guard is only removable as "vacuous" once every loader feeding it 
 **Rationale:** Needing to thread a value through many ignorant components means it belongs to the leaf, not the callers — this removed boilerplate from 11 sites and means M5's 10 sites inherit it for free. Follows the Conv-400/417 `useAuthStatus` three-state pattern, so it is not a novel mechanism.
 
 **See:** `docs/decisions/05-ui-ux-components.md` entry; `docs/sessions/2026-07/20260726_1129 Decisions.md` §2, Learnings §§2-3; Conv 418 (code `148ac48d`).
+
+### [ICON-TOK] Icon Size Is Its Own Token Axis, Split Three Ways by Role — `--icon-*` (rem) / `--icon-inline-*` (em) / Fixed px (Conv 419)
+**Date:** 2026-07-26 (Conv 419)
+
+Icon sizing gets a dedicated token axis rather than reusing the spacing scale or arbitrary `size-[Npx]`: `--icon-{12..64}` (rem) for standalone glyphs and fixed chrome; `--icon-inline-{sm,md,lg}` (em) for icons beside text, so they track the label rather than the document root (`md` = 1.15em, anchored on 14px body text); fixed px for dots, avatars, hit-targets and component defaults. Re-exported through `tokens-tailwind-bridge.css` as `--spacing-icon-*` because Tailwind v4 resolves `size-*` from the spacing namespace. The spacing scale keeps its numeric names — the Conv-174 `--spacing-*` override redefines exactly ten values (`4,8,12,16,20,24,32,40,48,64`) from `N × 4px` to a literal `N px` while everything else keeps the multiplier, so `h-4` renders 4px but `h-5` renders 20px; that ambiguity is why bare-numeric dimension classes are no longer acceptable for sizing an icon. Rejected: arbitrary `size-[Npx]` everywhere (untokenized and pinned against user font size); `size-16` on the spacing scale (it *would* have worked — tokenized and rem — but cannot express the shipped 14/18/28 and keeps the N-vs-N×4 ambiguity); renaming the `--spacing-*` override (cleanest, touches all 4,711 spacing sites — deferred to ICON-SIZING Phase 6).
+
+**Rationale:** There were **no icon-size tokens at all**, so the real choice was "wrong tokens vs no tokens", not "tokens vs arbitrary". The type scale is entirely rem, so an icon pinned in px beside growing text halves in relative size for exactly the user who enlarged it — "*should* icons scale with font size?" answers **yes for text-adjacent, no for fixed chrome**. `em` beats `rem` inline because it tracks the actual label: a converted site measured 16.1px beside 14px text, 24.1px at a 24px root, and 27.6px when only the label was raised to 24px — the third measurement is the one `rem` cannot produce.
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `docs/sessions/2026-07/20260726_1657 Decisions.md` §1, Learnings §2; Conv 419.
+
+### [ICON-TOK] Matt's Figma "Icon Size" Collection Is Credited Inside a CC-Owned Ladder, Not Adopted Wholesale (Conv 419)
+**Date:** 2026-07-26 (Conv 419)
+
+Matt did formalize icon sizes — his Figma "Icon Size" collection is Small 20 / Medium 24, and `05-color-and-tokens.md` proposed `--Icon-Size-Medium`/`--Icon-Size-Small` (Conv 172) which was never implemented. The `--icon-*` ladder ships eleven numeric steps with 20 and 24 marked `✓ Matt` and the other nine CC-owned. Rejected: adopting only Matt's two values (16px is the most-used icon size in the app at 72 sites and is not in his set; 14/18/28 also ship — adopting only Small/Medium would mean re-snapping shipped design rather than naming it); semantic `sm/md/lg` naming mirroring his modes (reserved instead for `--icon-inline-*`, where the name means "relative to the label").
+
+**Rationale:** Mirrors how `--space-N` flags its four Matt-extracted values inside a scaffolded ladder, and how Conv 306/313 minted CC-owned `Button` variants alongside Matt's — the designer source is credited so a future reconciliation knows which values are his, without letting an incomplete collection veto values already in production. The doc section was rewritten so the Conv-172 proposal and the implementation no longer contradict.
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `docs/sessions/2026-07/20260726_1657 Decisions.md` §2; Conv 419.
+
+### [ICON-TOK] Icon-Sizing Verification Is Two Gates — a New-Violations-Only Static Guard Plus a Two-Root-Font Runtime Scan (Conv 419)
+**Date:** 2026-07-26 (Conv 419)
+
+`npm run check:icons` (`scripts/check-icon-sizing.ts`) is a static guard over a committed baseline (1,863 at introduction, 1,694 after `[MKTDEAD]`), **new-violations-only**, with `--update-baseline` as the only mutation path so baseline growth is always a reviewable diff; its first run found **51 icon usages with no size class at all**. `npm run icons:scan` (`scripts/icon-scan.mjs`) measures 26 routes at **two root font sizes** — the double run is a completeness proof, since a post-migration inline icon that does not move between a 16px and a 24px root is provably still pinned to px. The `inline-ratio` rule keys on **geometry** (does the icon vertically overlap its text?); its first formulation keyed on "is there text nearby" and produced 38 findings that were nearly all thumbnails, 48px avatars and empty-state illustrations — re-keying took false positives to zero.
+
+**Rationale:** A checker that cries wolf gets ignored, which is the same failure new-violations-only baselining exists to prevent, so a noisy rule would have defeated the guard it shipped inside. Caveat recorded: `icons:scan` was built in the same conv as the 43-site change it exists to catch regressions in, so its baseline already contains that change — there is no true "before" state for `[ICON-4PX]`.
+
+**See:** `docs/decisions/06-testing-ci.md` entry; `docs/sessions/2026-07/20260726_1657 Learnings.md` §§4, 7; Conv 419.
+
+### [MKTDEAD] Dead Code Is Deleted, Not Parked — the 56 Orphaned Marketing/Admin-Intel Components Removed (Conv 419)
+**Date:** 2026-07-26 (Conv 419)
+
+All 56 bundler-confirmed orphaned components deleted (80 files: 56 components + 13 tests + 11 barrels), rather than stubbed, allowlisted into `KNOWN_ORPHANS`, or parked until the `[RG-PUBLIC]` redesign. The triggering premise — "these public pages are hopelessly out of date, replace their contents with Coming Soon" — was **already true**: all 14 `/old/*` marketing pages had rendered "Coming soon." stubs for a long time, and that stubbing is precisely why the components behind them were orphaned. Nothing user-facing was stale; the residue was the entire cost. General rule adopted: prefer deleting dead code to parking it, unless the parking has a dated, concrete consumer.
+
+**Rationale:** The bundler had been tree-shaking these out all along, so "keep until the redesign" bought nothing while costing recurring sweep collisions — twice documented, most recently 5 of 43 `[ICON-4PX]` fixes landing on unreachable files, one of them `TestimonialsBrowse`, the same file Conv 404's `[A11Y]` batch had already wasted a fix on 15 convs earlier. Dead code stays invisible to every green gate (tsc, lint, tests, build all pass over it), so the cost compounds as wasted edits, inflated censuses and detector noise. A fresh design will not reuse them (Conv 239 Matt phase-out); git history is the recovery path. Result: 334 → 278 components; orphan detector PASSes for the first time; knip unused files 0; `[ICON-TOK]` baseline 1863 → 1694.
+
+**See:** `docs/decisions/01-architecture.md` entry; `docs/sessions/2026-07/20260726_1657 Decisions.md` §3, Learnings §§5-6; Conv 419.
+
+### [MKTDEAD] The Bundler Is the Orphan Oracle — Sourcemap `sources` Union Is Ground Truth; knip Does Not Replace Route-Reachability (Conv 419)
+**Date:** 2026-07-26 (Conv 419)
+
+Three oracles were compared on the same question and disagreed: knip `--include files` = 14, route-reachability (`codecheck-orphan-components.mjs`) = 53, sourcemap `sources` union = 56. The sourcemap union is authoritative; the route detector stays as the cheap pre-sweep check (a strict subset, zero false alarms); knip keeps unused-*exports* and dependency scope. Barrels defeat import-graph reachability in **both** directions: a *dead* barrel keeps its re-exports alive for knip (`marketing/index.ts` kept `FaqPage`), while a *live* barrel with an unconsumed re-export hides dead files from route-reachability (`admin-intel/index.ts` hid 3). Method (~2 min): temporarily set `vite.build.sourcemap`, build, union the `sources` arrays of every `dist/**/*.map`, restore. Rejected: name-matching component names against minified `dist/` output — tried first and wrong in both directions (produced a spurious "64 orphans").
+
+**Rationale:** Only the bundler resolves both barrel failure modes, because tree-shaking *is* the question being asked. For any claim about what actually ships, the source text is a proxy and the bundler is the fact. `[KNIP]`'s claim that it "would replace `codecheck-orphan-components.mjs`" is corrected — the two answer different questions.
+
+**See:** `docs/decisions/06-testing-ci.md` entry; `docs/sessions/2026-07/20260726_1657 Decisions.md` §4, Learnings §6; Conv 419.
+
+### [MSG-CLEANUP] `GET /api/me/can-message/:userId` Deleted — an Endpoint With No Caller Is Removed, Not Kept as a "Valid Surface" (Conv 419)
+**Date:** 2026-07-26 (Conv 419)
+
+Resolves the keep-or-delete call `[CANMSG]` deferred to M6. Endpoint + 7 tests removed; 6 docs updated. Rejected: keeping it as a valid-but-untested-by-UI API surface.
+
+**Rationale:** Zero `src/` callers since `[CANMSG]` rewrote `useCanMessage` as a pure client derivation, and `canMessage()` in `src/lib/messaging.ts` was always the authoritative gate — enforcement is untouched; only an unreferenced read-only echo went away. Keeping it would have meant carrying it as a permanent `[KNIP]` exception. `API-USERS.md`'s follow endpoint now *owns* the visitors-and-self-get-a-value convention it had been documented as mirroring.
+
+**See:** `docs/decisions/03-api-data-fetching.md` entry; `docs/sessions/2026-07/20260726_1657 Decisions.md` §5; Conv 419.

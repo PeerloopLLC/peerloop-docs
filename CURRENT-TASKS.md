@@ -55,7 +55,8 @@
 28. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
 29. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
 30. [DEVSRV-STALE](#devsrv-stale) — un-parked: stale/bricked astro dev daemon recurred
-
+31. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
+32. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
 ## ⏸️ Parked  (gated — out of rotation)
 
 - [ORPHAN-BACKLOG](#orphan-backlog) — gate: marketing redesign (RG-PUBLIC)
@@ -212,8 +213,8 @@
 
 ### [ICON-TOK]
 
-- **State:** 📋 queued — **foundation built + standard decided Conv 419** (user decision); migration
-  outstanding and **multi-conv**
+- **State:** 📋 queued · `[Opus]` — **foundation built + standard decided Conv 419** (user decision);
+  migration outstanding and **multi-conv**
 - **Standard (decided).** Spacing (`p`/`m`/`gap`) keeps the numeric scale — that is what the
   Conv-174 override was for, settled at 4711 uses vs 55 arbitrary. Dimensions (`w`/`h`/`size`) use
   the icon axis, split three ways **by role** (user decision, Conv 419):
@@ -276,6 +277,18 @@
   `/profile` at 0% (entirely fixed px). Use it to order the tranches.
 - **Related:** `memory/reference_tailwind_intellisense_canonical_suggestions.md` — IntelliSense's
   arbitrary-`[Npx]`→scale suggestions must be REJECTED; same 4× confusion, inverted direction.
+
+### [INTTESTDOC]
+
+- **State:** 📋 queued · low priority (doc drift) — found by the r-end docs agent, Conv 419
+- **What:** `docs/reference/TEST-COVERAGE.md`'s `## Integration Tests — tests/integration/ (10 files)`
+  header says 10 but the table lists **9** rows. Missing: `tests/integration/session-timezone.test.ts`
+  (added Conv 386 `[XTZ]`). **Pre-existing**, not caused by Conv 419.
+- **Why the tooling missed it:** `sync-gaps.sh` checks one direction only — disk → doc, by basename —
+  so a file present on disk *and* counted in a header but absent from the table is invisible to it.
+- **Worth generalising:** the same one-directional blind spot applies to every count-bearing header in
+  TEST-COVERAGE.md / TEST-COMPONENTS.md. Consider a bidirectional check (header count == row count ==
+  `find` count) rather than fixing this one row and moving on.
 
 ### [KNIP]
 
@@ -360,7 +373,7 @@
 
 ### [ORPHAN-BACKLOG]
 
-- **State:** ⏸️ parked · `[Opus]` · **gate: marketing redesign (RG-PUBLIC)** — Cat-A+C DONE
+- **State:** ⏸️ parked · **gate: detector wiring only** — Cat-A+B+C all DONE (B deleted Conv 419)
 - **Done:** `[ORPHAN-DETECT]` surfaced 118 orphaned components. Conv 392 deleted all **Category A** (dead legacy, 74). Conv 393 resolved all **Category C** — deleted 3 (`error/ErrorPage`, `leaderboard/Leaderboard`+orphaned API, `context-actions/*`), **wired 1** (`invite/ModeratorInvite` was a LIVE bug: admin invite emails `/invite/mod/{token}`, RESEND live on staging, but no page → 404; built `src/pages/invite/mod/[token].astro`), swept 12 stray dead `.ts`. Detector now **53** (was 118); all 5 gates green.
 - **✅ Category B RESOLVED Conv 419 (`[MKTDEAD]`)** — deleted, not deferred. The bundler had been
   tree-shaking these out all along, so "keep them until the redesign" was costing sweep collisions
@@ -383,6 +396,18 @@
 - **State:** ⏸️ parked · **gate: user say-so**
 - **What:** tear down the preflip reference worktree (`~/projects/Peerloop-preflip` on :4331, `peerloop-ref` alias). Consequential + machine-local; the PLATO port-audit reason for keeping it has cleared.
 - **Refs:** `memory/project_preflip_worktree_reference`.
+
+### [PROBESAFE]
+
+- **State:** 📋 queued · low priority (process) — Conv 419
+- **What:** `node scripts/route-matrix.mjs --help` **ran the generator**. `--help` is not a supported
+  flag, so argv was ignored and the script executed, rewriting 4 generated docs during what was meant
+  to be a read-only capability probe. Harmless that time (the drift was the same conv's own work) but
+  it dirtied a clean, just-pushed repo without warning.
+- **Do:** treat an unknown flag on an unfamiliar script as **executing**, not as help. Read the source
+  or check for an explicit `--dry-run` before probing. `git status` after any exploratory script run.
+- **Optional fix:** give the `scripts/*.mjs` generators an arg guard that prints usage and exits on an
+  unrecognised flag, instead of silently running.
 
 ### [PROV-SWEEP-DEBT2]
 

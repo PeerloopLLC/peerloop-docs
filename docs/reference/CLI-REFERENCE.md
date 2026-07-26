@@ -263,10 +263,14 @@ npm run knip
 - Entry points: the Cloudflare cron worker (`workers/cron/src/index.ts`) + `scripts/**`; project scope is `src/**/*.{ts,tsx,astro}`
 
 **Use when:**
-- Adjudicating dead-code deletions — "absent from the graph = dead" is a stronger oracle than `git grep` importer analysis
-- Auditing unused exports across `src/` (generalizes `codecheck-orphan-components.mjs`, which is scoped to `src/components/**`)
+- Auditing unused **exports** across `src/` — a wider scope than `codecheck-orphan-components.mjs`, which is scoped to `src/components/**`
+- Adjudicating dead-code deletions — but see the barrel caveat below; do not use `--include files` alone as the oracle
 
-**Note:** The file/export reachability is trustworthy; the *dependency* section has known false positives (`zod`/`tailwindcss`/`react-day-picker` are used via CSS `@plugin`/runtime, not a JS import) and needs tuning before gating on it. Not yet a hard gate.
+**Note:** The *dependency* section has known false positives (`zod`/`tailwindcss`/`react-day-picker` are used via CSS `@plugin`/runtime, not a JS import) and needs tuning before gating on it. Not yet a hard gate.
+
+**Barrel caveat — knip does NOT replace the orphan detector (Conv 419, measured).** On the same dead-marketing surface the three oracles disagreed: knip *unused files* found **14**, `codecheck-orphan-components.mjs` route-reachability found **53**, and the bundler found **56**. Barrels defeat import-graph reachability in both directions — a **dead** barrel keeps its re-exports "alive" for knip (`marketing/index.ts` kept `FaqPage` off the list), while a **live** barrel with an unconsumed re-export hides dead files from route-reachability (`admin-intel/index.ts` hid 3). Only the bundler resolves both, because tree-shaking *is* the question being asked.
+
+**Ground-truth procedure for a dead-code sweep:** temporarily enable `vite.build.sourcemap` in `astro.config.mjs`, `npm run build`, union the `sources` arrays of every `dist/**/*.map`, then restore the config. ~2 min, immune to minification and to both barrel failure modes. Name-matching minified `dist/` output was tried instead and was wrong in *both* directions. The route detector stays useful as the cheap pre-sweep check (zero false alarms, a strict subset); knip keeps unused-exports and dependency scope.
 
 ---
 
