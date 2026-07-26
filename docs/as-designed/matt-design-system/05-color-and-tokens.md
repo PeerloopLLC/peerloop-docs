@@ -250,19 +250,80 @@ Both values land on the 4-base spacing scale — they match `--space-24` and `--
 - **Medium (24px)** for primary navigation icons (Mobile Header Bar mail/bell, Mobile Control Bar nav icons, Tablet Portrait Control Bar icons), prominent action buttons, entity-header CTAs.
 - **Small (20px)** for inline / secondary icons (text-row affordances, badges, inline meta indicators).
 
-**Implementation rule (CSS variables):**
+**Implementation (Conv 419, `[ICON-TOK]`) — superseded the proposal below.**
+
+The Conv-172 proposal here was `--Icon-Size-Medium: 24px` / `--Icon-Size-Small: 20px`. It was never
+implemented; no `--icon-*` variable existed in the codebase until Conv 419. What shipped instead is a
+**numeric, pixel-named `--icon-N` ladder** in `tokens-primitives.css`, re-exported by the bridge as
+`--spacing-icon-N` so Tailwind generates `size-icon-16` / `w-icon-20` / `h-icon-24`:
 
 ```css
-:root {
-  --Icon-Size-Medium: 24px;  /* matches --space-24 */
-  --Icon-Size-Small:  20px;  /* matches --space-20 */
-}
+--icon-12 --icon-14 --icon-16 --icon-18 --icon-20 ✓ --icon-24 ✓
+--icon-28 --icon-32 --icon-40 --icon-48 --icon-64      /* ✓ = Matt-formalized */
 ```
 
-For the existing React icon convention, either:
+**Why 11 steps rather than Matt's 2.** Matt formalized Small (20) and Medium (24) only, and both are
+marked ✓ in the token file. But the app ships 11 distinct icon sizes, and **16px is the single
+most-used (72 sites) despite not being in Matt's collection**; 14, 18 and 28 are also in use and are
+inexpressible on his set. Adopting only Small/Medium would mean re-snapping shipped design rather
+than naming it. This mirrors how `--space-N` carries a scaffolded ladder with its 4 Matt-extracted
+values flagged inside, and how Conv 306/313 minted CC-owned `Button` variants beyond Matt's set. It
+is consistent with the Conv-239 Matt phase-out (`memory/project_matt_phaseout_inspired_default.md`):
+Figma is layout-only, CC owns consistency.
 
-- Change the default prop from `'h-5 w-5'` (20px) to `'h-6 w-6'` (24px = Matt's Medium) — makes Medium the default
-- Or keep Small default and explicitly opt into Medium at each prominent-icon callsite via `className="h-6 w-6"` (or a `size="md"` prop)
+**Naming is numeric, not semantic** (`size-icon-24`, not `size-icon-md`), matching every other scale
+in `tokens-primitives.css` per Decision 2 (pixel-named tokens). Matt's Small/Medium remain the
+*design* guidance below; the tokens are the *implementation*.
 
-This is a one-line change in the icon component but a system-wide consequence. Decision tracked under [TSV] / [MATT-PRE-PLAN].
+**Why a separate axis at all.** `size-16` and `h-4 w-4` are ambiguous — the Conv-174 `--spacing-*`
+override makes ten numbers mean literal px while every other number keeps Tailwind's `N × 4`, so
+`h-4` renders 4px and `h-5` renders 20px. That shipped 4px icons and near-invisible 4px checkboxes
+(`[ICON-4PX]`, Conv 419). A named `icon-` segment has no number to misdivide. The tokens are
+rem-valued, so icons track the user's root font size — verified: `size-icon-16` renders 16×16 at a
+16px root and 20×20 at a 20px root, where `size-[16px]` stays pinned.
+
+### The three-way rule (Conv 419) — which family an icon belongs to
+
+Not every small square is an icon, and not every icon should scale the same way. Classify by **role**:
+
+| Role | Family | Unit | Example |
+|---|---|---|---|
+| **Inline** — sits beside text | `--icon-inline-{sm,md,lg}` → `size-icon-inline-md` | **em** | glyph before a button label, chevron in a list row, star before a rating |
+| **Standalone** — a glyph with no adjacent text | `--icon-N` → `size-icon-20` | **rem** | nav-rail icon, icon-only button, empty-state mark |
+| **Neither** — dots, avatars, hit targets, brand marks | arbitrary px | px | `size-[6px]` unread dot, 16px avatar, `size-[36px]` tap target, logo |
+
+**Why em for inline (user decision, Conv 419).** The app's type scale is entirely rem
+(`--body-default-size: 0.875rem`), so text already responds to the user's root font size. A rem icon
+tracks the *root*, which means a 16px glyph renders 16px whether its label is `text-body-small`
+(12px) or `text-h2` (24px) — not what "scales with the text" means to a reader. `em` tracks the
+adjacent text. Verified: `size-icon-inline-md` renders 16.1px beside 14px body text, 24.1px when the
+root goes to 24px, and **27.6px when only the button's own label is raised to 24px** — a rem icon
+would have stayed 16px in that last case.
+
+Ratios are anchored on `--body-default-size` (14px) so migrating an existing 16px inline icon is
+close to visually neutral: `sm` 1em · `md` 1.15em (≈16px) · `lg` 1.45em (≈20px, Matt's Small).
+They are deliberately **not** pixel-named — the rendered size is contextual, so a `-16` suffix
+would lie.
+
+**Why rem, not em, for standalone.** A standalone glyph has no neighbouring text; `em` would
+inherit whatever font-size happens to be on its container, which is arbitrary. Root-relative is the
+honest choice, and it still respects the user's font preference.
+
+**Why fixed px for the rest.** A 6px unread dot, a 16px avatar and a 36px tap target have no text
+relationship. Scaling them breaks their containers or doubles a dot. `ui/icons.tsx` component
+**defaults** also stay rem for this reason — a default cannot know its call site's context.
+
+**Cost of scaling, acknowledged.** Icon sets are drawn on a pixel grid (Matt's at 20 and 24); at a
+1.3× root font a 20px glyph renders at 26px and can sit off-grid. This is the trade accepted in
+exchange for icons that stay legible for the users who enlarged their text.
+
+**Guidance (unchanged, from Matt's modes):**
+
+- **Medium (24px)** — primary navigation icons, prominent action buttons, entity-header CTAs.
+- **Small (20px)** — inline / secondary icons: text-row affordances, badges, inline meta.
+
+The React icon default was `'h-5 w-5'` (20px = Matt's Small). Five icons in `ui/icons.tsx`
+(`Chevron{Right,Down,Left,Up}`, `Sort`) instead defaulted to `'h-4 w-4'`, which resolved to **4px**,
+not the intended 16px — fixed in Conv 419. Migration of the remaining ~2k dimension call sites onto
+the token axis is tracked as `[ICON-TOK]`.
 

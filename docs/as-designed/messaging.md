@@ -45,7 +45,7 @@
 | `/teacher/[handle]` | `ssr/loaders/teachers.ts` (`fetchTeacherProfileData`) | **unfiltered** |
 | `/creator/[handle]` | `ssr/loaders/creators.ts` (`fetchCreatorProfileData`) | **unfiltered** |
 
-The three missing `AND … deleted_at IS NULL` filters were added first (they are correct independently of messaging — the member directory was linking to a profile that 404s), pinned by `tests/ssr/soft-deleted-users.test.ts`. Only then was the hook rewritten as a pure `useAuthStatus` + `useCurrentUser` derivation: signed in, a recipient exists, and it isn't you. It makes **no fetch in any state**, and keeps the [MSGBOOT] three-state contract from Conv 417 (`loading` stays true until `authStatus` resolves). The client check was always advisory — `POST /api/conversations` calls `canMessage()` server-side and is the authoritative gate. `GET /api/me/can-message/:userId` still exists and is still tested, but now has **no UI caller** (keep-or-delete tracked as `[MSG-CLEANUP]`).
+The three missing `AND … deleted_at IS NULL` filters were added first (they are correct independently of messaging — the member directory was linking to a profile that 404s), pinned by `tests/ssr/soft-deleted-users.test.ts`. Only then was the hook rewritten as a pure `useAuthStatus` + `useCurrentUser` derivation: signed in, a recipient exists, and it isn't you. It makes **no fetch in any state**, and keeps the [MSGBOOT] three-state contract from Conv 417 (`loading` stays true until `authStatus` resolves). The client check was always advisory — `POST /api/conversations` calls `canMessage()` server-side and is the authoritative gate. `GET /api/me/can-message/:userId` was left with **no UI caller** and was deleted in Conv 419 (`[MSG-CLEANUP]`, M6) — a live tested surface nothing exercised, which `[KNIP]` would have had to carry as a permanent exception. Enforcement is unchanged: `canMessage()` in `src/lib/messaging.ts` was always the gate.
 
 > **History (Session 338):** The original implementation restricted messaging to platform relationships (student↔teacher, student↔creator, teacher↔creator, anyone→admin). Student-to-student was explicitly blocked (US-S017). Conv 110 opened all member-to-member messaging.
 
@@ -139,7 +139,7 @@ The same modal is mounted two ways: inside `MessagesCenter` on `/messages` (sear
 2. ~~`GET /api/users/search` -- filter results to messageable contacts only~~ DONE
 3. ~~`POST /api/conversations/:id/messages` -- validate active relationship still exists~~ DONE
 4. ~~Conditionally show/hide existing "Message" buttons on profile pages (A above)~~ DONE
-5. ~~New endpoint `GET /api/me/can-message/[userId]` + `useCanMessage` hook~~ DONE — *the hook no longer calls the endpoint (Conv 418); see "Conv 418" above*
+5. ~~New endpoint `GET /api/me/can-message/[userId]` + `useCanMessage` hook~~ SUPERSEDED — *the hook stopped calling the endpoint (Conv 418, [CANMSG]) and the endpoint itself was deleted (Conv 419, [MSG-CLEANUP]); the hook survives as a pure local derivation. See "Conv 418" above.*
 6. ~~URL normalization: `UserCard.tsx` from `/messages/new?to=handle` to `/messages?to=id`~~ DONE
 
 **Phase 2 -- Add buttons on inherently-valid surfaces (UX): DONE (Session 344)**

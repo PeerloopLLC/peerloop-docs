@@ -242,38 +242,34 @@ Mark all conversations as read for the current user. Sets `last_read_at` to now 
 
 ---
 
-## Messaging Permission Endpoint
+## Messaging Permission — no endpoint
 
-### GET /api/me/can-message/[userId]
+`GET /api/me/can-message/[userId]` was **deleted in Conv 419** (`[MSG-CLEANUP]`, M6). It had had no
+caller since Conv 418 (`[CANMSG]`) made the client check local, so it was a live, tested surface
+that nothing exercised — and `[KNIP]` would have had to carry it as a permanent exception. It is
+recoverable from git history if a future non-web client needs it.
 
-Check if the current user can message a specific user.
+Nothing about permission enforcement changed. The two places that matter:
 
-> **No UI caller since Conv 418 ([CANMSG]).** This endpoint is live and still covered by `tests/api/me/can-message/[userId].test.ts` (7), but nothing in the app calls it — see *Client Integration* below. Keep-or-delete is an open decision (`[MSG-CLEANUP]`).
+- **Authoritative gate (server).** `canMessage()` in `src/lib/messaging.ts`, called by
+  `POST /api/conversations` and `POST /api/conversations/[id]/messages`. This is, and always was,
+  what actually decides whether a message can be sent. Rules: never yourself; admins and global
+  moderators may message anyone; anyone may message an admin (support channel); an active
+  enrollment relationship (student ↔ teacher, student ↔ creator); a teacher ↔ creator relationship
+  via `teacher_certifications`. Under open messaging (Conv 110) any authenticated member may
+  message any non-deleted member, so in practice the gate is broad.
+- **Advisory affordance (client).** `useCanMessage` (`src/lib/useCanMessage.ts`) decides only
+  whether to *render* a message control: signed in, a recipient exists, and it isn't you. Pure
+  derivation over `useAuthStatus` + `useCurrentUser` — **no fetch in any state**, pinned by
+  `tests/lib/useCanMessage.test.ts`.
 
-**Auth:** Required
+The one input the client cannot derive is whether the recipient is soft-deleted, so Conv 418 added
+`deleted_at IS NULL` to the SSR loaders feeding these surfaces (`communities.ts` member directory,
+`teachers.ts` / `creators.ts` profile lookups; `users.ts` already filtered, and
+`GET /api/me/communities/[slug]/members` followed in `[CMDEL]`). Those filters are load-bearing for
+the client derivation and are pinned by `tests/ssr/soft-deleted-users.test.ts`.
 
-**Response (200):**
-```json
-{
-  "canMessage": true
-}
-```
-
-**Logic:**
-- Returns `false` if trying to message yourself
-- Returns `true` if sender is admin or global moderator (can message anyone)
-- Returns `true` if recipient is admin (support channel)
-- Returns `true` if active enrollment relationship exists (student ↔ Teacher, student ↔ creator)
-- Returns `true` if Teacher ↔ Creator relationship exists (via `teacher_certifications` table)
-- Returns `false` otherwise
-
-**Errors:**
-- `400` - User ID required
-- `401` - Not authenticated
-
-**Client Integration (Session 344, retired Conv 418):** `useCanMessage` (`src/lib/useCanMessage.ts`) used to call this endpoint once per recipient — N round-trips per list view (measured: 4 requests on a 5-member community, cold and warm). Under open messaging (Conv 110) the only input the client could not derive was whether the recipient is soft-deleted, so Conv 418 added `deleted_at IS NULL` to the three SSR loaders that feed these surfaces (`communities.ts` member directory, `teachers.ts` / `creators.ts` profile lookups — `users.ts` already filtered) and rewrote the hook as a pure `useAuthStatus` + `useCurrentUser` derivation with **no fetch in any state**. The filters are pinned by `tests/ssr/soft-deleted-users.test.ts`; the never-calls-the-API contract is pinned by `tests/lib/useCanMessage.test.ts`. `POST /api/conversations` remains the authoritative gate.
-
-**See:** `src/lib/messaging.ts` (canMessage function), POLICIES.md section 4
+**See:** `src/lib/messaging.ts` (`canMessage`), POLICIES.md section 4
 
 ---
 

@@ -19,44 +19,42 @@
 
 ## 🎯 Now  (execution order — top = next)
 
-> **MESSAGES mini-plan (Conv 417, user-sequenced).** One ordered programme, M1→M6.
-> **M1 `[MSGBOOT]` ✅ 417 · M2 `[CANMSG]` ✅ 418 · M3 `[MSG-ICON]` ✅ 418 · M4 `[MSG-ADOPT-A]` ✅ 418
-> · M5 `[MSG-ADOPT-B]` ✅ 419** — every per-user message affordance on the site now opens the
-> composer in place (11 + 10 sites; `SessionRoom` keeps its thread-intent anchor by design).
-> Only **M6 `[MSG-CLEANUP]`** remains: a debt sweep carrying one real decision — keep or delete
-> `GET /api/me/can-message/:userId`, which has had no UI caller since M2.
+> **MESSAGES mini-plan — ✅ COMPLETE (M1–M6, Convs 417–419).** `[MSGBOOT]` 417 · `[CANMSG]`,
+> `[MSG-ICON]`, `[MSG-ADOPT-A]` 418 · `[MSG-ADOPT-B]`, `[MSG-CLEANUP]` 419. Every per-user message
+> affordance composes in place, the per-row can-message fan-out is gone (4 requests → 0), and the
+> orphaned endpoint is deleted. Nothing outstanding — kept here one conv for traceability, then
+> delete this note.
 
-1. [MSG-CLEANUP](#msg-cleanup) — **M6** messages-area debt sweep
-2. [ICON-4PX](#icon-4px) — 44 icons render at 4px, not the intended 16px
-3. [COURSETAB-HASH](#coursetab-hash) — `/courses#student` deep link doesn't restore the tab
-4. [MERGE-BRIAN-JULY7](#merge-brian-july7) — client branch assessment/integration
-5. [A11Y](#a11y) — accessibility lint triage
-6. [RHOOKS](#rhooks) — react-hooks lint triage
-7. [KNIP](#knip) — dead-export oracle → gate
-8. [PROV-SWEEP-DEBT2](#prov-sweep-debt2) — `prov:sweep` gate silently red (10 unregistered)
-9. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
-10. [EDITSAFE](#editsafe) — anchored-edit discipline
-11. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
-12. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
-13. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
-14. [HOME-FIXES](#home-fixes) — Home route fix bucket
-15. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
-16. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
-17. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
-18. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
-19. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
-20. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
-21. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
-22. [RSFD](#rsfd) — port `r-start-from-dirty`
-23. [DEPEXP](#depexp) — dependency-probe hygiene
-24. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
-25. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
-26. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
-27. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
-28. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
-29. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
-30. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
-31. [DEVSRV-STALE](#devsrv-stale) — un-parked: stale/bricked astro dev daemon recurred
+1. [ICON-TOK](#icon-tok) — icon-size token axis: foundation built, ~2k-site migration outstanding
+2. [ICON-4PX](#icon-4px) — residue: `/become-a-teacher`, gated on RG-PUBLIC
+3. [MERGE-BRIAN-JULY7](#merge-brian-july7) — client branch assessment/integration
+4. [A11Y](#a11y) — accessibility lint triage
+5. [RHOOKS](#rhooks) — react-hooks lint triage
+6. [KNIP](#knip) — dead-export oracle → gate
+7. [PROV-SWEEP-DEBT2](#prov-sweep-debt2) — `prov:sweep` gate silently red (10 unregistered)
+8. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
+9. [EDITSAFE](#editsafe) — anchored-edit discipline
+10. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
+11. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
+12. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
+13. [HOME-FIXES](#home-fixes) — Home route fix bucket
+14. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
+15. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
+16. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
+17. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
+18. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
+19. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
+20. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
+21. [RSFD](#rsfd) — port `r-start-from-dirty`
+22. [DEPEXP](#depexp) — dependency-probe hygiene
+23. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
+24. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
+25. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
+26. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
+27. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
+28. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
+29. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
+30. [DEVSRV-STALE](#devsrv-stale) — un-parked: stale/bricked astro dev daemon recurred
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -126,20 +124,6 @@
 - **State:** 📋 queued (deferred per-route bucket)
 - **What:** deferred bucket of per-route fixes captured while sweeping the Courses route(s) — batch later. Sibling of `[HOME-FIXES]`.
 
-### [COURSETAB-HASH]
-
-- **State:** 📋 queued — found Conv 419 during `[MSG-ADOPT-B]` live verification
-- **What:** `/courses#student` does not restore the "As Student" tab on a first load. The hash is
-  present (`location.hash === '#student'`) and `readHashTab()` maps it to a valid `Tab`, but the
-  catalog renders the **All** listing. Clicking the tab works, and thereafter the hash tracks fine.
-- **Where:** `src/components/courses/CoursesCatalog.tsx:129-140` — the mount effect calls
-  `setTab(readHashTab())` and *also* subscribes to a `courses:tabchange` CustomEvent. Prime suspect
-  is the tab-strip island dispatching `courses:tabchange` with `'all'` on its own mount, landing
-  after the effect and overwriting it. Verify before fixing — that is a hypothesis, not a diagnosis.
-- **Why it matters:** every deep link and bookmark to a non-default courses tab silently lands on
-  All. Same class as `[TSLASH]`: addressability that looks wired and isn't.
-- **Done-test:** `goto('/courses#student')` renders the enrolled list without a click.
-
 ### [DEPEXP]
 
 - **State:** 📋 queued · low priority (tooling hygiene)
@@ -206,28 +190,75 @@
 
 ### [ICON-4PX]
 
-- **State:** 📋 queued — found Conv 419 during `[MSG-ADOPT-B]`; **measured, not inferred**
-- **What:** `h-4 w-4` / `w-4 h-4` / `size-4` renders a **4px** icon in this codebase, not the 16px
-  the author almost certainly intended. Measured live on `/teacher/marcus-t`: the Message button's
-  `MessageIcon` has a 4×4 bounding box. Confirmed **pre-existing** by re-measuring on a stashed
-  (unmodified) tree — same 4×4.
-- **Root cause, already documented in-repo:** `src/styles/tokens-tailwind-bridge.css:17-26` — the
-  Conv 174 (user decision B) `--spacing-*` block deliberately overrides Tailwind 4's default scale
-  app-wide so `N` means Matt's px scale, not `0.25rem × N`. Its own comment says *"legacy `/old/*`
-  pages will visually shrink and must be re-tested or migrated"* — the decision was made knowingly.
-- **Why it is still a bug:** the affected sites are **not** `/old/*`. They are live root routes —
-  `/teacher/[handle]`, `/creator/[handle]`, `/@handle` and 14 other files. **44 occurrences across
-  17 files.** Find with:
-  `git -C ~/projects/Peerloop grep -nE '\b(h-4 w-4|w-4 h-4|size-4)\b' -- src/`
-- **Not fixed in Conv 419 on purpose:** M5 preserved each call site's classes verbatim, which is
-  what made the before/after comparison trustworthy. Fixing it is a 44-site design sweep with a
-  real decision behind it (retarget to `size-[16px]`, or reconsider the global `--spacing-*`
-  override) — that is not an M5 change.
-- **Watch for the inverse:** `memory/reference_tailwind_intellisense_canonical_suggestions.md`
-  says Tailwind IntelliSense's arbitrary-`[Npx]`→scale "canonical" suggestions must be REJECTED for
-  exactly this reason. Same 4× confusion, opposite direction.
-- **Done-test:** decide the disposition, then a measured icon on `/teacher/[handle]` matches its
-  sibling buttons' glyph size.
+- **State:** 📋 queued — measured symptoms fixed Conv 419; standard now decided, see `[ICON-TOK]`
+- **Mechanism (measured, settled).** `tokens-tailwind-bridge.css` overrides exactly ten Tailwind
+  spacing values — `4, 8, 12, 16, 20, 24, 32, 40, 48, 64` — so for those, `N` means **N px** instead
+  of Tailwind's `N × 4px`. Every other value keeps the multiplier, which is why `h-5 w-5` is a
+  correct 20px and `h-4 w-4` is a broken 4px. Measured: `h-1`=4 `h-2`=8 `h-3`=12 `h-4`=**4**
+  `h-5`=20 `h-6`=24 `h-8`=**8** `h-12`=**12** `h-16`=**16**. For *spacing* this is the intended
+  Conv-174 behaviour; the bug is only where an author meant the multiplier.
+- **✅ Done Conv 419.** `h-4 w-4` / `w-4 h-4` → `size-icon-16`, **43 sites in 21 files**, including
+  the 5 `ui/icons.tsx` *defaults* (Chevron{Right,Down,Left,Up}, Sort — so every un-overridden use was
+  4px) and two **checkboxes** (`ModeratorInvite`, `TopicPicker`) rendering at 4px. Lone `h-4`
+  (skeleton bars, scroll sentinels) is deliberate literal-px and untouched — `AdminDataTable.tsx:7`
+  documents that. Re-verified live on 6 routes: zero sub-12px icons.
+- **⚠️ The original task understated this** — written from `grep h-4 w-4`, so it missed `h-8 w-8`
+  entirely. Do not re-derive scope from grep; **measure**.
+- **Residue A — `/become-a-teacher` (measured broken).** Uniformly stock Tailwind: `w-8 h-8` icons ×8
+  at 8px, `w-12 h-12` circles holding `text-xl` at 12px, `w-24` label column at 24px. **Gate:
+  `[RG-PUBLIC]` marketing redesign** — fixing now may be discarded by it. Carries a *different* bug
+  too: `w-5 h-5` rendering **8×20** (horizontal flex squeeze, wants `shrink-0`) — don't conflate.
+- **Residue B — folded into `[ICON-TOK]`** below, which is the standing migration.
+
+### [ICON-TOK]
+
+- **State:** 📋 queued — **foundation built + standard decided Conv 419** (user decision); migration
+  outstanding and **multi-conv**
+- **Standard (decided).** Spacing (`p`/`m`/`gap`) keeps the numeric scale — that is what the
+  Conv-174 override was for, settled at 4711 uses vs 55 arbitrary. Dimensions (`w`/`h`/`size`) use
+  the icon axis, split three ways **by role** (user decision, Conv 419):
+  - **Inline** (beside text) → `size-icon-inline-{sm,md,lg}`, **em**, tracks the adjacent label.
+  - **Standalone** (no adjacent text) → `size-icon-N`, **rem**, tracks the root.
+  - **Neither** (dots, avatars, hit targets, brand marks, and `ui/icons.tsx` component *defaults*,
+    which cannot know their call site) → arbitrary px.
+
+  Never `size-16`, `h-4 w-4`, or a bare `size-[Npx]` on something that is actually an icon.
+  Full rationale + the verified em/rem measurements: `matt-design-system/05-color-and-tokens.md`
+  §Icon Size → *The three-way rule*.
+- **✅ Built Conv 419.** `--icon-{12,14,16,18,20,24,28,32,40,48,64}` in `tokens-primitives.css`
+  (rem-valued, pixel-named, matching `--space-N` Decision 1 C) + `--spacing-icon-N` re-exports in
+  `tokens-tailwind-bridge.css`. Tailwind v4 resolves `size-*`/`w-*`/`h-*` from the spacing
+  namespace, so the tokens must live there; the `icon-` segment is what makes them unambiguous.
+  Plus the em inline family `--icon-inline-{sm,md,lg}` (1em / 1.15em / 1.45em, anchored on
+  `--body-default-size` = 14px so migrating a 16px inline icon is visually neutral).
+  **Verified live:** `size-icon-16` → 16×16, → 20×20 at a 20px root (rem);
+  `size-icon-inline-md` → 16.1px beside 14px text, 24.1px at a 24px root, and **27.6px when only
+  the button's own label is raised to 24px** — proving it tracks the label, not the root.
+  43 call sites migrated off `h-4 w-4`; **3 of them** (the profile-header Message buttons, verified
+  icon+label) further moved to the em family as the worked exemplars.
+
+- **⚠️ The remaining 40 are on `size-icon-16` (rem) pending classification, not because they are
+  standalone.** A crude text-adjacency heuristic misclassified even the Message buttons, so each
+  site needs reading, not grepping. The 5 `ui/icons.tsx` defaults are the one settled sub-case:
+  they stay rem permanently.
+- **Why a separate axis, not the spacing scale.** Two reasons, both checked: the spacing scale has
+  no 14, 18 or 28 (≈13 shipped sites inexpressible), and retuning rhythm should not resize every
+  glyph. Ladder values are the current de-facto sizes — 16/20/24 alone cover 221 of 304 sites — so
+  this *names* shipped design rather than re-snapping it.
+- **Migration outstanding (~1,424 bare-numeric + ~600 arbitrary sites).** Census Conv 419:
+  `size-[Npx]` 304 · `w-[Npx]`/`h-[Npx]` 301 · `w-N`/`h-N` overridden-ten **878** · `w-N`/`h-N`
+  Tailwind-only-N **546** · `size-N` 94. The last two rows are the hazard: identical syntax, two
+  meanings. **Mechanical and verifiable, not judgment-heavy** — every bare-numeric class has a
+  deterministic true value (overridden → N px, else → N×4 px), so it scripts and is checkable by
+  re-measuring the DOM. **Classify by ROLE, not by number** — of the off-ladder values only 19
+  (`MattIcon name="verified"`) is an icon (→ `--icon-20`); `size-[6px]`/`[8px]` are status + unread
+  **dots**, `size-[22px]` a toggle **knob**, `size-[36px]` a hit-target **container**. Those keep
+  arbitrary px; snapping them to the ladder would double a 6px dot. **Latent trap:** the 546 correct-today `h-5`/`h-6`/`h-10` uses would silently
+  4×-shrink if anyone ever added 5, 6 or 10 to the override set.
+- **Prevention (not built).** A lint rule banning bare numbers on `w-`/`h-`/`size-` is what makes
+  the standard stick; without it the next `h-4 w-4` lands unnoticed. Decide before the bulk sweep.
+- **Related:** `memory/reference_tailwind_intellisense_canonical_suggestions.md` — IntelliSense's
+  arbitrary-`[Npx]`→scale suggestions must be REJECTED; same 4× confusion, inverted direction.
 
 ### [KNIP]
 
@@ -288,23 +319,6 @@
 - **State:** ⏸️ parked · **gate: user say-so** (on hold Conv 369)
 - **What:** lower supported min screen width 375px → 320px (iPhone-SE class). 3 scoped overflow sites: `MembersFilters.tsx` + `CoursesFilters.tsx` filter rows (`min-w-0` or wrap) + Home legacy feed-card action button (`min-w-0`/`flex-wrap`); re-verify at 320px via iframe harness. Optional.
 - **Refs:** `docs/decisions/05-ui-ux-components.md` [MINWIDTH], `memory/reference_responsive_iframe_harness`.
-
-### [MSG-CLEANUP]
-
-- **State:** 📋 queued — **M6** of the MESSAGES mini-plan (no gate; can run any time)
-- **What:** messages-area debt found while doing M1–M5.
-  - `MessagesCenter.tsx:4` header claims it re-skins `src/components/messages/Messages.tsx`
-    *"(left untouched, still used by /old/messages)"* — **both are gone** (`src/components/messages/`
-    holds only `matt/`, `MessageUserButton.tsx`, `types.ts`; no `src/pages/old/messages*`).
-  - `[RHOOKS]` warning at `NewConversationModal:54` (`setState` in the debounced-search effect) —
-    either fix locally or fold into the standing `[RHOOKS]` task.
-  - **`GET /api/me/can-message/:userId` has no UI caller** since `[CANMSG]` (Conv 418) made the
-    check local. Deliberately KEPT — it is a valid API surface, still tested
-    (`tests/api/me/can-message/[userId].test.ts`), and the same `canMessage()` lib call is the
-    authoritative gate on `POST /api/conversations`. Decide here whether to keep or delete it;
-    if kept, note that `[KNIP]` will flag it when that gate lands.
-  - Registry / `prov:sweep` re-check for `MessageUserButton` + any M3 variant.
-- **Done-test:** no stale refs, 5 gates green, `prov:sweep` no worse than the `[PROV-SWEEP-DEBT2]` baseline.
 
 ### [ORPHAN-BACKLOG]
 
@@ -467,6 +481,26 @@
 ---
 
 ## ✅ Done this conv
+
+- **[MSG-CLEANUP]** — M6, closing the MESSAGES programme. Verified all four items rather than
+  trusting them: the stale `MessagesCenter` header was real (though one directory off — it lives
+  under `matt/`), the `[RHOOKS]` warning was real (line 62, not 54), and `prov:sweep` needed no
+  action (`MessageUserButton` is not among the 10 `[PROV-SWEEP-DEBT2]` errors; baseline unchanged).
+  **Deleted `GET /api/me/can-message/:userId`** + its 7 tests — zero `src/` callers since `[CANMSG]`,
+  and `canMessage()` in `lib/messaging.ts` was always the authoritative gate, so enforcement is
+  untouched. Updated 6 docs plus the `API-USERS` cross-reference, which had documented the follow
+  endpoint as *mirroring* the deleted one — that convention now lives where it is implemented.
+  Fixed the `set-state-in-effect` warning by **deriving** rather than storing: results for a
+  <2-char query are computable, so blanking them from inside the effect was the defect. Lint
+  warnings 167 → 166.
+
+- **[COURSETAB-HASH]** — `/courses#student` and `/communities#…` deep links now restore the tab.
+  Root cause was **not** the suspected `courses:tabchange` race: `useRoleTabs`'s reset-on-role-lost
+  effect fired during hydration, when `visibleTabs` (derived from the current user) still held only
+  the neutral tab — so it could not tell "you don't have that role" from "we don't know yet", and
+  the hash sync then erased the hash. **Same three-state bootstrap race as [MSGBOOT]** (M1 of this
+  programme), in a different consumer; fixed the same way, with a `ready` gate both callers pass
+  from `useAuthStatus()`. +6 tests (3 fail without the gate — verified by reverting it).
 
 - **[MSG-ADOPT-B]** — M5 of the MESSAGES mini-plan. In-place composer adopted on all 10 remaining
   list/profile sites; `SessionRoom` keeps its thread-intent anchor by design. Both "Learning with X"

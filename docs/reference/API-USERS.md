@@ -451,7 +451,7 @@ Search users for messaging (new conversation).
 
 ### GET /api/users/[handle]/follow
 
-Returns whether the current user is following this user. Seeds the Follow button's initial state (`UserFollowButton`). Mirrors `GET /api/me/can-message/[userId]` — visitors and self get `{ "isFollowing": false }` rather than a 401, so the client can render without special-casing auth.
+Returns whether the current user is following this user. Seeds the Follow button's initial state (`UserFollowButton`). Visitors and self get `{ "isFollowing": false }` rather than a 401, so the client can render without special-casing auth. This convention was shared with `GET /api/me/can-message/[userId]` (deleted Conv 419, `[MSG-CLEANUP]`); this endpoint is now where it is defined.
 
 **Path Parameter:** `handle` - Target user's handle
 

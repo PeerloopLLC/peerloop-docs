@@ -2,7 +2,8 @@
 
 React component tests using Vitest and React Testing Library.
 
-**Last Updated:** 2026-07-26 (Conv 418 — [MSG-ICON]/[MSG-ADOPT-A]: `messages/MessageUserButton.test.tsx` grew **11→21** in place (+5 for the `appearance="bare"` icon trigger — a bare `<button>` rendering the call site's own icon as children with `className` passed through and a required `title`, deliberately not the `Button` primitive; +5 for `signedIn` becoming optional and resolving from `useAuthStatus()` when omitted, with an explicit prop still winning). Messages 15→25 cases, files unchanged (2). Grand total files **88** (unchanged), cases **2,247→2,257**. No new component test files.)
+**Last Updated:** 2026-07-26 (Conv 419 — [MSG-ADOPT-B]/[COURSETAB-HASH]: `messages/MessageUserButton.test.tsx` grew **21→24** in place (+3 for `icon` widening to `string | ReactNode` — a node renders verbatim with no MattIcon substituted, a string still resolves to a MattIcon, and the node carries onto the signed-out anchor; needed because the 3 profile-header `Button` sites sit in a row of siblings carrying 16px `ui/icons` glyphs). +1 **new** file `useRoleTabs.test.ts` (6 — the `ready` gate that fixed the `/courses#student` deep link, the same three-state bootstrap race as [MSGBOOT]; 3 of the 6 fail if the gate is reverted). Messages 25→28 cases; new root-level entry. Grand total files **88→89**, cases **2,257→2,266**.)
+**Prev:** 2026-07-26 (Conv 418 — [MSG-ICON]/[MSG-ADOPT-A]: `messages/MessageUserButton.test.tsx` grew **11→21** in place (+5 for the `appearance="bare"` icon trigger — a bare `<button>` rendering the call site's own icon as children with `className` passed through and a required `title`, deliberately not the `Button` primitive; +5 for `signedIn` becoming optional and resolving from `useAuthStatus()` when omitted, with an explicit prop still winning). Messages 15→25 cases, files unchanged (2). Grand total files **88** (unchanged), cases **2,247→2,257**. No new component test files.)
 **Prev:** 2026-07-26 (Conv 417 — [MSG-INPLACE]/[MSG-EXIT]: +1 **new** file `messages/MessageUserButton.test.tsx` (11 — the in-place composer island: button-not-link when signed in, `/messages?to=` anchor fallback when signed out, recipient preselected on open, POST → close → toast with no navigation, the discard guard's cancel/confirm/nothing-typed paths, the opt-in "Open in Messages" exit + its typed-draft guard, error toast on a failed POST, and one case pinning the exit as opt-**out** on the `/messages` mount) → Messages 1→2 files / 4→15. Grand total files **87→88**, cases **2,236→2,247**.)
 **Prev:** 2026-07-13 (Conv 393 — [ORPHAN-BACKLOG] Category C + dead-.ts sweep: deleted 4 orphaned component test files whose components/utils were removed as dead code. Context Actions 1→0 files / 11→0 (−`ContextActionsPanel` 11, category removed), Explore 3→1 / 83→37 (−`community-role-utils` 24, −`feed-role-utils` 22), Leaderboard 1→0 / 35→0 (−`Leaderboard` 35, category removed). Grand total files **91→87**, cases **2,328→2,236**.)
 **Prev:** 2026-07-12 (Conv 392 — [ORPHAN-PURGE]/[ORPHAN-BACKLOG]: deleted 13 orphaned component test files whose components were removed as dead-legacy (unreachable from any route). Courses 7→2 files / 85→23 (−`CourseTabs` 19, `LearnTab` 18, `ModuleAccordion` 11, `MyCourses` 7, `course-tabs/ResourcesTabContent` 7), Explore 8→3 / 146→83 (−`RoleBadge` 21, `ExploreTabBar` 7, `RolePillFilters` 8, `ExploreCommunityCard` 16, `CommunityRolePillFilters` 11), Learning 2→1 / 20→2 (−`ModuleContent` 18), Messages 2→1 / 21→4 (−`Messages` 17), Notifications 1→0 / 35→0 (−`NotificationsList` 35, category removed). Grand total files **104→91**, cases **2,523→2,328**.)
@@ -72,6 +73,14 @@ All components use mocked API responses via `vi.mock()`.
 | ProgressDistribution | `tests/components/analytics/ProgressDistribution.test.tsx` | 9 |
 | SessionAnalytics | `tests/components/analytics/SessionAnalytics.test.tsx` | 14 |
 | TeacherPerformanceTable | `tests/components/analytics/TeacherPerformanceTable.test.tsx` | 18 |
+
+---
+
+## Shared Hooks (1 file)
+
+| Component | Test File | Tests |
+|-----------|-----------|:-----:|
+| useRoleTabs (`ready` gate) | `tests/components/useRoleTabs.test.ts` | 6 |
 
 ---
 
@@ -202,7 +211,7 @@ All components use mocked API responses via `vi.mock()`.
 
 | Component | Test File | Tests |
 |-----------|-----------|:-----:|
-| MessageUserButton (in-place composer island) | `tests/components/messages/MessageUserButton.test.tsx` | 21 |
+| MessageUserButton (in-place composer island) | `tests/components/messages/MessageUserButton.test.tsx` | 24 |
 | Message time (viewer-tz, XTZ) | `tests/components/messages/message-timezone.test.ts` | 4 |
 
 ---
@@ -314,7 +323,7 @@ All components use mocked API responses via `vi.mock()`.
 | Learning | 1 | 2 |
 | Layout | 2 | 11 |
 | Marketing | 9 | 389 |
-| Messages | 2 | 25 |
+| Messages | 2 | 28 |
 | Moderation | 1 | 59 |
 | Onboarding | 2 | 42 |
 | Progression | 1 | 15 |
@@ -325,7 +334,8 @@ All components use mocked API responses via `vi.mock()`.
 | Teaching | 4 | 146 |
 | Testimonials | 1 | 53 |
 | UI | 2 | 10 |
-| **Total** | **88** | **2,257** |
+| Shared hooks | 1 | 6 |
+| **Total** | **89** | **2,266** |
 
 ---
 
