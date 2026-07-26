@@ -132,6 +132,7 @@ crd: R02 /course/[slug] R01
 lnk: M01 P01
 rdr: M05 /community/[slug] A01
 tab: K03"					"C01 /course/[slug]/[...tab]
+btn: P02
 crd: /community/[slug]
 crm: R03
 lnk: P01 M01 M09 /course/[slug]/reviews /course/[slug]/benefits

@@ -1,7 +1,7 @@
 # Route ↔ API Map
 
 > **Auto-generated** by `scripts/route-api-map.mjs` — do not edit manually.
-> Last generated: 2026-07-25
+> Last generated: 2026-07-26
 >
 > Run: `cd ../Peerloop && node scripts/route-api-map.mjs`
 
@@ -10,7 +10,7 @@
 ## Quick Stats
 
 - **Pages scanned:** 67
-- **API endpoints found in UI:** 218
+- **API endpoints found in UI:** 219
 - **Routes reachable from navbar:** 54
 - **Unreachable routes:** 35
 
@@ -239,6 +239,7 @@ Which API calls does each page make?
 | POST | `/api/checkout/create-session` | src/components/courses/EnrollButton.tsx |
 | GET | `/api/courses/[param]/availability-summary` | src/components/courses/EnrollButton.tsx |
 | GET | `/api/courses/[param]/homework` | src/components/learning/HomeworkTab.tsx |
+| POST | `/api/enrollments/[param]/course-review` | src/components/course/CourseReviewComposer.tsx |
 | GET | `/api/feeds/course/[param]` | src/components/course/MattCourseFeed.tsx |
 | POST | `/api/feeds/course/[param]` | src/lib/feeds.ts |
 | POST | `/api/feeds/promote` | src/components/feed/PromoteButton.tsx |
@@ -733,6 +734,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/courses/[param]/discussion-feed` | `/creating/[...tab]` |
 | `POST /api/courses/availability-batch` | `/courses` |
 | `POST /api/creators/apply` | `/creating/apply` |
+| `POST /api/enrollments/[param]/course-review` | `/course/[slug]/[...tab]` |
 | `POST /api/enrollments/[param]/expectations` | `/course/[slug]/success` |
 | `POST /api/feeds/community/[param]` | `/community/[slug]/[...tab]` |
 | `POST /api/feeds/course/[param]` | `/course/[slug]/[...tab]`, `/course/[slug]/success`, `/teaching/courses/[courseId]` |

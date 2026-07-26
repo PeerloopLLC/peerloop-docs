@@ -1847,3 +1847,21 @@ Three `/course/[slug]` interaction-affordance refinements sharing one design-sys
 **Rationale:** Multi-conv-scope carve-out — the "focused step" ballooned into a major types migration; do it deliberately with all 5 gates. The immediate download is already fixed by the reseed. Interim rule: stop `astro dev` before any `wrangler --local` op.
 
 **See:** `docs/decisions/08-deployment-infra.md` entry; `docs/sessions/2026-07/20260725_1439 Decisions.md` §5, Learnings §§3,5; Conv 415.
+
+### [MF-SKEW] wrangler vs astro-dev Miniflare Version Skew — Resolved by an Exact-Pin wrangler 4.112.0 + workers-types v5 That Dedupes miniflare (Conv 416)
+**Date:** 2026-07-25 (Conv 416)
+
+Resolves the Conv-415 deferral. wrangler and `@cloudflare/vite-plugin` 1.45.1 each bundle miniflare at an *exact* version; two exact versions can never dedupe → incompatible `_cf_ALARM` schemas in the shared `.wrangler/state/v3` → older CLI crash. The Conv-415 "sweet spot" (mf ≥ 20260714 + workers-types v4 peer) proven not to exist (wt peer flips ^4→^5 at wrangler 4.108, before mf hits 20260714 at 4.112). Fix: **exact-pin `wrangler@4.112.0`** (matches vite-plugin's mf 4.20260714.0 pin → npm collapses to ONE shared copy → skew structurally impossible; a caret would re-float and re-split; an npm override rejected as fragile) + **bump workers-types → v5 (5.20260724.1)** to clear the ERESOLVE (an *optional* peer is still checked when the dep is directly declared), measured tsc-clean (0 errors both sides; rejected a broad `.npmrc legacy-peer-deps=true`) + bump global nvm wrangler 4.58→4.112 (shadows the project copy on PATH) + drop the dead `r2:list:*` scripts.
+
+**Rationale:** An exact pin matching the vite-plugin makes the skew structurally impossible (one shared copy), not merely currently-aligned. The v5 bump was the measured-clean unblock, strictly better than globally disabling peer checks. Caveat: an `npm install` bricks a *running* `astro dev` module runner — restart after any dependency change.
+
+**See:** `docs/decisions/08-deployment-infra.md` entry; `docs/sessions/2026-07/20260725_2039 Decisions.md` §1, Learnings §§1-3; memory `project_wrangler_exact_pin_miniflare_dedupe`; Conv 416 (code `3de05f0f`). Supersedes the Conv-415 MF-SKEW deferral.
+
+### [REVIEW-GATE] Gate a UI Affordance on the Exact Predicate Its Endpoint Enforces, Not a Journey Proxy — Course Review Composer (Conv 416)
+**Date:** 2026-07-25 (Conv 416)
+
+`/course/[slug]` "Write a Review" built as a new `CourseReviewComposer` island (Modal + StarRating + Textarea + collapsible sub-ratings, modelled on `SessionCompletedView`), gated on the **real** `enrollment.status === 'completed'` + no-existing-review — exactly what `POST /course-review` enforces (LEFT JOIN in `[...tab].astro`) — **not** the page's `courseComplete` journey proxy (which can diverge → a button whose POST 400s). Rejected: inline composer; stub-then-defer; proxy gating. Three states: write / already-reviewed read-only / hidden. Establishes the **API-aligned gating** convention.
+
+**Rationale:** Display and acceptance must agree; gate on the backing-endpoint predicate (the GET even exposes a `can_review` flag). Same conv: Feed "Post" button → bordered-neutral module-button style; "Ask a Question" → `/messages?to=` deep-link + tonal hover.
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `docs/sessions/2026-07/20260725_2039 Decisions.md` §§2-3, Learnings §4; Conv 416 (code `d450ae2c`).

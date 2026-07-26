@@ -255,6 +255,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [[REVIEW-GATE] Gate a UI Affordance on the Exact Predicate Its Endpoint Enforces, Not a Journey Proxy — Course Review Composer (Conv 416)](05-ui-ux-components.md#review-gate-gate-a-ui-affordance-on-the-exact-predicate-its-endpoint-enforces-not-a-journey-proxy--course-review-composer-conv-416)
 - [[STEP-LINK] Course-Detail Hover and Link Affordances — Persistent Underline for Links, Neutral Hover Tint, Variant-Aware Pale-Tonal Darker-Green Hover (Conv 415)](05-ui-ux-components.md#step-link-course-detail-hover-and-link-affordances--persistent-underline-for-links-neutral-hover-tint-variant-aware-pale-tonal-darker-green-hover-conv-415)
 - [[TAB-THEME] Matt/Brian Tab Colour Toggle — Brian's Colours Adopted on Our Flat Shape via a User-Preference Runtime Theme (MERGE-BRIAN M7, Conv 414)](05-ui-ux-components.md#tab-theme-mattbrian-tab-colour-toggle--brians-colours-adopted-on-our-flat-shape-via-a-user-preference-runtime-theme-merge-brian-m7-conv-414)
 - [[HERO] CourseHeader Collapsed to One State-Derived Band, Container-Query Shrink-to-Wrap Reflow (Conv 413)](05-ui-ux-components.md#hero-courseheader-collapsed-to-one-state-derived-band-container-query-shrink-to-wrap-reflow-conv-413)
@@ -486,7 +487,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [8. Deployment & Infrastructure](08-deployment-infra.md)
 
-- [[MF-SKEW] wrangler vs astro-dev Miniflare Version Skew — Full wrangler Upgrade Deferred to a Focused Task (Conv 415)](08-deployment-infra.md#mf-skew-wrangler-vs-astro-dev-miniflare-version-skew--full-wrangler-upgrade-deferred-to-a-focused-task-conv-415)
+- [[MF-SKEW] wrangler vs astro-dev Miniflare Version Skew — Resolved by an Exact-Pin wrangler 4.112.0 + workers-types v5 That Dedupes miniflare (Conv 416)](08-deployment-infra.md#mf-skew-wrangler-vs-astro-dev-miniflare-version-skew--resolved-by-an-exact-pin-wrangler-41120--workers-types-v5-that-dedupes-miniflare-conv-416)
 - [Applying an In-Place `0001` Column to a Data-Bearing Remote D1 — Prefer a Surgical ALTER When the Data Must Be Preserved (FEEDBACK-DEPLOY, Conv 394)](08-deployment-infra.md#applying-an-in-place-0001-column-to-a-data-bearing-remote-d1--prefer-a-surgical-alter-when-the-data-must-be-preserved-feedback-deploy-conv-394)
 - [In-Place `0001` Edits Drift Un-Reset Staging DBs — Prefer a Full Reseed Over a Surgical ALTER (PROF500, Conv 363)](08-deployment-infra.md#in-place-0001-edits-drift-un-reset-staging-dbs--prefer-a-full-reseed-over-a-surgical-alter-prof500-conv-363)
 - [Staging Is the Deploy Target; Production Is a Gated Launch Event](08-deployment-infra.md#staging-is-the-deploy-target-production-is-a-gated-launch-event)

@@ -3,7 +3,20 @@
 
 ## 8. Deployment & Infrastructure
 
-### [MF-SKEW] wrangler vs astro-dev Miniflare Version Skew — Full wrangler Upgrade Deferred to a Focused Task (Conv 415)
+### [MF-SKEW] wrangler vs astro-dev Miniflare Version Skew — Resolved by an Exact-Pin wrangler 4.112.0 + workers-types v5 That Dedupes miniflare (Conv 416)
+**Date:** 2026-07-25 (Conv 416)
+
+Resolves the Conv-415 deferral below. `wrangler … --local` and `astro dev` (`@astrojs/cloudflare` → `@cloudflare/vite-plugin` 1.45.1) each bundle **Miniflare** at an *exact* version; two different exact versions can never dedupe, so they wrote incompatible `_cf_ALARM` schemas into the shared `.wrangler/state/v3` and the older CLI crashed. The Conv-415 "sweet spot" (mf ≥ 4.20260714 while workers-types still peers v4) was proven **not to exist**: the wt peer flips `^4`→`^5` at wrangler **4.108** (mf 20260706), *before* mf reaches 20260714 at **4.112**.
+
+**Fix:** **exact-pin `wrangler@4.112.0`** (not a caret — `^4.112.0` lets a fresh install float wrangler to a version with a *different* mf pin → two copies again → crash returns; not an npm `override` — fragile). wrangler 4.112.0 and vite-plugin 1.45.1 both pin miniflare **4.20260714.0**, so npm collapses them to **ONE shared copy** → skew structurally impossible in both read/write directions. The blocking ERESOLVE (wrangler 4.112's `peerOptional @cloudflare/workers-types@^5` vs our directly-declared v4 in `tsconfig types[]` — an optional peer is still checked when the dep is present) was cleared by **bumping workers-types → v5 (5.20260724.1)**, *measured* tsc-clean (v4 baseline 0 errors → v5 install clean, tsc 0 errors — the "codebase-wide fallout" fear was unfounded); rejected a committed `.npmrc legacy-peer-deps=true` (broad, brittle). Also bumped the **global nvm wrangler 4.58→4.112** (it shadows the project copy on PATH) and removed the dead `r2:list:*` scripts (`r2 object list` is not a valid subcommand).
+
+**Rationale:** An exact pin matching the vite-plugin's pin makes the skew *structurally* impossible (one shared copy) rather than merely currently-aligned; a caret re-opens the gap on the next float. The v5 bump was the measured-clean unblock, strictly better than globally disabling peer checks.
+
+**Consequences:** miniflare deduped to one copy 4.20260714.0; live-verified `wrangler d1 execute --local` + `db:seed:r2:local` (7/7 blobs) run cleanly (previously the exact crash). Caveat: an `npm install` swaps these packages on disk and bricks a *running* `astro dev` module runner (500s) — restart the dev server after any dependency change. All 5 gates green (suite 6552). Memory `project_wrangler_exact_pin_miniflare_dedupe`. Committed `3de05f0f`.
+
+**See:** `package.json`, `scripts/seed-r2-dev.mjs`; `docs/sessions/2026-07/20260725_2039 Decisions.md` §1, Learnings §§1-3; memory `project_wrangler_exact_pin_miniflare_dedupe`; Conv 416. Supersedes the Conv-415 deferral (below).
+
+### [MF-SKEW] wrangler vs astro-dev Miniflare Version Skew — Full wrangler Upgrade Deferred to a Focused Task (Conv 415, SUPERSEDED by Conv 416 above)
 **Date:** 2026-07-25 (Conv 415)
 
 `wrangler … --local` and `astro dev` (`@astrojs/cloudflare` → `@cloudflare/vite-plugin`) both run **Miniflare**, persisting to the same `.wrangler/state/v3` SQLite (incl. an internal `_cf_ALARM` table). wrangler bundles miniflare **4.20260521**, the dev server **4.20260714** — the newer migrated `_cf_ALARM` 2→3 columns **on disk**, so the older wrangler crashes opening it (`table _cf_ALARM has 3 columns but 2 values supplied`; forward-incompat). It's a persisted-schema conflict, not a live lock: **stopping the dev server is necessary but NOT sufficient** — recovery is `rm -rf .wrangler/state/v3` then reseed with no dev server up.

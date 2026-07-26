@@ -414,6 +414,7 @@ Search users for messaging (new conversation).
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
+| `id` | string | - | Exact user id to resolve (takes precedence over `q`; returns the single messageable user for that id, or `[]`). Used by the `?to=` deep-link preselect. |
 | `q` | string | - | Search query (min 2 chars, searches name and handle) |
 | `limit` | number | 10 | Max results (max 20) |
 
@@ -444,6 +445,7 @@ Search users for messaging (new conversation).
 - Excludes current user from results
 - Excludes deleted/suspended users
 - Results ranked by handle prefix match, then alphabetical
+- `id` branch: when present, resolves that exact user id (bypassing the name/handle `q` search and its min-2-char 400) and is still gated by the messageable-contacts filter — a non-messageable or unknown id yields `{ "users": [] }`. The generic `q=` search matches name/handle only, so a raw id can never resolve without this branch.
 
 ---
 

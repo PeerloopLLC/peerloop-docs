@@ -3,6 +3,17 @@
 
 ## 5. UI/UX & Components
 
+### [REVIEW-GATE] Gate a UI Affordance on the Exact Predicate Its Endpoint Enforces, Not a Journey Proxy — Course Review Composer (Conv 416)
+**Date:** 2026-07-25 (Conv 416)
+
+The `/course/[slug]` "Write a Review" affordance (a new `CourseReviewComposer` island — Modal + StarRating + Textarea + collapsible clarity/relevance/depth sub-ratings, modelled on the post-session `SessionCompletedView`) is gated on the **real** `enrollment.status === 'completed'` + no-existing-review — the exact rule `POST /api/enrollments/:id/course-review` enforces — computed via a LEFT JOIN in `[...tab].astro`, **not** the page's existing `courseComplete` journey proxy (`isComplete OR all-modules-done`). Rejected: an inline composer; a stub-then-defer build; gating on the proxy. Three states: write / already-reviewed read-only ("You reviewed this ★N") / hidden.
+
+**Rationale:** The journey proxy can diverge from the real status, so gating display on it would show a button whose POST then 400s — display and acceptance must agree. Establishes the **API-aligned gating** convention: compute an affordance's visibility from the exact backing-endpoint predicate (the GET endpoint even exposes a ready-made `can_review` flag with the same logic).
+
+**Consequences:** Verified end-to-end vs seed (in_progress→hidden; completed→write→POST 200→read-only; DB reverted + aggregate drift fixed). All 5 gates green (6552). Committed `d450ae2c`. Same conv, minor: Feed "Post" button restyled to the bordered-neutral module-button style (`hover:bg-neutral-50`); "Ask a Question" (CreatorTab + TeachersTabList) wired to `/messages?to={userId}` with a tonal `hover:bg-student-primary/20`.
+
+**See:** `docs/decisions/06-testing-ci.md` (Learning 6 aggregate-recompute); `docs/sessions/2026-07/20260725_2039 Decisions.md` §§2-3, Learnings §4; Conv 416.
+
 ### [STEP-LINK] Course-Detail Hover and Link Affordances — Persistent Underline for Links, Neutral Hover Tint, Variant-Aware Pale-Tonal Darker-Green Hover (Conv 415)
 **Date:** 2026-07-25 (Conv 415)
 
