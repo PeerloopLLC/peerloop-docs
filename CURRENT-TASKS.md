@@ -244,9 +244,24 @@
     open question: **the three inline steps are anchored on 14px and don't serve a 12px label.**
   - Reachability check ran clean (`PASS`) — no repeat of Conv 419's 5 dead-code edits. 5 gates green
     (suite **6131**), `icons:scan` **no regression** across 26 routes.
-- **Next:** Phase 4 tranche 2 — the 891 `bare-numeric-overridden` sites (the class that actually
-  shipped 4px icons). Re-test the premise before executing; `/messages`, `/notifications`, `/profile`
-  still measure **0% scale with root**, so that is where genuinely-pinned px is concentrated.
+- **✅ Conv 420 — Tranche 2 (large standalone icons).** 44 sites / 85 classes at 32/40/48/64px →
+  `size-icon-{32,40,48,64}`; baseline 1,448 → **1,363**. Premise re-tested first and again over-scoped:
+  R1 matches *any* `w-/h-/size-N`, so the "891 sites that shipped 4px icons" is **~501 icon classes +
+  ~390 non-icon** (skeleton bars, badge circles, dots, avatar `<img>`s, one text-column width) — the
+  390 are out of this axis entirely. Avoided a blind sed: `w-64 h-64`/`h-48 w-48` occur *both* as icon
+  sizes and as the wrapper circles those icons sit in, so edits were scoped to the icon tag per line.
+  **Verification honestly partial** — `icons:scan` no regression, but a direct probe showed only
+  **4 of 44** actually render under seeded data (on `/admin`, growing correctly at a 24px root); the
+  other 40 are empty-state marks behind "list is empty" conditions no route walk reaches. Same probe
+  *did* confirm tranche 1 (33 elements on `size-icon-20`/`-16`, all 33 scaling). One test coupled to
+  the literal classname `svg.w-48.h-48` failed and was updated; swept `tests/` for the rest — no
+  further coupling. 5 gates green (suite 6131).
+- **Next:** Phase 4 tranche 3 — the remaining ~421 icon classes in the overridden set, concentrated at
+  16px (174) and 20px (139). **These are the inline/standalone judgment calls**, unlike tranche 2's
+  large marks, so they need reading. `/messages`, `/notifications`, `/profile` still measure **0% scale
+  with root** — that is where genuinely-pinned px is concentrated. Also outstanding: Phase 5 must drive
+  **empty states deliberately** (40 of tranche 2 remain unproven), and someone must decide whether the
+  ~390 non-icon bare-numerics get their own axis or stay ambiguous.
 - **Standard (decided).** Spacing (`p`/`m`/`gap`) keeps the numeric scale — that is what the
   Conv-174 override was for, settled at 4711 uses vs 55 arbitrary. Dimensions (`w`/`h`/`size`) use
   the icon axis, split three ways **by role** (user decision, Conv 419):
@@ -581,10 +596,10 @@
 
 ## ✅ Done this conv
 
-- **`[ICON-TOK]` Phase 4 Tranche 1** — 94 icon-component defaults → the token axis, **200 violations
-  cleared**; baseline 1,694 → **1,448**. Plus a rule correction: the tasked "46 no-size-class icons"
-  were all false positives, so `icon-no-size-class` was narrowed and re-verified. 5 gates green
-  (suite 6131), `icons:scan` no regression across 26 routes. Task stays active — multi-conv.
+- **`[ICON-TOK]` Phase 4 Tranches 1 + 2** — baseline 1,694 → **1,363**. T1: 94 icon-component defaults
+  → the token axis (200 violations) plus a rule correction, the tasked "46 no-size-class icons" being
+  all false positives. T2: 44 large standalone icons (85 classes). 5 gates green (suite 6131),
+  `icons:scan` no regression. Task stays active — multi-conv.
 - **`[DEVSRV-STALE]`** — 4th occurrence (2nd of the Vite-dep-cache variant, this time killing `/`
   itself). Found a cleaner teardown, `npx astro dev stop`, and wrote the long-tasked
   `memory/reference_devserver_stale_daemon.md` covering all three variants.

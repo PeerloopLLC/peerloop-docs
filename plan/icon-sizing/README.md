@@ -2,7 +2,7 @@
 
 **Focus:** Migrate ~1,700 dimension classnames onto the Conv-419 icon token axis, and be able to
 *demonstrate* no page shipped a mis-sized icon — not merely believe it.
-**Status:** 🔥 IN PROGRESS (Conv 420 — first migration tranche landed; baseline **1,448**, down from 1,694.
+**Status:** 🔥 IN PROGRESS (Conv 420 — two migration tranches landed; baseline **1,363**, down from 1,694.
 Conv 419 built the foundation, standard and Phases 1–2 at baseline 1,694, itself down from 1,863 after
 that conv's `[MKTDEAD]` dead-code purge)
 **Task code:** `[ICON-TOK]` · related `[ICON-4PX]` (residue), `[RG-PUBLIC]` (gates one file), `[MKTDEAD]` (shrank the baseline)
@@ -48,9 +48,11 @@ reach, and a census that counts them over-scopes the migration.
 | `.astro` pages (route-matrix) | 67 | 67 | 67 |
 | icon-component usages | 626 (198 `MattIcon` + 428 `ui/icons`) | 626 | 860 |
 | `ui/icons.tsx` exports | 98 | 98 | 98 |
-| **`check:icons` baseline total** | **1,448** | 1,694 | 1,863 |
-| — bare-numeric, overridden ten | **891** ← ambiguous, mean N px | 898 | — |
+| **`check:icons` baseline total** | **1,363** | 1,694 | 1,863 |
+| — bare-numeric, overridden ten | **806** ← ambiguous, mean N px | 898 | — |
 | — bare-numeric, non-overridden N | **370** ← ambiguous, mean N × 4 px | 558 | — |
+| — of the overridden ten, actually **on an icon** | ~421 (was ~501 pre-tranche-2) | — | — |
+| — of the overridden ten, **not an icon** (skeletons, badge circles, dots, avatars) | ~390 — out of scope for this axis | — | — |
 | — arbitrary px *on an icon component* | **187** | 192 | — |
 | — icon usage with **no size class at all** | **0** (rule was wrong — see below) | 46 | 51 |
 | arbitrary `size-[Npx]`/`w-[Npx]`/`h-[Npx]` site-wide | 557 | 562 | 605 |
@@ -207,6 +209,36 @@ put first turned out not to exist — see the Scale section.)
         `h-5 w-5` was already rem, so the `% scale with root` meters did not move. The gain is that
         the sizes are now named and the 5-joins-the-override-set landmine is defused for 94 sites.
         Only the 7 wrapper/PromoteButton sites actually moved fixed-px → rem/em.
+- [x] **Tranche 2 — large standalone icons (Conv 420).** 44 sites / 85 classes at 32/40/48/64px →
+      `size-icon-{32,40,48,64}`. Baseline 1,448 → **1,363**. Chosen as the lowest-judgment slice: at
+      that size an icon is essentially never inline, and reading all 44 confirmed it — every one is an
+      empty-state mark (`text-center py-32/48`, `mx-auto`, `text-neutral-300`), an image placeholder,
+      or a badge-circle's contents. Zero inline cases.
+      - **Premise re-tested first, and it was over-scoped again.** R1 matches *any* `w-/h-/size-N`
+        class, not only icons, so the "891 sites that shipped 4px icons" is really **~501 icon classes
+        + ~390 non-icon ones** — skeleton loader bars, badge circles, unread dots, avatar `<img>`s, and
+        one text-column width. Those 390 are out of scope for the icon axis entirely (the standard
+        keeps them on px); they remain ambiguous, but that is a different axis's problem.
+      - **Hazard avoided: no blind sed.** `w-64 h-64` and `h-48 w-48` occur *both* as icon sizes and as
+        the wrapper circles those icons sit inside (`mx-auto w-64 h-64 rounded-full` around a
+        `w-32 h-32` glyph). A global replace would have resized the containers too. Each edit was
+        scoped to the icon tag on its own line; one multi-line `<svg>` fell out of that and was done
+        by hand.
+      - **Verification is partial and that is the honest word for it.** `icons:scan` reports no
+        regression, but a direct probe showed why that is weak evidence here: **4 of the 44** rendered
+        (on `/admin`) and grew correctly at a 24px root; the other **40 never render under seeded
+        data**, because empty-state marks are behind "list is empty" conditions no route walk reaches.
+        `/learning` measured identically before and after. This is the "modals, empty states, error
+        states" gap named above, now with a number against it — **Phase 5 must drive empty states
+        deliberately, not hope to pass through them.**
+      - **Same probe did verify tranche 1:** 33 elements on `size-icon-20`/`size-icon-16`, all 33
+        growing at a 24px root.
+      - **One test was coupled to the literal classname** — `svg.w-48.h-48` in `CreatorStudio.test.tsx`
+        — and failed. Behaviour was unchanged; only the class moved. Swept `tests/` for the other
+        migrated classnames: no further coupling.
+      - **Scanner note (checked, no action):** `MAX_ICON_PX = 64` will *not* start false-positiving as
+        icons become rem. `invariants()` evaluates size rules over the **16px** measurements only; the
+        24px run feeds the scale/overflow comparison. So `size-icon-48` reads 48px there, not 72px.
 - [x] **Mandatory per-tranche reachability check.** Run `.claude/scripts/codecheck-orphan-components.mjs`
       over every file in a tranche **before** editing it. Conv 419 measured that **5 of its 43 icon
       fixes landed on dead code** — hitting `TestimonialsBrowse`, the same file Conv 404's `[A11Y]`
