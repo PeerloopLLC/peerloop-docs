@@ -2,7 +2,8 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-07-26 (Conv 419 — [MSG-ADOPT-B]/[COURSETAB-HASH]/[ICON-4PX]/[MSG-CLEANUP]: +1 **new** component test file `tests/components/useRoleTabs.test.ts` (6 — the `ready` gate: a deep-linked tab survives an unresolved render, still shows once the viewer resolves with the role, still resets once resolved *without* it, `ready` defaults true, the sibling-island event carries the deep-linked tab, and tab-change syncs the hash; 3 of the 6 fail if the gate is reverted). **−1 file:** `tests/api/me/can-message/[userId].test.ts` (7) deleted with its endpoint — `[CANMSG]` had left `GET /api/me/can-message/:userId` with no UI caller, so `[MSG-CLEANUP]` removed both; `canMessage()` in `src/lib/messaging.ts` was always the authoritative gate and is untouched. API Endpoints 241→240, Components 88→89, **Vitest Total 408 unchanged** (+1/−1), All Test Files 436 unchanged. One file extended in place: `tests/components/messages/MessageUserButton.test.tsx` 21→24 (`icon` widened to `string | ReactNode` so the 3 profile-header `Button` sites keep their own 16px glyph). Per-file component case counts are in TEST-COMPONENTS.md. Sibling `TEST-UNIT.md` still **not** updated — stale since Conv 253.)
+**Last Updated:** 2026-07-26 (Conv 419b — [MKTDEAD] dead-marketing purge: **−13 test files** deleted with the components they covered — `components/marketing/` ×8 (`AboutPage`, `ContactPage`, `FaqPage`, `ForCreatorsPage`, `HowItWorksPage`, `PricingPage`, `PrivacyPolicyPage`, `TermsOfServicePage`), `components/stories/StoriesBrowse`, `components/testimonials/TestimonialsBrowse`, and `unit/admin-intel/` ×3 (`admin-community-tab`, `admin-course-tab`, `admin-dashboard-card`). Their 56 components were provably dead: the 14 `/old/*` marketing pages have rendered "Coming soon." stubs for a long time, so the bundler had been tree-shaking the components out — confirmed via sourcemap `sources`, not inferred. `BecomeATeacherPage.test.tsx` deliberately KEPT: `/become-a-teacher` is live. Vitest Total 408→395, All Test Files 436→423; Components 89→79, Unit 17→14. Suite 6586→6131.)
+**Prev:** 2026-07-26 (Conv 419 — [MSG-ADOPT-B]/[COURSETAB-HASH]/[ICON-4PX]/[MSG-CLEANUP]: +1 **new** component test file `tests/components/useRoleTabs.test.ts` (6 — the `ready` gate: a deep-linked tab survives an unresolved render, still shows once the viewer resolves with the role, still resets once resolved *without* it, `ready` defaults true, the sibling-island event carries the deep-linked tab, and tab-change syncs the hash; 3 of the 6 fail if the gate is reverted). **−1 file:** `tests/api/me/can-message/[userId].test.ts` (7) deleted with its endpoint — `[CANMSG]` had left `GET /api/me/can-message/:userId` with no UI caller, so `[MSG-CLEANUP]` removed both; `canMessage()` in `src/lib/messaging.ts` was always the authoritative gate and is untouched. API Endpoints 241→240, Components 88→89, **Vitest Total 408 unchanged** (+1/−1), All Test Files 436 unchanged. One file extended in place: `tests/components/messages/MessageUserButton.test.tsx` 21→24 (`icon` widened to `string | ReactNode` so the 3 profile-header `Button` sites keep their own 16px glyph). Per-file component case counts are in TEST-COMPONENTS.md. Sibling `TEST-UNIT.md` still **not** updated — stale since Conv 253.)
 **Prev:** 2026-07-26 (Conv 418 — [CANMSG]/[MSG-ICON]/[MSG-ADOPT-A]: +1 **new** test file `tests/ssr/soft-deleted-users.test.ts` (3 — pins the `deleted_at IS NULL` filters added to `fetchCommunityDetailData` / `fetchTeacherProfileData` / `fetchCreatorProfileData`, which the now-local `useCanMessage` derivation depends on). SSR 3→4, Vitest Total 407→408, All Test Files 435→436. Two files were rewritten/extended in place, so no file-count change: `tests/lib/useCanMessage.test.ts` 5→7 (the hook no longer calls `GET /api/me/can-message/:userId` at all — one case now pins that the API is never called in any auth state) and `tests/components/messages/MessageUserButton.test.tsx` 11→21 (the `appearance="bare"` icon trigger + `signedIn` resolving from `useAuthStatus()` when the prop is omitted). Per-file component case counts are in TEST-COMPONENTS.md. Sibling `TEST-UNIT.md` still **not** updated — stale since Conv 253, needs its own reconciliation.)
 **Prev:** 2026-07-26 (Conv 417 — [MSG-INPLACE]/[MSGBOOT]: +2 **new** test files. `tests/components/messages/MessageUserButton.test.tsx` (11 — the in-place composer island: renders a button not a link when signed in, falls back to the `/messages?to=` anchor when signed out, opens with the recipient preselected, POSTs + closes + toasts without navigating, the discard guard's cancel/confirm/nothing-typed paths, the opt-in "Open in Messages" exit and its guard, error toast on a failed POST, plus one case pinning the exit as opt-out on the `/messages` mount) and `tests/lib/useCanMessage.test.ts` (5 — the three auth states pinned apart: unresolved decides nothing and calls no API, resolves once auth settles, genuine visitor and own-profile decide false without an API call, authenticated + different recipient asks the API). Components 87→88, Lib 32→33, Vitest Total 405→407, All Test Files 433→435. Per-file component case counts are in TEST-COMPONENTS.md. Also corrected three stale detail-section headers against on-disk truth: "Component Tests (91 files)"→88 (lagging since the Conv 392/393 orphan purge), "API Tests (240 files)"→241 and "Me (63 files)"→64. Sibling `TEST-UNIT.md` was **not** updated — it has been stale since Conv 253 (curated subset, subtotals disagree with its own rows) and needs a separate reconciliation.)
 **Prev:** 2026-07-13 (Conv 394 — [FEEDBACK-NUDGE]: +1 **new** lib test file `tests/lib/feedback-reminders.test.ts` (6 — `sendFeedbackReminders` cron: nudges both parties when neither has rated (stamps both `feedback_reminder_*_sent_at` columns, 2 emails), only nudges the un-rated party (null `moduleName` when no module), window filter (skips within-grace <1h and >72h), dedup (no re-nudge of a stamped party), skips non-`completed` sessions, stamps an email-pref-opted-out recipient but sends no email). Lib 31→32, Vitest Total 404→405, All Test Files 432→433. Also refreshed `tests/components/settings/NotificationSettings.test.tsx` (switch-count assertion 7→8 for the new feedback-reminder toggle, modified in place — Components summary is by-file, so no total change).)
@@ -52,18 +53,18 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Category | Files | Test Cases | Location |
 |----------|:-----:|:----------:|----------|
 | API Endpoints | 240 | — | `tests/api/` |
-| Components | 89 | — | `tests/components/` |
+| Components | 79 | — | `tests/components/` |
 | Pages | 9 | — | `tests/pages/` |
 | Lib | 33 | — | `tests/lib/` |
 | Integration | 10 | — | `tests/integration/` |
 | SSR | 4 | — | `tests/ssr/` |
-| Unit | 17 | — | `tests/unit/` |
+| Unit | 14 | — | `tests/unit/` |
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 3 | — | `tests/plato/` |
 | Src (co-located) | 2 | — | `src/__tests__/` |
-| **Vitest Total** | **408** | — | |
+| **Vitest Total** | **395** | — | |
 | E2E (Playwright) | 28 | — | `e2e/` |
-| **All Test Files** | **436** | — | |
+| **All Test Files** | **423** | — | |
 
 ---
 
@@ -798,7 +799,7 @@ See [TEST-E2E.md](TEST-E2E.md) for details.
 
 ---
 
-## Component Tests — `tests/components/` (89 files)
+## Component Tests — `tests/components/` (79 files)
 
 See [TEST-COMPONENTS.md](TEST-COMPONENTS.md) for the full breakdown by category.
 

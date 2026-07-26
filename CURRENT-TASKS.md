@@ -281,7 +281,28 @@
 
 - **State:** 🔄 active
 - **What:** `knip@6.27.0` adopted (Conv 398) as the module-graph reachability oracle — closes grep's blind spots (`.astro`, relative imports, barrel passthroughs). Installed + configured (`knip.json`, cron-worker + `scripts/**` entries, `project: src/**`); first run adjudicated the 9 `[RDFIX]` candidates and reproduced the 14 parked `[ORPHAN-BACKLOG]` Cat-B files.
-- **Before it can be a hard gate:** (1) tune dependency analysis — false-flags `zod`/`tailwindcss`/`@tailwindcss/forms`/`react-day-picker` (CSS `@plugin`/runtime, not JS import) + `cloudflare:` unlisted; (2) baseline the 14 Cat-B files (or wait for `[RG-PUBLIC]`) — same blocker as `codecheck-orphan-components.mjs`, which knip would replace; (3) wire into `/w-codecheck` (only NEW unused fails).
+- **⚠️ CORRECTED Conv 419 — knip does NOT replace `codecheck-orphan-components.mjs`.** The two ask
+  different questions and both must run:
+  - knip *unused files* → **14**. Question: "is this file imported by anything?"
+  - route detector → **53**. Question: "is this reachable from a route?" — i.e. will a user ever
+    see my edit.
+  - **Why knip under-reports: a dead barrel counts as an importer.** `marketing/index.ts` is itself
+    unused, but `export { FaqPage } from './FaqPage'` keeps `FaqPage` alive in knip's graph.
+    Verified in a throwaway worktree: deleting all 14 and re-running found **zero** more, so barrel
+    removal does not cascade it either.
+  - **Trap when reading knip output:** a file can appear under *unused exports* merely for a
+    redundant `export default X` beside a live `export function X`. `BecomeATeacherPage.tsx` and
+    `FaqPage.tsx` both have that shape; the first is live. Do not derive an orphan count by grepping
+    knip's export list — that produced a wrong "64" in Conv 419.
+  - knip's real value here is the **unused exports** + dependency analysis, which the route
+    detector cannot see. Complementary, not a substitute.
+  - **Post-`[MKTDEAD]` (Conv 419):** knip *unused files* is now **0** and the route detector PASSes,
+    so blocker (2) — "baseline the Cat-B files" — is **gone**. Remaining before it can gate:
+    tune dependency analysis, then wire into `/w-codecheck`.
+  - **Untested third oracle (user's suggestion, Conv 419):** tree-shake / build-output analysis —
+    if a component is absent from `dist/`, it is provably dead, barrels included. Ground truth, and
+    neither tool implements it. Worth a spike before `[MKTDEAD]` is decided.
+- **Before it can be a hard gate:** (1) tune dependency analysis — false-flags `zod`/`tailwindcss`/`@tailwindcss/forms`/`react-day-picker` (CSS `@plugin`/runtime, not JS import) + `cloudflare:` unlisted; (2) baseline the 14 Cat-B files (or wait for `[RG-PUBLIC]`); (3) wire into `/w-codecheck` (only NEW unused fails).
 - **Known dead exports KEPT by decision (knip re-flags when gate lands):** `CHART_BREAKPOINTS`, `now()`/`parseTimestamp()` (`lib/db/index.ts`), `creators`/`getRelatedCourses`/`getFeaturedCreators` (`lib/mock-data.ts`), `MONITORING_COLORS` (`discover/role-utils.ts`), `emails/styles.ts`'s 6 exports (file live).
 - **Refs:** `../Peerloop/knip.json`, `.claude/scripts/codecheck-orphan-components.mjs`, `[[feedback_orphaned_components_survive_migration]]`, `[ORPHAN-BACKLOG]`, `docs/decisions/06-testing-ci.md §RDOC`.
 
@@ -341,7 +362,11 @@
 
 - **State:** ⏸️ parked · `[Opus]` · **gate: marketing redesign (RG-PUBLIC)** — Cat-A+C DONE
 - **Done:** `[ORPHAN-DETECT]` surfaced 118 orphaned components. Conv 392 deleted all **Category A** (dead legacy, 74). Conv 393 resolved all **Category C** — deleted 3 (`error/ErrorPage`, `leaderboard/Leaderboard`+orphaned API, `context-actions/*`), **wired 1** (`invite/ModeratorInvite` was a LIVE bug: admin invite emails `/invite/mod/{token}`, RESEND live on staging, but no page → 404; built `src/pages/invite/mod/[token].astro`), swept 12 stray dead `.ts`. Detector now **53** (was 118); all 5 gates green.
-- **Remaining — Category B (52, parked):** `marketing/*` (48) + `stories/*` (2) + `testimonials/*` (2) + `creators/profiles/CreatorCard` — the old marketing site; keep until the redesign, then delete/replace. (12 dead `.ts` barrels deliberately LEFT with it; `icons/icon-provenance.ts` KEPT — it's the `prov:sweep` SoT.)
+- **✅ Category B RESOLVED Conv 419 (`[MKTDEAD]`)** — deleted, not deferred. The bundler had been
+  tree-shaking these out all along, so "keep them until the redesign" was costing sweep collisions
+  for no benefit; a fresh design will not reuse them (Conv 239 Matt phase-out). The detector now
+  PASSes. **This task's remaining scope is the detector-wiring below.** Superseded description —
+  **Category B (52, was parked):** `marketing/*` (48) + `stories/*` (2) + `testimonials/*` (2) + `creators/profiles/CreatorCard` — the old marketing site; keep until the redesign, then delete/replace. (12 dead `.ts` barrels deliberately LEFT with it; `icons/icon-provenance.ts` KEPT — it's the `prov:sweep` SoT.)
 - **Then — detector wiring:** snapshot residuals into `KNOWN_ORPHANS`, wire the detector into `/w-codecheck` as a hard gate (only NEW orphans fail). A `.ts` variant (scope `src/components/**` only — `src/lib/**` has entry points) can be productionized then.
 - **Refs:** `.claude/scripts/codecheck-orphan-components.mjs`, `[[feedback_orphaned_components_survive_migration]]`, `.claude/skills/w-codecheck`, `[KNIP]`.
 
@@ -498,6 +523,17 @@
 ---
 
 ## ✅ Done this conv
+
+- **[MKTDEAD]** — deleted the dead marketing surface: **56 components + 13 tests + 11 barrels = 80
+  files**, 334 components → 278. The user's premise ("stub these stale public pages") turned out to
+  be already done — all 14 `/old/*` pages have rendered "Coming soon." for a long time, and *that*
+  is why their components were unreachable. The residue was what kept absorbing sweeps.
+  **Settled the oracle first** (user's call): sourcemap `sources` is ground truth at 56, the route
+  detector was a strict subset at 53 (zero false alarms, missed 3 dead-through-a-**live**-barrel
+  `admin-intel` files), knip *unused files* only 14 (a dead barrel counts as an importer).
+  Aftermath: orphan detector **PASSes** for the first time, knip unused files **0**, and the
+  `[ICON-TOK]` static baseline fell **1863 → 1694** because 169 violations lived in dead code.
+  5 gates green; suite 6586 → 6131 (−455, all in deleted tests for deleted components).
 
 - **[MSG-CLEANUP]** — M6, closing the MESSAGES programme. Verified all four items rather than
   trusting them: the stale `MessagesCenter` header was real (though one directory off — it lives
