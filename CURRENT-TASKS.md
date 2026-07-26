@@ -20,41 +20,43 @@
 ## 🎯 Now  (execution order — top = next)
 
 > **MESSAGES mini-plan (Conv 417, user-sequenced).** One ordered programme, M1→M6.
-> **M1 `[MSGBOOT]` ✅ 417 · M2 `[CANMSG]` ✅ 418 · M3 `[MSG-ICON]` ✅ 418 · M4 `[MSG-ADOPT-A]` ✅ 418**
-> — items 1–2 below are the remainder (M5, M6). The programme has now passed the point where it
-> could legitimately stop: the 11 high-consequence sites are done, so **M5 is genuinely optional**
-> (it trades scroll position, not work) and M6 is a debt sweep.
+> **M1 `[MSGBOOT]` ✅ 417 · M2 `[CANMSG]` ✅ 418 · M3 `[MSG-ICON]` ✅ 418 · M4 `[MSG-ADOPT-A]` ✅ 418
+> · M5 `[MSG-ADOPT-B]` ✅ 419** — every per-user message affordance on the site now opens the
+> composer in place (11 + 10 sites; `SessionRoom` keeps its thread-intent anchor by design).
+> Only **M6 `[MSG-CLEANUP]`** remains: a debt sweep carrying one real decision — keep or delete
+> `GET /api/me/can-message/:userId`, which has had no UI caller since M2.
 
-1. [MSG-ADOPT-B](#msg-adopt-b) — **M5** adopt on 10 list/profile sites
-2. [MSG-CLEANUP](#msg-cleanup) — **M6** messages-area debt sweep
-3. [MERGE-BRIAN-JULY7](#merge-brian-july7) — client branch assessment/integration
-4. [A11Y](#a11y) — accessibility lint triage
-5. [RHOOKS](#rhooks) — react-hooks lint triage
-6. [KNIP](#knip) — dead-export oracle → gate
-7. [PROV-SWEEP-DEBT2](#prov-sweep-debt2) — `prov:sweep` gate silently red (10 unregistered)
-8. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
-9. [EDITSAFE](#editsafe) — anchored-edit discipline
-10. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
-11. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
-12. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
-13. [HOME-FIXES](#home-fixes) — Home route fix bucket
-14. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
-15. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
-16. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
-17. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
-18. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
-19. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
-20. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
-21. [RSFD](#rsfd) — port `r-start-from-dirty`
-22. [DEPEXP](#depexp) — dependency-probe hygiene
-23. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
-24. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
-25. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
-26. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
-27. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
-28. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
-29. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
-30. [DEVSRV-STALE](#devsrv-stale) — un-parked: stale/bricked astro dev daemon recurred
+1. [MSG-CLEANUP](#msg-cleanup) — **M6** messages-area debt sweep
+2. [ICON-4PX](#icon-4px) — 44 icons render at 4px, not the intended 16px
+3. [COURSETAB-HASH](#coursetab-hash) — `/courses#student` deep link doesn't restore the tab
+4. [MERGE-BRIAN-JULY7](#merge-brian-july7) — client branch assessment/integration
+5. [A11Y](#a11y) — accessibility lint triage
+6. [RHOOKS](#rhooks) — react-hooks lint triage
+7. [KNIP](#knip) — dead-export oracle → gate
+8. [PROV-SWEEP-DEBT2](#prov-sweep-debt2) — `prov:sweep` gate silently red (10 unregistered)
+9. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
+10. [EDITSAFE](#editsafe) — anchored-edit discipline
+11. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
+12. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
+13. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
+14. [HOME-FIXES](#home-fixes) — Home route fix bucket
+15. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
+16. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
+17. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
+18. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
+19. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
+20. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
+21. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
+22. [RSFD](#rsfd) — port `r-start-from-dirty`
+23. [DEPEXP](#depexp) — dependency-probe hygiene
+24. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
+25. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
+26. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
+27. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
+28. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
+29. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
+30. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
+31. [DEVSRV-STALE](#devsrv-stale) — un-parked: stale/bricked astro dev daemon recurred
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -124,6 +126,20 @@
 - **State:** 📋 queued (deferred per-route bucket)
 - **What:** deferred bucket of per-route fixes captured while sweeping the Courses route(s) — batch later. Sibling of `[HOME-FIXES]`.
 
+### [COURSETAB-HASH]
+
+- **State:** 📋 queued — found Conv 419 during `[MSG-ADOPT-B]` live verification
+- **What:** `/courses#student` does not restore the "As Student" tab on a first load. The hash is
+  present (`location.hash === '#student'`) and `readHashTab()` maps it to a valid `Tab`, but the
+  catalog renders the **All** listing. Clicking the tab works, and thereafter the hash tracks fine.
+- **Where:** `src/components/courses/CoursesCatalog.tsx:129-140` — the mount effect calls
+  `setTab(readHashTab())` and *also* subscribes to a `courses:tabchange` CustomEvent. Prime suspect
+  is the tab-strip island dispatching `courses:tabchange` with `'all'` on its own mount, landing
+  after the effect and overwriting it. Verify before fixing — that is a hypothesis, not a diagnosis.
+- **Why it matters:** every deep link and bookmark to a non-default courses tab silently lands on
+  All. Same class as `[TSLASH]`: addressability that looks wired and isn't.
+- **Done-test:** `goto('/courses#student')` renders the enrolled list without a click.
+
 ### [DEPEXP]
 
 - **State:** 📋 queued · low priority (tooling hygiene)
@@ -188,6 +204,31 @@
 - **State:** 📋 queued (deferred per-route bucket)
 - **What:** deferred bucket of per-route fixes captured while sweeping the Home (`/`) route — batch later.
 
+### [ICON-4PX]
+
+- **State:** 📋 queued — found Conv 419 during `[MSG-ADOPT-B]`; **measured, not inferred**
+- **What:** `h-4 w-4` / `w-4 h-4` / `size-4` renders a **4px** icon in this codebase, not the 16px
+  the author almost certainly intended. Measured live on `/teacher/marcus-t`: the Message button's
+  `MessageIcon` has a 4×4 bounding box. Confirmed **pre-existing** by re-measuring on a stashed
+  (unmodified) tree — same 4×4.
+- **Root cause, already documented in-repo:** `src/styles/tokens-tailwind-bridge.css:17-26` — the
+  Conv 174 (user decision B) `--spacing-*` block deliberately overrides Tailwind 4's default scale
+  app-wide so `N` means Matt's px scale, not `0.25rem × N`. Its own comment says *"legacy `/old/*`
+  pages will visually shrink and must be re-tested or migrated"* — the decision was made knowingly.
+- **Why it is still a bug:** the affected sites are **not** `/old/*`. They are live root routes —
+  `/teacher/[handle]`, `/creator/[handle]`, `/@handle` and 14 other files. **44 occurrences across
+  17 files.** Find with:
+  `git -C ~/projects/Peerloop grep -nE '\b(h-4 w-4|w-4 h-4|size-4)\b' -- src/`
+- **Not fixed in Conv 419 on purpose:** M5 preserved each call site's classes verbatim, which is
+  what made the before/after comparison trustworthy. Fixing it is a 44-site design sweep with a
+  real decision behind it (retarget to `size-[16px]`, or reconsider the global `--spacing-*`
+  override) — that is not an M5 change.
+- **Watch for the inverse:** `memory/reference_tailwind_intellisense_canonical_suggestions.md`
+  says Tailwind IntelliSense's arbitrary-`[Npx]`→scale "canonical" suggestions must be REJECTED for
+  exactly this reason. Same 4× confusion, opposite direction.
+- **Done-test:** decide the disposition, then a measured icon on `/teacher/[handle]` matches its
+  sibling buttons' glyph size.
+
 ### [KNIP]
 
 - **State:** 🔄 active
@@ -247,28 +288,6 @@
 - **State:** ⏸️ parked · **gate: user say-so** (on hold Conv 369)
 - **What:** lower supported min screen width 375px → 320px (iPhone-SE class). 3 scoped overflow sites: `MembersFilters.tsx` + `CoursesFilters.tsx` filter rows (`min-w-0` or wrap) + Home legacy feed-card action button (`min-w-0`/`flex-wrap`); re-verify at 320px via iframe harness. Optional.
 - **Refs:** `docs/decisions/05-ui-ux-components.md` [MINWIDTH], `memory/reference_responsive_iframe_harness`.
-
-### [MSG-ADOPT-B]
-
-- **State:** 📋 queued — **M5** of the MESSAGES mini-plan · **unblocked** (M3 `[MSG-ICON]` ✅ Conv 418) · **genuinely optional** now M4 has shipped
-- **How:** same shape M4 used — `appearance="bare"`, site `className` + icon element + `title`
-  verbatim, and **omit `signedIn`** (it resolves from `useAuthStatus()`). Worked examples: the 9
-  files in Conv 418's M4 commit; contract in `tests/components/messages/MessageUserButton.test.tsx`.
-- **What:** adopt on the remaining **10 list / profile sites**. Lower stakes than M4 — losing scroll
-  position rather than losing work — so this tranche is genuinely optional and can be dropped.
-- **Sites — long filtered lists (5):** `teachers/workspace/MyStudents:586`,
-  `dashboard/TeacherStudentList:207`, `dashboard/CreatorTeacherList:210`,
-  `dashboard/TeacherUpcomingSessions:117`, `community/CommunityMembersTab:94`.
-- **Sites — reading context; also the only 3 drop-in `Button`s (3):**
-  `teachers/profiles/TeacherProfileHeader:114`, `creators/profiles/CreatorProfileHeader:110`,
-  `users/UserCard:111` (the `/@handle` profile).
-- **Judgment calls, defaulted MODAL (2):** `dashboard/EnrollmentCard:107`,
-  `courses/CourseProgressCard:80` — both "Learning with X". Reading them as *continue our
-  conversation* (→ keep anchor) is defensible; **re-decide with the escape hatch in hand.**
-- **KEEP THE ANCHOR — do not convert (1):** `booking/SessionRoom:364`. Its own code comment says
-  *"links to the existing messages thread (function preserved)"* — thread-intent, not compose.
-- **Out of scope:** `Sidebar:315` `href="/messages"` — plain nav to the centre, correctly an anchor.
-- **Done-test:** as M4, plus an explicit re-read of the 2 judgment calls.
 
 ### [MSG-CLEANUP]
 
@@ -449,51 +468,11 @@
 
 ## ✅ Done this conv
 
-- **[CANMSG]** — **M2** of the MESSAGES mini-plan. Retired the per-row `useCanMessage` fan-out by
-  making the answer derivable on the client rather than by batching it. Chose the durable route
-  (option **C**): the check was only non-vacuous because three loaders could surface a soft-deleted
-  user, so `u.deleted_at IS NULL` was added to the community-member directory and the
-  teacher/creator profile lookups — matching what `/@handle` already did — and only then was the
-  network call removed. `useCanMessage` is now a pure `useAuthStatus` + `useCurrentUser` derivation
-  (no effect, no fetch, `[MSGBOOT]` three-state cover preserved). Fixes a latent defect on the way:
-  the member directory could list a soft-deleted user linking to a `/@handle` that 404s.
-  **Measured `/community/ai-for-you/members`: 4 requests → 0, cold and warm, icons unchanged at 4.**
-  5 gates green (suite **6573**, +5: 2 rewritten hook tests + 3 new loader tests in
-  `tests/ssr/soft-deleted-users.test.ts`). `GET /api/me/can-message/:userId` deliberately kept but
-  now UI-unused → noted on `[MSG-CLEANUP]`.
-- **[MSG-ICON]** — **M3** of the MESSAGES mini-plan. Added `appearance="bare"` to
-  `MessageUserButton`: a bare `<button>` that renders the call site's own icon as `children` and
-  passes `className` through verbatim (no `Button` primitive, whose pill radius/border/padding would
-  fight the site's styling), named by a required `title`. Modal wiring, signed-out anchor fallback,
-  discard guard and "Open in Messages" exit are shared with the default appearance — only the
-  trigger markup differs. Props are a discriminated union, following `Button`'s own
-  `LinkProps | NativeButtonProps` pattern. **Unblocks M4 + M5** (the 19 icon-only sites). 5 gates
-  green (suite **6578**, +5 bare-appearance tests); the 2 existing course-tab call sites
-  live-verified unchanged (`<button>`, 39px pill, 8px/12px padding, student background);
-  `prov:sweep` unchanged at 11 — the bare button is deliberately unstamped, so it adds no
-  `[PROV-SWEEP-DEBT2]` offender.
-- **[MSG-ADOPT-A]** — **M4** of the MESSAGES mini-plan. Converted **all 11 high-consequence
-  affordances** across 9 files to `appearance="bare"`, each keeping its own `className`, `title` and
-  icon element verbatim; zero raw `/messages?to=` anchors left in those files. Rather than thread
-  `signedIn` through 8 components that had no viewer knowledge (which meant hardcoding "obviously
-  yes" 11 times), made the prop **resolve from `useAuthStatus()` when omitted** — one place, keeps
-  the explicit prop for the SSR-known course tabs, and M5 inherits it. While auth is unresolved it
-  renders the anchor, which is correct rather than merely safe. 5 gates green (suite **6583**, +5
-  resolution tests → 21 in that file). **Live-verified 7 of 11** (button, composer opens, URL
-  unchanged, so slide-over + filtered list survive): `UserDetailContent`, `SessionDetailContent` ×2,
-  `TeacherDetailContent`, `EnrollmentDetailContent`, `CreatorApplicationDetailContent`,
-  `TeacherSessionsList`. **4 not live-reached** and accepted as covered by tsc + unit tests + build
-  (user call): `SessionBooking` ×2 (confirm-step summary needs teacher+date+time),
-  `SessionParticipantCard` (needs a live/completed session), `ModerationDetailContent` (gated on a
-  `targetUser` the single seeded row doesn't resolve). Also root-caused a third `[DEVSRV-STALE]`
-  variant en route — recorded there.
-- **[CMDEL]** — closed the last inconsistency the M2 sweep left behind. `GET /api/me/communities/
-  [slug]/members` was the only member-listing query still joining `users` without
-  `deleted_at IS NULL`. Surfaced by the `/r-end` docs agent, verified against source, then **decided
-  rather than assumed**: the list it backs (`CommunityManagement.tsx`) turned out to be **read-only**
-  — no remove, no promote, no row actions — so the "creator needs the row to act on it" case for
-  keeping soft-deleted users had nothing to act on, and leaving it made that panel's `Members (n)`
-  count disagree with the now-filtered directory tab. Added the filter + a test pinning it
-  (`tests/api/me/communities/[slug]/members.test.ts`, 12 in file). 5 gates green (suite **6584**).
-  Documented in `API-COMMUNITY.md` on both the SSR endpoint's note and the management endpoint's own
-  section, replacing the divergence note the docs agent had written minutes earlier.
+- **[MSG-ADOPT-B]** — M5 of the MESSAGES mini-plan. In-place composer adopted on all 10 remaining
+  list/profile sites; `SessionRoom` keeps its thread-intent anchor by design. Both "Learning with X"
+  judgment calls resolved to MODAL on evidence: `POST /api/conversations` is find-or-create, so the
+  composer appends to the existing thread rather than duplicating it, and `showOpenInMessages`
+  reaches the history in one click. Widened `icon` to accept a node so the 3 profile-header
+  `Button` sites keep their own 16px glyph and `Default` padding — they were **not** the
+  `appearance="bare"` drop-ins the task assumed. **10 of 10 live-verified** (composer opens,
+  URL unchanged, zero surviving `/messages?to=` anchors on those routes). Suite 6584 → 6587.
