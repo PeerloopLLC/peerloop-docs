@@ -20,43 +20,42 @@
 ## 🎯 Now  (execution order — top = next)
 
 > **MESSAGES mini-plan (Conv 417, user-sequenced).** One ordered programme, M1→M6.
-> **M1 `[MSGBOOT]` ✅ Conv 417 · M2 `[CANMSG]` ✅ Conv 418** — items 1–4 below are the
-> remainder (M3→M6). Soft dependency M3→M4/M5 (M4/M5 can't start until the icon variant
-> exists). M4 and M5 are independently shippable, so the programme can legitimately stop
-> after M4.
+> **M1 `[MSGBOOT]` ✅ Conv 417 · M2 `[CANMSG]` ✅ Conv 418 · M3 `[MSG-ICON]` ✅ Conv 418** —
+> items 1–3 below are the remainder (M4→M6). The M3 gate on M4/M5 is now **lifted**: the
+> `appearance="bare"` variant exists, so the 19 icon-only sites are adoptable. M4 and M5 are
+> independently shippable, so the programme can legitimately stop after M4.
 
-1. [MSG-ICON](#msg-icon) — **M3** icon variant of `MessageUserButton` (unblocks 19 sites)
-2. [MSG-ADOPT-A](#msg-adopt-a) — **M4** adopt on 11 high-consequence sites
-3. [MSG-ADOPT-B](#msg-adopt-b) — **M5** adopt on 10 list/profile sites
-4. [MSG-CLEANUP](#msg-cleanup) — **M6** messages-area debt sweep
-5. [MERGE-BRIAN-JULY7](#merge-brian-july7) — client branch assessment/integration
-6. [A11Y](#a11y) — accessibility lint triage
-7. [RHOOKS](#rhooks) — react-hooks lint triage
-8. [KNIP](#knip) — dead-export oracle → gate
-9. [PROV-SWEEP-DEBT2](#prov-sweep-debt2) — `prov:sweep` gate silently red (10 unregistered)
-10. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
-11. [EDITSAFE](#editsafe) — anchored-edit discipline
-12. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
-13. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
-14. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
-15. [HOME-FIXES](#home-fixes) — Home route fix bucket
-16. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
-17. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
-18. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
-19. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
-20. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
-21. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
-22. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
-23. [RSFD](#rsfd) — port `r-start-from-dirty`
-24. [DEPEXP](#depexp) — dependency-probe hygiene
-25. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
-26. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
-27. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
-28. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
-29. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
-30. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
-31. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
-32. [DEVSRV-STALE](#devsrv-stale) — un-parked: stale/bricked astro dev daemon recurred
+1. [MSG-ADOPT-A](#msg-adopt-a) — **M4** adopt on 11 high-consequence sites
+2. [MSG-ADOPT-B](#msg-adopt-b) — **M5** adopt on 10 list/profile sites
+3. [MSG-CLEANUP](#msg-cleanup) — **M6** messages-area debt sweep
+4. [MERGE-BRIAN-JULY7](#merge-brian-july7) — client branch assessment/integration
+5. [A11Y](#a11y) — accessibility lint triage
+6. [RHOOKS](#rhooks) — react-hooks lint triage
+7. [KNIP](#knip) — dead-export oracle → gate
+8. [PROV-SWEEP-DEBT2](#prov-sweep-debt2) — `prov:sweep` gate silently red (10 unregistered)
+9. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
+10. [EDITSAFE](#editsafe) — anchored-edit discipline
+11. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
+12. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
+13. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
+14. [HOME-FIXES](#home-fixes) — Home route fix bucket
+15. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
+16. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
+17. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
+18. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
+19. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
+20. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
+21. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
+22. [RSFD](#rsfd) — port `r-start-from-dirty`
+23. [DEPEXP](#depexp) — dependency-probe hygiene
+24. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
+25. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
+26. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
+27. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
+28. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
+29. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
+30. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
+31. [DEVSRV-STALE](#devsrv-stale) — un-parked: stale/bricked astro dev daemon recurred
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -240,9 +239,14 @@
 
 ### [MSG-ADOPT-A]
 
-- **State:** 📋 queued — **M4** of the MESSAGES mini-plan · gated on `[MSG-ICON]` (M3)
+- **State:** 📋 queued — **M4** of the MESSAGES mini-plan · **unblocked** (M3 `[MSG-ICON]` ✅ Conv 418)
 - **What:** adopt `MessageUserButton` on the **11 high-consequence sites** — where navigating away
   destroys work the user cannot cheaply rebuild. Ship as one tranche; independently releasable.
+- **How (M3 landed):** these are icon-only `<a>` tags, so use `appearance="bare"` — pass the site's
+  existing `className` verbatim, its icon element as `children`, and `title` for the accessible name
+  (there is no visible label). `signedIn` must be threaded through, or signed-out viewers lose the
+  login bounce. See the `appearance="bare"` describe block in
+  `tests/components/messages/MessageUserButton.test.tsx` for the shape.
 - **Sites — in-progress work destroyed (4):** `booking/SessionBooking:707,790` (mid-wizard: teacher,
   date and time already chosen), `booking/SessionParticipantCard:43` (rendered by `SessionRoom` and
   `SessionCompletedView`, where the user is about to rate), `teachers/workspace/TeacherSessionsList:692`.
@@ -256,7 +260,7 @@
 
 ### [MSG-ADOPT-B]
 
-- **State:** 📋 queued — **M5** of the MESSAGES mini-plan · gated on `[MSG-ICON]` (M3)
+- **State:** 📋 queued — **M5** of the MESSAGES mini-plan · **unblocked** (M3 `[MSG-ICON]` ✅ Conv 418) · see M4's "How" note for the `appearance="bare"` shape
 - **What:** adopt on the remaining **10 list / profile sites**. Lower stakes than M4 — losing scroll
   position rather than losing work — so this tranche is genuinely optional and can be dropped.
 - **Sites — long filtered lists (5):** `teachers/workspace/MyStudents:586`,
@@ -289,19 +293,6 @@
     if kept, note that `[KNIP]` will flag it when that gate lands.
   - Registry / `prov:sweep` re-check for `MessageUserButton` + any M3 variant.
 - **Done-test:** no stale refs, 5 gates green, `prov:sweep` no worse than the `[PROV-SWEEP-DEBT2]` baseline.
-
-### [MSG-ICON]
-
-- **State:** 📋 queued — **M3** of the MESSAGES mini-plan · unblocks M4 + M5
-- **🔴 Why it exists — the island does NOT drop in.** Of the 22 per-user message affordances, only
-  **3** are `Button` components. The other **19 are bespoke icon-only `<a>` tags** with per-site
-  classNames (`MessageIcon`/`MattIcon` at 16/20px, differing hover colours, some inside flex rows).
-  `MessageUserButton` renders a `Button`, so M4/M5 are **not** an href swap.
-- **What:** add an icon/bare-child variant — render the trigger as a bare styled `<button>` with
-  `className` passthrough instead of the `Button` primitive, keeping the modal wiring, the
-  `signedIn` anchor fallback, the discard guard and the "Open in Messages" exit identical.
-- **Done-test:** variant renders icon-only with per-site classes preserved; the 3 existing `Button`
-  call sites and the 2 course tabs are visually unchanged; 5 gates.
 
 ### [ORPHAN-BACKLOG]
 
@@ -472,3 +463,14 @@
   5 gates green (suite **6573**, +5: 2 rewritten hook tests + 3 new loader tests in
   `tests/ssr/soft-deleted-users.test.ts`). `GET /api/me/can-message/:userId` deliberately kept but
   now UI-unused → noted on `[MSG-CLEANUP]`.
+- **[MSG-ICON]** — **M3** of the MESSAGES mini-plan. Added `appearance="bare"` to
+  `MessageUserButton`: a bare `<button>` that renders the call site's own icon as `children` and
+  passes `className` through verbatim (no `Button` primitive, whose pill radius/border/padding would
+  fight the site's styling), named by a required `title`. Modal wiring, signed-out anchor fallback,
+  discard guard and "Open in Messages" exit are shared with the default appearance — only the
+  trigger markup differs. Props are a discriminated union, following `Button`'s own
+  `LinkProps | NativeButtonProps` pattern. **Unblocks M4 + M5** (the 19 icon-only sites). 5 gates
+  green (suite **6578**, +5 bare-appearance tests); the 2 existing course-tab call sites
+  live-verified unchanged (`<button>`, 39px pill, 8px/12px padding, student background);
+  `prov:sweep` unchanged at 11 — the bare button is deliberately unstamped, so it adds no
+  `[PROV-SWEEP-DEBT2]` offender.
