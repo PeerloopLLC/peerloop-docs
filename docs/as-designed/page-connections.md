@@ -615,7 +615,6 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/creating/communities/[slug]` (redir)
 - `/creating/studio` (redir) ⚠️
 - `/login` (redir)
-- `/messages` (btn)
 - `/profile` (link) ⚠️
 - `/profile/payments` (link) ⚠️
 - `/teaching` (link) ⚠️
@@ -862,7 +861,6 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/discover/courses` (btn) ⚠️
 - `/learning` (redir) ⚠️
 - `/learning/sessions` (link) ⚠️
-- `/messages` (btn)
 - `/session/[id]` (btn)
 - `/verify/[id]` (btn)
 
@@ -1105,7 +1103,6 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/creating` (link) ⚠️
 - `/creator/[handle]` (card)
 - `/members` (link)
-- `/messages` (btn)
 - `/profile/edit` (link) ⚠️
 
 **Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
@@ -1127,7 +1124,6 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/course/[slug]` (card) ⚠️
 - `/course/[slug]/book` (tab)
 - `/members` (link)
-- `/messages` (btn)
 - `/profile/edit` (link) ⚠️
 - `/teaching` (link) ⚠️
 - `/teaching/availability` (tab) ⚠️
@@ -1181,12 +1177,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/community/[slug]/[...tab]` (btn)
 - `/course/[slug]/[...tab]` (btn)
 - `/course/[slug]/book` (btn)
-- `/courses` (btn)
-- `/creating/[...tab]` (btn)
-- `/creator/[handle]` (btn)
-- `/learning/[...tab]` (btn)
 - `/session/[id]` (btn)
-- `/teacher/[handle]` (btn)
 - `/teaching/[...tab]` (btn)
 
 #### `/notifications`
@@ -1214,7 +1205,6 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/course/[slug]/learn` (tab) ⚠️
 - `/creating/studio` (tab) ⚠️
 - `/creator/[handle]` (card)
-- `/messages` (btn)
 - `/onboarding` (btn)
 
 **Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
