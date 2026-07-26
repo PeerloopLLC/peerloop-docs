@@ -3,6 +3,28 @@
 
 ## 5. UI/UX & Components
 
+### [MSG-ADOPT-A] A Prop Most Call Sites Would Pass a Constant For Is Optional With a Hook-Derived Default — `MessageUserButton.signedIn` (Conv 418)
+**Date:** 2026-07-26 (Conv 418)
+
+`signedIn` on `MessageUserButton` is **optional**; when omitted the island resolves it from `useAuthStatus()`. An explicit prop still wins, and the two course tabs that know the answer server-side keep passing it (sparing a resolve and a flicker). Adopted while converting the 11 M4 affordances across 9 files, none of whose 8 owning components had any viewer knowledge.
+
+Rejected: hardcoding `signedIn={true}` at all 11 sites (all are authenticated-only *today* — correct when written, silently wrong the first time one of those components is reused on a public surface); adding `useCurrentUser()` / `useAuthStatus()` to each of the 8 component files (the same three lines eight times). While auth is unresolved the component renders the anchor, which is correct rather than merely safe — the anchor works for a signed-in viewer too, it just navigates. Two pre-existing tests that had used *omission* of the prop to mean "signed out" were rewritten to say so via auth status.
+
+**Rationale:** Needing to thread a value through many ignorant components means the value belongs to the leaf, not the callers. Putting the knowledge in the one place that needs it removed boilerplate from 11 sites and means M5's 10 sites inherit the behaviour for free. Follows the `useAuthStatus` three-state pattern established in Conv 400/417 (`StudentDashboard`, `ProgressionNudge`, `useCreatorGate`), so it is not a novel mechanism.
+
+**See:** `docs/sessions/2026-07/20260726_1129 Decisions.md` §2, Learnings §§2-3; Conv 418 (code `148ac48d`).
+
+### [MSG-ICON] A Second Trigger Shape Is an `appearance` Discriminated Prop Union, Not a Second Component or a Flat Options Bag (Conv 418)
+**Date:** 2026-07-26 (Conv 418)
+
+`MessageUserButton` gained `appearance: 'button' | 'bare'` as a **discriminated union** — `label` required in `'button'` mode, `title` required in `'bare'` mode. The bare appearance renders a plain `<button>` carrying the call site's own icon as `children` with its `className` passed through verbatim, and **deliberately bypasses the `Button` primitive**: `Button`'s pill radius, border and padding would fight the call site's styling, and preserving that styling is the entire point (this is what unblocked adoption on the 19 bespoke icon-only affordances counted in the Conv-417 census).
+
+Rejected: a separate exported `MessageUserIconButton` (duplicates the modal, discard guard and escape hatch that the shared island exists to avoid); optional props on a flat interface (runtime ambiguity about which combination is valid).
+
+**Rationale:** `Button` itself already uses exactly this shape (`LinkProps | NativeButtonProps`), so the union follows an established codebase pattern rather than introducing one, and it lets the type system enforce that a label-less control is still *named* — without `title` the bare trigger would be unnamed — instead of leaving that to review. The bare trigger is also left unstamped for `data-prov`, so it adds no new `[PROV-SWEEP-DEBT2]` offender.
+
+**See:** `src/components/messages/MessageUserButton.tsx`; `docs/sessions/2026-07/20260726_1129 Decisions.md` §3; Conv 418 (code `1d0e740a`).
+
 ### [MSG-INPLACE] Per-User Messaging Composes In Place via an Opt-In Shared Island, With a Discard Guard and an Opt-In "Open in Messages" Exit (Conv 417)
 **Date:** 2026-07-26 (Conv 417)
 

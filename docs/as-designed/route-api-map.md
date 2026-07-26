@@ -10,7 +10,7 @@
 ## Quick Stats
 
 - **Pages scanned:** 67
-- **API endpoints found in UI:** 219
+- **API endpoints found in UI:** 218
 - **Routes reachable from navbar:** 54
 - **Unreachable routes:** 35
 
@@ -227,7 +227,6 @@ Which API calls does each page make?
 | POST | `/api/feeds/community/[param]` | src/components/community/CommunityFeed.tsx |
 | POST | `/api/feeds/system` | src/components/community/SystemFeed.tsx |
 | GET | `/api/feeds/system` | src/components/community/SystemFeed.tsx |
-| GET | `/api/me/can-message/[param]` | src/lib/useCanMessage.ts |
 | POST | `/api/me/communities/[param]/resources` | src/components/community/AddCommunityResourceModal.tsx |
 
 ### Course
@@ -446,7 +445,6 @@ Which API calls does each page make?
 
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
-| GET | `/api/me/can-message/[param]` | src/lib/useCanMessage.ts |
 | GET | `/api/users/[param]` | src/components/profile/PublicProfile.tsx |
 
 **`/creator/[handle]`** — *no API calls detected*
@@ -620,7 +618,6 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/homework/[param]/submissions/me` | `/course/[slug]/[...tab]` |
 | `GET /api/me/availability` | `/teaching/[...tab]` |
 | `GET /api/me/availability/overrides` | `/teaching/[...tab]` |
-| `GET /api/me/can-message/[param]` | `/@[handle]`, `/community/[slug]/[...tab]` |
 | `GET /api/me/certificates` | `/learning/[...tab]` |
 | `GET /api/me/communities` | `/creating/[...tab]`, `/creating/communities/[slug]` |
 | `GET /api/me/communities/[param]/members` | `/creating/communities/[slug]` |

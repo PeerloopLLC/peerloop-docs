@@ -307,8 +307,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 
 **Layout:** AdminLayout | **Auth:** Admin | **File:** `src/pages/admin/creator-applications.astro`
 
-**Outbound (page-specific):**
-- `/messages` (btn)
+**Outbound (page-specific):** None
 
 **Inherits:** `[AdminNavbar]`, `[Footer]`
 
@@ -323,7 +322,6 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/@[handle]` (card)
 - `/course/[slug]` (card) ⚠️
 - `/diploma/[id]` (link)
-- `/messages` (btn)
 
 **Inherits:** `[AdminNavbar]`, `[Footer]`
 
@@ -391,7 +389,6 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Layout:** AdminLayout | **Auth:** Admin | **File:** `src/pages/admin/sessions.astro`
 
 **Outbound (page-specific):**
-- `/messages` (btn)
 - `/session/[id]` (redir)
 
 **Inherits:** `[AdminNavbar]`, `[Footer]`
@@ -408,7 +405,6 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/admin/enrollments` (link)
 - `/admin/sessions` (link)
 - `/creator/[handle]` (card)
-- `/messages` (btn)
 
 **Inherits:** `[AdminNavbar]`, `[Footer]`
 
@@ -431,8 +427,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 
 **Layout:** AdminLayout | **Auth:** Admin | **File:** `src/pages/admin/users.astro`
 
-**Outbound (page-specific):**
-- `/messages` (btn)
+**Outbound (page-specific):** None
 
 **Inherits:** `[AdminNavbar]`, `[Footer]`
 
@@ -1183,11 +1178,6 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 
 **Inbound from:**
 - `[Sidebar]` (nav)
-- `/admin/creator-applications` (btn)
-- `/admin/enrollments` (btn)
-- `/admin/sessions` (btn)
-- `/admin/teachers` (btn)
-- `/admin/users` (btn)
 - `/community/[slug]/[...tab]` (btn)
 - `/course/[slug]/[...tab]` (btn)
 - `/course/[slug]/book` (btn)

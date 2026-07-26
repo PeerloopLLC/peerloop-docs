@@ -3,6 +3,21 @@
 
 ## 3. API & Data Fetching (Medium-High Impact)
 
+### [CANMSG] Fix the Data Sources, Then Delete the Guard — Every User-Listing Loader Filters `deleted_at IS NULL`; `useCanMessage` Is a Pure Client Derivation (Conv 418)
+**Date:** 2026-07-26 (Conv 418)
+
+A client-side guard is only removable as "vacuous" once every loader feeding it provably cannot produce the guarded condition. `useCanMessage` fired one `GET /api/me/can-message/:userId` **per rendered row** (measured: 4 requests on a 5-member directory, cold *and* warm after `[MSGBOOT]`), and under open messaging the only non-vacuous input is "is the recipient soft-deleted?" — but three of the four surfaces rendering it did not exclude soft-deleted users. So the fix landed in two ordered halves:
+
+1. **Source first** — `deleted_at IS NULL` added to `src/lib/ssr/loaders/communities.ts` (member directory), `teachers.ts` and `creators.ts` (profile lookups), matching what `fetchPublicProfileData` (`users.ts:212`) already did for `/@handle`. This also closed a latent dead-link defect: the members directory could list a soft-deleted user whose row linked to a `/@handle` that 404s.
+2. **Then the guard** — `useCanMessage` rewritten as a pure `useAuthStatus` + `useCurrentUser` derivation (no effect, no fetch), keeping the `[MSGBOOT]` three-state contract. Result **4 requests → 0**, cold and warm, icons unchanged; signed-out = 0, own-profile = 0, other-profile = 1.
+3. **Then the sibling the sweep missed** (`[CMDEL]`, same conv) — scoping step 1 to *the surfaces rendering the hook* left `GET /api/me/communities/[slug]/members` (the creator's management list) as the one member-listing query still unfiltered, an inconsistency the sweep itself created. `AND u.deleted_at IS NULL` added there too, plus a test. The case for leaving it — "the creator needs to see the row to act on it" — was settled by reading the consumer: `CommunityManagement.tsx` renders a **read-only** list with no row actions, and its `Members (n)` count (array length) would otherwise disagree with the community Members tab. **Scope a consistency fix by the data surface, not by the guard's call sites.**
+
+Rejected: dropping the gate outright (a real rare-case regression on three surfaces, failing only at POST); a batch endpoint over `getMessageableFlags` (keeps a round-trip to compute `true`, and needs the hook lifted out of `MemberRow`). `GET /api/me/can-message/:userId` is retained but now has no UI caller — keep-or-delete deferred to `[MSG-CLEANUP]` (M6). New `tests/ssr/soft-deleted-users.test.ts` (3 tests) pins the three filters *because* the client derivation now depends on them.
+
+**Rationale:** The `deleted_at` filters are correct independently of messaging — `/@handle` already treated deleted users as not-found, so the other three loaders were simply inconsistent with it. Fixing the source made the removal provably equivalent rather than a behaviour change, at the cost of three one-line SQL changes. General convention: **before deleting a check as vacuous, enumerate its call sites and prove at each one that the guarded condition cannot arise; if it can, fix the loader first, then pin it with a test that says why it exists.**
+
+**See:** `docs/sessions/2026-07/20260726_1129 Decisions.md` §1 + §5 (`[CMDEL]`), Learnings §§1, 6; Conv 418 (code `3b3310cd`).
+
 ### Shared Admin Response Types Co-Locate in One Route File, Imported Cross-Route (CERT-ROWSHAPE, Conv 391)
 **Date:** 2026-07-12 (Conv 391)
 

@@ -542,7 +542,7 @@ npm run route-api-map
 **What it does:**
 - Scans all `.astro` and `.tsx` page files, extracts `fetch()` calls to API endpoints
 - Traces component imports 2 levels deep to capture API calls in child components
-- Traces `@lib/` imports for `fetch()` calls (e.g. route-specific hooks like `useCanMessage` → `/api/me/can-message`); ambient-auth libs in `AMBIENT_LIB` (`current-user`) are suppressed by resolved basename so platform-wide auth calls (`/api/me/full`) aren't sprayed across every route (Conv 246)
+- Traces `@lib/` imports for `fetch()` calls from route-specific hooks (the original Conv-246 example, `useCanMessage` → `/api/me/can-message`, stopped fetching in Conv 418, so that edge no longer appears in the generated map); ambient-auth libs in `AMBIENT_LIB` (`current-user`) are suppressed by resolved basename so platform-wide auth calls (`/api/me/full`) aren't sprayed across every route (Conv 246)
 - Computes BFS navigation paths from AppNavbar, AdminNavbar, and DiscoverSlidePanel
 - Detects outbound links per page for same-page navigation
 - Adds tab sub-routes as explicit edges for dynamic href detection

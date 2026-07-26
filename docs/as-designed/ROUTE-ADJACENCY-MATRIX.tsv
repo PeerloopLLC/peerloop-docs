@@ -12,17 +12,17 @@ FROM \ TO	/	/@[handle]	/404	/admin	/admin/analytics	/admin/announcements	/admin/
 /admin/availability-settings	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot							foot																																							
 /admin/certificates	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot							foot																																							btn
 /admin/courses	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot							foot																																							
-/admin/creator-applications	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot							foot													btn																										
-/admin/enrollments	foot	card		nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot							foot								link					btn																										
+/admin/creator-applications	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot							foot																																							
+/admin/enrollments	foot	card		nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot							foot								link																															
 /admin/moderation	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot							foot																																							
 /admin/moderators	foot	card		nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot							foot																																							
 /admin/payouts	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot							foot																																							
 /admin/promotion-settings	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot							foot																																							
 /admin/recordings	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot							foot																																							
-/admin/sessions	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot							foot													btn																					redir					
-/admin/teachers	foot			nav	nav			nav	nav	nav	link	nav	nav	nav			link	nav	nav	nav	foot							foot				card									btn																										
+/admin/sessions	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot							foot																																		redir					
+/admin/teachers	foot			nav	nav			nav	nav	nav	link	nav	nav	nav			link	nav	nav	nav	foot							foot				card																																			
 /admin/topics	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot							foot																																							
-/admin/users	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot							foot													btn																										
+/admin/users	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot							foot																																							
 /become-a-teacher																												link											btn																												
 /certificates/[id]	link																																																																		btn
 /communities	link			nav																	foot		nav					foot											modal	nav	nav	nav	nav															btn					modal				

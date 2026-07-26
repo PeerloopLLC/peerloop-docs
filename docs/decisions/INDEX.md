@@ -183,6 +183,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [3. API & Data Fetching (Medium-High Impact)](03-api-data-fetching.md)
 
+- [[CANMSG] Fix the Data Sources, Then Delete the Guard — Every User-Listing Loader Filters `deleted_at IS NULL`; `useCanMessage` Is a Pure Client Derivation (Conv 418)](03-api-data-fetching.md#canmsg-fix-the-data-sources-then-delete-the-guard--every-user-listing-loader-filters-deleted_at-is-null-usecanmessage-is-a-pure-client-derivation-conv-418)
 - [Shared Admin Response Types Co-Locate in One Route File, Imported Cross-Route (CERT-ROWSHAPE, Conv 391)](03-api-data-fetching.md#shared-admin-response-types-co-locate-in-one-route-file-imported-cross-route-cert-rowshape-conv-391)
 - [Role-Aware Multi-Scope Endpoints Accept Caller-Declared `?scope=...` Query Param](03-api-data-fetching.md#role-aware-multi-scope-endpoints-accept-caller-declared-scope-query-param)
 - [Enrollment Self-Healing: Two-Surface Fallback for Missed Webhooks](03-api-data-fetching.md#enrollment-self-healing-two-surface-fallback-for-missed-webhooks)
@@ -256,6 +257,8 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [[MSG-ADOPT-A] A Prop Most Call Sites Would Pass a Constant For Is Optional With a Hook-Derived Default — `MessageUserButton.signedIn` (Conv 418)](05-ui-ux-components.md#msg-adopt-a-a-prop-most-call-sites-would-pass-a-constant-for-is-optional-with-a-hook-derived-default--messageuserbuttonsignedin-conv-418)
+- [[MSG-ICON] A Second Trigger Shape Is an `appearance` Discriminated Prop Union, Not a Second Component or a Flat Options Bag (Conv 418)](05-ui-ux-components.md#msg-icon-a-second-trigger-shape-is-an-appearance-discriminated-prop-union-not-a-second-component-or-a-flat-options-bag-conv-418)
 - [[MSG-INPLACE] Per-User Messaging Composes In Place via an Opt-In Shared Island, With a Discard Guard and an Opt-In "Open in Messages" Exit (Conv 417)](05-ui-ux-components.md#msg-inplace-per-user-messaging-composes-in-place-via-an-opt-in-shared-island-with-a-discard-guard-and-an-opt-in-open-in-messages-exit-conv-417)
 - [[REVIEW-GATE] Gate a UI Affordance on the Exact Predicate Its Endpoint Enforces, Not a Journey Proxy — Course Review Composer (Conv 416)](05-ui-ux-components.md#review-gate-gate-a-ui-affordance-on-the-exact-predicate-its-endpoint-enforces-not-a-journey-proxy--course-review-composer-conv-416)
 - [[STEP-LINK] Course-Detail Hover and Link Affordances — Persistent Underline for Links, Neutral Hover Tint, Variant-Aware Pale-Tonal Darker-Green Hover (Conv 415)](05-ui-ux-components.md#step-link-course-detail-hover-and-link-affordances--persistent-underline-for-links-neutral-hover-tint-variant-aware-pale-tonal-darker-green-hover-conv-415)

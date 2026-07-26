@@ -143,6 +143,7 @@ Get community detail with members and resources.
 
 **Notes:**
 - Members sorted by role: creator → member (COMMUNITY-TEACHER-KILL, Conv 120 — `'teacher'` retired from `community_members.member_role`)
+- **Soft-deleted members are excluded (Conv 418, [CANMSG]).** This endpoint delegates to `fetchCommunityDetailData` (`src/lib/ssr/loaders/communities.ts`), whose member query gained `AND u.deleted_at IS NULL`. Before Conv 418 the list could include a soft-deleted user whose row linked to a `/@handle` that 404s. Pinned by `tests/ssr/soft-deleted-users.test.ts`. The creator-facing *management* list (`GET /api/me/communities/[slug]/members`) gained the same filter later in Conv 418 ([CMDEL]), so **every** member-listing surface now excludes soft-deleted users.
 - Resources sorted by: pinned first, then by date
 - `membership` is null if not authenticated or not a member
 - Member `role` values: `creator`, `member` (teaching status is derived server-side via `MeFullResponse.teachingCommunityIds` — see API-USERS.md `/api/me/full`)
@@ -427,6 +428,8 @@ List members of a community owned by the authenticated creator. Returns user det
 ```
 
 **Sort order:** Role priority (creator → member), then joined_at ascending. (COMMUNITY-TEACHER-KILL, Conv 120 — `'teacher'` branch removed from ORDER BY CASE.)
+
+**Soft-deleted members are excluded ([CMDEL], Conv 418).** The query filters `AND u.deleted_at IS NULL`, matching every other member-listing surface. This was decided rather than assumed: the list it backs (`CommunityManagement.tsx`) is **read-only** — no remove, no promote, no row actions at all — so there is nothing a creator could do with a deleted user's row, and leaving it in made this panel's `Members (n)` count disagree with the community Members tab, which filters. Pinned by `tests/api/me/communities/[slug]/members.test.ts`.
 
 **Errors:** 400 (missing slug), 401 (not authenticated), 403 (not owner), 404 (community not found)
 

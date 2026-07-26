@@ -2,7 +2,8 @@
 
 React component tests using Vitest and React Testing Library.
 
-**Last Updated:** 2026-07-26 (Conv 417 — [MSG-INPLACE]/[MSG-EXIT]: +1 **new** file `messages/MessageUserButton.test.tsx` (11 — the in-place composer island: button-not-link when signed in, `/messages?to=` anchor fallback when signed out, recipient preselected on open, POST → close → toast with no navigation, the discard guard's cancel/confirm/nothing-typed paths, the opt-in "Open in Messages" exit + its typed-draft guard, error toast on a failed POST, and one case pinning the exit as opt-**out** on the `/messages` mount) → Messages 1→2 files / 4→15. Grand total files **87→88**, cases **2,236→2,247**.)
+**Last Updated:** 2026-07-26 (Conv 418 — [MSG-ICON]/[MSG-ADOPT-A]: `messages/MessageUserButton.test.tsx` grew **11→21** in place (+5 for the `appearance="bare"` icon trigger — a bare `<button>` rendering the call site's own icon as children with `className` passed through and a required `title`, deliberately not the `Button` primitive; +5 for `signedIn` becoming optional and resolving from `useAuthStatus()` when omitted, with an explicit prop still winning). Messages 15→25 cases, files unchanged (2). Grand total files **88** (unchanged), cases **2,247→2,257**. No new component test files.)
+**Prev:** 2026-07-26 (Conv 417 — [MSG-INPLACE]/[MSG-EXIT]: +1 **new** file `messages/MessageUserButton.test.tsx` (11 — the in-place composer island: button-not-link when signed in, `/messages?to=` anchor fallback when signed out, recipient preselected on open, POST → close → toast with no navigation, the discard guard's cancel/confirm/nothing-typed paths, the opt-in "Open in Messages" exit + its typed-draft guard, error toast on a failed POST, and one case pinning the exit as opt-**out** on the `/messages` mount) → Messages 1→2 files / 4→15. Grand total files **87→88**, cases **2,236→2,247**.)
 **Prev:** 2026-07-13 (Conv 393 — [ORPHAN-BACKLOG] Category C + dead-.ts sweep: deleted 4 orphaned component test files whose components/utils were removed as dead code. Context Actions 1→0 files / 11→0 (−`ContextActionsPanel` 11, category removed), Explore 3→1 / 83→37 (−`community-role-utils` 24, −`feed-role-utils` 22), Leaderboard 1→0 / 35→0 (−`Leaderboard` 35, category removed). Grand total files **91→87**, cases **2,328→2,236**.)
 **Prev:** 2026-07-12 (Conv 392 — [ORPHAN-PURGE]/[ORPHAN-BACKLOG]: deleted 13 orphaned component test files whose components were removed as dead-legacy (unreachable from any route). Courses 7→2 files / 85→23 (−`CourseTabs` 19, `LearnTab` 18, `ModuleAccordion` 11, `MyCourses` 7, `course-tabs/ResourcesTabContent` 7), Explore 8→3 / 146→83 (−`RoleBadge` 21, `ExploreTabBar` 7, `RolePillFilters` 8, `ExploreCommunityCard` 16, `CommunityRolePillFilters` 11), Learning 2→1 / 20→2 (−`ModuleContent` 18), Messages 2→1 / 21→4 (−`Messages` 17), Notifications 1→0 / 35→0 (−`NotificationsList` 35, category removed). Grand total files **104→91**, cases **2,523→2,328**.)
 **Prev:** 2026-07-12 (Conv 390 — [CERT-MASTERY-UI]: +1 **new** file `teachers/RecommendCertButton.test.tsx` (4 — confirm→POST teaching-cert recommend, optimistic "Recommended" pill, compact/labeled variants) → new **Teachers** category (1 file / 4). Two Admin files shed cases for the retired `completion`/`mastery` cert types: `admin/CertificateDetailContent.test.tsx` 31→29, `admin/CertificatesAdmin.test.tsx` 27→26 (dropped the single-option type-filter test) → Admin 695→692. Grand total files **103→104**, cases **2,522→2,523**.)
@@ -15,7 +16,7 @@ React component tests using Vitest and React Testing Library.
 **Prev:** 2026-06-26 (Conv 339 — [SESSHIST]/[OLD-PORTED-CLEANUP] retired `teaching/SessionHistory.test.tsx` (42) and added `teaching/TeacherSessionsList.test.tsx` (32); Teaching cases 154→144, file count unchanged (4).)
 **Prev:** 2026-06-15 (Conv 286 — two changes: [TESTCOMP-DRIFT] reconciled the doc against on-disk via a verified `vitest run` (removed stale `booking/SessionJoinableView.test.tsx`; corrected 5 drifted per-file counts: SessionBooking 32→31, EnrollButton 13→17, CreatorTeacherList 21→18, Messages 19→17, ModeratorQueue 61→59), then [NUDGE-TC-V2] added a new Progression category `progression/ProgressionNudge.test.tsx` (15). Net: 93→95 files / 2,262→2,498 cases.)
 
-**Total:** 87 test files
+**Total:** 88 test files
 
 ---
 
@@ -201,7 +202,7 @@ All components use mocked API responses via `vi.mock()`.
 
 | Component | Test File | Tests |
 |-----------|-----------|:-----:|
-| MessageUserButton (in-place composer island) | `tests/components/messages/MessageUserButton.test.tsx` | 11 |
+| MessageUserButton (in-place composer island) | `tests/components/messages/MessageUserButton.test.tsx` | 21 |
 | Message time (viewer-tz, XTZ) | `tests/components/messages/message-timezone.test.ts` | 4 |
 
 ---
@@ -313,7 +314,7 @@ All components use mocked API responses via `vi.mock()`.
 | Learning | 1 | 2 |
 | Layout | 2 | 11 |
 | Marketing | 9 | 389 |
-| Messages | 2 | 15 |
+| Messages | 2 | 25 |
 | Moderation | 1 | 59 |
 | Onboarding | 2 | 42 |
 | Progression | 1 | 15 |
@@ -324,7 +325,7 @@ All components use mocked API responses via `vi.mock()`.
 | Teaching | 4 | 146 |
 | Testimonials | 1 | 53 |
 | UI | 2 | 10 |
-| **Total** | **88** | **2,247** |
+| **Total** | **88** | **2,257** |
 
 ---
 

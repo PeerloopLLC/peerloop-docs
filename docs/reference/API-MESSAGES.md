@@ -246,7 +246,9 @@ Mark all conversations as read for the current user. Sets `last_read_at` to now 
 
 ### GET /api/me/can-message/[userId]
 
-Check if the current user can message a specific user. Used by profile page components to conditionally show/hide Message buttons.
+Check if the current user can message a specific user.
+
+> **No UI caller since Conv 418 ([CANMSG]).** This endpoint is live and still covered by `tests/api/me/can-message/[userId].test.ts` (7), but nothing in the app calls it — see *Client Integration* below. Keep-or-delete is an open decision (`[MSG-CLEANUP]`).
 
 **Auth:** Required
 
@@ -269,7 +271,7 @@ Check if the current user can message a specific user. Used by profile page comp
 - `400` - User ID required
 - `401` - Not authenticated
 
-**Client Integration (Session 344):** Used by the `useCanMessage` hook (`src/lib/useCanMessage.ts`). The hook handles visitor (no API call) and self-profile (returns false) short-circuits client-side. Used in UserCard, CreatorProfileHeader, and TeacherProfileHeader.
+**Client Integration (Session 344, retired Conv 418):** `useCanMessage` (`src/lib/useCanMessage.ts`) used to call this endpoint once per recipient — N round-trips per list view (measured: 4 requests on a 5-member community, cold and warm). Under open messaging (Conv 110) the only input the client could not derive was whether the recipient is soft-deleted, so Conv 418 added `deleted_at IS NULL` to the three SSR loaders that feed these surfaces (`communities.ts` member directory, `teachers.ts` / `creators.ts` profile lookups — `users.ts` already filtered) and rewrote the hook as a pure `useAuthStatus` + `useCurrentUser` derivation with **no fetch in any state**. The filters are pinned by `tests/ssr/soft-deleted-users.test.ts`; the never-calls-the-API contract is pinned by `tests/lib/useCanMessage.test.ts`. `POST /api/conversations` remains the authoritative gate.
 
 **See:** `src/lib/messaging.ts` (canMessage function), POLICIES.md section 4
 

@@ -3,7 +3,8 @@
 **Type:** Architecture Decision
 **Status:** ✅ DECIDED (MVP) / ⏸️ ON-HOLD (CHAT, SUBCOM)
 **Created:** 2026-01-19
-**Updated:** 2026-07-26 (Conv 417 -- in-place composer on the course page; §E surfaces re-pointed at their current components, §"URL Pattern Normalization" gains its first documented exception)
+**Updated:** 2026-07-26 (Conv 418 -- `useCanMessage` became a local derivation with no network call, backed by `deleted_at IS NULL` at the three unfiltered loaders; in-place composer adopted on 11 more affordances across §C/§D/§E/§H)
+**Prev:** 2026-07-26 (Conv 417 -- in-place composer on the course page; §E surfaces re-pointed at their current components, §"URL Pattern Normalization" gains its first documented exception)
 **Prev:** 2026-03-05 (Session 345 -- all 3 phases complete, surface catalog fully covered)
 **Related:** `docs/reference/stream.md`, `docs/reference/cloudflare.md`, `docs/POLICIES.md` section 4
 
@@ -29,11 +30,22 @@
 
 ---
 
-## Messaging Access Control (Session 338, updated Conv 110)
+## Messaging Access Control (Session 338, updated Conv 110 / Conv 418)
 
 **Policy:** See `docs/POLICIES.md` section 4 for the authoritative rules on who can message whom.
 
 **Conv 110 — Open messaging:** Any authenticated member can message any other non-deleted member. The relationship-based restrictions from Session 338 (which required enrollment, certification, or admin status) have been removed per client approval. Admin/moderator bypass and the `useCanMessage` hook infrastructure remain in place.
+
+**Conv 418 — the client check stopped being a network call ([CANMSG]).** `useCanMessage` used to `GET /api/me/can-message/:userId` once per recipient, so a list view paid N round-trips (2 D1 queries each) to compute `true` — measured at 4 requests on a 5-member community, cold and warm. Under open messaging the only input the client could not derive locally was whether the recipient is **soft-deleted**, and three of the four surfaces rendering the hook were not excluding those users:
+
+| Surface | Loader | Before Conv 418 |
+|---------|--------|-----------------|
+| `/@[handle]` | `ssr/loaders/users.ts` | already filtered `deleted_at` |
+| `/community/[slug]` members | `ssr/loaders/communities.ts` (`fetchCommunityDetailData`) | **unfiltered** — could list a soft-deleted member whose row linked to a `/@handle` that 404s |
+| `/teacher/[handle]` | `ssr/loaders/teachers.ts` (`fetchTeacherProfileData`) | **unfiltered** |
+| `/creator/[handle]` | `ssr/loaders/creators.ts` (`fetchCreatorProfileData`) | **unfiltered** |
+
+The three missing `AND … deleted_at IS NULL` filters were added first (they are correct independently of messaging — the member directory was linking to a profile that 404s), pinned by `tests/ssr/soft-deleted-users.test.ts`. Only then was the hook rewritten as a pure `useAuthStatus` + `useCurrentUser` derivation: signed in, a recipient exists, and it isn't you. It makes **no fetch in any state**, and keeps the [MSGBOOT] three-state contract from Conv 417 (`loading` stays true until `authStatus` resolves). The client check was always advisory — `POST /api/conversations` calls `canMessage()` server-side and is the authoritative gate. `GET /api/me/can-message/:userId` still exists and is still tested, but now has **no UI caller** (keep-or-delete tracked as `[MSG-CLEANUP]`).
 
 > **History (Session 338):** The original implementation restricted messaging to platform relationships (student↔teacher, student↔creator, teacher↔creator, anyone→admin). Student-to-student was explicitly blocked (US-S017). Conv 110 opened all member-to-member messaging.
 
@@ -62,16 +74,16 @@ Every UI surface showing a user is a potential messaging entry point. This catal
 | Full student list | `teachers/workspace/MyStudents.tsx` | Teacher | Assigned students | YES | Inherently valid |
 | Dashboard student cards | `dashboard/TeacherStudentList.tsx` | Teacher | Assigned students | YES | Inherently valid |
 | Upcoming sessions | `dashboard/TeacherUpcomingSessions.tsx` | Teacher | Session students | YES | Inherently valid |
-| Session history | `teachers/workspace/SessionHistory.tsx` | Teacher | Past students | YES | Inherently valid |
+| Session history | `teachers/workspace/TeacherSessionsList.tsx` | Teacher | Past students | YES | **In-place composer** (`appearance="bare"`, Conv 418) — replaced `SessionHistory.tsx`, retired Conv 339 |
 
 #### D. Video Session Screens
 
 | Surface | File | Viewer | User Shown | Msg Btn | Relationship |
 |---------|------|--------|-----------|:---:|--------------|
 | Pre-join (waiting room) | `booking/SessionJoinableView.tsx` | Student or teacher | Opposite participant | YES | Inherently valid (session pair) |
-| Session room | `booking/SessionRoom.tsx` | Student or teacher | Opposite participant | YES | Inherently valid |
+| Session room | `booking/SessionRoom.tsx` | Student or teacher | Opposite participant | YES | Inherently valid — **stays a plain link on purpose** (Conv 417: an in-session viewer wants the jump, not a modal over the call) |
 | Post-session (completed) | `booking/SessionCompletedView.tsx` | Student or teacher | Opposite participant | YES | Inherently valid |
-| Participant card (shared) | `booking/SessionParticipantCard.tsx` | Either | Opposite participant | YES | Inherently valid |
+| Participant card (shared) | `booking/SessionParticipantCard.tsx` | Either | Opposite participant | YES | **In-place composer** (`appearance="bare"`, Conv 418) — covers pre-join / post-session via `showMessage` |
 
 #### E. Course Pages
 
@@ -79,7 +91,7 @@ Every UI surface showing a user is a potential messaging entry point. This catal
 |---------|------|--------|------------|:---:|--------------|
 | Peer Teachers tab | `course/TeachersTabList.tsx` | Any | Course teachers | YES | **In-place composer** via `messages/MessageUserButton.tsx` (Conv 417); signed-out falls back to the `/messages?to=` anchor |
 | Meet the Creator tab | `course/CreatorTab.astro` | Any | Course creator | YES | **In-place composer** via `messages/MessageUserButton.tsx` (Conv 417); signed-out falls back to the `/messages?to=` anchor |
-| Booking -- teacher selection | `booking/SessionBooking.tsx` | Student | Available teachers | YES | Direct link (enrolled by definition) |
+| Booking -- teacher selection | `booking/SessionBooking.tsx` | Student | Available teachers | YES | **In-place composer** (`appearance="bare"`, Conv 418) — 2 affordances |
 
 > The Session-345 rows for `courses/CourseTeacherList.tsx` and `courses/CourseHero.tsx` were retired with those components; the course page's teacher/creator affordances now live in the `course/[slug]/[...tab]` tabs above.
 
@@ -87,7 +99,7 @@ Every UI surface showing a user is a potential messaging entry point. This catal
 
 | Surface | File | Viewer | Users Shown | Msg Btn | Relationship |
 |---------|------|--------|------------|:---:|--------------|
-| Members tab | `community/CommunityTabs.tsx` | Community member | All members | YES | `useCanMessage` per member (extracted `MemberRow`) |
+| Members tab | `community/CommunityMembersTab.tsx` | Community member | All members | YES | `useCanMessage` per member (extracted `MemberRow`) — local since Conv 418, no per-row request; soft-deleted members no longer listed |
 
 #### G. Discovery / Browse Pages
 
@@ -110,6 +122,8 @@ Discovery pages intentionally use click-through to profile pages. No inline mess
 | Moderation detail | `admin/ModerationDetailContent.tsx` | Admin/Mod | Reporter + target | YES | Admin/Mod -> anyone |
 | Creator application | `admin/CreatorApplicationDetailContent.tsx` | Admin | Applicant | YES | Admin -> anyone |
 
+> **All 6 admin panels use the in-place composer (Conv 418, `[MSG-ADOPT-A]`)** — 7 affordances, since `SessionDetailContent` has two (student + teacher). Each is a `MessageUserButton` with `appearance="bare"`, keeping the panel's own icon, `className` and `title`. The Conv-417 note that admin slide-overs "legitimately want the jump" was reversed once the modal was verified to open *over* a slide-over without navigating away from it.
+
 #### I. New Message Modal (search gateway)
 
 | Surface | File | Viewer | Users Shown | Msg Btn | Relationship |
@@ -125,7 +139,7 @@ The same modal is mounted two ways: inside `MessagesCenter` on `/messages` (sear
 2. ~~`GET /api/users/search` -- filter results to messageable contacts only~~ DONE
 3. ~~`POST /api/conversations/:id/messages` -- validate active relationship still exists~~ DONE
 4. ~~Conditionally show/hide existing "Message" buttons on profile pages (A above)~~ DONE
-5. ~~New endpoint `GET /api/me/can-message/[userId]` + `useCanMessage` hook~~ DONE
+5. ~~New endpoint `GET /api/me/can-message/[userId]` + `useCanMessage` hook~~ DONE — *the hook no longer calls the endpoint (Conv 418); see "Conv 418" above*
 6. ~~URL normalization: `UserCard.tsx` from `/messages/new?to=handle` to `/messages?to=id`~~ DONE
 
 **Phase 2 -- Add buttons on inherently-valid surfaces (UX): DONE (Session 344)**
@@ -144,7 +158,11 @@ All messaging surfaces use `/messages?to=${user.id}` consistently. Fixed:
 - `UserCard.tsx`: `/messages/new?to=${handle}` → `/messages?to=${id}`
 - `SessionHistory.tsx`: `/messages?user=${id}` → `/messages?to=${id}`
 
-**Exception — in-place composer (Conv 417).** The two course-page surfaces in §E no longer navigate for a signed-in viewer: `MessageUserButton` opens `NewConversationModal` on the page instead, and offers `/messages?to=${id}` only as a secondary "Open in Messages" exit. The URL pattern is unchanged — it is the *entry* that changed — and signed-out viewers still get the plain anchor so the login bounce works. The remaining 21 catalogued affordances are still plain links; adoption is tracked on the task board (`[MSG-ICON]` / `[MSG-ADOPT-A]` / `[MSG-ADOPT-B]`), so this section should be re-read as those land.
+**Exception — in-place composer (Conv 417, extended Conv 418).** Adopting surfaces no longer navigate for a signed-in viewer: `MessageUserButton` opens `NewConversationModal` on the page instead, and offers `/messages?to=${id}` only as a secondary "Open in Messages" exit. The URL pattern is unchanged — it is the *entry* that changed — and signed-out viewers still get the plain anchor so the login bounce works.
+
+Conv 418 added an `appearance="bare"` variant (`[MSG-ICON]`) — a bare `<button>` rendering the call site's own icon as children with its `className` passed through verbatim and a required `title`, deliberately **not** the `Button` primitive, whose pill radius/border/padding would fight the site's styling — and adopted it at 11 affordances across 9 files (`[MSG-ADOPT-A]`): `SessionBooking` ×2, `SessionParticipantCard`, `TeacherSessionsList`, and the 6 admin detail panels (7). `signedIn` is now optional and resolves from `useAuthStatus()` when omitted, so a call site with no viewer knowledge passes nothing; the two course tabs still pass it explicitly because they know server-side.
+
+**Still plain `/messages?to=` links — 10 files, tracked as `[MSG-ADOPT-B]`:** `users/UserCard.tsx`, `teachers/profiles/TeacherProfileHeader.tsx`, `creators/profiles/CreatorProfileHeader.tsx`, `community/CommunityMembersTab.tsx`, `dashboard/EnrollmentCard.tsx`, `dashboard/TeacherStudentList.tsx`, `dashboard/TeacherUpcomingSessions.tsx`, `dashboard/CreatorTeacherList.tsx`, `teachers/workspace/MyStudents.tsx`, `courses/CourseProgressCard.tsx`. `booking/SessionRoom.tsx` is excluded by design (see §D). M5 is optional — it trades scroll position rather than correctness — so this list may legitimately stay as-is.
 
 `?to=` is thread-aware on arrival (`MessagesCenter`): an existing conversation selects that thread, otherwise the composer opens preselected.
 

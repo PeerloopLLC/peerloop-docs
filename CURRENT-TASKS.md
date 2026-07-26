@@ -388,6 +388,11 @@
   14 files / 262 tests.
 - **Not a one-row patch.** The Conv-417 additions were documented, but the file needs a standalone
   reconciliation pass against disk — the same shape as the Conv 378 page-test pass.
+- **Re-flagged Conv 418 with sharper numbers** (docs agent declined to patch one row into a doc whose
+  totals are globally wrong — correctly): header claims `Total: 25 test files`; the **SSR Loader Tests**
+  table lists 3 files at 4 / 13 / ~20 tests against on-disk **7 / 20 / 14**, omits
+  `tests/ssr/soft-deleted-users.test.ts` entirely, and its summary row still reads `SSR Loaders | 3 | ~40`.
+  Reconcile against a verified `vitest run`, not against the file's own arithmetic.
 - **Note:** `TEST-COVERAGE.md` + `TEST-COMPONENTS.md` were reconciled this conv (the docs agent also
   corrected three section headers that had lagged since the Conv 392/393 orphan purge), and
   `sync-gaps.sh` now reports **all 405 test files documented, no gaps** — so this is the last known
@@ -482,3 +487,13 @@
   `SessionParticipantCard` (needs a live/completed session), `ModerationDetailContent` (gated on a
   `targetUser` the single seeded row doesn't resolve). Also root-caused a third `[DEVSRV-STALE]`
   variant en route — recorded there.
+- **[CMDEL]** — closed the last inconsistency the M2 sweep left behind. `GET /api/me/communities/
+  [slug]/members` was the only member-listing query still joining `users` without
+  `deleted_at IS NULL`. Surfaced by the `/r-end` docs agent, verified against source, then **decided
+  rather than assumed**: the list it backs (`CommunityManagement.tsx`) turned out to be **read-only**
+  — no remove, no promote, no row actions — so the "creator needs the row to act on it" case for
+  keeping soft-deleted users had nothing to act on, and leaving it made that panel's `Members (n)`
+  count disagree with the now-filtered directory tab. Added the filter + a test pinning it
+  (`tests/api/me/communities/[slug]/members.test.ts`, 12 in file). 5 gates green (suite **6584**).
+  Documented in `API-COMMUNITY.md` on both the SSR endpoint's note and the management endpoint's own
+  section, replacing the divergence note the docs agent had written minutes earlier.

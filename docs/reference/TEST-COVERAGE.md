@@ -2,7 +2,8 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-07-26 (Conv 417 — [MSG-INPLACE]/[MSGBOOT]: +2 **new** test files. `tests/components/messages/MessageUserButton.test.tsx` (11 — the in-place composer island: renders a button not a link when signed in, falls back to the `/messages?to=` anchor when signed out, opens with the recipient preselected, POSTs + closes + toasts without navigating, the discard guard's cancel/confirm/nothing-typed paths, the opt-in "Open in Messages" exit and its guard, error toast on a failed POST, plus one case pinning the exit as opt-out on the `/messages` mount) and `tests/lib/useCanMessage.test.ts` (5 — the three auth states pinned apart: unresolved decides nothing and calls no API, resolves once auth settles, genuine visitor and own-profile decide false without an API call, authenticated + different recipient asks the API). Components 87→88, Lib 32→33, Vitest Total 405→407, All Test Files 433→435. Per-file component case counts are in TEST-COMPONENTS.md. Also corrected three stale detail-section headers against on-disk truth: "Component Tests (91 files)"→88 (lagging since the Conv 392/393 orphan purge), "API Tests (240 files)"→241 and "Me (63 files)"→64. Sibling `TEST-UNIT.md` was **not** updated — it has been stale since Conv 253 (curated subset, subtotals disagree with its own rows) and needs a separate reconciliation.)
+**Last Updated:** 2026-07-26 (Conv 418 — [CANMSG]/[MSG-ICON]/[MSG-ADOPT-A]: +1 **new** test file `tests/ssr/soft-deleted-users.test.ts` (3 — pins the `deleted_at IS NULL` filters added to `fetchCommunityDetailData` / `fetchTeacherProfileData` / `fetchCreatorProfileData`, which the now-local `useCanMessage` derivation depends on). SSR 3→4, Vitest Total 407→408, All Test Files 435→436. Two files were rewritten/extended in place, so no file-count change: `tests/lib/useCanMessage.test.ts` 5→7 (the hook no longer calls `GET /api/me/can-message/:userId` at all — one case now pins that the API is never called in any auth state) and `tests/components/messages/MessageUserButton.test.tsx` 11→21 (the `appearance="bare"` icon trigger + `signedIn` resolving from `useAuthStatus()` when the prop is omitted). Per-file component case counts are in TEST-COMPONENTS.md. Sibling `TEST-UNIT.md` still **not** updated — stale since Conv 253, needs its own reconciliation.)
+**Prev:** 2026-07-26 (Conv 417 — [MSG-INPLACE]/[MSGBOOT]: +2 **new** test files. `tests/components/messages/MessageUserButton.test.tsx` (11 — the in-place composer island: renders a button not a link when signed in, falls back to the `/messages?to=` anchor when signed out, opens with the recipient preselected, POSTs + closes + toasts without navigating, the discard guard's cancel/confirm/nothing-typed paths, the opt-in "Open in Messages" exit and its guard, error toast on a failed POST, plus one case pinning the exit as opt-out on the `/messages` mount) and `tests/lib/useCanMessage.test.ts` (5 — the three auth states pinned apart: unresolved decides nothing and calls no API, resolves once auth settles, genuine visitor and own-profile decide false without an API call, authenticated + different recipient asks the API). Components 87→88, Lib 32→33, Vitest Total 405→407, All Test Files 433→435. Per-file component case counts are in TEST-COMPONENTS.md. Also corrected three stale detail-section headers against on-disk truth: "Component Tests (91 files)"→88 (lagging since the Conv 392/393 orphan purge), "API Tests (240 files)"→241 and "Me (63 files)"→64. Sibling `TEST-UNIT.md` was **not** updated — it has been stale since Conv 253 (curated subset, subtotals disagree with its own rows) and needs a separate reconciliation.)
 **Prev:** 2026-07-13 (Conv 394 — [FEEDBACK-NUDGE]: +1 **new** lib test file `tests/lib/feedback-reminders.test.ts` (6 — `sendFeedbackReminders` cron: nudges both parties when neither has rated (stamps both `feedback_reminder_*_sent_at` columns, 2 emails), only nudges the un-rated party (null `moduleName` when no module), window filter (skips within-grace <1h and >72h), dedup (no re-nudge of a stamped party), skips non-`completed` sessions, stamps an email-pref-opted-out recipient but sends no email). Lib 31→32, Vitest Total 404→405, All Test Files 432→433. Also refreshed `tests/components/settings/NotificationSettings.test.tsx` (switch-count assertion 7→8 for the new feedback-reminder toggle, modified in place — Components summary is by-file, so no total change).)
 **Prev:** 2026-07-13 (Conv 393 — [ORPHAN-BACKLOG] Category C + dead-.ts sweep: deleted 5 orphaned test files whose code was removed as dead. 1 API test (`tests/api/leaderboard.test.ts`, 17 — its `/api/leaderboard` endpoint was deleted) → API Endpoints 242→241; 4 component tests (`context-actions/ContextActionsPanel` 11, `discover/community-role-utils` 24, `discover/feed-role-utils` 22, `leaderboard/Leaderboard` 35) → Components 91→87. Vitest Total 409→404, All Test Files 437→432. Per-category component deltas in TEST-COMPONENTS.md.)
 **Prev:** 2026-07-12 (Conv 392 — [ORPHAN-PURGE]/[ORPHAN-BACKLOG]: deleted 14 orphaned test files whose components were removed as dead-legacy (unreachable from any route). 13 component tests — Course −5 (`CourseTabs`/`LearnTab`/`ModuleAccordion`/`MyCourses`/`course-tabs/ResourcesTabContent`), Explore −5 (`RoleBadge`/`ExploreTabBar`/`RolePillFilters`/`ExploreCommunityCard`/`CommunityRolePillFilters`), Learning −1 (`ModuleContent`), Messages −1 (`Messages`), Notifications −1 (`NotificationsList`, category emptied) → Components 104→91 — plus 1 page test (`pages/courses/CourseDetail.test.tsx`, 56) → Pages 10→9. Vitest Total 423→409, All Test Files 451→437. Per-category component case deltas are in TEST-COMPONENTS.md.)
@@ -54,14 +55,14 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Pages | 9 | — | `tests/pages/` |
 | Lib | 33 | — | `tests/lib/` |
 | Integration | 10 | — | `tests/integration/` |
-| SSR | 3 | — | `tests/ssr/` |
+| SSR | 4 | — | `tests/ssr/` |
 | Unit | 17 | — | `tests/unit/` |
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 3 | — | `tests/plato/` |
 | Src (co-located) | 2 | — | `src/__tests__/` |
-| **Vitest Total** | **407** | — | |
+| **Vitest Total** | **408** | — | |
 | E2E (Playwright) | 28 | — | `e2e/` |
-| **All Test Files** | **435** | — | |
+| **All Test Files** | **436** | — | |
 
 ---
 
@@ -565,7 +566,7 @@ tests/api/
 | `tests/lib/promotion-moderation.test.ts` | 7 | listSystemPromotions (join promoter+author, `to_feed_type='system'` scope) + removeSystemPromotion (scope-guarded delete — can't remove a community/course promotion) (FEED-U3c, Conv 276) |
 | `tests/lib/announcements.test.ts` | 15 | Platform announcements (D1-only): createAnnouncement (insert + `notify` system-notification fan-out to ACTIVE users only), getAnnouncementCandidates active-window (dial fallback, explicit `active_until` override, per-user dismissal filter, visitor null-userId path, cap/newest-first), dismissAnnouncement idempotency, listAnnouncements/removeAnnouncement (cascade dismissals), purgeExpiredAnnouncements (retention + still-active guard, non-positive no-op), smart-feed integration (pinned atop first page, absent on page 2) (FEED-U3c④, Conv 277) |
 | `tests/lib/messaging.test.ts` | 20 | canMessage policy rules, getMessageableFlags, SQL search |
-| `tests/lib/useCanMessage.test.ts` | 5 | `useCanMessage` three-state auth contract — unresolved `authStatus` decides nothing (no `/api/users/:id/can-message` call, stays loading), resolves once auth settles after an unresolved first render, genuine visitor and own-profile decide `false` without an API call, authenticated viewer + different recipient asks the API (MSGBOOT symptom 2, Conv 417) |
+| `tests/lib/useCanMessage.test.ts` | 7 | `useCanMessage` as a pure local derivation (rewritten Conv 418, [CANMSG]) — unresolved `authStatus` decides nothing and stays loading, resolves once auth settles after an unresolved first render, `false` for a genuine visitor / your own profile / no recipient, `true` for an authenticated viewer + a different recipient, and one case pinning that `GET /api/me/can-message/:userId` is **never** called in any state (the MSGBOOT three-state contract from Conv 417 is preserved) |
 | `tests/lib/notifications.test.ts` | 39 | Notification processing and display |
 | `tests/lib/session-reminders.test.ts` | 6 | `sendSessionReminders` cron — partition-band windows (24h advance / 1h imminent) stamp `reminder_24h_sent_at`/`reminder_1h_sent_at`, per-recipient-tz email copy, ≤24h window filter (skips far-future/past), dedup (no re-send of a stamped slot), skips non-`scheduled` sessions, always-on in-app notif + email-pref-gated send (SESSION-REMIND, Conv 375) |
 | `tests/lib/feedback-reminders.test.ts` | 6 | `sendFeedbackReminders` cron — post-session rating nudge (email-only), completed-but-unrated window `(now−72h, now−1h]`, per-party dedup via `feedback_reminder_student_sent_at`/`_teacher_sent_at` + `EXISTS(session_assessments)` skip, nudges both parties independently (2 emails / both columns stamped), stamps an email-pref-opted-out recipient without sending, skips non-`completed` sessions (FEEDBACK-NUDGE, Conv 394) |
@@ -592,12 +593,13 @@ tests/api/
 
 ---
 
-## SSR Tests — `tests/ssr/` (3 files)
+## SSR Tests — `tests/ssr/` (4 files)
 
 | File | Tests | Coverage |
 |------|:-----:|----------|
 | `tests/ssr/about.test.ts` | 7 | About page SSR rendering |
 | `tests/ssr/courses.test.ts` | 20 | Course pages SSR (+ Conv 165 [CRT-1] role flags on `fetchCourseTabData`) |
+| `tests/ssr/soft-deleted-users.test.ts` | 3 | `deleted_at IS NULL` at the three loaders the client messaging derivation depends on ([CANMSG], Conv 418) — a soft-deleted member is omitted from the community member directory (`fetchCommunityDetailData`), and `fetchTeacherProfileData` / `fetchCreatorProfileData` return no profile for a soft-deleted teacher/creator |
 | `tests/ssr/static.test.ts` | 14 | Static page generation |
 
 ---
