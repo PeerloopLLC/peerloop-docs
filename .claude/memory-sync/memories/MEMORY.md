@@ -59,6 +59,7 @@
 - [link](reference_playwright_headless_browser_fallback.md) — [BRIDGE-UNREACHABLE] bridge Chrome refuses local dev server (curl 200, Chrome refused both 127.0.0.1+localhost) ⇒ use Playwright headless + `POST /api/auth/dev-login`; run script from INSIDE `~/projects/Peerloop`; `astro dev` = daemon binding `[::1]`-only (`--host 127.0.0.1`; logs via `astro dev logs`). Conv 413.
 - [link](feedback_plato_expect_is_legacy_spec.md) — PLATO `expect`/`pageAction` = frozen LEGACY spec; "UI missing" on a Matt page → triage REDESIGN/REGRESSION/NEVER-EXISTED vs preflip BEFORE editing the test. Conv 343.
 - [link](feedback_persistent_dev_server_4321.md) — NO persistent dev server (retired Conv 366) — EPHEMERAL `npm run dev` on demand, killed when done. ≠ preflip :4331.
+- [link](reference_devserver_stale_daemon.md) — [DEVSRV-STALE] 3 daemon-brick variants told apart by `curl`: `000`+bound=mid-run `npm install`; 500 `deps_ssr/…does not exist`=`rm -rf node_modules/.vite`; 200-but-old=browser cache. Teardown = `npx astro dev stop`. Build staying clean ⇒ never the code. Convs 414-420.
 - [link](feedback_codecheck_moment_includes_tests_and_build.md) — `/w-codecheck` trigger = decision point: also decide per-change whether to add prov-sweep + full test suite + build. Anti-pattern: inline `tsc`+`lint`+astro check skipping `/w-codecheck`. Conv 207.
 - [link](plato_walk_mocked_service_divergence.md) — [PLATO-SEQ] browser-walk row-identity EXCLUDES `notifications`; [PSA-WAITUNTIL] fixed Conv 384; CUT-2 enroll has NO `payment_intent`.
 

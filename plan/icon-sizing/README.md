@@ -2,8 +2,9 @@
 
 **Focus:** Migrate ~1,700 dimension classnames onto the Conv-419 icon token axis, and be able to
 *demonstrate* no page shipped a mis-sized icon — not merely believe it.
-**Status:** 🔥 IN PROGRESS (Conv 419 — foundation + standard done; Phases 1–2 built; baseline **1,694** after the
-same conv's `[MKTDEAD]` dead-code purge, down from 1,863)
+**Status:** 🔥 IN PROGRESS (Conv 420 — first migration tranche landed; baseline **1,448**, down from 1,694.
+Conv 419 built the foundation, standard and Phases 1–2 at baseline 1,694, itself down from 1,863 after
+that conv's `[MKTDEAD]` dead-code purge)
 **Task code:** `[ICON-TOK]` · related `[ICON-4PX]` (residue), `[RG-PUBLIC]` (gates one file), `[MKTDEAD]` (shrank the baseline)
 
 ---
@@ -42,27 +43,48 @@ Re-measured **after** `[MKTDEAD]` (Conv 419) deleted 80 dead-marketing files; th
 are kept alongside because 169 baseline violations — a full **10%** — lived in code no route could
 reach, and a census that counts them over-scopes the migration.
 
-| | count | pre-`[MKTDEAD]` |
-|---|---|---|
-| `.astro` pages (route-matrix) | 67 | 67 |
-| icon-component usages | **626** (198 `MattIcon` + 428 `ui/icons`) | 860 |
-| `ui/icons.tsx` exports | 98 | 98 |
-| **`check:icons` baseline total** | **1,694** | 1,863 |
-| — bare-numeric, overridden ten | **898** ← ambiguous, mean N px | — |
-| — bare-numeric, non-overridden N | **558** ← ambiguous, mean N × 4 px | — |
-| — arbitrary px *on an icon component* | **192** | — |
-| — icon usage with **no size class at all** | **46** | 51 |
-| arbitrary `size-[Npx]`/`w-[Npx]`/`h-[Npx]` site-wide | 562 | 605 |
-| routes swept so far | 18 of 67 | — |
+| | Conv 420 | Conv 419 | pre-`[MKTDEAD]` |
+|---|---|---|---|
+| `.astro` pages (route-matrix) | 67 | 67 | 67 |
+| icon-component usages | 626 (198 `MattIcon` + 428 `ui/icons`) | 626 | 860 |
+| `ui/icons.tsx` exports | 98 | 98 | 98 |
+| **`check:icons` baseline total** | **1,448** | 1,694 | 1,863 |
+| — bare-numeric, overridden ten | **891** ← ambiguous, mean N px | 898 | — |
+| — bare-numeric, non-overridden N | **370** ← ambiguous, mean N × 4 px | 558 | — |
+| — arbitrary px *on an icon component* | **187** | 192 | — |
+| — icon usage with **no size class at all** | **0** (rule was wrong — see below) | 46 | 51 |
+| arbitrary `size-[Npx]`/`w-[Npx]`/`h-[Npx]` site-wide | 557 | 562 | 605 |
+| routes swept so far | 18 of 67 | 18 of 67 | — |
 
-**Latent trap:** those 558 non-overridden uses (`h-5`, `h-6`, `h-10`) are correct *today* purely
+**Latent trap:** those non-overridden uses (`h-5`, `h-6`, `h-10`) are correct *today* purely
 because 5, 6 and 10 aren't in the override set. Adding any of them later 4×-shrinks all of them
-silently. Migration removes that landmine.
+silently. Migration removes that landmine — Conv 420's tranche took the single most-repeated instance
+of it (94 icon-component defaults) off the board.
 
-**The 46 no-size-class usages are the sharpest finding** — icons with no sizing input at all, falling
-back to intrinsic SVG size or 100% of their container. Found *statically*; **never measured**, because
-runtime only sees where you navigate. They are the literal form of the user's "under-specified
-classname" concern, and should lead Phase 4's tranches.
+### ⚠️ The "46 no-size-class usages" finding was wrong (corrected Conv 420)
+
+Conv 419 called these *"the sharpest finding — icons with no sizing input at all"* and made them lead
+Phase 4. Reading all 46 (rather than grepping them) showed the rule's true count was **zero**. Every
+one was a false positive, in one of two ways:
+
+- **14 were avatars, not icons.** Each flagged `UserIcon` imports `@components/entity/UserIcon` — a
+  `@matt-source 1:35` initials/image avatar with a typed `size?: 24 | 40` prop, which the standard
+  puts in the "neither" bucket. The rule matched on the *name* ending in `Icon`.
+- **32 were sized one level in** — either a `className = 'h-5 w-5'` parameter default (`MattIcon`, the
+  `ui/icons.tsx` family) or a wrapper that hard-codes it (`QuickActionIcon` → `size-20`, `SortIcon` →
+  `size-icon-16`). Those *definition* lines are genuine violations where they're bare-numeric, and R1
+  already counts them; flagging the call sites too double-counted one defect as many.
+
+The rule now asks the question it always meant to — is there provably no sizing input *anywhere*, at
+the call site or in the component — via a structural `selfSizingIcons()` pre-pass rather than a
+hand-maintained allowlist (which would rot). Verified by injecting a genuinely unsized icon: caught,
+exit 1. **46 of the −246 baseline drop is this correction, not migration**; the honest migration figure
+is 200.
+
+**The transferable lesson.** This is the fifth consecutive task premise written by reading the
+*implementation* rather than enumerating the *consumers* (after `[CANMSG]`, `[MSG-ADOPT-A]`,
+`[MSG-ADOPT-B]`, `[COURSETAB-HASH]` in Convs 418–419). The check costs one tool call. Re-test the
+premise of every remaining phase here before executing it.
 
 ---
 
@@ -140,31 +162,57 @@ cries wolf gets ignored, which is the same failure new-violations-only baselinin
 and this block cannot retroactively answer "did it break anything". Everything from Phase 4 onward does
 have a genuine before; that gap is confined to those 43 sites.
 
-### Phase 3 — Classify by role 📋
+### Phase 3 — Classify by role 🔄 (started Conv 420)
 
-Tag each of the **1,694** baselined sites inline / standalone / neither. **This is the judgment and the
-bulk of the work, and it needs reading rather than grepping** — Conv 419 tried a text-adjacency
-heuristic and it misclassified even the profile-header Message buttons, which are plainly icon+label.
-Tooling assists; it does not decide. Settled sub-case: the 5 `ui/icons.tsx` defaults stay rem
-permanently, because a default cannot know its call site.
+Tag each baselined site inline / standalone / neither. **This is the judgment and the bulk of the
+work, and it needs reading rather than grepping** — Conv 419 tried a text-adjacency heuristic and it
+misclassified even the profile-header Message buttons, which are plainly icon+label. Tooling assists;
+it does not decide.
 
 Also settles the not-an-icon set: `size-[6px]`/`[8px]` status + unread **dots**, `size-[22px]`
-toggle **knob**, `size-[36px]` hit-target **containers**, 16px **avatars**. Snapping those to the
-ladder would double a dot.
+toggle **knob**, `size-[36px]` hit-target **containers**, **avatars** (`entity/UserIcon`, which owns
+this via a typed `size` prop). Snapping those to the ladder would double a dot.
 
-### Phase 4 — Migrate in tranches 📋
+**Settled Conv 420 — icon-component defaults are standalone rem.** A default cannot know its call
+site, so it cannot be `em`. All 94 now name their size: `size-icon-20` (92 `ui/icons.tsx` + `MattIcon`)
+and `size-icon-24` (`MenuIcon`), joining the 5 chevrons already on `size-icon-16`.
 
-By role, then by value, re-running both scanners after each tranche. Not one sweep. Suggested order:
-the **46 no-size-class** usages → `ui/icons.tsx` defaults → standalone → inline → the arbitrary px.
-Every bare-numeric class has a deterministic true value (overridden → N px, else → N × 4 px), so the
-mechanical part scripts cleanly; the classification from Phase 3 is what decides the target family.
+**Settled Conv 420 — a nav row with a label is standalone, not inline** (user decision). AdminNavbar's
+17 menu glyphs sit beside `text-body-small` = **12px** labels, where the em ladder reaches only
+13.8px (`md`) or 17.4px (`lg`) against today's 20px. Two things decided it: the standard's own
+examples list "nav-rail icon" as *standalone*, and `[ADMIN-CONF-POLICY]` makes the admin label
+deliberately small — a poor thing to chain a glyph to. This is the first real answer to the block's
+open question about em ratios: **the three inline steps are anchored on 14px body text and do not
+serve a 12px label.** Expect the same call at other `text-body-small` sites.
 
-- [ ] **Mandatory per-tranche reachability check.** Run `.claude/scripts/codecheck-orphan-components.mjs`
+### Phase 4 — Migrate in tranches 🔄
+
+By role, then by value, re-running both scanners after each tranche. Not one sweep. Every bare-numeric
+class has a deterministic true value (overridden → N px, else → N × 4 px), so the mechanical part
+scripts cleanly; the classification from Phase 3 is what decides the target family.
+
+Remaining order: standalone → inline → the arbitrary px. (The "46 no-size-class usages" that Conv 419
+put first turned out not to exist — see the Scale section.)
+
+- [x] **Tranche 1 — icon-component defaults (Conv 420).** 94 defaults → **200 violations cleared**,
+      the single highest-leverage edit available: `MattIcon.tsx:43` alone corrects every un-classed
+      `MattIcon` site-wide, AdminNavbar's 17 included. **Provably neutral** — `h-5 w-5` resolves to
+      `calc(0.25rem × 5)` = 1.25rem, identical to `--icon-20`; `h-6 w-6` = 1.5rem = `--icon-24`. Both
+      land on Matt's own formalized steps (Small 20 / Medium 24). Also migrated in the same pass: the
+      6 local wrappers behind the false-positive call sites (`QuickActionIcon`, `ActivityIcon`,
+      `ResourceIcon`, `TypeIcon`, and `PromoteButton`'s three local svgs → `size-icon-inline-md`, its
+      genuine inline case at a 14px label). Runtime scan: **no regression**, 0 findings on all 26
+      routes bar the parked 11.
+      - ⚠️ **Honest limit:** most of the 200 was *ambiguity* removal, not a rendered-size change —
+        `h-5 w-5` was already rem, so the `% scale with root` meters did not move. The gain is that
+        the sizes are now named and the 5-joins-the-override-set landmine is defused for 94 sites.
+        Only the 7 wrapper/PromoteButton sites actually moved fixed-px → rem/em.
+- [x] **Mandatory per-tranche reachability check.** Run `.claude/scripts/codecheck-orphan-components.mjs`
       over every file in a tranche **before** editing it. Conv 419 measured that **5 of its 43 icon
       fixes landed on dead code** — hitting `TestimonialsBrowse`, the same file Conv 404's `[A11Y]`
       batch already wasted a fix on 15 convs earlier. tsc/lint/tests/build are all green over dead
-      code, so nothing else in the pipeline catches it. (Cheaper now that `[MKTDEAD]` made the detector
-      PASS, so any hit is a genuine new orphan.)
+      code, so nothing else in the pipeline catches it. *Conv 420: ran clean — `PASS`, every component
+      route-reachable, no wasted edits.*
 - [ ] **`[ICON-4PX]` residue** — `/become-a-teacher`, 11 measured findings, gated behind the parked
       `[RG-PUBLIC]`. A deliberate park, not a blocker; fold into whichever tranche runs when the
       marketing redesign is scheduled.
@@ -186,9 +234,13 @@ number can ever be misread again — the deeper fix this block only works around
 
 ## Open questions
 
-- **`em` ratios.** `md` = 1.15em was anchored on `--body-default-size` (14px) to make migration
-  visually neutral there. Icons beside `text-body-small` (12px) or `text-h2` (24px) shift. Confirm
-  against real pages in Phase 4 rather than assuming three steps suffice.
+- **`em` ratios — partly answered Conv 420, and the answer was "they don't stretch".** `md` = 1.15em
+  was anchored on `--body-default-size` (14px). Against a `text-body-small` (12px) label the ladder
+  tops out at 17.4px (`lg`), so it cannot express AdminNavbar's 20px glyphs at all. That case was
+  resolved by classifying the nav as **standalone** rather than by adding a step — the right call
+  there, but it is a workaround, and a genuine 12px-label *inline* icon still has no home. Decide
+  whether to add a step or re-anchor when the first such site appears; `text-h2` (24px) is still
+  unconfirmed either way.
 - **Matt's ladder.** He formalized only Small 20 / Medium 24. We ship 11 steps because 16px is the
   most-used size (72 sites) and isn't in his set. If Matt returns to the project, reconcile.
 - **Pixel-grid softness.** At a 1.3× root font a 20px glyph renders 26px and can sit off-grid.

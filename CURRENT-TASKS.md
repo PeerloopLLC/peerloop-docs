@@ -153,11 +153,17 @@
   clean — so it is never a code defect. Fix: `rm -rf node_modules/.vite` + restart. ⚠️ The restarted
   daemon binds **`[::1]` only** → use `localhost:4321`, not `127.0.0.1:4321` (see
   `[[reference_playwright_headless_browser_fallback]]`). Related to `[VITE-DEPS-WATCH]`.
-- **Do:** write `memory/reference_devserver_stale_daemon` capturing all three variants — the
-  bound-but-dead signature (`lsof` hits + `curl 000` ⇒ bricked by a mid-run `npm install`; kill the
-  PIDs, restart), the stale-content one (verify with `curl …/matt` → 404 = current; hard-refresh /
-  private window / use `127.0.0.1`), and the stale-Vite-cache one above. The diagnosis has now been
-  re-derived four times.
+- **✅ Vite-cache variant RECURRED Conv 420 (4th occurrence overall, 2nd of this variant)** — same
+  signature, different dep: `curl /` → **HTTP 500**, `The file does not exist at
+  ".../node_modules/.vite/deps_ssr/astro_compiler-runtime.js?v=564df0ce"`. Note it hit the **root
+  route**, so "a specific route 500s" understates it — it takes out any route importing the stale dep.
+- **✅ Cleaner teardown found Conv 420 — `npx astro dev stop`.** Astro's dev daemon has first-class
+  `stop` / `status` / `logs` subcommands (`astro dev --help`). `npx astro dev stop` reports the pid it
+  killed, which is strictly better than the `kill <pids>` this task previously prescribed and directly
+  satisfies `[DEVSRV-KILL]`'s "scope teardown to PID". Full recovery: `npx astro dev stop` →
+  `rm -rf node_modules/.vite` → `npx astro dev --background` → verify `curl localhost:4321` = 200.
+- **✅ Memory written Conv 420:** `memory/reference_devserver_stale_daemon.md` — all three variants,
+  their distinguishing signatures, and the recovery for each.
 - **Refs:** `memory/feedback_persistent_dev_server_4321`, `memory/project_wrangler_exact_pin_miniflare_dedupe`, `[DEVSRV-KILL]`. Surfaced Conv 414, recurred 415/417.
 
 ### [DL-FILENAME]
@@ -213,8 +219,34 @@
 
 ### [ICON-TOK]
 
-- **State:** 📋 queued · `[Opus]` — **foundation built + standard decided Conv 419** (user decision);
-  migration outstanding and **multi-conv**
+- **State:** 🔄 active · `[Opus]` — **foundation + standard Conv 419; first migration tranche
+  Conv 420** (baseline 1,694 → **1,448**). Migration outstanding and **multi-conv**.
+- **✅ Conv 420 — Tranche 1 (icon-component defaults) + a rule correction.**
+  - **The tasked target didn't exist.** The "46 icon usages with **no size class at all**" that
+    Conv 419 called the sharpest finding were **all false positives**: 14 were `entity/UserIcon`,
+    an avatar with a typed `size?: 24 | 40` prop (the rule matched the *name* ending in `Icon`), and
+    32 were sized one level in by a `className = 'h-5 w-5'` default or a wrapper — already counted by
+    R1, so flagging call sites double-counted one defect as many. **Fifth consecutive task premise
+    written from the implementation instead of the consumers** (after `[CANMSG]`, `[MSG-ADOPT-A]`,
+    `[MSG-ADOPT-B]`, `[COURSETAB-HASH]`). Rule narrowed via a structural `selfSizingIcons()` pre-pass
+    (not a hand allowlist, which would rot); verified by injecting a genuinely unsized icon → caught,
+    exit 1.
+  - **200 genuine migrations from 94 edits.** Icon-component *defaults* were the high-leverage target
+    the call-site framing hid: `MattIcon.tsx:43` alone fixes every un-classed `MattIcon` site-wide
+    (AdminNavbar's 17 included). 92 `ui/icons.tsx` + `MattIcon` → `size-icon-20`, `MenuIcon` →
+    `size-icon-24`. **Provably neutral** — `h-5 w-5` = `calc(0.25rem × 5)` = 1.25rem = `--icon-20`;
+    `h-6 w-6` = 1.5rem = `--icon-24`. Both land on Matt's own Small-20 / Medium-24 steps.
+  - **Honest limit:** most of the 200 removed *ambiguity*, not rendered size — `h-5 w-5` was already
+    rem, so no `% scale with root` meter moved. Only 7 sites (the 6 local wrappers + PromoteButton's
+    three svgs → `size-icon-inline-md`) actually went fixed-px → rem/em.
+  - **Decision (user):** a nav row with a label is **standalone**, not inline. AdminNavbar's labels
+    are 12px, where the em ladder tops out at 17.4px vs today's 20px. First real answer to the em-ratio
+    open question: **the three inline steps are anchored on 14px and don't serve a 12px label.**
+  - Reachability check ran clean (`PASS`) — no repeat of Conv 419's 5 dead-code edits. 5 gates green
+    (suite **6131**), `icons:scan` **no regression** across 26 routes.
+- **Next:** Phase 4 tranche 2 — the 891 `bare-numeric-overridden` sites (the class that actually
+  shipped 4px icons). Re-test the premise before executing; `/messages`, `/notifications`, `/profile`
+  still measure **0% scale with root**, so that is where genuinely-pinned px is concentrated.
 - **Standard (decided).** Spacing (`p`/`m`/`gap`) keeps the numeric scale — that is what the
   Conv-174 override was for, settled at 4711 uses vs 55 arbitrary. Dimensions (`w`/`h`/`size`) use
   the icon axis, split three ways **by role** (user decision, Conv 419):
@@ -549,42 +581,10 @@
 
 ## ✅ Done this conv
 
-- **[MKTDEAD]** — deleted the dead marketing surface: **56 components + 13 tests + 11 barrels = 80
-  files**, 334 components → 278. The user's premise ("stub these stale public pages") turned out to
-  be already done — all 14 `/old/*` pages have rendered "Coming soon." for a long time, and *that*
-  is why their components were unreachable. The residue was what kept absorbing sweeps.
-  **Settled the oracle first** (user's call): sourcemap `sources` is ground truth at 56, the route
-  detector was a strict subset at 53 (zero false alarms, missed 3 dead-through-a-**live**-barrel
-  `admin-intel` files), knip *unused files* only 14 (a dead barrel counts as an importer).
-  Aftermath: orphan detector **PASSes** for the first time, knip unused files **0**, and the
-  `[ICON-TOK]` static baseline fell **1863 → 1694** because 169 violations lived in dead code.
-  5 gates green; suite 6586 → 6131 (−455, all in deleted tests for deleted components).
-
-- **[MSG-CLEANUP]** — M6, closing the MESSAGES programme. Verified all four items rather than
-  trusting them: the stale `MessagesCenter` header was real (though one directory off — it lives
-  under `matt/`), the `[RHOOKS]` warning was real (line 62, not 54), and `prov:sweep` needed no
-  action (`MessageUserButton` is not among the 10 `[PROV-SWEEP-DEBT2]` errors; baseline unchanged).
-  **Deleted `GET /api/me/can-message/:userId`** + its 7 tests — zero `src/` callers since `[CANMSG]`,
-  and `canMessage()` in `lib/messaging.ts` was always the authoritative gate, so enforcement is
-  untouched. Updated 6 docs plus the `API-USERS` cross-reference, which had documented the follow
-  endpoint as *mirroring* the deleted one — that convention now lives where it is implemented.
-  Fixed the `set-state-in-effect` warning by **deriving** rather than storing: results for a
-  <2-char query are computable, so blanking them from inside the effect was the defect. Lint
-  warnings 167 → 166.
-
-- **[COURSETAB-HASH]** — `/courses#student` and `/communities#…` deep links now restore the tab.
-  Root cause was **not** the suspected `courses:tabchange` race: `useRoleTabs`'s reset-on-role-lost
-  effect fired during hydration, when `visibleTabs` (derived from the current user) still held only
-  the neutral tab — so it could not tell "you don't have that role" from "we don't know yet", and
-  the hash sync then erased the hash. **Same three-state bootstrap race as [MSGBOOT]** (M1 of this
-  programme), in a different consumer; fixed the same way, with a `ready` gate both callers pass
-  from `useAuthStatus()`. +6 tests (3 fail without the gate — verified by reverting it).
-
-- **[MSG-ADOPT-B]** — M5 of the MESSAGES mini-plan. In-place composer adopted on all 10 remaining
-  list/profile sites; `SessionRoom` keeps its thread-intent anchor by design. Both "Learning with X"
-  judgment calls resolved to MODAL on evidence: `POST /api/conversations` is find-or-create, so the
-  composer appends to the existing thread rather than duplicating it, and `showOpenInMessages`
-  reaches the history in one click. Widened `icon` to accept a node so the 3 profile-header
-  `Button` sites keep their own 16px glyph and `Default` padding — they were **not** the
-  `appearance="bare"` drop-ins the task assumed. **10 of 10 live-verified** (composer opens,
-  URL unchanged, zero surviving `/messages?to=` anchors on those routes). Suite 6584 → 6587.
+- **`[ICON-TOK]` Phase 4 Tranche 1** — 94 icon-component defaults → the token axis, **200 violations
+  cleared**; baseline 1,694 → **1,448**. Plus a rule correction: the tasked "46 no-size-class icons"
+  were all false positives, so `icon-no-size-class` was narrowed and re-verified. 5 gates green
+  (suite 6131), `icons:scan` no regression across 26 routes. Task stays active — multi-conv.
+- **`[DEVSRV-STALE]`** — 4th occurrence (2nd of the Vite-dep-cache variant, this time killing `/`
+  itself). Found a cleaner teardown, `npx astro dev stop`, and wrote the long-tasked
+  `memory/reference_devserver_stale_daemon.md` covering all three variants.
