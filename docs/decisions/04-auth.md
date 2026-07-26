@@ -3,6 +3,15 @@
 
 ## 4. Authentication & Authorization
 
+### [MSGBOOT] Client Consumers Gate on the Three-State `authStatus`, Never on a Nullable `getCurrentUser()` (Conv 417)
+**Date:** 2026-07-26 (Conv 417)
+
+Any client consumer that branches on "is there a signed-in user?" must wait on `useAuthStatus()` (`'loading' | 'authenticated' | 'visitor' | 'session_expired' | 'error'` from `src/lib/current-user.ts`) and treat `'loading'` as *undecided* — it must **not** read the nullable `getCurrentUser()` singleton and treat `null` as "logged out". `getCurrentUser()` hydrates from localStorage first and revalidates from the API, so on a first visit (empty localStorage) it returns `null` until `CurrentUserInit` resolves. Two consumers were violating this, each failing silently on cold loads only: `MessagesCenter` redirected an authenticated user to `/login` (which bounced them to Home), and `useCanMessage` set `canMessage=false` without calling the API at all, so every `{canMessage && …}` affordance rendered nothing (measured: cold **0** message icons on a members list, warm **5**). Both now gate on `authStatus`, matching the pre-existing pattern in `StudentDashboard` / `ProgressionNudge` / `useCreatorGate`. **Rejected:** SSR-seeding the current user (new architecture for a problem the codebase had already solved) and any timeout/retry workaround.
+
+**Rationale:** A nullable getter cannot express "not yet known", so every consumer that treats `null` as a decision is a latent first-visit bug that self-heals on reload — which is exactly why these survived undetected. The three-state signal already existed; the fix was two files joining an established pattern. Genuine visitors are still redirected — the gate waits for resolution rather than assuming a session. Verification requires a **fresh** browser context per probe (`browser.newContext()`); repeated `page.goto()` in one context cannot reveal cold-load bugs.
+
+**See:** `docs/sessions/2026-07/20260726_0650 Decisions.md` §5, Learnings §§1-3; `src/lib/useCanMessage.ts`, `src/components/messages/matt/MessagesCenter.tsx`, `tests/lib/useCanMessage.test.ts`; Conv 417 (code `1f7bfd79`).
+
 ### AUTHBUG Fix: Login Gates Visible Success on Real Auth, Reload-Fallback from Cookies, Logout Clears Auth Cache (Conv 365)
 **Date:** 2026-07-05 (Conv 365)
 

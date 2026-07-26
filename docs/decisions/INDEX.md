@@ -212,6 +212,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [4. Authentication & Authorization](04-auth.md)
 
+- [[MSGBOOT] Client Consumers Gate on the Three-State `authStatus`, Never on a Nullable `getCurrentUser()` (Conv 417)](04-auth.md#msgboot-client-consumers-gate-on-the-three-state-authstatus-never-on-a-nullable-getcurrentuser-conv-417)
 - [Keep One-Teacher-Per-Enrollment — Reject Client-Branch Teacher-Switching (Conv 408)](04-auth.md#keep-one-teacher-per-enrollment--reject-client-branch-teacher-switching-conv-408)
 - [AUTHBUG Fix: Login Gates Visible Success on Real Auth, Reload-Fallback from Cookies, Logout Clears Auth Cache (Conv 365)](04-auth.md#authbug-fix-login-gates-visible-success-on-real-auth-reload-fallback-from-cookies-logout-clears-auth-cache-conv-365)
 - [Enumeration-Endpoint Auth Mirrors the Action It Feeds — Homework Grading List = Reviewer Predicate (Conv 346)](04-auth.md#enumeration-endpoint-auth-mirrors-the-action-it-feeds--homework-grading-list--reviewer-predicate-conv-346)
@@ -255,6 +256,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [[MSG-INPLACE] Per-User Messaging Composes In Place via an Opt-In Shared Island, With a Discard Guard and an Opt-In "Open in Messages" Exit (Conv 417)](05-ui-ux-components.md#msg-inplace-per-user-messaging-composes-in-place-via-an-opt-in-shared-island-with-a-discard-guard-and-an-opt-in-open-in-messages-exit-conv-417)
 - [[REVIEW-GATE] Gate a UI Affordance on the Exact Predicate Its Endpoint Enforces, Not a Journey Proxy — Course Review Composer (Conv 416)](05-ui-ux-components.md#review-gate-gate-a-ui-affordance-on-the-exact-predicate-its-endpoint-enforces-not-a-journey-proxy--course-review-composer-conv-416)
 - [[STEP-LINK] Course-Detail Hover and Link Affordances — Persistent Underline for Links, Neutral Hover Tint, Variant-Aware Pale-Tonal Darker-Green Hover (Conv 415)](05-ui-ux-components.md#step-link-course-detail-hover-and-link-affordances--persistent-underline-for-links-neutral-hover-tint-variant-aware-pale-tonal-darker-green-hover-conv-415)
 - [[TAB-THEME] Matt/Brian Tab Colour Toggle — Brian's Colours Adopted on Our Flat Shape via a User-Preference Runtime Theme (MERGE-BRIAN M7, Conv 414)](05-ui-ux-components.md#tab-theme-mattbrian-tab-colour-toggle--brians-colours-adopted-on-our-flat-shape-via-a-user-preference-runtime-theme-merge-brian-m7-conv-414)

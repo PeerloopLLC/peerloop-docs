@@ -2,7 +2,8 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-07-13 (Conv 394 — [FEEDBACK-NUDGE]: +1 **new** lib test file `tests/lib/feedback-reminders.test.ts` (6 — `sendFeedbackReminders` cron: nudges both parties when neither has rated (stamps both `feedback_reminder_*_sent_at` columns, 2 emails), only nudges the un-rated party (null `moduleName` when no module), window filter (skips within-grace <1h and >72h), dedup (no re-nudge of a stamped party), skips non-`completed` sessions, stamps an email-pref-opted-out recipient but sends no email). Lib 31→32, Vitest Total 404→405, All Test Files 432→433. Also refreshed `tests/components/settings/NotificationSettings.test.tsx` (switch-count assertion 7→8 for the new feedback-reminder toggle, modified in place — Components summary is by-file, so no total change).)
+**Last Updated:** 2026-07-26 (Conv 417 — [MSG-INPLACE]/[MSGBOOT]: +2 **new** test files. `tests/components/messages/MessageUserButton.test.tsx` (11 — the in-place composer island: renders a button not a link when signed in, falls back to the `/messages?to=` anchor when signed out, opens with the recipient preselected, POSTs + closes + toasts without navigating, the discard guard's cancel/confirm/nothing-typed paths, the opt-in "Open in Messages" exit and its guard, error toast on a failed POST, plus one case pinning the exit as opt-out on the `/messages` mount) and `tests/lib/useCanMessage.test.ts` (5 — the three auth states pinned apart: unresolved decides nothing and calls no API, resolves once auth settles, genuine visitor and own-profile decide false without an API call, authenticated + different recipient asks the API). Components 87→88, Lib 32→33, Vitest Total 405→407, All Test Files 433→435. Per-file component case counts are in TEST-COMPONENTS.md. Also corrected three stale detail-section headers against on-disk truth: "Component Tests (91 files)"→88 (lagging since the Conv 392/393 orphan purge), "API Tests (240 files)"→241 and "Me (63 files)"→64. Sibling `TEST-UNIT.md` was **not** updated — it has been stale since Conv 253 (curated subset, subtotals disagree with its own rows) and needs a separate reconciliation.)
+**Prev:** 2026-07-13 (Conv 394 — [FEEDBACK-NUDGE]: +1 **new** lib test file `tests/lib/feedback-reminders.test.ts` (6 — `sendFeedbackReminders` cron: nudges both parties when neither has rated (stamps both `feedback_reminder_*_sent_at` columns, 2 emails), only nudges the un-rated party (null `moduleName` when no module), window filter (skips within-grace <1h and >72h), dedup (no re-nudge of a stamped party), skips non-`completed` sessions, stamps an email-pref-opted-out recipient but sends no email). Lib 31→32, Vitest Total 404→405, All Test Files 432→433. Also refreshed `tests/components/settings/NotificationSettings.test.tsx` (switch-count assertion 7→8 for the new feedback-reminder toggle, modified in place — Components summary is by-file, so no total change).)
 **Prev:** 2026-07-13 (Conv 393 — [ORPHAN-BACKLOG] Category C + dead-.ts sweep: deleted 5 orphaned test files whose code was removed as dead. 1 API test (`tests/api/leaderboard.test.ts`, 17 — its `/api/leaderboard` endpoint was deleted) → API Endpoints 242→241; 4 component tests (`context-actions/ContextActionsPanel` 11, `discover/community-role-utils` 24, `discover/feed-role-utils` 22, `leaderboard/Leaderboard` 35) → Components 91→87. Vitest Total 409→404, All Test Files 437→432. Per-category component deltas in TEST-COMPONENTS.md.)
 **Prev:** 2026-07-12 (Conv 392 — [ORPHAN-PURGE]/[ORPHAN-BACKLOG]: deleted 14 orphaned test files whose components were removed as dead-legacy (unreachable from any route). 13 component tests — Course −5 (`CourseTabs`/`LearnTab`/`ModuleAccordion`/`MyCourses`/`course-tabs/ResourcesTabContent`), Explore −5 (`RoleBadge`/`ExploreTabBar`/`RolePillFilters`/`ExploreCommunityCard`/`CommunityRolePillFilters`), Learning −1 (`ModuleContent`), Messages −1 (`Messages`), Notifications −1 (`NotificationsList`, category emptied) → Components 104→91 — plus 1 page test (`pages/courses/CourseDetail.test.tsx`, 56) → Pages 10→9. Vitest Total 423→409, All Test Files 451→437. Per-category component case deltas are in TEST-COMPONENTS.md.)
 **Prev:** 2026-07-12 (Conv 390 — [CERT-MASTERY-UI]: +1 **new** component test file `components/teachers/RecommendCertButton.test.tsx` (4) → Components 103→104, Vitest Total 422→423, All Test Files 450→451. Per-file component case deltas (new **Teachers** category; Admin 695→692 as `CertificateDetailContent` 31→29 + `CertificatesAdmin` 27→26 shed retired `completion`/`mastery` cert-type cases) are in TEST-COMPONENTS.md. Also refreshed `tests/api/me/teacher-students.test.ts` 16→18 (+2 `hasPendingCertRecommendation` cases, modified in place — API summary is by-file, so no totals change).)
@@ -49,18 +50,18 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 | Category | Files | Test Cases | Location |
 |----------|:-----:|:----------:|----------|
 | API Endpoints | 241 | — | `tests/api/` |
-| Components | 87 | — | `tests/components/` |
+| Components | 88 | — | `tests/components/` |
 | Pages | 9 | — | `tests/pages/` |
-| Lib | 32 | — | `tests/lib/` |
+| Lib | 33 | — | `tests/lib/` |
 | Integration | 10 | — | `tests/integration/` |
 | SSR | 3 | — | `tests/ssr/` |
 | Unit | 17 | — | `tests/unit/` |
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 3 | — | `tests/plato/` |
 | Src (co-located) | 2 | — | `src/__tests__/` |
-| **Vitest Total** | **405** | — | |
+| **Vitest Total** | **407** | — | |
 | E2E (Playwright) | 28 | — | `e2e/` |
-| **All Test Files** | **433** | — | |
+| **All Test Files** | **435** | — | |
 
 ---
 
@@ -93,7 +94,7 @@ Test files use path aliases instead of deep relative imports:
 
 ---
 
-## API Tests — `tests/api/` (240 files)
+## API Tests — `tests/api/` (241 files)
 
 Tests mirror the API route structure with 1:1 file mapping:
 
@@ -325,7 +326,7 @@ tests/api/
 | `tests/api/homework/[id]/submissions/[subId].test.ts` | 13 |
 | `tests/api/homework/submissions/[id]/download.test.ts` | 13 |
 
-### Me — `tests/api/me/` (63 files)
+### Me — `tests/api/me/` (64 files)
 
 | Area | File | Tests |
 |------|------|:-----:|
@@ -535,7 +536,7 @@ tests/api/
 
 ---
 
-## Lib Tests — `tests/lib/` recursive (32 files: 31 in `tests/lib/`, 1 in `tests/lib/video/`)
+## Lib Tests — `tests/lib/` recursive (33 files: 32 in `tests/lib/`, 1 in `tests/lib/video/`)
 
 | File | Tests | Coverage |
 |------|:-----:|----------|
@@ -564,6 +565,7 @@ tests/api/
 | `tests/lib/promotion-moderation.test.ts` | 7 | listSystemPromotions (join promoter+author, `to_feed_type='system'` scope) + removeSystemPromotion (scope-guarded delete — can't remove a community/course promotion) (FEED-U3c, Conv 276) |
 | `tests/lib/announcements.test.ts` | 15 | Platform announcements (D1-only): createAnnouncement (insert + `notify` system-notification fan-out to ACTIVE users only), getAnnouncementCandidates active-window (dial fallback, explicit `active_until` override, per-user dismissal filter, visitor null-userId path, cap/newest-first), dismissAnnouncement idempotency, listAnnouncements/removeAnnouncement (cascade dismissals), purgeExpiredAnnouncements (retention + still-active guard, non-positive no-op), smart-feed integration (pinned atop first page, absent on page 2) (FEED-U3c④, Conv 277) |
 | `tests/lib/messaging.test.ts` | 20 | canMessage policy rules, getMessageableFlags, SQL search |
+| `tests/lib/useCanMessage.test.ts` | 5 | `useCanMessage` three-state auth contract — unresolved `authStatus` decides nothing (no `/api/users/:id/can-message` call, stays loading), resolves once auth settles after an unresolved first render, genuine visitor and own-profile decide `false` without an API call, authenticated viewer + different recipient asks the API (MSGBOOT symptom 2, Conv 417) |
 | `tests/lib/notifications.test.ts` | 39 | Notification processing and display |
 | `tests/lib/session-reminders.test.ts` | 6 | `sendSessionReminders` cron — partition-band windows (24h advance / 1h imminent) stamp `reminder_24h_sent_at`/`reminder_1h_sent_at`, per-recipient-tz email copy, ≤24h window filter (skips far-future/past), dedup (no re-send of a stamped slot), skips non-`scheduled` sessions, always-on in-app notif + email-pref-gated send (SESSION-REMIND, Conv 375) |
 | `tests/lib/feedback-reminders.test.ts` | 6 | `sendFeedbackReminders` cron — post-session rating nudge (email-only), completed-but-unrated window `(now−72h, now−1h]`, per-party dedup via `feedback_reminder_student_sent_at`/`_teacher_sent_at` + `EXISTS(session_assessments)` skip, nudges both parties independently (2 emails / both columns stamped), stamps an email-pref-opted-out recipient without sending, skips non-`completed` sessions (FEEDBACK-NUDGE, Conv 394) |
@@ -794,7 +796,7 @@ See [TEST-E2E.md](TEST-E2E.md) for details.
 
 ---
 
-## Component Tests — `tests/components/` (91 files)
+## Component Tests — `tests/components/` (88 files)
 
 See [TEST-COMPONENTS.md](TEST-COMPONENTS.md) for the full breakdown by category.
 

@@ -1865,3 +1865,21 @@ Resolves the Conv-415 deferral. wrangler and `@cloudflare/vite-plugin` 1.45.1 ea
 **Rationale:** Display and acceptance must agree; gate on the backing-endpoint predicate (the GET even exposes a `can_review` flag). Same conv: Feed "Post" button → bordered-neutral module-button style; "Ask a Question" → `/messages?to=` deep-link + tonal hover.
 
 **See:** `docs/decisions/05-ui-ux-components.md` entry; `docs/sessions/2026-07/20260725_2039 Decisions.md` §§2-3, Learnings §4; Conv 416 (code `d450ae2c`).
+
+### [MSG-INPLACE] Per-User Messaging Composes In Place via an Opt-In Shared Island, With a Discard Guard and an Opt-In "Open in Messages" Exit (Conv 417)
+**Date:** 2026-07-26 (Conv 417)
+
+"Ask … a Question" now opens a composer **in place** instead of navigating to `/messages?to=…`. New shared island `MessageUserButton.tsx` (existing `Button` + `NewConversationModal` + `showToast`; `preselectedUserId` only — no new API). (1) **Opt-in adoption**, not a sweep — adopted on the two course tabs (`CreatorTab` prop `askHref`→`askUserId`); a census of 23 affordances found **only 3 of 22 are `Button`s, 19 are bespoke icon-only `<a>`s**, and admin slide-overs / `SessionRoom` legitimately want the jump; signed-out keeps the anchor for the login bounce. (2) **Discard guard** — every dismissal path raises a "Discard message?" `ConfirmModal` when the draft is non-empty (rejected: draft persistence, blocking dismiss); applies to `/messages` too. (3) **Opt-in exit** — `showOpenInMessages` (default OFF) renders a real `<a>`; always-on is circular inside `MessagesCenter`; needed no new route/param/API since `?to=` is already thread-aware. Also fixed a silently-swallowed non-ok POST (now an error toast).
+
+**Rationale:** A modal that yanks the reader off the page defeats its own purpose, but the fix belongs in one shared island and adoption must be per-site because the call sites are structurally heterogeneous. The exit removes the only real cost of composing in place (no thread history). Remaining 21 sites deferred as `[MSG-ICON]` → `[MSG-ADOPT-A]` → `[MSG-ADOPT-B]`.
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `docs/sessions/2026-07/20260726_0650 Decisions.md` §§1-4, Learnings §§5-7; Conv 417 (code `1f7bfd79`).
+
+### [MSGBOOT] Client Consumers Gate on the Three-State `authStatus`, Never on a Nullable `getCurrentUser()` (Conv 417)
+**Date:** 2026-07-26 (Conv 417)
+
+Any client consumer branching on "is there a signed-in user?" must wait on `useAuthStatus()` and treat `'loading'` as undecided, **not** read the nullable `getCurrentUser()` singleton and treat `null` as logged-out. `getCurrentUser()` hydrates from localStorage then revalidates, so on a first visit it is `null` until `CurrentUserInit` resolves. Two consumers silently failed on cold loads: `MessagesCenter` redirected an authenticated user to `/login`, and `useCanMessage` decided `false` without calling the API (measured: cold 0 icons / warm 5). Both now gate on `authStatus`, matching `StudentDashboard` / `ProgressionNudge` / `useCreatorGate`. Rejected: SSR-seeding the user (the task's stated "durable option"), timeout/retry.
+
+**Rationale:** A nullable getter cannot express "not yet known"; every consumer treating `null` as a decision is a latent first-visit bug that self-heals on reload. The three-state signal already existed — a two-file fix, not new architecture. Cold-vs-warm is its own test axis: verify with `browser.newContext()` per probe.
+
+**See:** `docs/decisions/04-auth.md` entry; `docs/sessions/2026-07/20260726_0650 Decisions.md` §5, Learnings §§1-3; Conv 417 (code `1f7bfd79`).

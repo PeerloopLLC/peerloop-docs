@@ -55,6 +55,8 @@
 29. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
 30. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
 31. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
+32. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
+33. [DEVSRV-STALE](#devsrv-stale) — un-parked: stale/bricked astro dev daemon recurred
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -67,7 +69,6 @@
 - [BROWSER-SMOKE-2B](#browser-smoke-2b) — gate: post-launch
 - [MINWIDTH-320](#minwidth-320) — gate: user say-so
 - [ICON-LIC](#icon-lic) — gate: MVP-GOLIVE
-- [DEVSRV-STALE](#devsrv-stale) — gate: recurs (stale astro-dev daemon / cache serving old site)
 
 ---
 
@@ -107,7 +108,7 @@
 
 ### [CANMSG]
 
-- **State:** 📋 queued — **M2** of the MESSAGES mini-plan · **unblocked** (M1 `[MSGBOOT]` ✅ Conv 417)
+- **State:** 📋 queued · [Opus] — **M2** of the MESSAGES mini-plan · **unblocked** (M1 `[MSGBOOT]` ✅ Conv 417)
 - **⚠️ Re-measure before deciding.** The Conv-417 numbers below were taken *before* M1 landed. M1
   fixed the cold-load half (icons now render on first load, firing the full N requests), so the
   fan-out is now N on **every** load rather than N on warm loads only — slightly worse, and the
@@ -169,10 +170,12 @@
 
 ### [DEVSRV-STALE]
 
-- **State:** ⏸️ parked · watch · gate: recurs
-- **What:** Conv 414 — user hit an "old version" of the site on :4321 (`/matt` + `/discover` as real routes = **pre-flip**, dissolved Conv 197). Current code verified correct via curl (`/matt`→404). Root cause not pinned: a stale `astro dev` **daemon** persists across sessions (`npm run dev` reported "already running pid 9015"), OR the pre-flip worktree server (`~/projects/Peerloop-preflip` @ 608346a2) bound to 4321, OR Brave's localhost cache.
-- **If it recurs:** verify current-ness via `curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:4321/matt` (404 = current code); tell the user to hard-refresh (Cmd+Shift+R) / private window / use `127.0.0.1`. Consider a `memory/reference_devserver_stale_daemon` note. Related: `[DEVSRV-KILL]`.
-- **Refs:** `memory/feedback_persistent_dev_server_4321`. Surfaced Conv 414.
+- **State:** 📋 queued — **gate FIRED, un-parked Conv 417** (third occurrence; recurred in consecutive convs)
+- **What:** Conv 414 — user hit an "old version" of the site on :4321 (`/matt` + `/discover` as real routes = **pre-flip**, dissolved Conv 197). Current code verified correct via curl (`/matt`→404). Root cause not pinned at the time: a stale `astro dev` **daemon** persists across sessions (`npm run dev` reported "already running pid 9015"), OR the pre-flip worktree server (`~/projects/Peerloop-preflip` @ 608346a2) bound to 4321, OR Brave's localhost cache.
+- **✅ One variant now root-caused (Convs 416–417):** an `npm install` run **while `astro dev` is up** bricks the running server's in-memory miniflare module runner. Symptom is distinctive: **the port stays bound (`lsof -ti:4321` returns PIDs) but `curl` returns `000`** — a dead daemon holding the socket. Conv 417 hit exactly this from the Conv-416 dependency work; fix was `kill <pids>` then a fresh `npm run dev`. This is a *different* variant from the Conv-414 stale-content one, which remains unpinned.
+- **Why it's un-parked:** flagged by the r-end docs agent as appearing in two consecutive session extracts (2026-07-25 and 2026-07-26), and the earlier extract had said to act "if it bites again". It bit again.
+- **Do:** write `memory/reference_devserver_stale_daemon` capturing both variants — the bound-but-dead signature (`lsof` hits + `curl 000` ⇒ bricked by a mid-run `npm install`; kill the PIDs, restart) and the stale-content one (verify with `curl …/matt` → 404 = current; hard-refresh / private window / use `127.0.0.1`). The diagnosis has now been re-derived three times.
+- **Refs:** `memory/feedback_persistent_dev_server_4321`, `memory/project_wrangler_exact_pin_miniflare_dedupe`, `[DEVSRV-KILL]`. Surfaced Conv 414, recurred 415/417.
 
 ### [DL-FILENAME]
 
@@ -414,6 +417,21 @@
 - **Decision (Conv 406): HARD-DETACH from the Task subsystem** — skills/CLAUDE.md/hook rewritten to write-through `CURRENT-TASKS.md` directly, no Task-tool reliance. So this watch no longer blocks work; keep it only to record the gate + run the `/model` probe if curious.
 - **Cross-machine:** MacMiniM4 still carries stale Conv-403 `~/.zshrc` `env -u` guards (harmless no-ops) — clean next time on it.
 - **Refs:** `memory/project_task_tools_child_session_leak.md`, `DOC-DECISIONS.md §3`, `code.claude.com/docs/en/tools-reference.md`. Surfaced Conv 404, root-caused Conv 406.
+
+### [TESTUNITDOC]
+
+- **State:** 📋 queued — surfaced by the `/r-end` docs agent, Conv 417
+- **What:** `docs/reference/TEST-UNIT.md` (registry category **driftCheck**, so in scope) has been stale
+  since **Conv 253**. It lists roughly **21 of the 33** files in `tests/lib/`, and it contradicts itself:
+  its own "Subtotal: 20 files, 315 tests" disagrees with its row count, and its Summary claims
+  14 files / 262 tests.
+- **Not a one-row patch.** The Conv-417 additions were documented, but the file needs a standalone
+  reconciliation pass against disk — the same shape as the Conv 378 page-test pass.
+- **Note:** `TEST-COVERAGE.md` + `TEST-COMPONENTS.md` were reconciled this conv (the docs agent also
+  corrected three section headers that had lagged since the Conv 392/393 orphan purge), and
+  `sync-gaps.sh` now reports **all 405 test files documented, no gaps** — so this is the last known
+  test-doc drift.
+- **Refs:** `docs/reference/TEST-UNIT.md`, `.claude/scripts/sync-gaps.sh`.
 
 ### [TSLASH]
 

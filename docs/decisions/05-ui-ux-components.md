@@ -3,6 +3,21 @@
 
 ## 5. UI/UX & Components
 
+### [MSG-INPLACE] Per-User Messaging Composes In Place via an Opt-In Shared Island, With a Discard Guard and an Opt-In "Open in Messages" Exit (Conv 417)
+**Date:** 2026-07-26 (Conv 417)
+
+"Ask … a Question" (and every future per-user message affordance) opens a composer **in place** instead of navigating to `/messages?to=…`. Shipped as a new shared island `src/components/messages/MessageUserButton.tsx` (composes the existing `Button` + `NewConversationModal` + `showToast`; `preselectedUserId` is sufficient — no new API surface). Three sub-rules:
+
+1. **Opt-in adoption, not a site-wide sweep.** Adopted on the two course tabs (`TeachersTabList`, `CreatorTab.astro` — prop `askHref` → `askUserId`, `client:visible`); the other 21 message affordances keep their anchors until they individually opt in. Rejected a blanket flip: admin slide-over consoles and the `SessionRoom` participant chip legitimately want a full-page jump, and a census showed **only 3 of 22 sites are `Button` components — 19 are bespoke icon-only `<a>` tags**, so the island does not drop in. Signed-out viewers keep the `/messages?to=` anchor so the login bounce survives.
+2. **Discard guard.** Every dismissal path (backdrop, Escape, ×) raises a "Discard message?" `ConfirmModal` when the draft is non-empty (re-entry guarded; the send path calls `onClose` directly so it is never prompted). Applies to `/messages` too — same modal. Chosen over draft-persistence and over blocking backdrop dismiss. Rendered after `</Modal>` so equal `z-50` resolves by DOM order (cosmetic side-effect: two `bg-black/50` backdrops compose to ~75% black).
+3. **Opt-in escape hatch.** `showOpenInMessages` (default **OFF**, `MessageUserButton` opts in) renders a real `<a href="/messages?to=…">` so middle/cmd-click behave normally (deliberately unguarded — page + draft survive); a plain click with unsent text routes through the discard prompt. Always-on is rejected as circular: the same modal is mounted inside `MessagesCenter`. Needed no new route/param/API — `?to=` is already thread-aware (`MessagesCenter:104-110`: existing conversation → select thread, none → composer).
+
+Also fixed en route: `NewConversationModal.handleStartConversation` silently swallowed a non-ok POST (now an error toast).
+
+**Rationale:** A modal that yanks the reader off the page they were reading defeats its own purpose; but the fix belongs in one shared island rather than a second per-page copy, and adoption must be per-site because the call sites are structurally heterogeneous. The escape hatch removes the only real cost of composing in place (no thread history) without duplicating the message centre. Remaining adoption tracked as `[MSG-ICON]` (icon/bare-child variant, unblocks the rest) → `[MSG-ADOPT-A]` (11 high-consequence sites) → `[MSG-ADOPT-B]` (10 list/profile sites).
+
+**See:** `docs/sessions/2026-07/20260726_0650 Decisions.md` §§1-4, Learnings §§5-7; Conv 417 (code `1f7bfd79`).
+
 ### [REVIEW-GATE] Gate a UI Affordance on the Exact Predicate Its Endpoint Enforces, Not a Journey Proxy — Course Review Composer (Conv 416)
 **Date:** 2026-07-25 (Conv 416)
 

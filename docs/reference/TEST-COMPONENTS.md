@@ -2,7 +2,8 @@
 
 React component tests using Vitest and React Testing Library.
 
-**Last Updated:** 2026-07-13 (Conv 393 — [ORPHAN-BACKLOG] Category C + dead-.ts sweep: deleted 4 orphaned component test files whose components/utils were removed as dead code. Context Actions 1→0 files / 11→0 (−`ContextActionsPanel` 11, category removed), Explore 3→1 / 83→37 (−`community-role-utils` 24, −`feed-role-utils` 22), Leaderboard 1→0 / 35→0 (−`Leaderboard` 35, category removed). Grand total files **91→87**, cases **2,328→2,236**.)
+**Last Updated:** 2026-07-26 (Conv 417 — [MSG-INPLACE]/[MSG-EXIT]: +1 **new** file `messages/MessageUserButton.test.tsx` (11 — the in-place composer island: button-not-link when signed in, `/messages?to=` anchor fallback when signed out, recipient preselected on open, POST → close → toast with no navigation, the discard guard's cancel/confirm/nothing-typed paths, the opt-in "Open in Messages" exit + its typed-draft guard, error toast on a failed POST, and one case pinning the exit as opt-**out** on the `/messages` mount) → Messages 1→2 files / 4→15. Grand total files **87→88**, cases **2,236→2,247**.)
+**Prev:** 2026-07-13 (Conv 393 — [ORPHAN-BACKLOG] Category C + dead-.ts sweep: deleted 4 orphaned component test files whose components/utils were removed as dead code. Context Actions 1→0 files / 11→0 (−`ContextActionsPanel` 11, category removed), Explore 3→1 / 83→37 (−`community-role-utils` 24, −`feed-role-utils` 22), Leaderboard 1→0 / 35→0 (−`Leaderboard` 35, category removed). Grand total files **91→87**, cases **2,328→2,236**.)
 **Prev:** 2026-07-12 (Conv 392 — [ORPHAN-PURGE]/[ORPHAN-BACKLOG]: deleted 13 orphaned component test files whose components were removed as dead-legacy (unreachable from any route). Courses 7→2 files / 85→23 (−`CourseTabs` 19, `LearnTab` 18, `ModuleAccordion` 11, `MyCourses` 7, `course-tabs/ResourcesTabContent` 7), Explore 8→3 / 146→83 (−`RoleBadge` 21, `ExploreTabBar` 7, `RolePillFilters` 8, `ExploreCommunityCard` 16, `CommunityRolePillFilters` 11), Learning 2→1 / 20→2 (−`ModuleContent` 18), Messages 2→1 / 21→4 (−`Messages` 17), Notifications 1→0 / 35→0 (−`NotificationsList` 35, category removed). Grand total files **104→91**, cases **2,523→2,328**.)
 **Prev:** 2026-07-12 (Conv 390 — [CERT-MASTERY-UI]: +1 **new** file `teachers/RecommendCertButton.test.tsx` (4 — confirm→POST teaching-cert recommend, optimistic "Recommended" pill, compact/labeled variants) → new **Teachers** category (1 file / 4). Two Admin files shed cases for the retired `completion`/`mastery` cert types: `admin/CertificateDetailContent.test.tsx` 31→29, `admin/CertificatesAdmin.test.tsx` 27→26 (dropped the single-option type-filter test) → Admin 695→692. Grand total files **103→104**, cases **2,522→2,523**.)
 **Prev:** 2026-07-11 (Conv 386 — [XTZ] cross-timezone regression suite. Two **new** files: `dashboard/cross-timezone-day-of.test.tsx` (2 — same instant rendered teacher LA/PDT vs student Tokyo/JST, day AND hour diverge) → Dashboard 6→7 files / 88→90, and `messages/message-timezone.test.ts` (4 — `formatMessageTime`/`formatDateHeader`/`groupMessagesByDate` per viewer stored tz, null→`" UTC"` label) → Messages 1→2 files / 17→21. Grand total files **101→103**, cases **2,516→2,522**.)
@@ -196,10 +197,11 @@ All components use mocked API responses via `vi.mock()`.
 
 ---
 
-## Messages Components (1 file)
+## Messages Components (2 files)
 
 | Component | Test File | Tests |
 |-----------|-----------|:-----:|
+| MessageUserButton (in-place composer island) | `tests/components/messages/MessageUserButton.test.tsx` | 11 |
 | Message time (viewer-tz, XTZ) | `tests/components/messages/message-timezone.test.ts` | 4 |
 
 ---
@@ -311,7 +313,7 @@ All components use mocked API responses via `vi.mock()`.
 | Learning | 1 | 2 |
 | Layout | 2 | 11 |
 | Marketing | 9 | 389 |
-| Messages | 1 | 4 |
+| Messages | 2 | 15 |
 | Moderation | 1 | 59 |
 | Onboarding | 2 | 42 |
 | Progression | 1 | 15 |
@@ -322,7 +324,7 @@ All components use mocked API responses via `vi.mock()`.
 | Teaching | 4 | 146 |
 | Testimonials | 1 | 53 |
 | UI | 2 | 10 |
-| **Total** | **87** | **2,236** |
+| **Total** | **88** | **2,247** |
 
 ---
 

@@ -3,7 +3,8 @@
 **Type:** Architecture Decision
 **Status:** ✅ DECIDED (MVP) / ⏸️ ON-HOLD (CHAT, SUBCOM)
 **Created:** 2026-01-19
-**Updated:** 2026-03-05 (Session 345 -- all 3 phases complete, surface catalog fully covered)
+**Updated:** 2026-07-26 (Conv 417 -- in-place composer on the course page; §E surfaces re-pointed at their current components, §"URL Pattern Normalization" gains its first documented exception)
+**Prev:** 2026-03-05 (Session 345 -- all 3 phases complete, surface catalog fully covered)
 **Related:** `docs/reference/stream.md`, `docs/reference/cloudflare.md`, `docs/POLICIES.md` section 4
 
 ---
@@ -76,9 +77,11 @@ Every UI surface showing a user is a potential messaging entry point. This catal
 
 | Surface | File | Viewer | Users Shown | Msg Btn | Relationship |
 |---------|------|--------|------------|:---:|--------------|
-| Course teacher list (teachers tab) | `courses/CourseTeacherList.tsx` | Any | Course teachers | YES | `useCanMessage` per teacher (extracted `TeacherCard`) |
+| Peer Teachers tab | `course/TeachersTabList.tsx` | Any | Course teachers | YES | **In-place composer** via `messages/MessageUserButton.tsx` (Conv 417); signed-out falls back to the `/messages?to=` anchor |
+| Meet the Creator tab | `course/CreatorTab.astro` | Any | Course creator | YES | **In-place composer** via `messages/MessageUserButton.tsx` (Conv 417); signed-out falls back to the `/messages?to=` anchor |
 | Booking -- teacher selection | `booking/SessionBooking.tsx` | Student | Available teachers | YES | Direct link (enrolled by definition) |
-| Course hero -- creator | `courses/CourseHero.tsx` | Any | Course creator | YES | `useCanMessage(creator.id)` |
+
+> The Session-345 rows for `courses/CourseTeacherList.tsx` and `courses/CourseHero.tsx` were retired with those components; the course page's teacher/creator affordances now live in the `course/[slug]/[...tab]` tabs above.
 
 #### F. Community Pages
 
@@ -111,7 +114,9 @@ Discovery pages intentionally use click-through to profile pages. No inline mess
 
 | Surface | File | Viewer | Users Shown | Msg Btn | Relationship |
 |---------|------|--------|------------|:---:|--------------|
-| User search | `messages/NewConversationModal.tsx` via `/api/users/search` | Any auth'd | Search results | N/A | Must filter to messageable contacts |
+| User search | `messages/matt/NewConversationModal.tsx` via `/api/users/search` | Any auth'd | Search results | N/A | Must filter to messageable contacts |
+
+The same modal is mounted two ways: inside `MessagesCenter` on `/messages` (search gateway), and in place on a page via `MessageUserButton` with the recipient preselected. Two props differ by mount (Conv 417): dismissing with unsent text raises a "Discard message?" confirm on both, while the `showOpenInMessages` exit link is **opt-in** and OFF on the `/messages` mount, where it would point at the current page.
 
 ### Implementation Priority
 
@@ -135,9 +140,13 @@ Discovery pages intentionally use click-through to profile pages. No inline mess
 
 ### URL Pattern Normalization — DONE (Session 344)
 
-All messaging surfaces now use `/messages?to=${user.id}` consistently. Fixed:
+All messaging surfaces use `/messages?to=${user.id}` consistently. Fixed:
 - `UserCard.tsx`: `/messages/new?to=${handle}` → `/messages?to=${id}`
 - `SessionHistory.tsx`: `/messages?user=${id}` → `/messages?to=${id}`
+
+**Exception — in-place composer (Conv 417).** The two course-page surfaces in §E no longer navigate for a signed-in viewer: `MessageUserButton` opens `NewConversationModal` on the page instead, and offers `/messages?to=${id}` only as a secondary "Open in Messages" exit. The URL pattern is unchanged — it is the *entry* that changed — and signed-out viewers still get the plain anchor so the login bounce works. The remaining 21 catalogued affordances are still plain links; adoption is tracked on the task board (`[MSG-ICON]` / `[MSG-ADOPT-A]` / `[MSG-ADOPT-B]`), so this section should be re-read as those land.
+
+`?to=` is thread-aware on arrival (`MessagesCenter`): an existing conversation selects that thread, otherwise the composer opens preselected.
 
 ### Relationship Check Implementation
 
