@@ -19,32 +19,42 @@
 
 ## 🎯 Now  (execution order — top = next)
 
-1. [MERGE-BRIAN-JULY7](#merge-brian-july7) — client branch assessment/integration
-2. [A11Y](#a11y) — accessibility lint triage
-3. [RHOOKS](#rhooks) — react-hooks lint triage
-4. [KNIP](#knip) — dead-export oracle → gate
-5. [PROV-SWEEP-DEBT2](#prov-sweep-debt2) — `prov:sweep` gate silently red (9 unregistered)
-6. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
-7. [EDITSAFE](#editsafe) — anchored-edit discipline
-8. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
-9. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
-10. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
-11. [HOME-FIXES](#home-fixes) — Home route fix bucket
-12. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
-13. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
-14. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
-15. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
-16. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
-17. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
-18. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
-19. [RSFD](#rsfd) — port `r-start-from-dirty`
-20. [DEPEXP](#depexp) — dependency-probe hygiene
-21. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
-22. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
-23. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
-24. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
-25. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
-26. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
+> **MESSAGES mini-plan (Conv 417, user-sequenced).** Items 1–6 are one ordered programme —
+> M1→M6. Hard dependency M1→M2 (M2's symptom *is* M1's race). Soft dependency M3→M4/M5
+> (M4/M5 can't start until the icon variant exists). M4 and M5 are independently shippable, so
+> the programme can legitimately stop after M4.
+
+1. [CANMSG](#canmsg) — **M2** retire/batch the per-row can-message fan-out (M1 ✅, now unblocked)
+2. [MSG-ICON](#msg-icon) — **M3** icon variant of `MessageUserButton` (unblocks 19 sites)
+3. [MSG-ADOPT-A](#msg-adopt-a) — **M4** adopt on 11 high-consequence sites
+4. [MSG-ADOPT-B](#msg-adopt-b) — **M5** adopt on 10 list/profile sites
+5. [MSG-CLEANUP](#msg-cleanup) — **M6** messages-area debt sweep
+6. [MERGE-BRIAN-JULY7](#merge-brian-july7) — client branch assessment/integration
+7. [A11Y](#a11y) — accessibility lint triage
+8. [RHOOKS](#rhooks) — react-hooks lint triage
+9. [KNIP](#knip) — dead-export oracle → gate
+10. [PROV-SWEEP-DEBT2](#prov-sweep-debt2) — `prov:sweep` gate silently red (9 unregistered)
+11. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
+12. [EDITSAFE](#editsafe) — anchored-edit discipline
+13. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
+14. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
+15. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
+16. [HOME-FIXES](#home-fixes) — Home route fix bucket
+17. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
+18. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
+19. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
+20. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
+21. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
+22. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
+23. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
+24. [RSFD](#rsfd) — port `r-start-from-dirty`
+25. [DEPEXP](#depexp) — dependency-probe hygiene
+26. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
+27. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
+28. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
+29. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
+30. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
+31. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -94,6 +104,34 @@
 - **Fallback (Conv 379):** set course thumbnail via the app's `PUT /api/me/courses/[id]/thumbnail` (external URL, JSON). Document API-PUT as the standard for file-gated browser steps.
 - **Next:** re-test on a newer Chrome-in-Claude build.
 - **Refs:** `memory/reference_chrome_bridge_island_stale_cache` [BRIDGE-UPLOAD]. Surfaced Conv 379.
+
+### [CANMSG]
+
+- **State:** 📋 queued — **M2** of the MESSAGES mini-plan · **unblocked** (M1 `[MSGBOOT]` ✅ Conv 417)
+- **⚠️ Re-measure before deciding.** The Conv-417 numbers below were taken *before* M1 landed. M1
+  fixed the cold-load half (icons now render on first load, firing the full N requests), so the
+  fan-out is now N on **every** load rather than N on warm loads only — slightly worse, and the
+  reason this is next.
+- **What:** retire or batch the per-row `useCanMessage` fan-out.
+- **Measured (Conv 417, `/community/ai-for-you/members`, 5 members):** warm load fires
+  **5 `GET /api/me/can-message/:userId` requests — one per member row** (the hook is called inside
+  `MemberRow`, `CommunityMembersTab:62`). Cold load fires **0** and renders **0** icons — that half
+  is `[MSGBOOT]`.
+- **Why it's near-vacuous:** under **open messaging (Conv 110)** `canMessage` is true for any
+  authenticated member messaging any non-deleted member (`src/lib/messaging.ts` — admin/moderator
+  short-circuit, then an existence + not-soft-deleted check). So it is N round-trips to compute
+  `true`, and the **server gates the POST anyway** — the client check is advisory, not a control.
+- **Two options to weigh:** (a) **drop the client gate** — always render the affordance and let
+  `POST /api/conversations` reject the rare invalid case (simplest, matches the open-messaging
+  policy); (b) **batch it** — `getMessageableFlags(db, senderId, recipientIds[])` already exists
+  server-side but has no batch endpoint; add one and resolve a whole list in a single call.
+  Prefer (a) unless the policy is expected to tighten again.
+- **Call sites:** `community/CommunityMembersTab:62`, `profile/PublicProfile:171` (→ `users/UserCard`),
+  `teachers/profiles/TeacherProfileHeader:23`, `creators/profiles/CreatorProfileHeader:26`.
+- **Done-test:** members page fires ≤1 can-message request (0 under option a) and renders its icons
+  on the **first** load.
+- **Refs:** `src/lib/useCanMessage.ts`, `src/lib/messaging.ts`, `src/pages/api/me/can-message/[userId].ts`,
+  `[MSGBOOT]`.
 
 ### [CHIPWRAP]
 
@@ -224,6 +262,66 @@
 - **State:** ⏸️ parked · **gate: user say-so** (on hold Conv 369)
 - **What:** lower supported min screen width 375px → 320px (iPhone-SE class). 3 scoped overflow sites: `MembersFilters.tsx` + `CoursesFilters.tsx` filter rows (`min-w-0` or wrap) + Home legacy feed-card action button (`min-w-0`/`flex-wrap`); re-verify at 320px via iframe harness. Optional.
 - **Refs:** `docs/decisions/05-ui-ux-components.md` [MINWIDTH], `memory/reference_responsive_iframe_harness`.
+
+### [MSG-ADOPT-A]
+
+- **State:** 📋 queued — **M4** of the MESSAGES mini-plan · gated on `[MSG-ICON]` (M3)
+- **What:** adopt `MessageUserButton` on the **11 high-consequence sites** — where navigating away
+  destroys work the user cannot cheaply rebuild. Ship as one tranche; independently releasable.
+- **Sites — in-progress work destroyed (4):** `booking/SessionBooking:707,790` (mid-wizard: teacher,
+  date and time already chosen), `booking/SessionParticipantCard:43` (rendered by `SessionRoom` and
+  `SessionCompletedView`, where the user is about to rate), `teachers/workspace/TeacherSessionsList:692`.
+- **Sites — slide-over + list state destroyed (7):** every `admin/*DetailContent` —
+  `UserDetailContent:96`, `TeacherDetailContent:93`, `EnrollmentDetailContent:123`,
+  `SessionDetailContent:167,184`, `ModerationDetailContent:222`, `CreatorApplicationDetailContent:79`.
+  These sit inside `AdminDetailPanel` (a **slide-in panel**) over a filtered list, so navigating
+  discards both. **This corrects a Conv-417 mid-conv guess that admins want the jump — they don't.**
+- **Done-test:** per-site live verify that a click opens the composer and does not navigate; 5 gates.
+- **Refs:** `[MSG-ICON]`, `src/components/messages/MessageUserButton.tsx`, Conv 417 sweep.
+
+### [MSG-ADOPT-B]
+
+- **State:** 📋 queued — **M5** of the MESSAGES mini-plan · gated on `[MSG-ICON]` (M3)
+- **What:** adopt on the remaining **10 list / profile sites**. Lower stakes than M4 — losing scroll
+  position rather than losing work — so this tranche is genuinely optional and can be dropped.
+- **Sites — long filtered lists (5):** `teachers/workspace/MyStudents:586`,
+  `dashboard/TeacherStudentList:207`, `dashboard/CreatorTeacherList:210`,
+  `dashboard/TeacherUpcomingSessions:117`, `community/CommunityMembersTab:94`.
+- **Sites — reading context; also the only 3 drop-in `Button`s (3):**
+  `teachers/profiles/TeacherProfileHeader:114`, `creators/profiles/CreatorProfileHeader:110`,
+  `users/UserCard:111` (the `/@handle` profile).
+- **Judgment calls, defaulted MODAL (2):** `dashboard/EnrollmentCard:107`,
+  `courses/CourseProgressCard:80` — both "Learning with X". Reading them as *continue our
+  conversation* (→ keep anchor) is defensible; **re-decide with the escape hatch in hand.**
+- **KEEP THE ANCHOR — do not convert (1):** `booking/SessionRoom:364`. Its own code comment says
+  *"links to the existing messages thread (function preserved)"* — thread-intent, not compose.
+- **Out of scope:** `Sidebar:315` `href="/messages"` — plain nav to the centre, correctly an anchor.
+- **Done-test:** as M4, plus an explicit re-read of the 2 judgment calls.
+
+### [MSG-CLEANUP]
+
+- **State:** 📋 queued — **M6** of the MESSAGES mini-plan (no gate; can run any time)
+- **What:** messages-area debt found while doing M1–M5.
+  - `MessagesCenter.tsx:4` header claims it re-skins `src/components/messages/Messages.tsx`
+    *"(left untouched, still used by /old/messages)"* — **both are gone** (`src/components/messages/`
+    holds only `matt/`, `MessageUserButton.tsx`, `types.ts`; no `src/pages/old/messages*`).
+  - `[RHOOKS]` warning at `NewConversationModal:54` (`setState` in the debounced-search effect) —
+    either fix locally or fold into the standing `[RHOOKS]` task.
+  - Registry / `prov:sweep` re-check for `MessageUserButton` + any M3 variant.
+- **Done-test:** no stale refs, 5 gates green, `prov:sweep` no worse than the `[PROV-SWEEP-DEBT2]` baseline.
+
+### [MSG-ICON]
+
+- **State:** 📋 queued — **M3** of the MESSAGES mini-plan · unblocks M4 + M5
+- **🔴 Why it exists — the island does NOT drop in.** Of the 22 per-user message affordances, only
+  **3** are `Button` components. The other **19 are bespoke icon-only `<a>` tags** with per-site
+  classNames (`MessageIcon`/`MattIcon` at 16/20px, differing hover colours, some inside flex rows).
+  `MessageUserButton` renders a `Button`, so M4/M5 are **not** an href swap.
+- **What:** add an icon/bare-child variant — render the trigger as a bare styled `<button>` with
+  `className` passthrough instead of the `Button` primitive, keeping the modal wiring, the
+  `signedIn` anchor fallback, the discard guard and the "Open in Messages" exit identical.
+- **Done-test:** variant renders icon-only with per-site classes preserved; the 3 existing `Button`
+  call sites and the 2 course tabs are visually unchanged; 5 gates.
 
 ### [ORPHAN-BACKLOG]
 
@@ -367,6 +465,31 @@
 
 ## ✅ Done this conv
 
-- **[MERGE-BRIAN §1 course-page refinements]** (Conv 416) — user-requested `/course/[slug]` UI polish + a review feature: Feed **Post** button restyled to match the Modules Download/Open buttons (bordered-neutral, `hover:bg-neutral-50`); **"Ask a Question"** (Meet-the-Creator + Peer-Teachers) wired to the existing `/messages?to={userId}` deep-link + tonal hover; new **`CourseReviewComposer`** modal (StarRating + comment + collapsible clarity/relevance/depth sub-ratings) modeled on `SessionCompletedView`, with **API-aligned 3-state gating** (write / already-reviewed / hidden) computed from real `enrollment.status='completed'` + existing-review lookup in `[...tab].astro`. Review flow verified e2e vs seed (State1→POST→State2, reverted). Files: CourseReviewComposer.tsx (new), ReviewsTab.astro, [...tab].astro, MattCourseFeed.tsx, CreatorTab.astro, TeachersTabList.tsx.
-- **[Messages `?to=` deep-link fixes]** (Conv 416) — fixed 2 pre-existing bugs the "Ask a Question" links surfaced (messaging someone with no existing thread): (1) `NewConversationModal` preselect resolved the target via `/api/users/search?q={id}` which matches name/handle only → added an exact **by-id** branch (`?id=`) to the search endpoint; (2) `MessagesCenter`'s `?to=` effect re-fired on every 10s poll (endless-reopen loop) → **run-once ref guard** + strip the `?to=` URL param + clear the intent on modal close. Open messaging (Conv 110) = no messageability blocker. Verified e2e (Playwright + screenshot): modal opens with the user preloaded, closes + stays closed, no reappear. Fixes all `?to=` deep-links (notifications, profiles), not just the course page. Files: MessagesCenter.tsx, NewConversationModal.tsx, api/users/search.ts. All 5 gates green (suite 6552).
-- **[MF-SKEW]** (Conv 416) — full wrangler upgrade / miniflare skew fix. Root cause: two miniflare copies (wrangler 4.94→mf 20260521 vs `@cloudflare/vite-plugin` 1.45.1→mf 20260714), older CLI crashed reading the newer dev-server `_cf_ALARM` schema. Fix: exact-pin `wrangler@4.112.0` (its mf pin 20260714.0 == vite-plugin's → **npm dedupes to ONE shared miniflare**, skew structurally eliminated both directions) + bump `@cloudflare/workers-types` v4→**v5** (5.20260724.1 — wrangler's optional peer conflicts with a directly-declared v4; measured **tsc 0 errors**, so the Conv-415 "codebase-wide fallout" fear was unfounded) + bump global nvm wrangler → 4.112.0 + removed the dead `r2:list:*` scripts (`r2 object list` never existed). **Live-verified:** `wrangler d1 execute --local` + `db:seed:r2:local` (7/7) now run cleanly while the dev server is up. All 5 gates green (tsc 0 · astro 0/0 · lint 0-err · build ✓ · suite 6552). Code diff: package.json + package-lock.json + seed-r2-dev.mjs comment.
+- **[MSG-INPLACE]** — course "Ask … a Question" buttons no longer navigate away. New shared
+  `MessageUserButton` island (`src/components/messages/MessageUserButton.tsx`) opens the existing
+  `NewConversationModal` in place; wired into the Peer Teachers + Meet the Creator tabs, signed-out
+  viewers keep the `/messages?to=` login bounce. Also fixed `NewConversationModal` silently swallowing
+  a failed POST (now an error toast), and added a **discard guard** — dismissing with unsent text
+  (backdrop / Escape / ×) now raises a "Discard message?" `ConfirmModal` instead of silently binning
+  the draft; the send path is never guarded. +8 tests (suite 6560), 5 gates green, live-verified as
+  David Rodriguez on `/course/intro-to-n8n` (no nav, recipient preselected, live POST 200 + toast,
+  prompt stacks above the composer, Cancel preserves the draft, no-draft closes clean).
+- **[MSG-EXIT]** — opt-in "Open in Messages" escape hatch in the composer. Renders as a real `<a>`
+  (middle/cmd-click open a tab, unguarded since the draft survives); a plain click with unsent text
+  routes through the same discard prompt. OFF by default so it never renders inside `MessagesCenter`
+  where it would link to the current page. Needed no new plumbing — `/messages?to=` is already
+  thread-aware (`MessagesCenter:104-110`). +3 tests (suite 6563), 5 gates green, live-verified:
+  exit → real thread with prior messages, guard holds on draft, opt-out holds on `/messages`.
+- **[MSG-SWEEP]** — full census of message affordances (23 found) with per-site dispositions
+  → recorded in `[MSG-ADOPT-A]` / `[MSG-ADOPT-B]`. Adoption deferred by user decision;
+  the 6-step MESSAGES mini-plan (M1–M6) is now sequenced at the top of `## 🎯 Now`.
+- **[MSGBOOT] (M1)** — current-user bootstrap race fixed. `getCurrentUser()` returning `null` was
+  being read as "logged out" when it actually meant "not resolved yet" (the singleton hydrates from
+  localStorage first). Both consumers now wait on the existing `authStatus` three-state via
+  `useAuthStatus()` — the same pattern `StudentDashboard`/`ProgressionNudge`/`useCreatorGate`
+  already use, so no new architecture. Fixed **two live symptoms**: `/messages` deep links bounced
+  to `/` on a first visit, and `useCanMessage` silently hid every message affordance
+  (`CommunityMembersTab`, `UserCard`, `TeacherProfileHeader`, `CreatorProfileHeader`).
+  +5 tests (suite 6568), 5 gates green. Live-verified on **fresh browser contexts**: cold deep-link
+  → thread with content ✅ · cold members page → 5 icons on first load (was 0) ✅ · genuine visitor
+  still redirected to `/login` ✅.
