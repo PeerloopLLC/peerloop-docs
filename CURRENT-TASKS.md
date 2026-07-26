@@ -255,8 +255,25 @@
   **dots**, `size-[22px]` a toggle **knob**, `size-[36px]` a hit-target **container**. Those keep
   arbitrary px; snapping them to the ladder would double a 6px dot. **Latent trap:** the 546 correct-today `h-5`/`h-6`/`h-10` uses would silently
   4×-shrink if anyone ever added 5, 6 or 10 to the override set.
-- **Prevention (not built).** A lint rule banning bare numbers on `w-`/`h-`/`size-` is what makes
-  the standard stick; without it the next `h-4 w-4` lands unnoticed. Decide before the bulk sweep.
+- **✅ Phases 1–2 BUILT (Conv 419).** Promoted to its own PLAN block —
+  **[plan/icon-sizing/README.md](plan/icon-sizing/README.md)** holds the 6-phase sequence, the test
+  design and the open questions. Do not re-derive them here.
+  - `npm run check:icons` (`scripts/check-icon-sizing.ts`) — static guard, **new-violations-only**
+    against a committed 1,863-violation baseline (a hard gate would be red on day one and ignored).
+    Rules: bare-numeric both ambiguity directions · **51 icon usages with no size class at all** ·
+    arbitrary px on an icon. Verified by injecting an `h-4 w-4` regression: caught, exit 1.
+  - `npm run icons:scan` (`scripts/icon-scan.mjs`) — runtime, 26 routes × **two root font sizes**.
+    The double run is the completeness proof: post-migration, an inline icon that doesn't move
+    between a 16px and 24px root is provably still pinned to px. Baseline: **11 findings, all on
+    `/become-a-teacher`** (9 too-small incl. an 8px avatar, 2 overflowing) — every other route clean.
+  - **Lesson worth keeping:** the first `inline-ratio` rule keyed off "is there text nearby" and
+    produced 38 findings that were almost all thumbnails, avatars and empty-state illustrations.
+    Re-keyed on **geometry** (does the icon vertically overlap its text, i.e. beside it vs stacked
+    above it) → 0 false positives. A noisy rule would have been ignored, which is the failure the
+    baselining was meant to avoid.
+- **Useful side-effect:** the scan's `% scale with root` column is a per-route migration-progress
+  meter — `/admin` 96%, `/admin/users` 98% (largely rem already) vs `/messages`, `/notifications`,
+  `/profile` at 0% (entirely fixed px). Use it to order the tranches.
 - **Related:** `memory/reference_tailwind_intellisense_canonical_suggestions.md` — IntelliSense's
   arbitrary-`[Npx]`→scale suggestions must be REJECTED; same 4× confusion, inverted direction.
 
