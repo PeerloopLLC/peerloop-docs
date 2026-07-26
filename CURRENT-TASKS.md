@@ -20,42 +20,41 @@
 ## 🎯 Now  (execution order — top = next)
 
 > **MESSAGES mini-plan (Conv 417, user-sequenced).** One ordered programme, M1→M6.
-> **M1 `[MSGBOOT]` ✅ Conv 417 · M2 `[CANMSG]` ✅ Conv 418 · M3 `[MSG-ICON]` ✅ Conv 418** —
-> items 1–3 below are the remainder (M4→M6). The M3 gate on M4/M5 is now **lifted**: the
-> `appearance="bare"` variant exists, so the 19 icon-only sites are adoptable. M4 and M5 are
-> independently shippable, so the programme can legitimately stop after M4.
+> **M1 `[MSGBOOT]` ✅ 417 · M2 `[CANMSG]` ✅ 418 · M3 `[MSG-ICON]` ✅ 418 · M4 `[MSG-ADOPT-A]` ✅ 418**
+> — items 1–2 below are the remainder (M5, M6). The programme has now passed the point where it
+> could legitimately stop: the 11 high-consequence sites are done, so **M5 is genuinely optional**
+> (it trades scroll position, not work) and M6 is a debt sweep.
 
-1. [MSG-ADOPT-A](#msg-adopt-a) — **M4** adopt on 11 high-consequence sites
-2. [MSG-ADOPT-B](#msg-adopt-b) — **M5** adopt on 10 list/profile sites
-3. [MSG-CLEANUP](#msg-cleanup) — **M6** messages-area debt sweep
-4. [MERGE-BRIAN-JULY7](#merge-brian-july7) — client branch assessment/integration
-5. [A11Y](#a11y) — accessibility lint triage
-6. [RHOOKS](#rhooks) — react-hooks lint triage
-7. [KNIP](#knip) — dead-export oracle → gate
-8. [PROV-SWEEP-DEBT2](#prov-sweep-debt2) — `prov:sweep` gate silently red (10 unregistered)
-9. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
-10. [EDITSAFE](#editsafe) — anchored-edit discipline
-11. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
-12. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
-13. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
-14. [HOME-FIXES](#home-fixes) — Home route fix bucket
-15. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
-16. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
-17. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
-18. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
-19. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
-20. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
-21. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
-22. [RSFD](#rsfd) — port `r-start-from-dirty`
-23. [DEPEXP](#depexp) — dependency-probe hygiene
-24. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
-25. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
-26. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
-27. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
-28. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
-29. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
-30. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
-31. [DEVSRV-STALE](#devsrv-stale) — un-parked: stale/bricked astro dev daemon recurred
+1. [MSG-ADOPT-B](#msg-adopt-b) — **M5** adopt on 10 list/profile sites
+2. [MSG-CLEANUP](#msg-cleanup) — **M6** messages-area debt sweep
+3. [MERGE-BRIAN-JULY7](#merge-brian-july7) — client branch assessment/integration
+4. [A11Y](#a11y) — accessibility lint triage
+5. [RHOOKS](#rhooks) — react-hooks lint triage
+6. [KNIP](#knip) — dead-export oracle → gate
+7. [PROV-SWEEP-DEBT2](#prov-sweep-debt2) — `prov:sweep` gate silently red (10 unregistered)
+8. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
+9. [EDITSAFE](#editsafe) — anchored-edit discipline
+10. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
+11. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
+12. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
+13. [HOME-FIXES](#home-fixes) — Home route fix bucket
+14. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
+15. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
+16. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
+17. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
+18. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
+19. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
+20. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
+21. [RSFD](#rsfd) — port `r-start-from-dirty`
+22. [DEPEXP](#depexp) — dependency-probe hygiene
+23. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
+24. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
+25. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
+26. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
+27. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
+28. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
+29. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
+30. [DEVSRV-STALE](#devsrv-stale) — un-parked: stale/bricked astro dev daemon recurred
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -145,7 +144,19 @@
 - **What:** Conv 414 — user hit an "old version" of the site on :4321 (`/matt` + `/discover` as real routes = **pre-flip**, dissolved Conv 197). Current code verified correct via curl (`/matt`→404). Root cause not pinned at the time: a stale `astro dev` **daemon** persists across sessions (`npm run dev` reported "already running pid 9015"), OR the pre-flip worktree server (`~/projects/Peerloop-preflip` @ 608346a2) bound to 4321, OR Brave's localhost cache.
 - **✅ One variant now root-caused (Convs 416–417):** an `npm install` run **while `astro dev` is up** bricks the running server's in-memory miniflare module runner. Symptom is distinctive: **the port stays bound (`lsof -ti:4321` returns PIDs) but `curl` returns `000`** — a dead daemon holding the socket. Conv 417 hit exactly this from the Conv-416 dependency work; fix was `kill <pids>` then a fresh `npm run dev`. This is a *different* variant from the Conv-414 stale-content one, which remains unpinned.
 - **Why it's un-parked:** flagged by the r-end docs agent as appearing in two consecutive session extracts (2026-07-25 and 2026-07-26), and the earlier extract had said to act "if it bites again". It bit again.
-- **Do:** write `memory/reference_devserver_stale_daemon` capturing both variants — the bound-but-dead signature (`lsof` hits + `curl 000` ⇒ bricked by a mid-run `npm install`; kill the PIDs, restart) and the stale-content one (verify with `curl …/matt` → 404 = current; hard-refresh / private window / use `127.0.0.1`). The diagnosis has now been re-derived three times.
+- **✅ A THIRD variant (Conv 418) — stale Vite dep-optimizer cache.** A long-running `astro dev`
+  (up since the previous conv) 500s on routes importing a pre-optimized dep after new imports are
+  added across several files: `The file does not exist at ".../node_modules/.vite/deps_ssr/
+  react-chartjs-2.js?v=<hash>" ... might be incompatible with the dep optimizer`. Distinctive
+  signature: **the server answers (not `000`) but a specific route 500s**, while `npm run build` is
+  clean — so it is never a code defect. Fix: `rm -rf node_modules/.vite` + restart. ⚠️ The restarted
+  daemon binds **`[::1]` only** → use `localhost:4321`, not `127.0.0.1:4321` (see
+  `[[reference_playwright_headless_browser_fallback]]`). Related to `[VITE-DEPS-WATCH]`.
+- **Do:** write `memory/reference_devserver_stale_daemon` capturing all three variants — the
+  bound-but-dead signature (`lsof` hits + `curl 000` ⇒ bricked by a mid-run `npm install`; kill the
+  PIDs, restart), the stale-content one (verify with `curl …/matt` → 404 = current; hard-refresh /
+  private window / use `127.0.0.1`), and the stale-Vite-cache one above. The diagnosis has now been
+  re-derived four times.
 - **Refs:** `memory/feedback_persistent_dev_server_4321`, `memory/project_wrangler_exact_pin_miniflare_dedupe`, `[DEVSRV-KILL]`. Surfaced Conv 414, recurred 415/417.
 
 ### [DL-FILENAME]
@@ -237,30 +248,12 @@
 - **What:** lower supported min screen width 375px → 320px (iPhone-SE class). 3 scoped overflow sites: `MembersFilters.tsx` + `CoursesFilters.tsx` filter rows (`min-w-0` or wrap) + Home legacy feed-card action button (`min-w-0`/`flex-wrap`); re-verify at 320px via iframe harness. Optional.
 - **Refs:** `docs/decisions/05-ui-ux-components.md` [MINWIDTH], `memory/reference_responsive_iframe_harness`.
 
-### [MSG-ADOPT-A]
-
-- **State:** 📋 queued — **M4** of the MESSAGES mini-plan · **unblocked** (M3 `[MSG-ICON]` ✅ Conv 418)
-- **What:** adopt `MessageUserButton` on the **11 high-consequence sites** — where navigating away
-  destroys work the user cannot cheaply rebuild. Ship as one tranche; independently releasable.
-- **How (M3 landed):** these are icon-only `<a>` tags, so use `appearance="bare"` — pass the site's
-  existing `className` verbatim, its icon element as `children`, and `title` for the accessible name
-  (there is no visible label). `signedIn` must be threaded through, or signed-out viewers lose the
-  login bounce. See the `appearance="bare"` describe block in
-  `tests/components/messages/MessageUserButton.test.tsx` for the shape.
-- **Sites — in-progress work destroyed (4):** `booking/SessionBooking:707,790` (mid-wizard: teacher,
-  date and time already chosen), `booking/SessionParticipantCard:43` (rendered by `SessionRoom` and
-  `SessionCompletedView`, where the user is about to rate), `teachers/workspace/TeacherSessionsList:692`.
-- **Sites — slide-over + list state destroyed (7):** every `admin/*DetailContent` —
-  `UserDetailContent:96`, `TeacherDetailContent:93`, `EnrollmentDetailContent:123`,
-  `SessionDetailContent:167,184`, `ModerationDetailContent:222`, `CreatorApplicationDetailContent:79`.
-  These sit inside `AdminDetailPanel` (a **slide-in panel**) over a filtered list, so navigating
-  discards both. **This corrects a Conv-417 mid-conv guess that admins want the jump — they don't.**
-- **Done-test:** per-site live verify that a click opens the composer and does not navigate; 5 gates.
-- **Refs:** `[MSG-ICON]`, `src/components/messages/MessageUserButton.tsx`, Conv 417 sweep.
-
 ### [MSG-ADOPT-B]
 
-- **State:** 📋 queued — **M5** of the MESSAGES mini-plan · **unblocked** (M3 `[MSG-ICON]` ✅ Conv 418) · see M4's "How" note for the `appearance="bare"` shape
+- **State:** 📋 queued — **M5** of the MESSAGES mini-plan · **unblocked** (M3 `[MSG-ICON]` ✅ Conv 418) · **genuinely optional** now M4 has shipped
+- **How:** same shape M4 used — `appearance="bare"`, site `className` + icon element + `title`
+  verbatim, and **omit `signedIn`** (it resolves from `useAuthStatus()`). Worked examples: the 9
+  files in Conv 418's M4 commit; contract in `tests/components/messages/MessageUserButton.test.tsx`.
 - **What:** adopt on the remaining **10 list / profile sites**. Lower stakes than M4 — losing scroll
   position rather than losing work — so this tranche is genuinely optional and can be dropped.
 - **Sites — long filtered lists (5):** `teachers/workspace/MyStudents:586`,
@@ -474,3 +467,18 @@
   live-verified unchanged (`<button>`, 39px pill, 8px/12px padding, student background);
   `prov:sweep` unchanged at 11 — the bare button is deliberately unstamped, so it adds no
   `[PROV-SWEEP-DEBT2]` offender.
+- **[MSG-ADOPT-A]** — **M4** of the MESSAGES mini-plan. Converted **all 11 high-consequence
+  affordances** across 9 files to `appearance="bare"`, each keeping its own `className`, `title` and
+  icon element verbatim; zero raw `/messages?to=` anchors left in those files. Rather than thread
+  `signedIn` through 8 components that had no viewer knowledge (which meant hardcoding "obviously
+  yes" 11 times), made the prop **resolve from `useAuthStatus()` when omitted** — one place, keeps
+  the explicit prop for the SSR-known course tabs, and M5 inherits it. While auth is unresolved it
+  renders the anchor, which is correct rather than merely safe. 5 gates green (suite **6583**, +5
+  resolution tests → 21 in that file). **Live-verified 7 of 11** (button, composer opens, URL
+  unchanged, so slide-over + filtered list survive): `UserDetailContent`, `SessionDetailContent` ×2,
+  `TeacherDetailContent`, `EnrollmentDetailContent`, `CreatorApplicationDetailContent`,
+  `TeacherSessionsList`. **4 not live-reached** and accepted as covered by tsc + unit tests + build
+  (user call): `SessionBooking` ×2 (confirm-step summary needs teacher+date+time),
+  `SessionParticipantCard` (needs a live/completed session), `ModerationDetailContent` (gated on a
+  `targetUser` the single seeded row doesn't resolve). Also root-caused a third `[DEVSRV-STALE]`
+  variant en route — recorded there.
