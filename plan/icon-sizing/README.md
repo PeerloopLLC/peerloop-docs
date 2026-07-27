@@ -466,7 +466,7 @@ parked residue at the foot of this list.**
       id** rather than array position (the `% scale with root` summary too). Direct measurement
       confirmed every `size-icon-24` on `/admin` scales 24 → 36px. Lesson: pair by identity, never by
       index, whenever two measurement passes can differ in membership.
-- [ ] **Mandatory per-tranche reachability check — standing, re-runs every tranche.** Run `.claude/scripts/codecheck-orphan-components.mjs`
+- **STANDING RULE (not an open to-do — all tranches are complete).** **Per-tranche reachability check.** Run `.claude/scripts/codecheck-orphan-components.mjs`
       over every file in a tranche **before** editing it. Conv 419 measured that **5 of its 43 icon
       fixes landed on dead code** — hitting `TestimonialsBrowse`, the same file Conv 404's `[A11Y]`
       batch already wasted a fix on 15 convs earlier. tsc/lint/tests/build are all green over dead
@@ -478,8 +478,12 @@ parked residue at the foot of this list.**
       reachable yet rendered 26 icons of which **0** were tokened, so tranches were landing on files that
       render nothing this axis governs. Pair the orphan check with a **render census** of the target
       surface before choosing a tranche, not just after.
-- [ ] **`[ICON-4PX]` residue — now the block's *entire* remaining icon debt, and it is exactly 25
-      classes.** All 25 sit in `BecomeATeacherPage` (`/become-a-teacher`), the second and last of the 7
+- [x] ~~**`[ICON-4PX]` residue**~~ — **✅ CLEARED Conv 424**, by fixing the file rather than waiting for the
+      marketing redesign (user call). Of the 25 classes, **13 were a checker range bug, not icons at all**;
+      the 12 real ones went to `size-icon-32`. Measured live: benefit icons 8×8 → 32×32, circles 8×8 → 32×32
+      and 12×12 → 48×48, sub-12px SVGs 6 → 0. Runtime scan for `/become-a-teacher`: **20 of 21 tokened,
+      95% scale, 0 findings** (was 14 tokened). Originally logged as: exactly 25
+      classes. All 25 sit in `BecomeATeacherPage` (`/become-a-teacher`), the second and last of the 7
       legacy-v3-semantics files, gated behind the parked `[RG-PUBLIC]` marketing redesign. Conv 421's
       sweep (3b) cleared everything around it, so **no live icon-size debt remains anywhere else in the
       app.** A deliberate park, not a blocker; fold into whichever tranche runs when the marketing
@@ -609,8 +613,12 @@ against a number you can predict before quoting its output.*
 Phase 5 and the attribution ledger between them convert every remaining unknown on this axis into a
 list. Nothing below blocks Phase 6; they are the honest tail.
 
-- [ ] **`[SPACING-VIS]` — Chrome-bridge visual pass at a 16px base over every route the root fix touched
-      (Conv 423, user-raised).** `npm run spacing:scan` proves the *invariant* — 4,206 strict
+- [x] ~~**`[SPACING-VIS]` — Chrome-bridge visual pass**~~ — **✅ DONE Conv 424.** All **53 canonical routes**
+      inspected at a true 1280 viewport across 5 roles + signed-out; **zero Conv-423 regressions**. Also proved
+      completeness arithmetically: the **92** surviving non-multiple-of-4 spacing utilities map **1:1** to the
+      **92** pre-sweep fractional utilities, with zero fractionals left — so no call site was missed.
+      `/old/*` excluded by user decision. Originally logged as: visual pass at a 16px base over every route the root fix touched
+      (Conv 423, user-raised). `npm run spacing:scan` proves the *invariant* — 4,206 strict
       measurements over 12 routes, zero mismatches — and the 449 rewrites are value-preserving by
       construction, so nothing *should* have moved. But a numeric proof of "unchanged" is not the same
       as a page looking right, and no page was inspected by eye after the base change. Blocked on
@@ -618,123 +626,37 @@ list. Nothing below blocks Phase 6; they are the honest tail.
       itself suspect — `[BRIDGE-UNREACHABLE]` (Conv 413) recorded a workaround and was then treated as
       settled fact for ten convs without ever being diagnosed.
 
-- [ ] **Drive interaction-gated and loading states.** The unproven 391 of 629 sites are not dead code
+- [ ] **Drive interaction-gated and loading states — the block's one remaining piece of real work.**
+      *(Counts restated Conv 424: the denominator is now **528 attributable call sites**, after the 107
+      component defaults and 61 `.astro` sites were excluded as decided above — so the residue is smaller
+      than the "391 of 629" figure written here at Conv 422, and is call-sites-only.)* These sites are not dead code
       (`codecheck-orphan-components.mjs` returns **PASS**) — they are states no route walk enters:
       dropdown menus, slide-over panels, modals, and loading/skeleton branches. The ledger prints them
       **per file**, so this is a countable worklist rather than "more coverage", and it is the natural
       successor to the `--drive-invite` pattern Phase 5 already established for post-POST states.
-- [ ] **Decide the `.astro` blind spot: separate attribution route, or documented permanently?** 61
-      static sites / 151 rendered icons are outside fiber-walking entirely (SSR without a `client:*`
-      directive). Options are a source-level `.astro` matcher tied to route coverage, or accepting the
-      current treatment — reported as a named blind spot and excluded from the residue denominator.
-      Leaving it undecided means 61 sites read as permanently unproven.
-- [ ] **Decide whether the ~98 near-dead `ui/icons.tsx` defaults stay.** Each of the 98 exports defaults
-      to `size-icon-20`, but only **6** usages app-wide omit `className` (4 of them in the parked
-      `BecomeATeacherPage`) against **381** that pass their own. They are correct and harmless, but they
-      are also 98 of the 107 counted defaults, so they dominate any "unproven sites" figure this block
-      quotes. Keep (and exclude from the denominator), or remove and let the 6 callers name their size.
+- [x] ~~**Decide the `.astro` blind spot**~~ — **✅ DECIDED Conv 424 (user): ACCEPT AND DOCUMENT PERMANENTLY.**
+      The decisive fact, measured rather than assumed: **static enforcement already covers `.astro`.**
+      Injecting `h-4 w-4` into an `.astro` `<MattIcon>` makes `check:icons` exit 1 (+2 violations), and
+      there are **70 icon tags across 21 `.astro` files** all governed. So the 61 static sites / 151
+      rendered icons cannot regress — what is missing is only *runtime attribution*, because SSR without a
+      `client:*` directive produces no React fiber to walk. The gap therefore costs **completeness
+      reporting, not correctness**, and building a source-level `.astro` matcher would improve a metric
+      rather than protect the codebase. `icon-scan.mjs` now says so in its own output.
 
-### Phase 6 — Tighten the guard 🔄 (Conv 423 — root cause fixed; one item left)
+- [x] ~~**Decide whether the ~98 near-dead `ui/icons.tsx` defaults stay.**~~ — **✅ DECIDED Conv 424 (user):
+      KEEP THEM, EXCLUDE THEM FROM THE DENOMINATOR.** Measured properly by resolving every
+      `from '@components/ui/icons'` import to its local (possibly aliased) name: across **102 consumer
+      files, 395 usages pass their own `className` and 0 rely on a default.** The plan's earlier "6 usages
+      omit className, 4 of them in `BecomeATeacherPage`" was **entirely name collisions** — `PromoteButton`
+      and `BecomeATeacherPage` define their *own* local `CheckIcon`/`CloseIcon`, and `SocialPost` imports a
+      different `entity/UserIcon`. A grep on the bare tag name cannot tell those apart; resolving imports
+      can.
+      Since a default renders only when a caller omits `className`, and none do, a default can **never** be
+      proven by rendering — so counting the 107 defaults as unproven residue overstated the gap forever.
+      They are kept as the fallback that makes a future `<FeedIcon />` render at 20px instead of unsized,
+      and `reportLedger()` now excludes them from the denominator and reports them separately, exactly as
+      it already treated `.astro`. Ledger denominator: **635 → 528 attributable call sites.**
 
-Original scope: once no arbitrary px remains on icon elements, promote those rules from warn to error
-and drive the baseline to zero; ship the **bare-number lint rule** listed under Phase 1; and *"decide
-whether the `--spacing-*` numeric override should be renamed outright so no number can ever be misread
-again — the deeper fix this block only works around."* **Conv 423 executed that last clause, and the
-answer turned out to be better than a rename** — which then dissolved two of the three items.
-
-**Precondition met since Conv 421.** `icon-arbitrary-px` is retired (0) and the governed total is **25**,
-all of them behind one parked task — a single-file dependency, not a migration.
-
-#### The root fix (Conv 423)
-
-**The ambiguity this whole block works around is gone — fixed at the root, not swept.** Conv 423
-scoped the "rename the `--spacing-*` override" idea this phase had always called "the deeper fix",
-found it cost **4,911 sites across 295 files** — ~11× the cheapest call-site option and comparable to
-the whole ICON-SIZING block — and then found a one-line alternative *inside the same measurement*. The
-scoping exercise was worth doing precisely because its stated answer was "no": the **distribution** the
-count came from is what produced the winning option, not the total.
-
-- **What the measurement showed.** Numeric spacing splits **4,911 overridden vs 361 multiplier** —
-  93% of usage already meant literal px. So the exception was never the ten overridden numbers; it
-  was the *other* nineteen. And Tailwind v4 resolves any un-named `p-N` as `calc(var(--spacing) * N)`
-  from a **base multiplier this project had never touched**. Verified empirically by compiling the
-  real stylesheet, not from the docs: un-named numbers emit `calc(var(--spacing) * N)`, named ones
-  emit `var(--spacing-N)`, and `size-icon-N` is independent of both.
-- **The fix: `--spacing: 0.0625rem`.** Every one of the ten `--space-N` and eleven `--icon-N` tokens
-  is *exactly* `N × 0.0625rem` (`--space-4` = 0.25rem, `--icon-14` = 0.875rem …), so the base was
-  simply off by a factor of four. Setting it makes N mean N px for **every** number — including ones
-  nobody has typed yet, which no call-site sweep can reach. **Proof of blast radius: compiling the
-  real stylesheet before and after diffs exactly one line in 185 KB** — every emitted utility rule is
-  byte-identical, so all 4,911 overridden sites are untouched.
-- **The 449-site sweep, provably neutral.** The sites that *did* rely on the ×4 reading were rewritten
-  `N → N×4`, which preserves their computed value (`N×4 × 0.0625rem` ≡ `N × 0.25rem`). 354 integer +
-  **95 fractional** (`py-0.5`, `gap-1.5` — a gap found only because the first regex deliberately
-  rejected a trailing `.`), across 99 files. An independent verifier that parses the **git diff**
-  rather than the sweep's own report confirms **449 of 449 are exactly N→N×4 and nothing else moved**.
-  That independence is what makes the number mean anything — a sweep reporting its own edit count is
-  exactly what a buggy sweep would also report confidently — and it earned it: the verifier caught its
-  own pairing bug, which a shared-code checker would have inherited silently.
-- **Two gaps the plan never named, on independent axes.** The sweep walked `.tsx/.jsx/.astro`, so **5
-  `@apply` sites in `global.css`** sat outside its *file set*; its first regex deliberately rejected a
-  trailing `.`, so the 95 fractional utilities sat outside its *token shape*. Widening a sweep's file
-  set and widening its regex are **distinct decisions, and neither is visible from the other** — a sweep
-  that reconciles perfectly against its own scan can still miss a whole category.
-- **How the edits were applied: offset-spliced from the *end* of each file**, using a real
-  string/comment scanner rather than a line rewrite. That designs out both Conv-421 sweep bugs at once —
-  the apostrophe desync (a whole-file string regex mis-pairing every quote after `don't`) and the
-  whitespace collapse that shipped flattened indentation in `HomeworkEditor.tsx`.
-- **Three instrument false positives, each caught by the number looking implausible — never by
-  re-reading the code.** (i) The blast-radius scan matched `%Y-%m-01` in SQL date strings as `m-01` and
-  `"top-001"` topic IDs as `top-N`: **12 false positives**, fixed by rejecting zero-padded numbers (they
-  are never Tailwind classes) and re-measuring clean. (ii) The diff verifier paired removed lines with
-  the physically next line, which desynchronises the moment a `-U0` hunk removes two lines in a row —
-  the same index-pairing defect as Conv 421's `tokened-did-not-scale`. (iii) The live scanner's first
-  run reported **184 mismatches**, every one a variant-shadowed element (`px-16` alongside `lg:px-32`).
-  *State the expected magnitude out loud before trusting a new instrument.*
-- **Verified live: 4,206 strict measurements over 12 routes, zero mismatches** (`npm run spacing:scan`,
-  new). The invariant tested is `X-N` measures N px — which simultaneously proves the base change and
-  that all 449 rewrites kept their value, with no before-run needed.
-- **5 gates green:** tsc clean · astro 0 errors · eslint 0 errors (166 pre-existing warnings) · 6131
-  tests · build complete. Two tests pinned `AdminBadge`'s literal class names and were updated.
-  Code `dc1f031e` (101 files): `tokens-tailwind-bridge.css` (the one-line root change plus the proof of
-  why it is safe and why the ten named overrides are kept) · `global.css` (5 `@apply` rewrites) · 96
-  further `.tsx`/`.astro` call-site files · **new `scripts/spacing-scan.mjs`** wired as
-  `npm run spacing:scan` · `tests/unit/admin-intel/admin-badge.test.tsx`.
-
-#### What it cost the checker (decided the same conv, not deferred)
-
-`icon-bare-numeric-overridden` / `-multiplier` and the 532 `dimension-bare-numeric` sites all policed an
-ambiguity that no longer exists — both counters read the same after the fix (25 / 532) only because the
-rules fire on *shape*, while the defect they name had gone. Resolved rather than left open:
-
-- **The two governed icon rules were kept but REFRAMED.** Their messages claimed a mis-render risk,
-  which is now false. They now state a readability rationale — a bare number does not *name* the icon
-  axis — which is what they actually enforce.
-- **`dimension-bare-numeric` was RETIRED outright**, not zeroed. `INFORMATIONAL` is an empty set and the
-  baseline **omits the `informational` key** rather than writing `{}`: an empty object would read as
-  "this tier exists and is clean", which would be false — the tier was retired, not emptied. Keeping the
-  mechanism (an empty set) preserves warn-first adoption for a future rule, which is how every other
-  lint set in this project has landed.
-- **Net:** `npm run check:icons` now reports **25 governed violations in one file and nothing else.**
-
-#### Remaining work
-
-- [ ] **Promote the governed icon rules warn → error** once `[RG-PUBLIC]` clears the last 25, driving the
-      governed baseline to **zero**. This is now a single-file dependency, not a migration. **Still open,
-      and unaffected by the root fix** — all 25 remain in `BecomeATeacherPage.tsx`.
-- [x] ~~**Decide the fate of the 532 `dimension-bare-numeric` sites**~~ — **✅ CLOSED Conv 423 by the root
-      fix, and the tier is RETIRED.** They were only ever reported because a bare number on a box was
-      ambiguous (`h-32` could read as 32px or 128px). With `--spacing: 0.0625rem` they are self-describing,
-      so there is no defect to hold. `INFORMATIONAL` is now an empty set and the baseline omits the key
-      entirely rather than writing `{}` — an empty object would read as "a tier exists and is clean".
-      Note this also dissolves the 93 `min-w-0` sites Conv 423 found inside that 532: they were never
-      ambiguous under any reading (0 is 0), and were 17.5% of the tier — the same false-positive class
-      tranche 7 removed twice already.
-- [x] ~~**Ship the bare-number lint rule**~~ — **✅ CANCELLED Conv 423, deliberately, not dropped.** Its
-      whole purpose was to make the *ambiguity* visible in the editor while typing. There is no longer an
-      ambiguity to surface: every number means its own px. Shipping it now would flag correct code for a
-      defect that cannot occur. What remains — "a bare number does not *name* the icon axis" — is a
-      readability preference already covered by `check:icons`, and not worth an editor-level rule.
 
 ---
 
