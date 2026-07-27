@@ -289,8 +289,21 @@ put first turned out not to exist — see the Scale section.)
       fourth time — see the callout under *Standard* above for the four findings. Scanner rule widened
       `inline-did-not-scale` → `tokened-did-not-scale` (every token is rem now, so *any* `size-icon-*`
       that measures the same at both roots is provably still pinned). 5 gates green + `icons:scan` no
-      regression. ⚠️ The 6 converted sites sit behind teacher/creator-profile and feed conditionals
-      that could not be reached live — asserted from the token side, not measured in place.
+      regression.
+      - **✅ Verified in place (second pass) — and it was a repair, not just a simplification.** The
+        first attempt failed only because the probe used `brian`, who is neither a teacher nor a
+        creator; the routes 200'd and rendered an empty profile. Re-run against real seed entities
+        (`/teacher/guy-rymberg`, `/creator/gabriel-rymberg`, `/@guy-rymberg` — `PublicProfile` lives
+        at `/@[handle]`, not `/profile/` — and `/course/ai-tools-overview/feed` signed in as admin,
+        since `canPromote` needs admin / course creator / certified teacher), **all 4 files render at
+        16×16px, zero stale `size-icon-inline-*`.**
+      - **The counterfactual is the real finding.** Re-applying `1.15em` to the same live elements
+        measures what the em token had been shipping: **6 of 7 PromoteButton icons sit in a 12px
+        container → 13.8px, a −2.2px / −14% shrink**; only the one at 14px was neutral (+0.09px).
+        Conv 420 migrated those svgs from a literal 16px believing it "the genuine inline case at a
+        14px label" — **the label is 12px**, so they silently shrank and shipped that way, uncaught
+        because the site was never live-verified. Finding 4 of the rescind, demonstrated on the em
+        family's own flagship use.
 - [ ] **Tranche 3b — the 16/20/24px bulk (~500 classes: 230×16 · 186×20 · 86×24).** **No longer a
       judgment tranche.** With the em family gone (tranche 5) these are mechanical
       `w-N h-N`/`size-N` → `size-icon-N` conversions, provably neutral wherever N is already the

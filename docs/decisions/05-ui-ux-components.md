@@ -16,7 +16,15 @@
 
 **Consequences:** the ~500 sites remaining in the 16/20/24px band become **mechanical** conversions (`size-[N]`/`w-N h-N` → `size-icon-N`, provably neutral) instead of ~500 arguable inline-vs-standalone judgments — the single largest source of friction left in ICON-SIZING. The runtime scanner's `inline-did-not-scale` rule was **strengthened** to `tokened-did-not-scale`: with every token rem-valued, *any* `size-icon-*` element that measures identically at a 16px and 24px root is provably still pinned, so the completeness proof now covers the whole axis rather than its inline arm. The Conv-419 measurement that motivated em (27.6px when only the label was raised to 24px) is real but describes local font-size overrides, which this token-driven type scale does not use.
 
-**Not verified:** the 6 converted call sites sit behind teacher/creator-profile and feed conditionals that could not be reached live; the change is a 0.1px delta on a numerically verified token, and 5 gates are green, but it is asserted from the static/token side, not measured in place.
+**Verified in place (Conv 421, second pass) — and the rescind turned out to be a repair, not just a simplification.** The 6 sites were initially unreachable because the probe used a handle that was neither a teacher nor a creator; re-run against real seed entities (`/teacher/guy-rymberg`, `/creator/gabriel-rymberg`, `/@guy-rymberg`, `/course/ai-tools-overview/feed` as admin) all 4 files render, all at **16×16px**, zero stale `size-icon-inline-*` anywhere. A counterfactual measurement — re-applying `1.15em` to the same live elements — shows what the em token had actually been shipping:
+
+| Site | container font | `size-icon-16` (now) | `1.15em` (Conv 420–421) | delta |
+|---|---|---|---|---|
+| PromoteButton ×6 | **12px** | 16px | **13.8px** | **−2.2px (−14%)** |
+| PromoteButton ×1 | 14px | 16px | 16.09px | +0.09px |
+| Profile headers / UserCard | 14px | 16px | 16.09px | +0.09px |
+
+Conv 420 migrated PromoteButton's three svgs from a literal 16px to `size-icon-inline-md` believing it "the genuine inline case at a 14px label". The label is **12px**, so those icons silently shrank to 13.8px and shipped that way — never caught, because the site was never live-verified. This is finding 4 (*the 14px anchor was wrong where it mattered*) demonstrated on the family's own flagship use, and it means the rescind **restored a 14% shrink** rather than merely removing a rule.
 
 **See:** `src/styles/tokens-primitives.css` (tombstone comment retains the full rationale), `src/styles/tokens-tailwind-bridge.css`, `scripts/icon-scan.mjs`, `docs/as-designed/matt-design-system/05-color-and-tokens.md` §The two-way rule; Conv 421.
 

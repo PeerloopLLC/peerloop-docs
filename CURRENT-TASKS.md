@@ -717,3 +717,7 @@
   `size-icon-16`, rule collapsed three-way → two-way, scanner rule widened
   `inline-did-not-scale` → `tokened-did-not-scale`. Closes the block's longest-open decision.
   5 gates green (suite 6131) + `icons:scan` no regression.
+- **All 6 rescinded sites live-verified (second pass)** — and the rescind proved to be a **repair**:
+  a counterfactual measurement shows the em token had been rendering **6 of 7 PromoteButton icons at
+  13.8px (−14%)** because their container is 12px, not the 14px Conv 420 assumed. Shipped that way
+  since Conv 420, uncaught because the site was never live-verified.
