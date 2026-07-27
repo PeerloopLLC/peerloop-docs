@@ -26,37 +26,39 @@
 > delete this note.
 
 1. [ICON-TOK](#icon-tok) — icon-size token axis: foundation built, ~2k-site migration outstanding
-2. [ICON-4PX](#icon-4px) — residue: `/become-a-teacher`, gated on RG-PUBLIC
-3. [MERGE-BRIAN-JULY7](#merge-brian-july7) — client branch assessment/integration
-4. [A11Y](#a11y) — accessibility lint triage
-5. [RHOOKS](#rhooks) — react-hooks lint triage
-6. [KNIP](#knip) — dead-export oracle → gate
-7. [PROV-SWEEP-DEBT2](#prov-sweep-debt2) — `prov:sweep` gate silently red (10 unregistered)
-8. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
-9. [EDITSAFE](#editsafe) — anchored-edit discipline
-10. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
-11. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
-12. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
-13. [HOME-FIXES](#home-fixes) — Home route fix bucket
-14. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
-15. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
-16. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
-17. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
-18. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
-19. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
-20. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
-21. [RSFD](#rsfd) — port `r-start-from-dirty`
-22. [DEPEXP](#depexp) — dependency-probe hygiene
-23. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
-24. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
-25. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
-26. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
-27. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
-28. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
-29. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
-30. [DEVSRV-STALE](#devsrv-stale) — un-parked: stale/bricked astro dev daemon recurred
-31. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
-32. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
+2. [ICON-AUDIT](#icon-audit) — Conv 421 audit: migration is landing off-surface; metric inflated
+3. [HDR-AVATAR](#hdr-avatar) — live 8×8px avatar in the legacy shell header (shipping now)
+4. [ICON-4PX](#icon-4px) — residue: `/become-a-teacher`, gated on RG-PUBLIC
+5. [MERGE-BRIAN-JULY7](#merge-brian-july7) — client branch assessment/integration
+6. [A11Y](#a11y) — accessibility lint triage
+7. [RHOOKS](#rhooks) — react-hooks lint triage
+8. [KNIP](#knip) — dead-export oracle → gate
+9. [PROV-SWEEP-DEBT2](#prov-sweep-debt2) — `prov:sweep` gate silently red (10 unregistered)
+10. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
+11. [EDITSAFE](#editsafe) — anchored-edit discipline
+12. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
+13. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
+14. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
+15. [HOME-FIXES](#home-fixes) — Home route fix bucket
+16. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
+17. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
+18. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
+19. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
+20. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
+21. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
+22. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
+23. [RSFD](#rsfd) — port `r-start-from-dirty`
+24. [DEPEXP](#depexp) — dependency-probe hygiene
+25. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
+26. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
+27. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
+28. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
+29. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
+30. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
+31. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
+32. [DEVSRV-STALE](#devsrv-stale) — un-parked: stale/bricked astro dev daemon recurred
+33. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
+34. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
 ## ⏸️ Parked  (gated — out of rotation)
 
 - [ORPHAN-BACKLOG](#orphan-backlog) — gate: marketing redesign (RG-PUBLIC)
@@ -195,6 +197,66 @@
 - **State:** 📋 queued (deferred per-route bucket)
 - **What:** deferred bucket of per-route fixes captured while sweeping the Home (`/`) route — batch later.
 
+### [HDR-AVATAR]
+
+- **State:** 📋 queued — **live defect, shipping now**; found by the Conv 421 `[ICON-AUDIT]` walk
+- **What.** `src/components/layout/Header.tsx:137` — the signed-in user's avatar carries
+  `h-8 w-8 rounded-full object-cover`. Under the Conv-174 override `h-8` = **8px**, so it renders as
+  an **8×8px speck** next to the user's name. Measured live at 1280×900 on 5 routes
+  (`/invite/mod/<bad-token>` and every 404 — `/teachers/brian`, `/creators/brian`, `/settings`,
+  `/dashboard`), and visible in the Conv-421 screenshot as a dark dot before "Sarah Miller".
+- **Why it survived the block so far.** It is an `<img>` avatar, not an icon, so tranche 2 explicitly
+  classified it into the **~390 "non-icon" bucket** that the icon axis "does not govern" — but the
+  defect it exhibits is exactly the one this block exists to fix. That bucket needs an owner
+  (see `[ICON-AUDIT]`), not a blanket exemption.
+- **Scope note.** `layout/Header.tsx` is the **legacy shell**, not the Matt `AppLayout` — so the blast
+  radius is 404s and legacy-shell pages, not the canonical app. Confirm whether the shell is
+  retire-by-default (`[OLD-RETIRE-DEFAULT]`) before investing; a one-line fix may still be worth it.
+- **Fix (one line).** `h-8 w-8` → `size-[32px]` (author intent — avatars are the "neither" category
+  per the three-way rule, so arbitrary px is correct here, not `size-icon-32`).
+
+### [ICON-AUDIT]
+
+- **State:** 📋 queued · `[Opus]` — **findings surfaced Conv 421, disposition not yet chosen**
+- **What this was.** A direct audit of everything `[ICON-TOK]` has changed across Convs 419–420,
+  done from the diffs + a live browser walk rather than from the plan's own summaries. Method:
+  resolve every changed dimension class through the ten-value override table to a rendered px, then
+  walk 20 routes signed-in as a seed user and measure what actually renders.
+- **✅ The reassuring half — appearance did NOT drift.** Of **206 changed lines carrying a dimension
+  class, 153 (74%) are pixel-identical** at the default root: `20→20` (103), `48→48` (27), `32→32`
+  (13), `64→64` (3), plus singles at 16/24/40. Those were pure ambiguity removal, provably neutral.
+  The **53 that did change** are almost all **4px → 16px** — restoring icons that were shipping as
+  near-invisible specks. A 20-route live walk found **zero** sub-11px glyphs anywhere except the one
+  avatar in `[HDR-AVATAR]`. Screenshots of the two highest-density migrated surfaces
+  (`/onboarding`, the `ModeratorInvite` repair) render correctly.
+- **🔴 Finding 1 — the migration is landing off-surface.** The canonical Matt pages are essentially
+  untouched: `/course/intro-q-system` renders **26 icons, 0 tokened**; `/course/ai-tools-overview`
+  **29 / 0**; `/profile/brian` **20 / 0**; `/profile/amanda-lee` **20 / 0**. `/courses` renders 87
+  icons of which exactly **1** carries a token class. Across 10 detail routes: **20 tokened vs 107
+  arbitrary-px**. The Matt surface is built almost entirely from `size-[20px]` / `size-[24px]`, which
+  is the 187-strong `icon-arbitrary-px` bucket the block has not started. Only `/onboarding` shows
+  real adoption (15 tokened). **So the 1,863 → 1,337 baseline drop has mostly been earned in the
+  parts of the codebase that render least.**
+- **🔴 Finding 2 — some edits were dead on arrival.** 5 of the ~29 files touched by the Conv-419
+  migration were **deleted two commits later** by `[MKTDEAD]` (`creators/profiles/CreatorCard`,
+  `marketing/FaqPage`, `marketing/about/TeamSection`, `marketing/welcome/FeaturedCreators`,
+  `testimonials/TestimonialsBrowse`). The reachability check that later ran clean was added *after*
+  these landed.
+- **🟠 Finding 3 — the "MattIcon default fixes it site-wide" claim is ~8× over-scoped.** Of **199
+  `<MattIcon>` usages, 176 pass their own `className`**, so the changed default fires on only **23**.
+  The 200-violation drop was a drop in *scanner counts*, not in rendered sites. Eighth instance of
+  the `[PREMISE]` pattern — see `feedback_retest_task_premise_before_executing.md`.
+- **🔴 Finding 4 — the metric can't be read as a progress bar.** Of the 1,337 remaining, **788 are
+  `bare-numeric-overridden`** — and tranche 2 already established that class is **~44% non-icon**
+  (skeleton bars, badge circles, dots, avatar `<img>`s). So true remaining icon debt is materially
+  below 1,337, and "baseline went down" conflates migration, deletion, and rule-narrowing. Conv 420
+  already logged one instance (46 of a −246 was a measurement correction).
+- **✅ Disposition chosen + executed (Conv 421): re-target at the Matt surface.** See `[ICON-TOK]`
+  — the whole `icon-arbitrary-px` class was retired, 187 → 0, baseline 1,337 → **1,150**.
+- **Still open from this audit:** Findings 2–4 are recorded, not fixed. Specifically the metric is
+  still misleading (788 `bare-numeric-overridden` remains ~44% non-icon), and `[HDR-AVATAR]` is
+  unfixed. Decide whether to split the non-icon class out of the 788 before the next tranche.
+
 ### [ICON-4PX]
 
 - **State:** 📋 queued — measured symptoms fixed Conv 419; standard now decided, see `[ICON-TOK]`
@@ -219,8 +281,31 @@
 
 ### [ICON-TOK]
 
-- **State:** 🔄 active · `[Opus]` — **foundation + standard Conv 419; first migration tranche
-  Conv 420** (baseline 1,694 → **1,448**). Migration outstanding and **multi-conv**.
+- **State:** 🔄 active · `[Opus]` — **foundation + standard Conv 419; tranches 1–3a Conv 420;
+  arbitrary-px class retired Conv 421** (baseline 1,694 → 1,337 → **1,150**). Migration outstanding
+  and **multi-conv**.
+- **✅ Conv 421 — the `icon-arbitrary-px` class eliminated, 187 → 0.** Re-targeted at the Matt
+  surface after `[ICON-AUDIT]` showed the block had been migrating where nothing renders. **First
+  tranche whose premise survived re-testing:** R3 matches only icon-component tags, so all 187 were
+  real icons (166 `<MattIcon>` + 21 `ui/icons.tsx`), zero avatars/logos/skeleton bars — unlike
+  tranche 2's 891, which was ~44% non-icon. 69 files, 187 line-for-line edits.
+  - **Provably neutral.** All 11 `--icon-N` tokens verified pixel-identical to their names at the
+    default root (`--icon-20` = 1.25rem = 20px …), so every conversion is zero-change + gains
+    root-scaling. Distribution: 62×20px, 61×24px, 26×16px, 10×48px, 10×14px, 7×32px, 4×18px,
+    2×40px, 2×28px, 2×12px, 1×19px.
+  - **Deliberately rem, not em — the em ladder is still NOT settled and was not applied.** rem is
+    neutral; em is not (a Sidebar glyph reclassified inline would shrink 20px → ~16px against its
+    14px label). All went to standalone/rem per the Conv-420 nav-row ruling. **This defers, not
+    answers, the inline question** — it remains the block's open decision.
+  - **Verified live at two root sizes across 10 routes: 232 icons render, 232/232 at their exact
+    named px at 16px root, 232/232 grow at 24px root.** Before the tranche only 20 tokened icons
+    rendered on those routes. This is the first real completeness proof the block has produced.
+  - **Method note:** scoped to flagged tags, never a file-wide sed (tranche-2 lesson: `w-64 h-64`
+    is both an icon size and its wrapper circle). The script's non-square guard correctly refused
+    one conditional ternary (`MessageUserButton`), edited by hand. Three multi-line JSX tags the
+    rewriter reflowed were restored to preserve formatting.
+  - 5 gates green: tsc clean · astro 0 errors · eslint 0 errors (166 pre-existing warnings) ·
+    **6131 tests pass** · build complete. Code `31251d82`.
 - **✅ Conv 420 — Tranche 1 (icon-component defaults) + a rule correction.**
   - **The tasked target didn't exist.** The "46 icon usages with **no size class at all**" that
     Conv 419 called the sharpest finding were **all false positives**: 14 were `entity/UserIcon`,
@@ -613,12 +698,11 @@
 
 ## ✅ Done this conv
 
-- **`[ICON-TOK]` Phase 4 Tranches 1 + 2 + 3a** — baseline 1,694 → **1,337**. T1: 94 icon-component defaults
-  → the token axis (200 violations) plus a rule correction, the tasked "46 no-size-class icons" being
-  all false positives. T2: 44 large standalone icons (85 classes). T3a: two genuine shipped defects — the whole
-  `ModeratorInvite` component (8px glyph in a 16px circle, live-measured before/after) and
-  `PublicProfile`'s 12px error mark. 5 gates green (suite 6131), `icons:scan` no regression.
-  Task stays active — multi-conv.
-- **`[DEVSRV-STALE]`** — 4th occurrence (2nd of the Vite-dep-cache variant, this time killing `/`
-  itself). Found a cleaner teardown, `npx astro dev stop`, and wrote the long-tasked
-  `memory/reference_devserver_stale_daemon.md` covering all three variants.
+- **`[ICON-AUDIT]` findings surfaced** — audited all 4 icon commits from diffs + a live 20-route
+  walk. Appearance had **not** drifted (153 of 206 changed lines pixel-identical; the 53 that moved
+  were mostly 4px→16px restorations), but four real problems surfaced: migration landing off-surface,
+  5 files deleted 2 commits later, the MattIcon-default claim ~8× over-scoped, and a metric that
+  can't be read as a progress bar. Body kept — findings 2–4 still open.
+- **`[ICON-TOK]` arbitrary-px class retired** — 187 → 0, baseline 1,337 → **1,150**, 69 files.
+  Verified live at two root font sizes: 232/232 unchanged at 16px root, 232/232 scaling at 24px.
+  5 gates green (suite 6131). Code `31251d82`.
