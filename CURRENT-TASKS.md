@@ -614,6 +614,12 @@
   `availableSoon` · M6 tokenised flat pills · M7 visible compact sort · M8 opt-in `compact`/`dense`).
   5 gates green, suite **6131 → 6139** (new `CoursesFilters.test.tsx`, 8 tests), live-verified signed
   in and signed out.
+- **MERGE-BRIAN §2 Tier C — BUILT (13 of 14 mechanisms; M10 open).** Shared `CourseCoverPanel` +
+  `cover-story` card variant (M9), `CommunityAffiliation` extracted and used by both surfaces (M11),
+  enrolled markers with `[DIPLOMA]` wording and no invented CTA (M12), persistent-underline link chips
+  (M13), `formatPrice` decimals dropped with a `formatPriceExact` carve-out for the receipt (M14 —
+  closes F2). Suite **6139 → 6153**. **M10 deliberately not built** — its disposition is unbuildable
+  as stated; awaiting a narrower decision.
 - **`[FORMCHROME]` — pre-existing site-wide form-chrome defect fixed.** `@tailwindcss/forms` chrome
   was rendering *inside* our `Input`/`Select` wrappers (own 1px border + 8px/12px padding on the inner
   control), showing a hard-cornered box nested in the rounded pill on every form, and capping the new

@@ -39,7 +39,7 @@
 | # | Review unit | Status |
 |---|---|---|
 | 1 | `/course/[slug]` detail | ✅ **COMPLETE (Conv 412)** — dispositions DONE (Conv 408, 12 mechanisms: 9 ADAPT · 3 DROP · 0 ADOPT). **All 9 ADAPT built:** Tier A+B (Conv 409, M1/M4/M5 + M6/M7/M12) · Tier C M10/[RECEIPT] (Conv 410) · Tier C M2 `[SESS-TAB]` (Conv 411) · Tier C M3 `[SESS-FILES]` (Conv 412) · hero refinement `[HERO]` (Conv 413) · colour-theme toggle `[TAB-THEME]` (Conv 414) · UI + messages follow-ups (Convs 415–419, incl. the **MESSAGES mini-plan M1–M6, COMPLETE Conv 419** — see build logs). Only the 3 DROPs unbuilt (2 soft/revisitable) |
-| 2 | `/courses` catalog | 🔄 **dispositions DONE + Tier A/B BUILT (Conv 425)** — 16 mechanisms: 3 ADOPT · 12 ADAPT · 1 DROP. **Built:** M1 M2 M15 M16 (page shell) · M5 M6 M7 M8 (toolbar), plus finding **F1** — a pre-existing site-wide doubled form-chrome defect — confirmed by measurement and fixed. 5 gates green (suite **6139**, +8 new tests) + live-verified. **Remaining:** Tier C (M9 M10 M11 M12 M13 M14); M3 + M4 gated on `[ROLE-CRS-LIST]` / `[REC-REHOME]` |
+| 2 | `/courses` catalog | 🔄 **dispositions DONE + Tiers A/B/C BUILT (Conv 425), M10 open** — 16 mechanisms: 3 ADOPT · 12 ADAPT · 1 DROP. **Built: 13 of 14** — M1 M2 M15 M16 (shell) · M5 M6 M7 M8 (toolbar) · M9 M11 M12 M13 M14 (card), plus finding **F1**, a pre-existing site-wide doubled form-chrome defect, measured and fixed. 5 gates green (suite **6153**, +22 new tests) + live-verified. **Open:** **M10** — its disposition is unbuildable as stated (our hero has no cover panel to share; giving it one turns it into the card, the option not chosen) → needs a narrower call. M3 + M4 stay gated on `[ROLE-CRS-LIST]` / `[REC-REHOME]` |
 | 3 | `/community/[slug]` + `/communities` (+`[COMM-BRAND]` feature decision) | ⬜ |
 | 4 | **Site-wide shell track** (`[BACK-X]` back-nav, `SubNav`/`SubNavItem`, `Sidebar`, forms, `AppLayout`) | ⬜ |
 | 5 | Sessions-files feature (`0006` + storage API) — adopt/reject as a feature | ⬜ |
@@ -505,6 +505,57 @@ files this build never touched.
 **Not built (Tier C, next):** M9 cover-story card · M10 shared `CourseCoverPanel` on the hero ·
 M11 community band on cards · M12 badge + progress · M13 link chips · M14 the `formatPrice` fix that
 closes F2 (the catalog still shows `$249.00` against the detail hero's `$249`).
+
+### Build log — §2 Tier C (Conv 425, all 5 gates green + live-verified) — M10 OPEN
+
+**Two inventory premises were wrong and were corrected before building** (both would have made the
+work look cheaper than it is):
+
+- **M11 was NOT "reuse a primitive we already built".** Conv 410's `[COMM-BAND]` landed as **inline
+  markup inside `CourseHeader`**, and the community join lives only in the course **detail** loader.
+  Real work: extract `entity/CommunityAffiliation.tsx` (tone `default` | `on-dark`, `raised` for hosts
+  with a stretched card link) and add the chain to the **browse** loader.
+- **M14's blast radius was 4 files, not 11.** Six of the eleven `formatPrice` matches are **local
+  shadow definitions** (`CoursesAdmin`, `CourseDetailContent`, `CourseCard`, `CourseEditor`,
+  `CreatorStudio`, `ProgressionCard`) that never imported the shared helper — which is why the admin
+  test asserting `$199.00` still passes. Real consumers: `RecommendedCourses`, `CoursesCatalog`,
+  `EnrollButton`, `receipt/[id].astro`.
+
+**Built:** `CourseCoverPanel.tsx` (new, shared) — cover art + white price sticker + badge slot, sized
+by container query (120px banner → 180px panel at `@xl`); **tokenised**, his navy/teal/violet gradient
+replaced by a `neutral-700` placeholder (M9). `CourseCatalogCard` gains a **third named variant,
+`cover-story`** rather than his `overlay + catalog` overloading, so `RecommendedCourses` keeps exactly
+what "overlay" has always meant: cover left, description-forward body (3-line clamp, `tagline`
+fallback), one merged meta line, `min-h-190`, CTA docked in the title row (M9). Community affiliation
+footer (M11). `IconLabelChip` gains `tone="link"` with a **persistent** underline per Conv 415
+`[STEP-LINK]`, not his hover-only version (M13). `formatPrice` drops forced decimals (M14) — with a
+deliberate carve-out: **`formatPriceExact` added for the receipt page**, because a financial document
+stating an amount charged should keep its cents.
+
+**M12 built as dispositioned — markers, not a CTA.** ✓ Enrolled / ✓ Completed badge on the cover and
+the viewer's own progress replacing students · level; the CTA is left exactly as the host passed it.
+Live-verified on `amanda.lee`: **"✓ Completed" · "2 of 2 sessions · Diploma earned"**, and the string
+"Certificate earned" appears nowhere on the page (`[DIPLOMA]`).
+
+**Live verification** (`localhost:4321`, signed in as `amanda.lee@example.com`): 6 cover-story cards at
+640×193 with a 180px cover panel; price sticker reads **`$249`** where it read `$249.00` before, closing
+**F2**; description clamped to 3 lines; creator + rating chips both linked, brand blue `rgb(7,119,182)`,
+`text-decoration: underline` at rest; affiliation reads "part of AI for You · 156 members". The course
+**detail** hero re-verified after the extraction: still **198px** (the Conv-413 compaction, unchanged),
+affiliation now rendered by the shared component in white, linking to `/community/ai-for-you`.
+
+**Tests:** `tests/components/courses/CourseCatalogCard.test.tsx` (new, 12) pins the three deliberate
+divergences from his branch — no invented journey CTA, "Diploma" not "Certificate", persistent
+underline — plus that `stacked`/`overlay` are unaffected. `tests/ssr/courses.test.ts` +2 for the
+loader's `description` and the LEFT-JOIN community chain (including that a course outside a
+progression still loads with `community: null`). Suite **6139 → 6153** (397 files). 5 gates green.
+
+**🔴 M10 NOT built — the disposition under-specifies and I did not guess.** "Share the cover panel,
+keep our hero" is unbuildable as literally stated: our hero renders the course art as a **full-bleed
+dark backdrop with white text over a scrim**, so there is no cover panel to share. Giving it one means
+the art becomes a 180px left panel, which leaves the remaining band with nothing dark behind its white
+text — i.e. the hero stops being the dark hero and becomes the card, which is exactly the option the
+walk did **not** choose. Needs a narrower decision; see the §2 walk result.
 
 ### §2 walk result (Conv 425)
 
