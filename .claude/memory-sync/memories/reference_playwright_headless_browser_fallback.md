@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: e585e11d-a9dc-4c48-a011-f55e61b3a825
-  modified: 2026-07-27T18:35:54.694Z
+  modified: 2026-07-27T22:58:48.921Z
 ---
 
 [BRIDGE-OK-USE-LOCALHOST] **The bridge is NOT unreachable.** Conv 424 re-tested the Conv-413 premise
@@ -29,6 +29,17 @@ The superseded note also contradicted itself (claimed `curl` 200 on *both* loopb
 stating the `[::1]`-only bind — impossible simultaneously; today `curl 127.0.0.1:4321` = `000`).
 Observations taken under *different* server binds had been written up as if simultaneous. Lesson: when
 a memo's own two claims can't both hold, re-measure before trusting either. See [[feedback_retest_task_premise_before_executing]].
+
+**[BRIDGE-HIDDEN-TAB] The bridge tab is `visibilityState: "hidden"` whenever the Chrome window is not
+foregrounded — and Chrome then (a) makes programmatic **smooth** scrolling a NO-OP and (b) throttles
+React re-renders.** Conv 425: `scrollBy({left:300})` moved 300px while `scrollBy({left:300,
+behavior:'smooth'})` moved **0**, and a button's `disabled` prop never flipped after a state change.
+Both read as product bugs; both were harness artifacts. Check `document.visibilityState` /
+`document.hasFocus()` before believing either. `computer left_click` wins `hasFocus` but does **not**
+clear `hidden`. The way through: verify the **handler**, not the animation — monkey-patch the target
+method to record its args (`el.scrollBy = (o) => { calls.push(o); return orig({...o, behavior:'instant'}) }`),
+click, then assert the call args + the instant-mode effect. Anything depending on animation completion or
+a throttled re-render stays UNVERIFIED — say so rather than claiming it works.
 
 **Playwright headless = genuine FALLBACK (not the default).** Still the right tool for exact-width
 screenshots / scripted DOM truth without a human in the loop:

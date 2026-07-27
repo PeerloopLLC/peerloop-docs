@@ -26,43 +26,45 @@
 > delete this note.
 
 1. [MERGE-BRIAN-JULY7](#merge-brian-july7) — client branch assessment/integration
-2. [A11Y](#a11y) — accessibility lint triage
-3. [RHOOKS](#rhooks) — react-hooks lint triage
-4. [KNIP](#knip) — dead-export oracle → gate
-5. [PROV-SWEEP-DEBT2](#prov-sweep-debt2) — `prov:sweep` gate silently red (10 unregistered)
-6. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
-7. [EDITSAFE](#editsafe) — anchored-edit discipline
-8. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
-9. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
-10. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
-11. [HOME-FIXES](#home-fixes) — Home route fix bucket
-12. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
-13. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
-14. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
-15. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
-16. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
-17. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
-18. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
-19. [RSFD](#rsfd) — port `r-start-from-dirty`
-20. [DEPEXP](#depexp) — dependency-probe hygiene
-21. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
-22. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
-23. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
-24. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
-25. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
-26. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
-27. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
-28. [DEVSRV-STALE](#devsrv-stale) — un-parked: stale/bricked astro dev daemon recurred
-29. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
-30. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
-31. [TLFMT](#tlfmt) — r-end ref documents a TIMELINE.md shape the file no longer uses
-32. [OUTLINE-V4B](#outline-v4b) — 3 residual `outline-none` sites the Conv-244 fix missed
-33. [ADMIN-OVFLW](#admin-ovflw) — 3 admin routes overflow horizontally (pre-existing, not Conv-423)
-34. [LH1](#lh1) — 23 typography tokens hardcode `line-height: 1` (TYPO-FDN axis)
-35. [BRIDGE-RESIZE](#bridge-resize) — `resize_window` silently ignores width
-36. [ICON-STATES](#icon-states) — Phase-5 tail: drive hidden/loading states over 528 call sites
-37. [GATEPAR](#gatepar) — `/w-codecheck` vs `npm run verify` diverged on the icon gate
-38. [VPHARNESS](#vpharness) — persist the exact-size iframe harness as a script
+2. [ROLE-CRS-LIST](#role-crs-list) — teaching/moderating course lists (blocks §2 M3)
+3. [REC-REHOME](#rec-rehome) — rehome course recommendations (blocks §2 M4)
+4. [A11Y](#a11y) — accessibility lint triage
+5. [RHOOKS](#rhooks) — react-hooks lint triage
+6. [KNIP](#knip) — dead-export oracle → gate
+7. [PROV-SWEEP-DEBT2](#prov-sweep-debt2) — `prov:sweep` gate silently red (10 unregistered)
+8. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
+9. [EDITSAFE](#editsafe) — anchored-edit discipline
+10. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
+11. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
+12. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
+13. [HOME-FIXES](#home-fixes) — Home route fix bucket
+14. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
+15. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
+16. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
+17. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
+18. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
+19. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
+20. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
+21. [RSFD](#rsfd) — port `r-start-from-dirty`
+22. [DEPEXP](#depexp) — dependency-probe hygiene
+23. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
+24. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
+25. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
+26. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
+27. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
+28. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
+29. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
+30. [DEVSRV-STALE](#devsrv-stale) — un-parked: stale/bricked astro dev daemon recurred
+31. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
+32. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
+33. [TLFMT](#tlfmt) — r-end ref documents a TIMELINE.md shape the file no longer uses
+34. [OUTLINE-V4B](#outline-v4b) — 3 residual `outline-none` sites the Conv-244 fix missed
+35. [ADMIN-OVFLW](#admin-ovflw) — 3 admin routes overflow horizontally (pre-existing, not Conv-423)
+36. [LH1](#lh1) — 23 typography tokens hardcode `line-height: 1` (TYPO-FDN axis)
+37. [BRIDGE-RESIZE](#bridge-resize) — `resize_window` silently ignores width
+38. [ICON-STATES](#icon-states) — Phase-5 tail: drive hidden/loading states over 528 call sites
+39. [GATEPAR](#gatepar) — `/w-codecheck` vs `npm run verify` diverged on the icon gate
+40. [VPHARNESS](#vpharness) — persist the exact-size iframe harness as a script
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -427,6 +429,15 @@
 - **Why it matters:** a real gate failing unnoticed → the registry⟺marker⟺stamp conformity from `[PRIM-STAMP]` (Conv 217) isn't holding. Each offender needs a registry entry (with `figmaMatchNames`) **or** its stamp removed if not a vetted primitive — decide per component, don't bulk-register.
 - **Refs:** `../Peerloop/scripts/matt-inspired-registry.ts`, `npm run prov:sweep`, `docs/as-designed/matt-provenance.md §12c`, `plan/prim-registry/README.md`, `[PRIM-STAMP]`, `[PROV-SWEEP-DEBT]`. Surfaced Conv 404.
 
+### [REC-REHOME]
+
+- **State:** 📋 queued · gate-prerequisite for MERGE-BRIAN §2 M4
+- **What:** give personalized **course recommendations** a home outside `/courses`, so the "Popular Courses" carousel can leave that page.
+- **Why:** Conv 425 §2 disposition walk found `/courses` is the **only** consumer of `RecommendedCourses` — hiding it there (his `[CRS-POPULAR-OFF]`) retires the surface site-wide and strands `/api/recommendations/courses` with no caller.
+- **🔴 Target undecided:** Home is the obvious candidate, but `[FEEDS]` (Conv 267, `memory/project_feeds_hub.md`) explicitly bars re-adding panel surfaces (FeedsHub / ActionCards / TriageStrip) to `/`. Decide the destination before building. `RecommendedCommunities` has the same shape on `/communities` — check whether §3 wants the two solved together.
+- **Blocks:** MERGE-BRIAN §2 **M4 `[CRS-POPULAR-OFF]`** — dispositioned *ADAPT — hide only after rehoming*.
+- **Refs:** `plan/merge-brian/README.md § 2 Dispositions (Batch B)`, `src/components/recommendations/RecommendedCourses.tsx`, `src/pages/api/recommendations/courses.ts`.
+
 ### [RG-PUBLIC]
 
 - **State:** ⏸️ parked · **gate: marketing redesign**
@@ -444,6 +455,14 @@
   - **Leave at warn:** `purity` = `ModeratorDetailContent:83` (`Date.now()` countdown); `preserve-manual-memoization` = `CoursesCatalog:211` (advisory).
 - **Next (opportunistic):** clear residual warnings in files touched for other reasons (`[LE-TRIAGE]`/`[A11Y]` model). No standalone sweep.
 - **Refs:** `../Peerloop/eslint.config.js`, `docs/decisions/06-testing-ci.md §§ RHOOKS/RDOC`, `[A11Y]`, `[LE-TRIAGE]`.
+
+### [ROLE-CRS-LIST]
+
+- **State:** 📋 queued · gate-prerequisite for MERGE-BRIAN §2 M3
+- **What:** give the **teaching** and **moderating** role lenses their own course lists, so `/courses` role tabs can be retired.
+- **Why:** Conv 425 §2 disposition walk found `/courses#teaching` is today the **only** list of the courses a teacher teaches — `/teaching/[...tab].astro`'s own route comment states "There is no courses LIST page, so bare `/teaching/courses` is an unknown tab → redirects to `/teaching`", and `TeacherDashboard` groups *students* by course without ever listing courses. Same shape for `#moderating`. `/learning` already covers the student lens.
+- **Blocks:** MERGE-BRIAN §2 **M3 `[CRS-ROLE-TABS-OFF]`** — dispositioned *ADAPT — hide only after rehoming*.
+- **Refs:** `plan/merge-brian/README.md § 2 Dispositions (Batch A)`, `src/pages/teaching/[...tab].astro`, `src/components/dashboard/TeacherDashboard.tsx`, `src/components/courses/CoursesRoleTabs.tsx`.
 
 ### [RSFD]
 
@@ -587,7 +606,16 @@
 
 ## ✅ Done this conv
 
-- **[ICON-TOK]** — **Phase 6 COMPLETE; the ICON-SIZING block is closed.** Guard promoted warn → **error**, absolute at **zero** governed violations. Biggest finding: **13 of the 25 reported violations were not icons** — `iconRanges()` let the *last* icon definition in a file claim every offset to EOF, so spans, range inputs and avatar circles at lines 247–473 of `BecomeATeacherPage` were governed as icons (the very line-proximity failure that function's doc-comment says it rejects). Bounded each window at the next top-level statement; 25 → 12, verified it did not over-correct by injecting a bare-numeric default into a multi-line icon body (still caught, 12 → 14). Fixed the 12 real sites (`w-8 h-8` → `size-icon-32`). `--update-baseline` now refuses to write a non-zero governed baseline, so the gate cannot be laundered — clean/violation/launder all verified by injection. Also **wired `check:icons` into `npm run verify`** — it had never been in the aggregate chain, so an "error" nothing routinely runs would still have been a warning. 5 gates green: tsc · astro 0/0 · eslint 0 errors · **6131 tests (395 files)** · build. **Both remaining open questions then settled (user):** (a) the `.astro` attribution blind spot is **accepted and documented** — measurement showed `check:icons` *does* statically enforce `.astro` (injection → exit 1; 70 icon tags / 21 files), so the gap costs completeness reporting, not correctness; (b) the 98 `ui/icons.tsx` defaults are **kept but excluded from the ledger denominator** — resolving imports properly gave **0 of 395 usages relying on a default** (the old "6" were all name collisions: local `CheckIcon`/`CloseIcon` wrappers and a different `entity/UserIcon`), so a default can never be proven by rendering. Ledger denominator **635 → 528 call sites**. Runtime `icons:scan` baseline regenerated: `/become-a-teacher` 14 → **20 tokened**, app-wide **0 known findings**. New task `[ICON-STATES]` carries the one genuine remainder.
-- **[ICON-4PX]** — **Residue A CLEARED, task closed.** `/become-a-teacher` measured before/after via the bridge at a true 1280 viewport: benefit icons **8×8 → 32×32**, check/close circles **8×8 → 32×32** (they had been 8px boxes holding 20px glyphs), step-number circles and testimonial avatars **12×12 → 48×48**, sub-12px SVGs **6 → 0**. Icons went to `size-icon-32` (rem, **scale to 48px at a 24px root** — proof they are genuinely tokened); non-icon circles to arbitrary px per the two-way standard, so they correctly stay pinned. Slider tracks left at 8px — checked pre-sweep and they were `h-2` = 8px all along, so 'restoring' 32px would have invented a change. Added `shrink-0` to the avatar, which squeezed to 42×48 at a 24px root. Two parts of the task's own note were **stale**: the `w-5 h-5` 8×20 squeeze and the `w-24` label column do not exist in the file (0 occurrences in either tree).
-- **[SPACING-VIS]** — visual pass COMPLETE: **all 53 canonical routes** checked at a true 1280 viewport across 5 roles (student/teacher/creator/admin/mod + signed-out). **Zero Conv-423 regressions.** Proved completeness arithmetically as well as visually: all **92** surviving non-multiple-of-4 spacing utilities correspond **1:1** to the **92** fractional utilities (`*-0.5/1.5/2.5`) that existed pre-sweep, and **zero** fractionals remain — exact accounting, no per-class mismatch, so no call site was missed. Three pre-existing defects surfaced and attributed away from the sweep: `[ADMIN-OVFLW]`, `[LH1]`, and the known `[ICON-4PX]` 8px icons (`w-8` = 8px both before and after, since 8 is in the override set). `/old/*` excluded by decision.
-- **[BRIDGE-DIAG]** — premise falsified: the Chrome bridge reaches the local dev server fine (full render, islands hydrated, authenticated). `127.0.0.1:4321` fails only because `astro dev` binds `[::1]` only; the Conv-413 "proxy in its profile" diagnosis is **disproven** by a throwaway IPv4-bound server the bridge loads without trouble. Also identified the trap that produced the misdiagnosis: `navigate` returns a success-shaped result while the tab sits on `chrome-error://chromewebdata/`. Memo + MEMORY.md index corrected. No code change.
+- **MERGE-BRIAN §2 `/courses` disposition walk — COMPLETE.** 16 mechanisms inventoried from the pivot
+  and all dispositioned: 3 ADOPT · 12 ADAPT · 1 DROP. Recorded in `plan/merge-brian/README.md § 2`.
+  Two ADAPTs are gated on new prerequisite tasks (`[ROLE-CRS-LIST]`, `[REC-REHOME]`).
+- **MERGE-BRIAN §2 Tier A + B — BUILT.** Page shell (M1 640-left geometry · M2 search-first · M15
+  "Enroll Now" · M16 panel kept and extended) and toolbar (M5 topic pills keeping Level/Length/
+  `availableSoon` · M6 tokenised flat pills · M7 visible compact sort · M8 opt-in `compact`/`dense`).
+  5 gates green, suite **6131 → 6139** (new `CoursesFilters.test.tsx`, 8 tests), live-verified signed
+  in and signed out.
+- **`[FORMCHROME]` — pre-existing site-wide form-chrome defect fixed.** `@tailwindcss/forms` chrome
+  was rendering *inside* our `Input`/`Select` wrappers (own 1px border + 8px/12px padding on the inner
+  control), showing a hard-cornered box nested in the rounded pill on every form, and capping the new
+  `compact` variant at 49px instead of 34px. Fixed as the twin of Conv 223 `[DRV-C]`. Measured before
+  and after; `/login` and `/communities` re-verified.

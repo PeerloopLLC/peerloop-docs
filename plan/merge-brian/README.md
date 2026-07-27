@@ -39,7 +39,7 @@
 | # | Review unit | Status |
 |---|---|---|
 | 1 | `/course/[slug]` detail | ✅ **COMPLETE (Conv 412)** — dispositions DONE (Conv 408, 12 mechanisms: 9 ADAPT · 3 DROP · 0 ADOPT). **All 9 ADAPT built:** Tier A+B (Conv 409, M1/M4/M5 + M6/M7/M12) · Tier C M10/[RECEIPT] (Conv 410) · Tier C M2 `[SESS-TAB]` (Conv 411) · Tier C M3 `[SESS-FILES]` (Conv 412) · hero refinement `[HERO]` (Conv 413) · colour-theme toggle `[TAB-THEME]` (Conv 414) · UI + messages follow-ups (Convs 415–419, incl. the **MESSAGES mini-plan M1–M6, COMPLETE Conv 419** — see build logs). Only the 3 DROPs unbuilt (2 soft/revisitable) |
-| 2 | `/courses` catalog | ⬜ |
+| 2 | `/courses` catalog | 🔄 **dispositions DONE + Tier A/B BUILT (Conv 425)** — 16 mechanisms: 3 ADOPT · 12 ADAPT · 1 DROP. **Built:** M1 M2 M15 M16 (page shell) · M5 M6 M7 M8 (toolbar), plus finding **F1** — a pre-existing site-wide doubled form-chrome defect — confirmed by measurement and fixed. 5 gates green (suite **6139**, +8 new tests) + live-verified. **Remaining:** Tier C (M9 M10 M11 M12 M13 M14); M3 + M4 gated on `[ROLE-CRS-LIST]` / `[REC-REHOME]` |
 | 3 | `/community/[slug]` + `/communities` (+`[COMM-BRAND]` feature decision) | ⬜ |
 | 4 | **Site-wide shell track** (`[BACK-X]` back-nav, `SubNav`/`SubNavItem`, `Sidebar`, forms, `AppLayout`) | ⬜ |
 | 5 | Sessions-files feature (`0006` + storage API) — adopt/reject as a feature | ⬜ |
@@ -363,7 +363,162 @@ Token note: his CTA uses raw `rgba` shadow values; ours must tokenise.
 
 ## 2 · `/courses` catalog review
 
-_(pending)_
+**Scope (Conv 425).** Files at the pivot that land on this screen: `src/pages/courses.astro`,
+`courses/CoursesCatalog.tsx`, `courses/CoursesFilters.tsx`, `courses/CourseCatalogCard.tsx`,
+`courses/CourseCoverPanel.tsx` (**new**), plus five shared primitives the screen pulls in
+(`form/Input.tsx`, `form/Select.tsx`, `ui/IconLabelChip.tsx`, `layout/StickyListingToolbar.astro`,
+`layout/ListingShell.astro`). **Excluded** and handled elsewhere: `CourseMiniHeader.tsx` +
+`CourseRail.astro` (§1 `[HDR-ABOVE-TABS]`, already ADAPTed) · `CourseEmbedCard.tsx` elevation
+(§1 `MattCourseFeed` row) · `communities/*` (§3) · "Peer Teachers" relabel in
+`CoursePerformanceTable`/`CourseEditor`/`CourseTabs` (§6).
+
+**Baseline check (Conv 425):** ours is **byte-identical to the merge-base** on all four core
+`/courses` files (`courses.astro`, `CoursesCatalog`, `CoursesFilters`, `CourseCatalogCard`), and
+carries **none** of the cover-story machinery (no `CourseCoverPanel`, no `CommunityBand` on the
+card, no `enrollment` journey mode, no `reviewsHref`). So every mechanism below is genuinely
+undecided — nothing here has been silently absorbed by §1's work.
+
+### Mechanism inventory (Conv 425 — dispositions pending)
+
+| # | Mechanism | Ripple | Token/colour | Notes |
+|---|---|---|---|---|
+| M1 | `[CRS-LAYOUT]` /courses adopts Home's 640px left-anchored two-column geometry; drops `ListingShell` **and** the rail/top `navLayout` variance (filters always inline `orientation="top"`) | `ListingShell` keeps 3 other consumers (`index`, `communities`, `members`); kills [LAYOUT-MODE] Phase D rail mode **for this page only** | clean | page-level twin of §1's `[FEED-WIDTH]` (DROPped, soft) |
+| M2 | `[CRS-SEARCH-FIRST]` visible "Browse Courses" h1 + description removed (sr-only h1 kept); toolbar leads the page; nudge banner moves below it | none | clean | a11y preserved via `sr-only h1` |
+| M3 | `[CRS-ROLE-TABS-OFF]` `CoursesRoleTabs` hidden (commented out, code retained) | 🔴 the As-Student/Teaching/Moderating **lenses become unreachable**; `courses:tabchange`, sub-filters + hash routing all go dormant | n/a | functional removal, not cosmetics |
+| M4 | `[CRS-POPULAR-OFF]` "Popular Courses" `RecommendedCourses` carousel hidden (code retained) | recommendations surface loses its only home on this page | n/a | functional removal |
+| M5 | `[TOPIC-PILLS]` Level / Topic / Length dropdowns + "Filters" collapse → one horizontally-scrolling **topic** pill row (sticky "All", drag-scroll, flanking ◀▶ arrows) | 🔴 **Level and Duration filters disappear from the UI** (`FilterState` contract keeps them `null`, catalog code untouched) | clean | functional narrowing |
+| M6 | `[PILL-FLOAT]` raised-pill treatment: two-layer shadows, hover lift 1px, selected = blue gradient capsule | none (page-local) | 🔴 raw `#2a93d5`, `#dfe6ee`, 8 `rgba` shadow stacks | same class as §1 `[TAB-FLOAT]` → ADAPTed compact-only, colours later shipped tokenised as `[TAB-THEME]` |
+| M7 | `[SORT-IN-SEARCH]` sort moves **inside** the search box: chevron-only slot behind a hairline divider, invisible native `<select>` beneath; chevron tints brand-blue when sort ≠ default | consistency with our `TeachersTabList` (Conv 409), which kept a **visible** `Select` | clean | sort label disappears — discoverability trade |
+| M8 | `[TOOLBAR-COMPACT]` `compact` prop on `Input` + `Select` (34px vs 46px) + `StickyListingToolbar` slimming (`gap-12→8`, `py-8→4`, riser `20→16px`) | 🔴 toolbar is shared by `/courses`, `/communities`, `/members` — the riser trim is site-wide | clean | opt-in props are safe; riser is not |
+| M9 | `[COVER-STORY]` catalog card → "Cover story" hero: white card, left `CourseCoverPanel` (price sticker + badge), description-forward 3-line clamp (✓ checklist gone), ONE merged bottom meta line, `min-h-190` density "Option B", resting+hover 2-layer shadow, course icon right of title, green CTA docked in the title row | card is also used by `RecommendedCourses` / community Courses tabs — his change is gated to `variant="overlay" + context="catalog"`, so other hosts are untouched | 🔴 `CourseCoverPanel` gradient hexes (`#0e3a5c`, `#0b2740`, `rgba(18,179,168)`, `rgba(88,77,244)`) + shadow `rgba` stacks | the flagship of §2 |
+| M10 | `[COVER-STORY-MIRROR]` the **detail** hero (`CourseHeader`) renders the same shared `CourseCoverPanel` so catalog card and detail hero look identical | 🔴 **collides with our Conv-413 `[HERO]` work** (variant-system collapse + compaction + `@container` reflow) | as M9 | client's explicit request at the pivot: *"make the detail page card look exactly like the summary listing"* |
+| M11 | `[CARD-COMM-BAND]` `CommunityBand` footer on catalog cards (whole strip → community page) | low — we already adopted `CommunityBand` (§1 `[COMM-BAND]`, Conv 410) | reuses adopted tokens | cheap extension of an already-built primitive |
+| M12 | `[CARD-JOURNEY]` enrolled viewers get journey mode on the card: ✓ Enrolled/Completed cover badge, CTA becomes the next journey step (book first/next · Teach this course), meta line trades students·level for own progress | duplicates `buildCoursePrimaryCta` semantics **client-side** | 🔴 his string is "Certificate earned" — **violates our [DIPLOMA] rule** (completion = diploma) | needs our own next-step source of truth |
+| M13 | `[CHIP-LINK]` `IconLabelChip` gains `tone="link"` (brand blue) + `hoverUnderline` (label-only underline via `group-hover`) | shared primitive, additive | clean | our Conv-415 `[STEP-LINK]` chose a **persistent** underline for the same problem — consistency call |
+| M14 | `[PRICE-FMT]` price drops forced decimals (`$249`, not `$249.00`) | bypasses shared `formatPrice` locally (11 call sites) | n/a | **see finding F2 — this fixes a real inconsistency on our side.** *(The "abbreviated rating" his comment claims is **already ours** — `ratingLabel` was unchanged context in his diff, comment-only.)* |
+| M15 | `[ENROLL-NOW]` catalog CTA label "Enroll" → "Enroll Now" | none | n/a | trivial |
+| M16 | `[PANEL-REMOVE]` the light-blue "More coming soon" placeholder panel deleted **site-wide** (`ListingShell` + `AppLayout` + Home + /courses) | 🔴 site-wide; our Home renders this panel today (Conv 298 client markup) | removes an `#eff6ff` honest-orphan | interacts with M1: 640-left-anchored **without** a panel leaves /courses' right region empty at ≥lg |
+
+### Findings surfaced while building the inventory (Conv 425)
+
+- **F1 — `form/Input.tsx` may double-render form chrome on ours (unverified).** `@tailwindcss/forms`
+  is active (`src/styles/global.css:5`). Our `Select` strips the plugin's chrome (Conv 223
+  `[DRV-C]`), but our `Input` never got the twin fix — the wrapper div owns a border + `px-16 py-12`
+  while the inner `<input>` keeps the plugin's own border, padding and focus ring. His pivot adds
+  exactly that fix (`appearance-none border-0 p-0 focus:ring-0`) bundled into the `compact` commit.
+  **Needs live measurement before being called a defect** — plausible from the code, not confirmed.
+- **F2 — our price format is inconsistent between catalog and detail (verified, both sides read).**
+  `CourseHeader.tsx:157` uses `minimumFractionDigits: 0` → **`$249`**; `CoursesCatalog` uses shared
+  `formatPrice` (`lib/db/types.ts`, no `minimumFractionDigits`) → **`$249.00`**. Same course, two
+  formats, one click apart. M14 is the fix; the open question is local override vs changing
+  `formatPrice` for all 11 call sites.
+
+### Dispositions
+
+_(walk in progress — Conv 425)_
+
+**Batch A — page shell + IA (decided Conv 425):**
+
+| # | Disposition | Build note |
+|---|---|---|
+| M1 `[CRS-LAYOUT]` | **ADAPT** — take Home's 640px left-anchored two-column geometry on `/courses` | `ListingShell` stays untouched for its 3 other consumers (`index`, `communities`, `members`); this page stops varying by `navLayout` (filters always `orientation="top"`) |
+| M16 `[PANEL-REMOVE]` | **DROP his removal** — keep the light-blue panel **and extend it to `/courses`** | Home keeps its Conv-298 panel; `/courses` gains the same `#eff6ff` sticky aside so M1's right region isn't dead space. His site-wide deletion is not adopted |
+| M2 `[CRS-SEARCH-FIRST]` | **ADOPT** — search leads the page | Visible "Browse Courses" h1 + description out, `sr-only` h1 in; toolbar first, nudge banner below it |
+| M3 `[CRS-ROLE-TABS-OFF]` | **ADAPT — hide only after rehoming** | 🔴 **Blocked on a prerequisite:** `/teaching` has no courses-list page (its own route comment says so; `TeacherDashboard` groups students by course but never lists them), so `/courses#teaching` is today the only list of a teacher's courses — same for `#moderating`. `/learning` already covers the student lens. Give teaching + moderation their own course lists **first**, then hide the tabs here. Tracked as `[ROLE-CRS-LIST]` |
+
+**Batch B — filter toolbar (decided Conv 425):**
+
+| # | Disposition | Build note |
+|---|---|---|
+| M4 `[CRS-POPULAR-OFF]` | **ADAPT — hide only after rehoming** | 🔴 **Blocked on a prerequisite:** `/courses` is the **only** consumer of `RecommendedCourses`, so hiding it retires personalized course recommendations site-wide and leaves `/api/recommendations/courses` with no caller. Rehome the surface first. **Target is undecided** — Home is the obvious candidate but `[FEEDS]` (Conv 267) bars re-adding panel surfaces to `/`. Tracked as `[REC-REHOME]` |
+| M5 `[TOPIC-PILLS]` | **ADAPT — pill row, keep Level + Length** | Take the single-line scrolling **topic** pill row (sticky "All", drag-scroll, flanking arrows); Level and Length stay reachable rather than being dropped to `null`. Keeps `FilterState` fully exercised |
+| M6 `[PILL-FLOAT]` | **ADAPT — tokenised, flat** | Compact geometry + clear selected state; **no raw hexes, no gradient** — same call as §1 `[TAB-FLOAT]`. The `#2a93d5` / `#dfe6ee` / 8 `rgba` shadow stacks are not adopted |
+| M7 `[SORT-IN-SEARCH]` | **ADAPT — visible compact control** | Sort stays a labelled compact `Select` in the toolbar: matches `TeachersTabList` (Conv 409) and keeps sorting discoverable. The chevron-in-search trick (invisible native `<select>`) is not adopted |
+
+**Batch C — the card (decided Conv 425):**
+
+| # | Disposition | Build note |
+|---|---|---|
+| M8 `[TOOLBAR-COMPACT]` | **ADAPT — every shared change opt-in** | `compact` props on `Input` + `Select` adopted (additive, default unchanged); the `StickyListingToolbar` slimming (`gap-12→8`, `py-8→4`, riser `20→16px`) goes behind an **opt-in prop** so `/communities` and `/members` stay bit-identical. Same opt-in discipline as §1's shared-primitive adoptions. Verify **F1** while in `Input.tsx` |
+| M9 `[COVER-STORY]` | **ADAPT — cover-story card, tokenised** | Left `CourseCoverPanel` + price sticker + badge on the cover, description-forward 3-line clamp, ONE merged bottom meta line, `min-h` "Option B" density, resting + hover elevation, course icon right of title, CTA docked in the title row. **Built on our palette tokens — no raw hex, no gradient** (his `#0e3a5c`/`#0b2740`/`rgba(18,179,168)`/`rgba(88,77,244)` are not adopted). Gated to `variant="overlay" + context="catalog"` so `RecommendedCourses` and community Courses tabs are untouched |
+| M10 `[COVER-STORY-MIRROR]` | **ADAPT — share the cover panel only** | Both surfaces render the same `CourseCoverPanel`, so cover art + price sticker are identical; our Conv-413 `[HERO-COLLAPSE]` hero keeps its slim band, compaction and `@container` reflow. The client's "make the detail page look exactly like the listing" is honoured at the cover, not by cloning the card |
+| M11 `[CARD-COMM-BAND]` | **ADOPT** | Reuse the `CommunityBand` primitive built Conv 410 (§1 `[COMM-BAND]`); whole strip links to the community page |
+
+**Batch D — journey, chips, formats (decided Conv 425):**
+
+| # | Disposition | Build note |
+|---|---|---|
+| M12 `[CARD-JOURNEY]` | **ADAPT — badge + progress, no CTA change** | ✓ Enrolled / ✓ Completed cover badge + own-progress meta line for enrolled viewers; **CTA logic untouched**. Rationale: his card CTA is derived from the client snapshot (`{status, modulesCompleted, modulesTotal}`) only, while our `buildCoursePrimaryCta` (`_course-tabs.ts:255`, pure) resolves an upcoming session to `Go to Session N → /session/[id]` **before** offering booking — so his version would read "Book next session" on the catalog and "Go to Session 3" on the detail for the same course. Giving the card the real next step needs per-course journey state in the catalog loader (N-per-course SSR). 🔴 Progress wording must say **diploma**, never "Certificate earned" (`[DIPLOMA]`); his completed-CTA ("Teach this course" → `/become-a-teacher`) also diverges from ours ("Review your sessions") and is not adopted |
+| M13 `[CHIP-LINK]` | **ADAPT — link tone, persistent underline** | `IconLabelChip` gains `tone="link"` (brand blue); the affordance uses the **persistent** underline standardised by `[STEP-LINK]` (Conv 415), not his hover-only `group-hover:underline` |
+| M14 `[PRICE-FMT]` | **ADAPT — fix the shared helper** | Add `minimumFractionDigits: 0` to `formatPrice` (`lib/db/types.ts`) so all 11 call sites agree with `CourseHeader.tsx:157`. Closes **F2**. Only whole-dollar amounts change (`$19.99` is unaffected — it's a *minimum*) |
+| M15 `[ENROLL-NOW]` | **ADOPT** | Catalog CTA label "Enroll" → "Enroll Now", matching the detail hero's own `$249 • Enroll Now` |
+
+### Build log — §2 Tier A + B (Conv 425, all 5 gates green + live-verified)
+
+**Tier A — page shell** (`src/pages/courses.astro`): `ListingShell` replaced by Home's two-column
+geometry (M1) — measured live at **640px column anchored left (x=437) + 284px panel at x=1101** on a
+1600px viewport; the `[LAYOUT-MODE]` `isRail` branch and its duplicate filter island are gone, so the
+page no longer varies by `navLayout`. The light-blue "More coming soon" panel is **kept and extended
+here** (M16 — his site-wide deletion not adopted). Visible hero removed, `h1` now `sr-only` (M2 —
+measured 1px tall), toolbar leads the column, nudge + carousel below it. Catalog CTA → "Enroll Now" (M15).
+
+**Tier B — toolbar** (`CoursesFilters.tsx` rewritten, `form/Input.tsx`, `form/Select.tsx`,
+`layout/StickyListingToolbar.astro`): topic pill row with sticky "All", drag-scroll and flanking
+arrows (M5) — **Level, Length and our `availableSoon` [CAF] filter all kept reachable** behind the
+Filters toggle, where his version hard-coded `level`/`duration` to `null` and had no `availableSoon`
+at all. Pills are flat and token-only (M6): selected = `bg-primary-light` + `text-primary-default`,
+zero raw hex. Sort stays a labelled compact `Select` (M7). `compact` props added to `Input`/`Select`
+and a `dense` prop to `StickyListingToolbar` — **all opt-in** (M8): `/communities` verified still on
+the default bar with its 20px riser. The icon set has no `chevron-left`, so the arrows mirror
+`chevron-right` with `rotate-180` rather than adding a near-duplicate asset.
+
+**🔴 Finding F1 CONFIRMED and FIXED — a pre-existing site-wide defect, not his mechanism.** Measured
+live on `/courses`: the inner `<input>` carried **its own 1px border (the forms-plugin grey) plus
+8px/12px padding** inside `Input`'s wrapper border+padding, rendering a hard-cornered box nested in
+the rounded pill; `Select` had the padding half of the same bug (Conv 223 `[DRV-C]` stripped its
+border but not its `8px 40px 8px 12px` padding). This also **blocked M8's intent** — the `compact`
+wrapper measured **49px** where ~34px was intended. Fixed as the twin of `[DRV-C]`
+(`appearance-none border-0 p-0 focus:ring-0`). After: search **49→34px**, sort **44→34px**, Filters
+button aligned to 34px via `py-8`, toolbar **94→79px**; the default (non-compact) variant is now a
+consistent **46px for both primitives**, which previously disagreed (59 vs 56). `/login` re-verified
+visually — clean single-bordered fields.
+
+**Live verification** (`localhost:4321`, dev seed, signed in as `amanda.lee@example.com`): topic pill
+filters the catalog **6 → 2 courses** with the chip and "Clear filters" appearing; "All" resets to
+null; role tabs render (`All 6` · `As Student 1`) confirming M3's keep — signed **out** they are
+correctly absent because `RoleTabBar.tsx:92` returns null at ≤1 tab; the "Popular Courses" carousel is
+retained (M4). Arrow handler verified to fire with the exact expected step (454.4 ≈ `clientWidth×0.8`)
+and to scroll the row to 454.5 when the animation is not suppressed.
+
+**⚠️ Residual verification gap:** the arrows' **smooth animation** and their **enabled/disabled
+toggle** could not be confirmed — Chrome suppresses programmatic smooth scrolling and throttles
+re-renders in a tab whose `visibilityState` is `hidden`, and the bridge tab could not be foregrounded.
+The handler logic and scroll math are verified; the animation needs a foreground eyeball.
+
+**Tests:** new `tests/components/courses/CoursesFilters.test.tsx` (8 tests) pins M5's contract claim —
+that the published `FilterState` keeps every field rather than nulling `level`/`duration` — plus the
+pill semantics, Level/Length reachability, the visible sort, and role-tab collapse. Suite
+**6131 → 6139** (396 files). 5 gates green: tsc · astro check 0 errors · lint 0 errors · 6139 tests ·
+build complete. Tailwind check's 3 `outline-none` hits are the pre-existing `[OUTLINE-V4B]` sites in
+files this build never touched.
+
+**Not built (Tier C, next):** M9 cover-story card · M10 shared `CourseCoverPanel` on the hero ·
+M11 community band on cards · M12 badge + progress · M13 link chips · M14 the `formatPrice` fix that
+closes F2 (the catalog still shows `$249.00` against the detail hero's `$249`).
+
+### §2 walk result (Conv 425)
+
+**16 mechanisms · 3 ADOPT · 12 ADAPT · 1 DROP.** Two ADAPTs are **gated on prerequisites** and are not
+buildable yet: M3 (`[ROLE-CRS-LIST]`) and M4 (`[REC-REHOME]`). The other **14 are buildable now**.
+
+Suggested build tiers (mirrors §1's A/B/C staging):
+
+- **Tier A — page shell:** M1 640-left geometry · M16 panel extended to `/courses` · M2 search-first · M15 label
+- **Tier B — toolbar:** M5 topic pills + retained Level/Length · M6 tokenised pill treatment · M7 visible compact sort · M8 opt-in `compact`/`dense` props (**verify F1 while in `Input.tsx`**)
+- **Tier C — card:** M9 cover-story card (tokenised) · M11 community band · M12 badge + progress · M13 link chips · M10 shared `CourseCoverPanel` on the hero · M14 `formatPrice` fix
+
+The two DROP-adjacent notes worth keeping: his site-wide `[PANEL-REMOVE]` is **not** adopted (M16), and
+his `[SORT-IN-SEARCH]` chevron is **not** adopted (M7) — both are revisitable if the client raises them.
 
 ## 3 · Communities review
 
