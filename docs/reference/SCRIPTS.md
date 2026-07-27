@@ -38,8 +38,9 @@ All commands run from the code repo: `cd ../Peerloop && npm run <name>`
 | `npm run prov:sweep` | Provenance collision-detection validator (Matt design-system attribution drift) |
 | `npm run prov:page-report` | DOM page-conformity report — rendered-page check for unvetted UI (runtime companion to `prov:sweep`) |
 | `npm run prim:treewalk` | Static primitive-candidate surveyor — source-graph walk that nominates raw markup for vetting (static primary to `prov:page-report`'s runtime backstop) |
-| `npm run check:icons` | Static icon-sizing guard — bare-numeric `w-`/`h-`/`size-` classes, new-violations-only against a committed baseline (exit 1 on regression) |
+| `npm run check:icons` | Static icon-sizing guard — bare-numeric `w-`/`h-`/`size-` classes **on icons**, new-violations-only against a committed baseline (exit 1 on regression) |
 | `npm run icons:scan` | Runtime icon measurement — 97 route-states at two root font sizes, diffed against a committed baseline (informational; needs dev server + dev seed) |
+| `npm run spacing:scan` | Runtime spacing-invariant proof — measures every rendered `X-N` spacing class and asserts it computes to N px (needs dev server + dev seed) |
 
 ### Testing
 
@@ -500,7 +501,11 @@ npm run prim:treewalk -- <entry> --include-shell   # also walk @layouts/* chrome
 
 #### `scripts/check-icon-sizing.ts`
 
-Static icon-sizing guard (Conv 419 [ICON-TOK], Phase 1 of `plan/icon-sizing/README.md`) — the **static** half of the icon-size pair. `tokens-tailwind-bridge.css` overrides ten Tailwind spacing values (4, 8, 12, 16, 20, 24, 32, 40, 48, 64) from `N × 4px` to a literal `N px`, so `h-4` renders 4px while `h-5` renders 20px — identical syntax, two meanings, decided by set membership. That shipped 4px icons and two near-invisible 4px checkboxes.
+Static icon-sizing guard (Conv 419 [ICON-TOK], Phase 1 of `plan/icon-sizing/README.md`) — the **static** half of the icon-size pair.
+
+**Originally** it caught a size *ambiguity*: `tokens-tailwind-bridge.css` overrode ten Tailwind spacing values (4, 8, 12, 16, 20, 24, 32, 40, 48, 64) from `N × 4px` to a literal `N px`, so `h-4` rendered 4px while `h-5` rendered 20px — identical syntax, two meanings, decided by set membership. That shipped 4px icons and two near-invisible 4px checkboxes.
+
+**Reframed Conv 423.** That ambiguity is gone at the root: the bridge now sets Tailwind v4's base `--spacing` to `0.0625rem`, so **every** number means its own pixel count. What the gate enforces now is narrower and purely a **readability** claim — `size-icon-20` says the element is an icon on the icon axis, `size-20` says only that something is 20px. A violation here is a legibility defect, not a rendering one; the rule help text was rewritten accordingly (anything phrased "this renders at the wrong size" would now be false).
 
 ```bash
 npm run check:icons
@@ -510,13 +515,14 @@ npm run check:icons -- --update-baseline   # re-snapshot scripts/icon-sizing-bas
 
 **What it does:**
 - Walks `git ls-files src` (`.ts`/`.tsx`/`.astro`), skipping `src/styles/` and comment lines (a comment naming `h-4 w-4` is documentation, not a violation)
-- **R1 `icon-bare-numeric-*` / `dimension-bare-numeric`** — a bare-numeric `w-`/`h-`/`size-N`, **classified by whether it sizes an icon or a box** (split Conv 421). Icon-governed matches report as `icon-bare-numeric-overridden` (means N px, reads as N×4) or `icon-bare-numeric-multiplier` (means N×4, and breaks if N is ever added to the override set); everything else reports as `dimension-bare-numeric` and is **measured but not gated** — skeleton bars, unread dots, avatars, thumbnails, layout boxes and `min-`/`max-` constraints belong to a different axis. Icon context is decided structurally, by testing the match's character offset against ranges built from (a) whole icon **tags**, reusing R3's matching so multi-line tags work, and (b) icon component **definition bodies**, where a `className = 'h-5 w-5'` default sizes every un-classed call site — Conv 420 cleared 200 violations from 94 such defaults, so missing them would misclassify the highest-leverage sites as non-icon. Deliberately *not* line proximity: that was tried while scoping and misread infinite-scroll sentinels (`<div ref={sentinelRef} className="h-4" />`) as icons because an icon tag sat a few lines above
+- **R1 `icon-bare-numeric-*`** — a bare-numeric `w-`/`h-`/`size-N`, **classified by whether it sizes an icon or a box** (split Conv 421). Only icon-governed matches are reported, as `icon-bare-numeric-overridden` or `icon-bare-numeric-multiplier`. **The two names are vestigial since Conv 423** — both now mean exactly N px and carry identical help text; the split is kept only so the committed baseline stays diffable across that change. Non-icon matches (skeleton bars, unread dots, avatars, thumbnails, layout boxes, `min-`/`max-` constraints) are **not reported at all** — see the retired informational tier below. Icon context is decided structurally, by testing the match's character offset against ranges built from (a) whole icon **tags**, reusing R3's matching so multi-line tags work, and (b) icon component **definition bodies**, where a `className = 'h-5 w-5'` default sizes every un-classed call site — Conv 420 cleared 200 violations from 94 such defaults, so missing them would misclassify the highest-leverage sites as non-icon. Deliberately *not* line proximity: that was tried while scoping and misread infinite-scroll sentinels (`<div ref={sentinelRef} className="h-4" />`) as icons because an icon tag sat a few lines above
   - **Precision fixed Conv 421.** The original `\b(?:w|h|size)-(\d+)\b` made two wrong word-boundary assumptions that inflated the count by **145**: `\b` after a hyphen is a boundary, so `min-w-0` matched as `w-0` (94 occurrences, reported under a class name absent from the file, so ungreppable); and `\b` before `/` is a boundary, so the fraction `w-1/2` matched as `w-1` (51 occurrences with no ambiguity at all, since a percentage width never consults the spacing scale). The lookbehind now captures `min-`/`max-` **whole** rather than half-matching it, and the lookahead rejects `/`, letters (`w-4xl`) and `-`
   - **Calibration** (per `[CMH]`, run before commit): 14 regex cases — fractions, `w-4xl`, `size-icon-20` and `size-[24px]` must not fire; `h-4 w-4`, decimals, responsive prefixes, min-/max- and a class preceded by one ending in a digit must — plus an injected probe component verifying all six element shapes classify correctly and that the gate flags the probe as a regression
 - **R2 `icon-no-size-class`** — an icon component (`MattIcon`, `*Icon`, `*Logo`) with **provably no sizing input anywhere**: none at the call site *and* none in the component itself, so it falls back to intrinsic size or 100% of its container — the failure mode runtime scanning only catches where you happen to navigate. **Narrowed Conv 420:** the first cut tested the call site only and reported 51 (46 by the time it was worked). Reading all 46 showed every one was a false positive — 14 were `@components/entity/UserIcon`, an avatar with a typed `size?: 24 | 40` prop that the standard puts in the "neither" bucket (the rule had matched on the *name* ending in `Icon`); the other 32 resolved their size one level in, via a `className = 'h-5 w-5'` parameter default or a hard-coding wrapper, whose *definition* lines R1 already counts. A `selfSizingIcons()` pre-pass now scans each component's definition body for a dimension class or a `size` prop — structural, so it can't rot the way a hand-maintained allowlist would. True count after the narrowing: **0**
 - **R3 `icon-arbitrary-px`** — arbitrary `size-[Npx]` on an icon component: pinned, so it ignores the reader's font size. **Governed, and the class is retired** — Conv 421 took it 187 → 0, so it no longer appears in the baseline at all and any reappearance is an immediate regression. (Note the word *informational* below names a formal, separate tier — R3 is not in it)
 - **New-violations-only.** ~1,600 bare-numeric classes pre-dated the rule, so a hard gate would be red on day one and immediately ignored. Compares per-file counts against `scripts/icon-sizing-baseline.json` (same shape as `KNOWN_ORPHANS` in the orphan detector) so a violation *moving within* a file isn't a regression. `--update-baseline` is the only supported mutation path, which keeps baseline growth a reviewable diff
-- **The headline total is the migration target, not every dimension class** (Conv 421). Only governed rules count toward the total and drive regression; `dimension-bare-numeric` is printed in its own *Informational — measured, NOT gated* section and stored under `informational` in the baseline file, so a sudden jump still shows up in the diff without polluting the progress number. The split took the baseline **1,143 → 560**, of which 51 was regex noise that never existed
+- **The headline total is the migration target, not every dimension class** (Conv 421). Only governed rules count toward the total and drive regression. The Conv-421 split introduced an *Informational — measured, NOT gated* tier holding `dimension-bare-numeric`, which took the baseline **1,143 → 560** (51 of it regex noise that never existed)
+- **The informational tier is RETIRED (Conv 423).** `dimension-bare-numeric` measured an ambiguity — `h-32` meaning either 32px or 128px — that the base-multiplier fix eliminated, so the rule was **deleted rather than zeroed** (an empty tier would read as "exists and is clean", which is false). `INFORMATIONAL` is now an empty set, kept as a mechanism so a future rule can still land warn-first; `--update-baseline` **omits the `informational` key entirely** rather than writing `{}`. Current baseline: **25 governed violations in one file**, nothing else reported
 
 **Exit code:** 0 = no new violations; 1 = regression (so it can join `/w-codecheck`).
 
@@ -560,6 +566,34 @@ npm run icons:scan -- --drive-invite accept|decline   # MUTATES the dev DB — s
 **Coverage caveat:** route coverage is complete (50/50 in-scope pages). The remaining residue is **state** coverage, not route coverage — interaction-gated UI (dropdown menus, slide-over panels, modals) and loading/skeleton states still need PLATO rather than a URL, and the `.astro` sites above are a permanent blind spot for attribution.
 
 **Called by:** `npm run icons:scan`
+
+---
+
+#### `scripts/spacing-scan.mjs`
+
+Runtime proof of the **spacing invariant** (Conv 423 [ICON-TOK], Phase 6) — the sibling of `icon-scan.mjs`, for the general spacing axis rather than the icon axis.
+
+**The invariant.** Conv 423 set Tailwind v4's base `--spacing` to `0.0625rem` in `tokens-tailwind-bridge.css`, so a spacing class `X-N` means exactly **N pixels** at the default root — for every N, not just the ten named in the bridge. This script drives Playwright over the app and asserts that live.
+
+```bash
+npm run spacing:scan                      # default 12-route set
+npm run spacing:scan -- --routes /a,/b    # limit to specific routes
+npm run spacing:scan -- --verbose         # list every strict mismatch (first 60)
+```
+
+**What it does:**
+- Visits **12 routes** as `sarah.miller@example.com` via `POST /api/auth/dev-login`, reads every element's **live class list** (not source — so entity ids like `m-1` can never be mistaken for a class), and compares each parsed `X-N` against `getComputedStyle`
+- **Two tiers.** `padding` / `margin` / `gap` / `min-*` / `max-*` resolve straight from the class, so a mismatch is a real defect — these are the **STRICT** set and the only ones that fail the run. `w-` / `h-` / `size-` are layout-negotiated (a flex child with `w-40` legitimately renders narrower), so they are measured and reported but **never failed on**
+- **Variant-shadowed base classes are skipped.** An element carrying both `px-16` and `lg:px-32` computes to whichever variant wins at the test viewport; comparing the base class against that reports a defect that is not one. Without this the first run reported **184 mismatches, every one variant-shadowed**
+- Shorthand utilities are expanded to single-valued properties (`px` → `padding-left` + `padding-right`) so the computed value is always a plain px string; non-px results (`auto`, `none`, percentages) are skipped. Tolerance is sub-pixel (`< 0.51px`)
+
+**Why it also proves the Conv-423 migration was neutral.** The sweep rewrote every call site that relied on the old ×4 reading as `N → N*4`. Since `N*4 × 0.25rem_old ≡ N × 0.0625rem_new`, a scan finding that every rendered `X-N` measures N px proves each swept site still renders its **original** value — one live invariant covers both the root change and all 449 edits, with **no before-run needed**.
+
+**Exit code:** 0 = invariant holds; 1 = at least one strict mismatch.
+
+**Requires:** a running dev server (`SPACING_SCAN_BASE`, default `http://localhost:4321` — use `localhost`, not `127.0.0.1`; the astro dev daemon binds `[::1]` only) and dev seed data (`npm run db:setup:local:dev`). Run from inside `~/projects/Peerloop` so Playwright resolves from `./node_modules`.
+
+**Called by:** `npm run spacing:scan`
 
 ---
 
@@ -964,6 +998,7 @@ npx tsx scripts/codemods/migrate-test-json-as-any.ts --limit=20
 | `prim:treewalk` | `scripts/prim-treewalk.ts` (imports both vetted-primitive registries) |
 | `check:icons` | `scripts/check-icon-sizing.ts` (baseline: `scripts/icon-sizing-baseline.json`) |
 | `icons:scan` | `scripts/icon-scan.mjs` (baseline: `scripts/icon-scan-baseline.json`) |
+| `spacing:scan` | `scripts/spacing-scan.mjs` (no baseline — asserts an invariant) |
 | `gen:registries` | `scripts/gen-registries.ts` (emits `scripts/matt-sourced-registry.generated.ts`) |
 | `db:seed:feeds:local` | `scripts/seed-feeds.mjs --local --clean` |
 | `db:seed:feeds:staging` | `scripts/seed-feeds.mjs --staging --clean` |

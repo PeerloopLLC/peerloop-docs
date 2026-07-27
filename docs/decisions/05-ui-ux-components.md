@@ -3,6 +3,28 @@
 
 ## 5. UI/UX & Components
 
+### [ICON-TOK] Tailwind v4's **Base `--spacing` Multiplier** Is Set to `0.0625rem` — a Bare Number Now Means Its Own Pixel Count Everywhere (Conv 423)
+**Date:** 2026-07-27 (Conv 423)
+
+**Supersedes** the Conv-174 approach of overriding ten named `--spacing-N` entries, and removes the premise of the Conv-421 governed/informational split (below) on its informational arm. One line changes in `tokens-tailwind-bridge.css`: `--spacing: 0.0625rem`. Every un-named numeric utility (`h-16`, `px-24`, `gap-8`) now compiles to its literal pixel value; the 449 call sites that relied on the stock ×4 reading were rewritten `N → N×4`. Rejected: an own token axis for boxes (~439-site multi-conv sweep); an arbitrary-px sweep (recreates the `icon-arbitrary-px` shape Conv 421 just retired); a permanent carve-out; and the literal `--spacing-*` rename that was scoped first at **4,911 sites / 295 files** and priced out.
+
+**Rationale:** Options that fix today's call sites do not stop the next one — `h-16` would still mean 16px for every line written afterwards, which is precisely why Phase 6 needed a lint rule at all. Establishing the mechanism empirically (compiling the project's real stylesheet with `@tailwindcss/cli@4.3.3`, not reading docs): un-named numbers emit `calc(var(--spacing) * N)` while `@theme`-declared `--spacing-N` entries **bypass** the base for that number only — so the Conv-174 override fixed ten numbers and left the rest on stock `0.25rem`, which is what produced two meanings for one syntax. Scoping the rejected rename is what surfaced this: **4,911 overridden vs 361 multiplier** sites showed 93% of numeric spacing already meant literal px, making the *un*-overridden numbers the exception. Every one of the ten `--space-N` and eleven `--icon-N` tokens was already exactly `N × 0.0625rem`, so all remain correct unchanged. Blast radius proven before applying: **exactly one line differs in 185 KB of compiled CSS**.
+
+**Consequences:** The defect the whole ICON-SIZING block was built to work around no longer exists; the 532 informational and 25 governed sites stop being ambiguous, and two of the block's long-open questions closed. `--space-N` and `--icon-N` are now identical where they overlap, making the icon axis a readability layer rather than a behavioural one. Two gaps the plan never named were caught during the sweep: 5 `@apply` sites in `global.css` (wrong *file type* — the sweep walked `.tsx/.jsx/.astro`) and 95 fractional utilities (wrong *token shape* — the regex rejected a trailing `.`); file set and regex are independent failure axes. The transform was proven **without a before-run** — `N×4 × 0.0625rem ≡ N × 0.25rem` by construction, so a single live invariant ("does `X-N` measure N px?") proves the root change and all 449 edits at once: new `scripts/spacing-scan.mjs` (`npm run spacing:scan`), 4,206 strict measurements over 12 routes, 0 mismatches. Verification used an instrument sharing no code with the sweep — it parses the **git diff** and re-derives that every changed class is exactly `N → N×4` with nothing else altered on the line (449 of 449). 5 gates green (suite 6131).
+
+**See:** `src/styles/tokens-tailwind-bridge.css`, `src/styles/global.css`, `scripts/spacing-scan.mjs`, `plan/icon-sizing/README.md`; `docs/sessions/2026-07/20260727_1404 Decisions.md` §1, Learnings §§2, 3, 4, 5, 6, 7; Conv 423.
+
+### [ICON-TOK] The `--icon-N` Family Is **Kept As-Is** After the Root Fix Made It Behaviourally Redundant — It Is the Only Record of Which Elements Are Icons (Conv 423)
+**Date:** 2026-07-27 (Conv 423)
+
+With the base multiplier set, `size-icon-16` and `size-16` compute to the same 1rem and `--icon-N`/`--space-N` are identical at every overlapping step — the family carries no behaviour. Kept anyway, with the `check:icons` gate and its path to zero unchanged. Rejected: **keep but freeze** (tokens as documentation, no further migration, drop the warn→error ambition); **retire** (~600 mechanical `size-icon-N` → `size-N` edits plus deleting 11 tokens and the checker). User decision.
+
+**Rationale:** Decided on asymmetry, not enthusiasm. The family is the only surviving record of *which elements in this codebase are icons* — information that took four convs to produce and is encoded nowhere else (components take a bare `className` for icons and boxes alike; not in the DOM, not in the types). Retiring is cheap to do and expensive to undo, and the family is the seam that would make a future icons-only scaling change a one-line edit. The drawbacks are real and evidenced — two vocabularies for identical values force an "is this an icon?" judgment that has been wrong before — but reduce to "a convention needs discipline".
+
+**Consequences:** The icon rule messages were **reframed** to state a readability rationale (a bare number does not *name* the icon axis) rather than the now-false mis-render claim. `check:icons` keeps its 25-site gate.
+
+**See:** `scripts/check-icon-sizing.ts`, `plan/icon-sizing/README.md`; `docs/sessions/2026-07/20260727_1404 Decisions.md` §4, Learnings §1; Conv 423.
+
 ### [ICON-TOK] The Inline **em** Icon Family Is Rescinded — the Rule Collapses to Two-Way, Everything rem (Conv 421)
 **Date:** 2026-07-27 (Conv 421)
 

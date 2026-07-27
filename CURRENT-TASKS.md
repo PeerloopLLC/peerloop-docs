@@ -25,41 +25,43 @@
 > orphaned endpoint is deleted. Nothing outstanding — kept here one conv for traceability, then
 > delete this note.
 
-1. [ICON-TOK](#icon-tok) — icon-size token axis: foundation built, ~2k-site migration outstanding
-2. [ICON-AUDIT](#icon-audit) — Conv 421 audit: migration is landing off-surface; metric inflated
-3. [ICON-4PX](#icon-4px) — residue: `/become-a-teacher`, gated on RG-PUBLIC
-4. [MERGE-BRIAN-JULY7](#merge-brian-july7) — client branch assessment/integration
-5. [A11Y](#a11y) — accessibility lint triage
-6. [RHOOKS](#rhooks) — react-hooks lint triage
-7. [KNIP](#knip) — dead-export oracle → gate
-8. [PROV-SWEEP-DEBT2](#prov-sweep-debt2) — `prov:sweep` gate silently red (10 unregistered)
-9. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
-10. [EDITSAFE](#editsafe) — anchored-edit discipline
-11. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
-12. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
-13. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
-14. [HOME-FIXES](#home-fixes) — Home route fix bucket
-15. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
-16. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
-17. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
-18. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
-19. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
-20. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
-21. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
-22. [RSFD](#rsfd) — port `r-start-from-dirty`
-23. [DEPEXP](#depexp) — dependency-probe hygiene
-24. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
-25. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
-26. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
-27. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
-28. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
-29. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
-30. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
-31. [DEVSRV-STALE](#devsrv-stale) — un-parked: stale/bricked astro dev daemon recurred
-32. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
-33. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
-34. [TLFMT](#tlfmt) — r-end ref documents a TIMELINE.md shape the file no longer uses
-35. [OUTLINE-V4B](#outline-v4b) — 3 residual `outline-none` sites the Conv-244 fix missed
+1. [BRIDGE-DIAG](#bridge-diag) — why is the Chrome bridge unreachable when it used to work? (next conv)
+2. [SPACING-VIS](#spacing-vis) — Chrome-bridge visual pass over every page the Conv-423 sweep touched (next conv)
+3. [ICON-TOK](#icon-tok) — Phase 6 only: warn→error, gated on `[RG-PUBLIC]` clearing the last 25
+4. [ICON-4PX](#icon-4px) — residue: `/become-a-teacher`, gated on RG-PUBLIC
+5. [MERGE-BRIAN-JULY7](#merge-brian-july7) — client branch assessment/integration
+6. [A11Y](#a11y) — accessibility lint triage
+7. [RHOOKS](#rhooks) — react-hooks lint triage
+8. [KNIP](#knip) — dead-export oracle → gate
+9. [PROV-SWEEP-DEBT2](#prov-sweep-debt2) — `prov:sweep` gate silently red (10 unregistered)
+10. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
+11. [EDITSAFE](#editsafe) — anchored-edit discipline
+12. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
+13. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
+14. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
+15. [HOME-FIXES](#home-fixes) — Home route fix bucket
+16. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
+17. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
+18. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
+19. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
+20. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
+21. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
+22. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
+23. [RSFD](#rsfd) — port `r-start-from-dirty`
+24. [DEPEXP](#depexp) — dependency-probe hygiene
+25. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
+26. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
+27. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
+28. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
+29. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
+30. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
+31. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
+32. [DEVSRV-STALE](#devsrv-stale) — un-parked: stale/bricked astro dev daemon recurred
+33. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
+34. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
+35. [TLFMT](#tlfmt) — r-end ref documents a TIMELINE.md shape the file no longer uses
+36. [OUTLINE-V4B](#outline-v4b) — 3 residual `outline-none` sites the Conv-244 fix missed
+
 ## ⏸️ Parked  (gated — out of rotation)
 
 - [ORPHAN-BACKLOG](#orphan-backlog) — gate: marketing redesign (RG-PUBLIC)
@@ -99,6 +101,44 @@
 - **State:** 📋 queued · low priority
 - **What:** docs-wide "PeerLoop" → "Peerloop" casing sweep. **Pre-existing** (not Conv-369-caused); ~30 docs still carry old casing, mostly manual/vendor (`resend.md`, `stripe.md`, `cloudflare.md`, `matt-design-system/*`) + a few driftCheck (`url-routing.md`, `messaging.md`, `ratings-feedback.md`).
 - **Guard:** verify each mention isn't an intentional reference before bulk-replace. BRAND-CASE (Conv 369) was "UI copy only".
+
+### [BRIDGE-DIAG]
+
+- **State:** 📋 queued · `[Opus]` — **next conv, #1.** User-raised Conv 423.
+- **What:** find out why the Chrome bridge is treated as unreachable against the local dev server, when
+  it has worked many times before — PLATO browser testing is the standing counter-example. The current
+  memory `[BRIDGE-UNREACHABLE]` (Conv 413) records the *workaround* (fall back to Playwright headless +
+  `POST /api/auth/dev-login`, run from inside `~/projects/Peerloop`, use `localhost` because `astro dev`
+  binds `[::1]` only) but never diagnosed the cause. **The user's point is that the premise looks wrong:**
+  a fallback that has quietly become the default is a smell, not a fix.
+- **Re-test the premise first** (`[PREMISE]`): do not start from the memo. Establish whether the bridge
+  *actually* fails today, on this machine, against an ephemeral `npm run dev` — the Conv 413 note may be
+  describing a transient (a stale daemon per `[DEVSRV-STALE]`, an extension site-permission that was
+  never granted for `localhost:4321`, or an IPv6-only bind the bridge cannot follow while curl can).
+  Distinguish those before proposing anything.
+- **Why it matters:** Playwright headless measures the DOM but nobody *looks* at it. Several of this
+  block's defects were things a human eye caught and a measurement did not (`ModeratorInvite`'s 8px glyph,
+  the legacy shell header). Losing the bridge quietly downgraded the whole verification loop.
+- **Refs:** `memory/reference_playwright_headless_browser_fallback.md`,
+  `memory/reference_chrome_bridge_island_stale_cache.md`, `memory/reference_devserver_stale_daemon.md`,
+  `memory/plato-context.md`. Surfaced Conv 423.
+
+### [SPACING-VIS]
+
+- **State:** 📋 queued — **next conv, #2** (depends on `[BRIDGE-DIAG]`). User-raised Conv 423.
+- **What:** use the **Chrome bridge** to look at every page affected by the Conv-423 spacing change and
+  confirm each renders properly at a **16px base**. Not a re-measurement — a human-visible check.
+- **Scope:** 99 files changed, but the visual surface is what matters. Start from the 99-file diff
+  (`git -C ~/projects/Peerloop show dc1f031e --stat`) and reduce it to distinct **routes**; the 12 routes
+  `spacing:scan` already covers are the floor, not the target. `/old/*` pages carry 14 of the changed
+  files and are retire-by-default, so decide explicitly whether they are in scope rather than skipping
+  them silently.
+- **What was already proven, so don't re-do it:** the transform is arithmetically value-preserving,
+  the compiled-CSS diff is one line, and `npm run spacing:scan` measured 4,206 strict values across 12
+  routes with 0 mismatches. **What is NOT proven is appearance** — measurement cannot see a layout that
+  is technically correct and looks wrong, which is exactly the gap the user is closing here.
+- **Refs:** code `dc1f031e`, `scripts/spacing-scan.mjs`, plan/icon-sizing/README.md § Phase 6.
+  Surfaced Conv 423.
 
 ### [BRIDGE-UPLOAD]
 
@@ -198,61 +238,6 @@
 - **State:** 📋 queued (deferred per-route bucket)
 - **What:** deferred bucket of per-route fixes captured while sweeping the Home (`/`) route — batch later.
 
-### [ICON-AUDIT]
-
-- **State:** 📋 queued — **disposition chosen and executed Conv 421**; kept as the audit record. Findings
-  1 and 4 are closed (re-target + baseline split); 2–3 are historical-accuracy notes, not live defects.
-  `[Opus]` stripped — no design decision remains here (the surviving one, the fate of the 532
-  `dimension-bare-numeric` sites, lives under `[ICON-TOK]` Phase 6).
-- **What this was.** A direct audit of everything `[ICON-TOK]` has changed across Convs 419–420,
-  done from the diffs + a live browser walk rather than from the plan's own summaries. Method:
-  resolve every changed dimension class through the ten-value override table to a rendered px, then
-  walk 20 routes signed-in as a seed user and measure what actually renders.
-- **✅ The reassuring half — appearance did NOT drift.** Of **206 changed lines carrying a dimension
-  class, 153 (74%) are pixel-identical** at the default root: `20→20` (103), `48→48` (27), `32→32`
-  (13), `64→64` (3), plus singles at 16/24/40. Those were pure ambiguity removal, provably neutral.
-  The **53 that did change** are almost all **4px → 16px** — restoring icons that were shipping as
-  near-invisible specks. A 20-route live walk found **zero** sub-11px glyphs anywhere except the one
-  avatar in `[HDR-AVATAR]`. Screenshots of the two highest-density migrated surfaces
-  (`/onboarding`, the `ModeratorInvite` repair) render correctly.
-- **🔴 Finding 1 — the migration is landing off-surface.** The canonical Matt pages are essentially
-  untouched: `/course/intro-q-system` renders **26 icons, 0 tokened**; `/course/ai-tools-overview`
-  **29 / 0**; `/profile/brian` **20 / 0**; `/profile/amanda-lee` **20 / 0**. `/courses` renders 87
-  icons of which exactly **1** carries a token class. Across 10 detail routes: **20 tokened vs 107
-  arbitrary-px**. The Matt surface is built almost entirely from `size-[20px]` / `size-[24px]`, which
-  is the 187-strong `icon-arbitrary-px` bucket the block has not started. Only `/onboarding` shows
-  real adoption (15 tokened). **So the 1,863 → 1,337 baseline drop has mostly been earned in the
-  parts of the codebase that render least.**
-- **🔴 Finding 2 — some edits were dead on arrival.** 5 of the ~29 files touched by the Conv-419
-  migration were **deleted two commits later** by `[MKTDEAD]` (`creators/profiles/CreatorCard`,
-  `marketing/FaqPage`, `marketing/about/TeamSection`, `marketing/welcome/FeaturedCreators`,
-  `testimonials/TestimonialsBrowse`). The reachability check that later ran clean was added *after*
-  these landed.
-- **🟠 Finding 3 — the "MattIcon default fixes it site-wide" claim is ~8× over-scoped.** Of **199
-  `<MattIcon>` usages, 176 pass their own `className`**, so the changed default fires on only **23**.
-  The 200-violation drop was a drop in *scanner counts*, not in rendered sites. Eighth instance of
-  the `[PREMISE]` pattern — see `feedback_retest_task_premise_before_executing.md`.
-- **🔴 Finding 4 — the metric can't be read as a progress bar.** Of the 1,337 remaining, **788 are
-  `bare-numeric-overridden`** — and tranche 2 already established that class is **~44% non-icon**
-  (skeleton bars, badge circles, dots, avatar `<img>`s). So true remaining icon debt is materially
-  below 1,337, and "baseline went down" conflates migration, deletion, and rule-narrowing. Conv 420
-  already logged one instance (46 of a −246 was a measurement correction).
-- **✅ Disposition chosen + executed (Conv 421): re-target at the Matt surface.** See `[ICON-TOK]`
-  — the whole `icon-arbitrary-px` class was retired, 187 → 0, baseline 1,337 → **1,150**.
-- **✅ Follow-on (Conv 421): the em inline family was rescinded**, collapsing the rule to two-way.
-  This removes the block's longest-standing open decision (the em ladder, dodged 3×) and converts the
-  ~500 remaining 16/20/24px sites from judgment calls into mechanical, provably-neutral conversions.
-- **✅ Finding 4 closed (Conv 421): the metric now means something.** Scoped by measuring, which found
-  **three** inflation sources, not one: 51 fraction false positives (`w-1/2` matched as `w-1`), 94
-  `min-`/`max-` mislabels (reported under a class name absent from the file), and ~418 genuinely
-  non-icon elements. R1 now classifies structurally into `icon-bare-numeric-*` (gated) vs
-  `dimension-bare-numeric` (measured, not gated). **Baseline 1,143 → 560 governed + 532
-  informational.** Calibrated per `[CMH]` before commit (14 regex cases + a 6-shape injected probe).
-- **✅ `[HDR-AVATAR]` closed (Conv 421)** — see `## ✅ Done this conv`.
-- **Still open:** findings 2–3 are recorded, not acted on (5 files were deleted 2 commits after being
-  edited; the MattIcon-default claim was ~8× over-scoped). Both are historical accuracy notes rather
-  than live defects — no action needed unless the record is being relied on.
-
 ### [ICON-4PX]
 
 - **State:** 📋 queued — measured symptoms fixed Conv 419; standard now decided, see `[ICON-TOK]`
@@ -294,7 +279,10 @@
   "mismatches" that were all variant-shadowed elements; each caught by a number looking implausible.
   **Open decision surfaced, not pre-empted:** the icon rules now police an ambiguity that no longer
   exists (counters unchanged at 25 / 532 because they fire on shape).
-- **State:** 🔄 active · `[Opus]` — **foundation + standard Conv 419; tranches 1–3a Conv 420;
+- **State:** 🔄 active — `[Opus]` **stripped Conv 423**: every judgment-heavy piece has landed (the
+  standard, the em rescind, the root fix, the two open decisions). What remains is Phase 6's
+  warn→error promotion — a config flip once `[RG-PUBLIC]` clears 25 sites in one file. Rote.
+  **Foundation + standard Conv 419; tranches 1–3a Conv 420;
   arbitrary-px class retired Conv 421** (baseline 1,694 → 1,337 → **1,150**). Migration outstanding
   and **multi-conv**.
 - **✅ Conv 421 — the `icon-arbitrary-px` class eliminated, 187 → 0.** Re-targeted at the Matt
@@ -813,3 +801,24 @@
 - **[ICON-TOK] Phase 6 root fix** — `--spacing: 0.0625rem` + 449-site `N→N×4` sweep across 99 files;
   every Tailwind number now means its own pixel count. Blast radius proven at one line of compiled
   CSS; live-verified 4,206 strict measurements / 0 mismatches; 5 gates green. New `npm run spacing:scan`.
+- **[ICON-TOK] icon-rule reframe + informational tier retired** — `check:icons` rules now state a
+  *readability* rationale ("renders correctly, but does not say it is an icon"); the old text asserted a
+  mis-render that can no longer happen. `dimension-bare-numeric` deleted outright — all 532 became
+  self-describing at the root, so the tier held a non-defect. Baseline regenerated: **25 governed, one
+  file**, `informational` key omitted rather than written as `{}`. Phase 6's bare-number lint rule
+  **cancelled deliberately** (its purpose was surfacing an ambiguity that no longer exists).
+- **[ICON-AUDIT]** — closed. The Conv-421 audit's findings 1 and 4 were acted on that conv (re-target +
+  baseline split); 2–3 were historical-accuracy notes with nothing to do. Its remaining open question
+  (the 532) was answered by the Conv-423 root fix. Record lives in `plan/icon-sizing/README.md` and
+  git history.
+- **[TOKDOC]** — design-system SoT (`docs/as-designed/matt-design-system/05-color-and-tokens.md`)
+  rewritten. Its § "Why a separate axis at all" justified the icon axis with the ambiguity Conv 423
+  removed, *and* with a rem-vs-pinned contrast that no longer distinguishes `size-16` from
+  `size-icon-16`. Now states the real surviving rationale, flags the two claims not to reintroduce, and
+  notes the two-way rule's "Not an icon" row is a preference rather than an enforced rule. Surfaced by
+  the r-end docs agent as an out-of-scope FYI (category `manual`), verified against the file, fixed at
+  the Step 4d checkpoint on user instruction.
+- **Decision (user, Conv 423): the `--icon-N` family is KEPT AS-IS** — behaviourally redundant after the
+  root fix (`size-icon-16` ≡ `size-16`), but retained because it is the only surviving record of which
+  elements are icons, and retiring it is a one-way door on four convs of identification work. Costed at
+  ~600 neutral edits; cheap to do, expensive to undo. → `plan/icon-sizing/README.md § Open questions`.

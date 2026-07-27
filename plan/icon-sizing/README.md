@@ -2,15 +2,21 @@
 
 **Focus:** Migrate ~1,700 dimension classnames onto the Conv-419 icon token axis, and be able to
 *demonstrate* no page shipped a mis-sized icon — not merely believe it.
-**Status:** 🟢 MIGRATION COMPLETE (Conv 421) · **PROOF COMPLETE (Conv 422)** — **no live icon-size debt
-remains anywhere.** Governed icon debt is **25**, all of them in the parked `BecomeATeacherPage` (gated
-behind `[RG-PUBLIC]`). Phases 1–5 are done; **only Phase 6 (tighten the guard) remains**, plus the two
-open questions below. Trajectory: baseline 1,863 → 1,694 (Conv 419 `[MKTDEAD]` purge) → 1,337 (Conv 420,
-three tranches) → 1,150 (tranche 4) → 1,143 → **560 governed + 532 informational** (tranche 7's axis
-split) → **25** (tranche 3b's mechanical sweep). Coverage as of Conv 422: **50 of 50 in-scope pages**
-(80 URLs / 97 route-states), **1,858 tokened renders, zero `tokened-did-not-scale`**.
+**Status:** 🟢 MIGRATION COMPLETE (Conv 421) · **PROOF COMPLETE (Conv 422)** · **ROOT CAUSE FIXED
+(Conv 423)** — **no live icon-size debt remains anywhere.** Governed icon debt is **25**, all of them in
+the parked `BecomeATeacherPage` (gated behind `[RG-PUBLIC]`). Phases 1–5 are done and **Phase 6 now
+reduces to a single item** — the warn→error promotion, still gated on `[RG-PUBLIC]`; its other two items
+were closed/cancelled in Conv 423, and **both of the block's open decision questions are now closed**
+(the 532-site informational tier; the `--icon-N` family) — only the two standing notes at the foot of
+*Open questions* remain, and neither gates anything. Trajectory: baseline
+1,863 → 1,694 (Conv 419 `[MKTDEAD]` purge) → 1,337 (Conv 420, three tranches) → 1,150 (tranche 4) →
+1,143 → **560 governed + 532 informational** (tranche 7's axis split) → **25** (tranche 3b's mechanical
+sweep) → **25 governed, informational tier retired** (Conv 423's root fix). Coverage as of Conv 422:
+**50 of 50 in-scope pages** (80 URLs / 97 route-states), **1,858 tokened renders, zero
+`tokened-did-not-scale`**.
 **Task code:** `[ICON-TOK]` · related `[ICON-4PX]` (residue, now exactly 25 classes), `[RG-PUBLIC]` (gates
-the one remaining file), `[MKTDEAD]` (shrank the baseline), `[ICON-AUDIT]` (Conv 421 course-correction)
+the one remaining file), `[MKTDEAD]` (shrank the baseline), `[ICON-AUDIT]` (Conv 421 course-correction,
+✅ closed Conv 423), `[SPACING-VIS]` (Conv 423 follow-up — Chrome-bridge visual pass at a 16px base)
 
 ---
 
@@ -23,6 +29,14 @@ and `h-5` renders 20px, in identical syntax, and nothing in the source says whic
 
 That shipped 4px icons, two near-invisible 4px checkboxes, and five `ui/icons.tsx` component
 **defaults** that made every un-overridden chevron in the app 4px.
+
+> ⚠️ **Conv 423 removed that premise at the root** — see Phase 6. Tailwind v4's base `--spacing`
+> multiplier (stock `0.25rem`, never touched by this project) is what made "N units" the default
+> reading; setting it to `0.0625rem` makes N mean N px for *every* number, so the two-meanings-one-syntax
+> defect described above no longer exists anywhere in the codebase. Everything below is the record of
+> migrating **off** the ambiguity site-by-site, which was the only option available before the base fix
+> was found. The migration is still worth having — it is what identifies which elements are icons — but
+> the trap it was working around is gone.
 
 Conv 419 fixed the unambiguous half (43 sites — **honestly 38**: the reachability check afterwards
 showed 5 had landed on dead code, which `[MKTDEAD]` then deleted), built the token axis, and agreed
@@ -51,6 +65,14 @@ in Conv 421, when the em inline family was rescinded):
 > capped at 17.4px against this app's 12px labels. Removing it makes the ~500 remaining 16/20/24px
 > sites mechanical rather than judgment calls.
 
+> **Amended (Conv 423):** the **"not an icon"** row is now a *preference*, not a correctness rule.
+> Under `--spacing: 0.0625rem` an arbitrary `h-[40px]` and a bare `h-40` are exactly equivalent **and
+> both self-describing**, so the `dimension-bare-numeric` rule that policed that row was retired rather
+> than left reporting 532 non-defects. Arbitrary px stays the recommended form for non-icons only
+> because it visibly *isn't* the icon axis — nothing enforces it. The **"an icon"** row is unchanged and
+> still gated; what changed is its rationale (readability / "this element is an icon"), not a mis-render
+> risk — see Phase 6.
+
 Rationale and the verified measurements live in
 [matt-design-system/05-color-and-tokens.md § Icon Size](../../docs/as-designed/matt-design-system/05-color-and-tokens.md).
 
@@ -66,7 +88,7 @@ reach, and a census that counts them over-scopes the migration.
 | icon-component usages | — (not re-censused) | `MattIcon` re-censused at **199** call sites (`[ICON-AUDIT]`); `ui/icons` not re-counted | 626 (198 `MattIcon` + 428 `ui/icons`) | 626 | 860 |
 | `ui/icons.tsx` exports | **98**, each defaulting to `size-icon-20` — but only **6** app-wide usages omit `className` (vs 381 that pass one) | — | 98 | 98 | 98 |
 | **`check:icons` governed total** | **25** (unchanged) | **25** — all in the parked `BecomeATeacherPage` | **1,337** | 1,694 | 1,863 |
-| **informational total** (measured, ungated) | **532** (unchanged) | **532** — split out by tranche 7 | — (conflated into the total) | — | — |
+| **informational total** (measured, ungated — **tier RETIRED Conv 423**, see note below) | **532** (unchanged) | **532** — split out by tranche 7 | — (conflated into the total) | — | — |
 | — bare-numeric, overridden ten | superseded by the governed/informational split | superseded by the governed/informational split | **788** ← ambiguous, mean N px | 898 | — |
 | — bare-numeric, non-overridden N | superseded by the governed/informational split | superseded by the governed/informational split | **362** ← ambiguous, mean N × 4 px | 558 | — |
 | — of the overridden ten, actually **on an icon** | **25** | **25** left (was ~369; 539 swept in tranche 3b) | ~369, now all ≥16px | — | — |
@@ -86,6 +108,15 @@ reach, and a census that counts them over-scopes the migration.
 > that included 14 `/old/*` pages (retire-by-default) and 3 `/dev/*` pages (provenance opt-out). The
 > governed surface is **50 pages** — and six of those are `[...tab]` catch-alls rendering 2–7 tabs each,
 > which is why 50 pages expand to 80 distinct URLs and 97 route-states.
+>
+> **Conv 423 retired the informational tier itself.** The 532 was measured accurately, but it stopped
+> being a defect count the moment `--spacing: 0.0625rem` made every number self-describing. Its
+> composition, measured before the rule was deleted, is worth keeping: **358 actively ambiguous · 81
+> latent-multiplier · 93 `N = 0` (`min-w-0`), which were never ambiguous under any reading** — 0 is 0.
+> That last group is 17.5% of the tier and is the *same* false-positive class tranche 7 already removed
+> twice, which is the third time this block's headline number carried elements that could not have been
+> defects. Shape census at the same moment (heuristic, 142 files): dots 137 · skeletons 117 · layout
+> guards 95 · boxes 92 · avatars 58 · media 33.
 
 **Latent trap:** those non-overridden uses (`h-5`, `h-6`, `h-10`) are correct *today* purely
 because 5, 6 and 10 aren't in the override set. Adding any of them later 4×-shrinks all of them
@@ -146,6 +177,10 @@ But four real problems surfaced, and they set the rest of the conv's agenda:
 
 `[HDR-AVATAR]` was also logged out of this walk (→ tranche 6).
 
+**✅ `[ICON-AUDIT]` closed Conv 423** — every finding is either acted on (1 → tranche 4; 2 → the standing
+reachability check under Phase 4; 3 → recorded against tranche 1's own entry; 4 → tranche 7's axis split)
+or superseded by the root fix. Nothing was left hanging.
+
 ---
 
 ## Why a threshold scanner is not enough
@@ -201,10 +236,10 @@ diff. The baseline shrinks as phases land; it must never grow. **First movement 
 `[MKTDEAD]` took it **1,863 → 1,694** by deleting dead code, which is also the measurement that proved
 10% of the census was unreachable.
 
-- [ ] **Lint rule banning bare numbers on `w-`/`h-`/`size-`.** `check:icons` only refuses *new*
-      violations relative to a baseline a developer can re-generate. Without an editor-visible rule the
-      next `h-4 w-4` lands unnoticed and is discovered by measurement again. (Ships with Phase 6's
-      warn→error promotion, or earlier if the migration outpaces it.)
+- [x] ~~**Lint rule banning bare numbers on `w-`/`h-`/`size-`.**~~ **✅ CANCELLED Conv 423** — the
+      argument for it was "without an editor-visible rule the next `h-4 w-4` lands unnoticed and is
+      discovered by measurement again", which was true only while `h-4` could mean two things. It
+      cannot any more. Full reasoning under Phase 6.
 
 ### Phase 2 — Runtime scanner + captured baseline ✅ BUILT (Conv 419)
 
@@ -569,10 +604,19 @@ correctly; the regex did not implement it. `\s+` fixes it — true split **107 d
 61 `.astro`** = 690. Same lesson as the Conv-421 index-pairing false positive: *verify the instrument
 against a number you can predict before quoting its output.*
 
-### Residue after Conv 422 — named, countable, not unbounded
+### Residue after Convs 422–423 — named, countable, not unbounded
 
 Phase 5 and the attribution ledger between them convert every remaining unknown on this axis into a
 list. Nothing below blocks Phase 6; they are the honest tail.
+
+- [ ] **`[SPACING-VIS]` — Chrome-bridge visual pass at a 16px base over every route the root fix touched
+      (Conv 423, user-raised).** `npm run spacing:scan` proves the *invariant* — 4,206 strict
+      measurements over 12 routes, zero mismatches — and the 449 rewrites are value-preserving by
+      construction, so nothing *should* have moved. But a numeric proof of "unchanged" is not the same
+      as a page looking right, and no page was inspected by eye after the base change. Blocked on
+      `[BRIDGE-DIAG]`: the Chrome bridge is currently treated as unreachable, which the user flagged as
+      itself suspect — `[BRIDGE-UNREACHABLE]` (Conv 413) recorded a workaround and was then treated as
+      settled fact for ten convs without ever being diagnosed.
 
 - [ ] **Drive interaction-gated and loading states.** The unproven 391 of 629 sites are not dead code
       (`codecheck-orphan-components.mjs` returns **PASS**) — they are states no route walk enters:
@@ -590,11 +634,25 @@ list. Nothing below blocks Phase 6; they are the honest tail.
       are also 98 of the 107 counted defaults, so they dominate any "unproven sites" figure this block
       quotes. Keep (and exclude from the denominator), or remove and let the 6 callers name their size.
 
-### Phase 6 — Tighten the guard 🔄 (Conv 423: the root cause is fixed)
+### Phase 6 — Tighten the guard 🔄 (Conv 423 — root cause fixed; one item left)
+
+Original scope: once no arbitrary px remains on icon elements, promote those rules from warn to error
+and drive the baseline to zero; ship the **bare-number lint rule** listed under Phase 1; and *"decide
+whether the `--spacing-*` numeric override should be renamed outright so no number can ever be misread
+again — the deeper fix this block only works around."* **Conv 423 executed that last clause, and the
+answer turned out to be better than a rename** — which then dissolved two of the three items.
+
+**Precondition met since Conv 421.** `icon-arbitrary-px` is retired (0) and the governed total is **25**,
+all of them behind one parked task — a single-file dependency, not a migration.
+
+#### The root fix (Conv 423)
 
 **The ambiguity this whole block works around is gone — fixed at the root, not swept.** Conv 423
-scoped the "rename the `--spacing-*` override" idea the section below calls "the deeper fix", found
-it cost **4,911 sites across 295 files**, and found a one-line alternative in the same measurement.
+scoped the "rename the `--spacing-*` override" idea this phase had always called "the deeper fix",
+found it cost **4,911 sites across 295 files** — ~11× the cheapest call-site option and comparable to
+the whole ICON-SIZING block — and then found a one-line alternative *inside the same measurement*. The
+scoping exercise was worth doing precisely because its stated answer was "no": the **distribution** the
+count came from is what produced the winning option, not the total.
 
 - **What the measurement showed.** Numeric spacing splits **4,911 overridden vs 361 multiplier** —
   93% of usage already meant literal px. So the exception was never the ten overridden numbers; it
@@ -613,39 +671,90 @@ it cost **4,911 sites across 295 files**, and found a one-line alternative in th
   **95 fractional** (`py-0.5`, `gap-1.5` — a gap found only because the first regex deliberately
   rejected a trailing `.`), across 99 files. An independent verifier that parses the **git diff**
   rather than the sweep's own report confirms **449 of 449 are exactly N→N×4 and nothing else moved**.
+  That independence is what makes the number mean anything — a sweep reporting its own edit count is
+  exactly what a buggy sweep would also report confidently — and it earned it: the verifier caught its
+  own pairing bug, which a shared-code checker would have inherited silently.
+- **Two gaps the plan never named, on independent axes.** The sweep walked `.tsx/.jsx/.astro`, so **5
+  `@apply` sites in `global.css`** sat outside its *file set*; its first regex deliberately rejected a
+  trailing `.`, so the 95 fractional utilities sat outside its *token shape*. Widening a sweep's file
+  set and widening its regex are **distinct decisions, and neither is visible from the other** — a sweep
+  that reconciles perfectly against its own scan can still miss a whole category.
+- **How the edits were applied: offset-spliced from the *end* of each file**, using a real
+  string/comment scanner rather than a line rewrite. That designs out both Conv-421 sweep bugs at once —
+  the apostrophe desync (a whole-file string regex mis-pairing every quote after `don't`) and the
+  whitespace collapse that shipped flattened indentation in `HomeworkEditor.tsx`.
+- **Three instrument false positives, each caught by the number looking implausible — never by
+  re-reading the code.** (i) The blast-radius scan matched `%Y-%m-01` in SQL date strings as `m-01` and
+  `"top-001"` topic IDs as `top-N`: **12 false positives**, fixed by rejecting zero-padded numbers (they
+  are never Tailwind classes) and re-measuring clean. (ii) The diff verifier paired removed lines with
+  the physically next line, which desynchronises the moment a `-U0` hunk removes two lines in a row —
+  the same index-pairing defect as Conv 421's `tokened-did-not-scale`. (iii) The live scanner's first
+  run reported **184 mismatches**, every one a variant-shadowed element (`px-16` alongside `lg:px-32`).
+  *State the expected magnitude out loud before trusting a new instrument.*
 - **Verified live: 4,206 strict measurements over 12 routes, zero mismatches** (`npm run spacing:scan`,
   new). The invariant tested is `X-N` measures N px — which simultaneously proves the base change and
   that all 449 rewrites kept their value, with no before-run needed.
 - **5 gates green:** tsc clean · astro 0 errors · eslint 0 errors (166 pre-existing warnings) · 6131
   tests · build complete. Two tests pinned `AdminBadge`'s literal class names and were updated.
+  Code `dc1f031e` (101 files): `tokens-tailwind-bridge.css` (the one-line root change plus the proof of
+  why it is safe and why the ten named overrides are kept) · `global.css` (5 `@apply` rewrites) · 96
+  further `.tsx`/`.astro` call-site files · **new `scripts/spacing-scan.mjs`** wired as
+  `npm run spacing:scan` · `tests/unit/admin-intel/admin-badge.test.tsx`.
 
-**Consequence to decide (not pre-empted):** `icon-bare-numeric-overridden` / `-multiplier` police an
-ambiguity that no longer exists, and the same is true of the 532 `dimension-bare-numeric` sites — they
-are now self-describing. Both counters are unchanged (25 / 532) because the rules still fire on
-*shape*; what changed is that the defect they name is gone. Whether the icon rules get retired,
-reframed as a readability axis, or left as-is is an open decision.
+#### What it cost the checker (decided the same conv, not deferred)
 
-### Phase 6 — Tighten the guard 📋
+`icon-bare-numeric-overridden` / `-multiplier` and the 532 `dimension-bare-numeric` sites all policed an
+ambiguity that no longer exists — both counters read the same after the fix (25 / 532) only because the
+rules fire on *shape*, while the defect they name had gone. Resolved rather than left open:
 
-Once no arbitrary px remains on icon elements, promote those rules from warn to error and drive the
-baseline to zero. Ship the **bare-number lint rule** listed under Phase 1 here if it hasn't landed
-earlier. Decide then whether the `--spacing-*` numeric override should be renamed outright so no
-number can ever be misread again — the deeper fix this block only works around.
+- **The two governed icon rules were kept but REFRAMED.** Their messages claimed a mis-render risk,
+  which is now false. They now state a readability rationale — a bare number does not *name* the icon
+  axis — which is what they actually enforce.
+- **`dimension-bare-numeric` was RETIRED outright**, not zeroed. `INFORMATIONAL` is an empty set and the
+  baseline **omits the `informational` key** rather than writing `{}`: an empty object would read as
+  "this tier exists and is clean", which would be false — the tier was retired, not emptied. Keeping the
+  mechanism (an empty set) preserves warn-first adoption for a future rule, which is how every other
+  lint set in this project has landed.
+- **Net:** `npm run check:icons` now reports **25 governed violations in one file and nothing else.**
 
-**Now genuinely in reach (Conv 421).** The precondition is met — `icon-arbitrary-px` is retired (0) and
-the governed total is **25**, all of them behind one parked task. So:
+#### Remaining work
 
 - [ ] **Promote the governed icon rules warn → error** once `[RG-PUBLIC]` clears the last 25, driving the
-      governed baseline to **zero**. This is now a single-file dependency, not a migration.
-- [ ] **Decide the fate of the 532 `dimension-bare-numeric` sites** (new, Conv 421) — the informational
-      tier is a holding pattern, not a destination. Until they get an owning axis or an explicit permanent
-      carve-out, "the baseline reaches zero" means only the icon half. See the open question below.
-- [ ] **Ship the bare-number lint rule** (carried from Phase 1) — `check:icons` still only refuses *new*
-      violations against a re-generatable baseline; nothing is editor-visible.
+      governed baseline to **zero**. This is now a single-file dependency, not a migration. **Still open,
+      and unaffected by the root fix** — all 25 remain in `BecomeATeacherPage.tsx`.
+- [x] ~~**Decide the fate of the 532 `dimension-bare-numeric` sites**~~ — **✅ CLOSED Conv 423 by the root
+      fix, and the tier is RETIRED.** They were only ever reported because a bare number on a box was
+      ambiguous (`h-32` could read as 32px or 128px). With `--spacing: 0.0625rem` they are self-describing,
+      so there is no defect to hold. `INFORMATIONAL` is now an empty set and the baseline omits the key
+      entirely rather than writing `{}` — an empty object would read as "a tier exists and is clean".
+      Note this also dissolves the 93 `min-w-0` sites Conv 423 found inside that 532: they were never
+      ambiguous under any reading (0 is 0), and were 17.5% of the tier — the same false-positive class
+      tranche 7 removed twice already.
+- [x] ~~**Ship the bare-number lint rule**~~ — **✅ CANCELLED Conv 423, deliberately, not dropped.** Its
+      whole purpose was to make the *ambiguity* visible in the editor while typing. There is no longer an
+      ambiguity to surface: every number means its own px. Shipping it now would flag correct code for a
+      defect that cannot occur. What remains — "a bare number does not *name* the icon axis" — is a
+      readability preference already covered by `check:icons`, and not worth an editor-level rule.
 
 ---
 
 ## Open questions
+
+- ~~**Does the `--icon-N` family still earn its place?**~~ — **✅ DECIDED Conv 423 (user): KEEP AS-IS.**
+  Raised because the root fix made it behaviourally redundant: `--icon-N` and `--space-N` are both rem and
+  both exactly `N × 0.0625rem`, identical at every overlapping step (16/20/24/32/40/48/64), so
+  `size-icon-16` and `size-16` now compute to the same 1rem. What it still buys: call-site intent, a gate
+  with something to enforce, and — the decisive one — **it is the only surviving record of which elements
+  in this codebase are icons**, information that cost four convs to produce and is encoded nowhere else
+  (not in the components, which take a bare `className` for icons and boxes alike; not in the DOM; not in
+  the types). The drawbacks are real and evidenced — two vocabularies for identical values force an
+  "is this an icon?" judgment on every dimension class, and that judgment has been wrong before (tranche
+  2 tokened a course thumbnail `<img>` and two skeleton bars; Conv 422 unpicked them) — but they reduce to
+  "a convention needs discipline". **The decision turned on asymmetry, not enthusiasm:** retiring is a
+  one-way door. Re-identifying icons later is the expensive half, and the family is the seam that would
+  make an icons-only scaling change (a reader-font or accessibility setting) a one-line edit. Retirement
+  was costed at ~600 mechanical, provably-neutral `size-icon-N` → `size-N` edits — cheap to do, expensive
+  to undo. Rejected middle option: keep-but-freeze (tokens as documentation, no further migration).
 
 - ~~**`em` ratios**~~ — **✅ CLOSED Conv 421 by rescinding the family outright** (tranche 5). The block's
   longest-open question, dodged three times, is not answered so much as dissolved: there are no em tokens
@@ -654,7 +763,14 @@ the governed total is **25**, all of them behind one parked task. So:
   icon simply takes `size-icon-16` like any other. Conv 421's counterfactual measurement showed the ladder
   had been *actively harmful* where it did fire: 6 of 7 `PromoteButton` icons were rendering at 13.8px, a
   −14% shrink, because their container is 12px.
-- **The 532 non-icon bare-numerics — whose axis?** (opened Conv 420 as "~390"; **measured at 532 by
+- ~~**The 532 non-icon bare-numerics — whose axis?**~~ — **✅ CLOSED Conv 423: none of them, because the
+  question dissolved.** The answer was not "their own axis / a sweep / a carve-out" but that the ambiguity
+  they shared with icons was fixable at the root for all of them at once. After `--spacing: 0.0625rem`,
+  `h-32` says 32px as plainly as `size-icon-32` does. This is the second question this block resolved by
+  removing its premise rather than answering it (the `em` ratios question went the same way in Conv 421) —
+  worth noting as a pattern: when a question has been dodged repeatedly, check whether it is load-bearing
+  before answering it. Original text follows for the record.
+- **[SUPERSEDED] The 532 non-icon bare-numerics — whose axis?** (opened Conv 420 as "~390"; **measured at 532 by
   Conv 421's tranche 7**, which also split them out of the governed total into an `informational` tier.)
   Dots (114), skeletons (64), avatars (33), media (29), boxes. The standard puts them in the "neither"
   bucket, so *this* axis does not govern them — yet they carry exactly the same `N`-means-two-things

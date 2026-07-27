@@ -259,6 +259,8 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [[ICON-TOK] Tailwind v4's **Base `--spacing` Multiplier** Is Set to `0.0625rem` — a Bare Number Now Means Its Own Pixel Count Everywhere (Conv 423)](05-ui-ux-components.md#icon-tok-tailwind-v4s-base---spacing-multiplier-is-set-to-00625rem--a-bare-number-now-means-its-own-pixel-count-everywhere-conv-423)
+- [[ICON-TOK] The `--icon-N` Family Is **Kept As-Is** After the Root Fix Made It Behaviourally Redundant — It Is the Only Record of Which Elements Are Icons (Conv 423)](05-ui-ux-components.md#icon-tok-the---icon-n-family-is-kept-as-is-after-the-root-fix-made-it-behaviourally-redundant--it-is-the-only-record-of-which-elements-are-icons-conv-423)
 - [[ICON-TOK] The Inline **em** Icon Family Is Rescinded — the Rule Collapses to Two-Way, Everything rem (Conv 421)](05-ui-ux-components.md#icon-tok-the-inline-em-icon-family-is-rescinded--the-rule-collapses-to-two-way-everything-rem-conv-421)
 - [[HDR-AVATAR] The Legacy Shell `Header` Is Repaired **Whole**, Not by the Tasked One-Line Avatar Fix — the Second Bounded v3-Semantics Exception (Conv 421)](05-ui-ux-components.md#hdr-avatar-the-legacy-shell-header-is-repaired-whole-not-by-the-tasked-one-line-avatar-fix--the-second-bounded-v3-semantics-exception-conv-421)
 - [[ICON-TOK] A Labelled Nav Row Is Classified **Standalone**, Not Inline — and the em Ladder Provably Cannot Serve a 12px Label (Conv 420)](05-ui-ux-components.md#icon-tok-a-labelled-nav-row-is-classified-standalone-not-inline--and-the-em-ladder-provably-cannot-serve-a-12px-label-conv-420)
@@ -421,6 +423,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [6. Testing & CI/CD](06-testing-ci.md)
 
+- [[ICON-TOK] The `dimension-bare-numeric` Informational Tier Is **Retired Outright** and Phase 6's Bare-Number Lint Rule Is **Cancelled** — the Root Fix Removed What They Measured (Conv 423)](06-testing-ci.md#icon-tok-the-dimension-bare-numeric-informational-tier-is-retired-outright-and-phase-6s-bare-number-lint-rule-is-cancelled--the-root-fix-removed-what-they-measured-conv-423)
 - [[ICON-TOK] Per-Element Attribution Uses the React 19 Fiber `_debugStack`, Not a Build-Time Stamp — Closed Prop Interfaces Killed the Transform (Conv 422)](06-testing-ci.md#icon-tok-per-element-attribution-uses-the-react-19-fiber-_debugstack-not-a-build-time-stamp--closed-prop-interfaces-killed-the-transform-conv-422)
 - [[ICON-TOK] Phase 5 Proves Completeness by **Computing** Route Coverage (50/50), and the 4 Mis-Tokened Non-Icons Are Fixed, Not Baselined (Conv 422)](06-testing-ci.md#icon-tok-phase-5-proves-completeness-by-computing-route-coverage-5050-and-the-4-mis-tokened-non-icons-are-fixed-not-baselined-conv-422)
 - [[ICON-TOK] The Icon-Sizing Baseline Splits Into **Governed** and **Informational** Tiers — R1 Classifies Structurally, Not by Line Proximity (Conv 421)](06-testing-ci.md#icon-tok-the-icon-sizing-baseline-splits-into-governed-and-informational-tiers--r1-classifies-structurally-not-by-line-proximity-conv-421)

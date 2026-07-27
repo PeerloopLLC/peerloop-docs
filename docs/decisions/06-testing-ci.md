@@ -3,6 +3,17 @@
 
 ## 6. Testing & CI/CD
 
+### [ICON-TOK] The `dimension-bare-numeric` Informational Tier Is **Retired Outright** and Phase 6's Bare-Number Lint Rule Is **Cancelled** — the Root Fix Removed What They Measured (Conv 423)
+**Date:** 2026-07-27 (Conv 423)
+
+**Supersedes** the Conv-421 governed/informational split (below) on its **informational arm only** — R1's structural classification survives; the informational tier does not. With Tailwind's base `--spacing` set to `0.0625rem` (Conv 423, `05-ui-ux-components.md`) a bare number is self-describing, so the tier measured a non-defect. The rule is deleted, `INFORMATIONAL` is an empty set, and the baseline **omits** the `informational` key rather than writing `{}`. Separately, Phase 6's planned ESLint bare-number rule is **cancelled**, marked `[x]` in the plan with its reasoning rather than silently dropped. Rejected: leaving the tier reporting 532 as a measurement; zeroing it but keeping the rule; shipping the lint rule anyway for readability.
+
+**Rationale:** An empty object reads as "a tier exists and is clean", which would be false — the tier was retired, not emptied. Keeping the *mechanism* (an empty set) preserves warn-first adoption for a future rule, which is how this project has landed every other lint set. The lint rule's stated purpose was making the ambiguity editor-visible while typing; there is no ambiguity left to surface, so it would flag correct code for a defect that cannot occur, and what remains ("a bare number does not *name* the icon axis") is already covered by `check:icons`.
+
+**Consequences:** `check:icons` reports **25 governed violations in one file and nothing else** — the 532 informational sites are gone, including the 93 `min-w-0` sites that were never ambiguous under any reading (the same false-positive class tranche 7 removed twice). Phase 6 reduces to the warn→error promotion, still gated on `[RG-PUBLIC]`. Note for future baseline reading: the block's headline metric has now been re-scoped four times (Conv 419 `[MKTDEAD]` deletion, Conv 420 rule-narrowing, Conv 421 three-way inflation split, Conv 423 tier retirement), so "1,863 → 25" mixes migration, deletion, rule correction and premise removal — the plan README spells this out.
+
+**See:** `scripts/check-icon-sizing.ts`, `scripts/icon-sizing-baseline.json`, `plan/icon-sizing/README.md`; `docs/sessions/2026-07/20260727_1404 Decisions.md` §§2, 3; Conv 423.
+
 ### [ICON-TOK] Per-Element Attribution Uses the React 19 Fiber `_debugStack`, Not a Build-Time Stamp — Closed Prop Interfaces Killed the Transform (Conv 422)
 **Date:** 2026-07-27 (Conv 422)
 

@@ -275,12 +275,42 @@ Figma is layout-only, CC owns consistency.
 in `tokens-primitives.css` per Decision 2 (pixel-named tokens). Matt's Small/Medium remain the
 *design* guidance below; the tokens are the *implementation*.
 
-**Why a separate axis at all.** `size-16` and `h-4 w-4` are ambiguous — the Conv-174 `--spacing-*`
-override makes ten numbers mean literal px while every other number keeps Tailwind's `N × 4`, so
-`h-4` renders 4px and `h-5` renders 20px. That shipped 4px icons and near-invisible 4px checkboxes
-(`[ICON-4PX]`, Conv 419). A named `icon-` segment has no number to misdivide. The tokens are
-rem-valued, so icons track the user's root font size — verified: `size-icon-16` renders 16×16 at a
-16px root and 20×20 at a 20px root, where `size-[16px]` stays pinned.
+**Why a separate axis at all.** The answer changed in Conv 423, and the original reason no longer
+applies — read both, because the axis was *kept* on the second one.
+
+**The original reason (Conv 419–422), now obsolete.** `size-16` and `h-4 w-4` were **ambiguous**: the
+Conv-174 `--spacing-*` override made ten numbers mean literal px while every other number kept
+Tailwind's `N × 4`, so `h-4` rendered 4px and `h-5` rendered 20px in identical syntax. That shipped
+4px icons and near-invisible 4px checkboxes (`[ICON-4PX]`, Conv 419). A named `icon-` segment has no
+number to misdivide, which is what the axis was built to provide.
+
+**Conv 423 removed that ambiguity at its root**, so this argument is now void. Tailwind v4 resolves any
+un-named `p-N`/`size-N` as `calc(var(--spacing) * N)` from a **base multiplier** the project had never
+overridden — Conv 174 had overridden ten *names*, leaving every other number on the stock `0.25rem`.
+Since every `--space-N` *and* every `--icon-N` token is exactly `N × 0.0625rem`, the base was simply
+off by a factor of four. Setting `--spacing: 0.0625rem` makes N mean N px for every number, including
+ones nobody has typed yet. A bare `size-16` is now **as unambiguous as `size-icon-16`, and identical to
+it** — both resolve to `1rem`.
+
+> ⚠️ Two claims that used to live here are now false and should not be reintroduced: that a bare
+> number might render at four times its name, and that the icon tokens are rem-valued *in contrast to*
+> the numeric scale. The rem contrast holds only against **arbitrary px** (`size-[16px]` stays pinned);
+> `size-16` and `size-icon-16` track the root font identically.
+
+**The reason the axis was kept (decided Conv 423, user).** Not behaviour — **identification**. The
+`--icon-N` family is the only place in this codebase that records *which elements are icons*. Nothing
+else encodes it: `MattIcon` and the `ui/icons.tsx` components take a bare `className` exactly as a
+skeleton bar or an avatar does, the DOM cannot distinguish them, and the types do not either. That
+mapping took four convs to produce (the tranches, `[ICON-AUDIT]`, the Conv-422 completeness proof), and
+it is what any future icons-only change would need first — scaling icons with the reader's font while
+boxes hold still, or an accessibility setting that enlarges only glyphs, becomes a one-line edit with
+the family and a re-identification project without it. Retirement was costed at ~600 mechanical,
+provably-neutral `size-icon-N` → `size-N` edits: cheap to do, expensive to undo. **The decision turned
+on that asymmetry, not on rendering.** The honest cost of keeping it is that two vocabularies now
+describe identical values, so "is this an icon?" is a judgment call at every call site — one this
+codebase has got wrong before (Conv 420 tokened a course thumbnail `<img>` and two skeleton bars;
+Conv 422 unpicked them). `npm run check:icons` polices it as a **readability** rule, not a
+correctness one.
 
 ### The two-way rule (Conv 421) — which family an icon belongs to
 
@@ -294,6 +324,14 @@ Not every small square is an icon. Classify by **role**:
 > **This replaced a three-way rule.** Conv 419 added a third family — `--icon-inline-{sm,md,lg}`,
 > em-valued, for icons sitting beside text so they would track the label rather than the root. It was
 > **rescinded in Conv 421** and the tokens deleted. See *Why the inline em family was rescinded* below.
+
+> **The "Not an icon" row is a preference, not a rule (Conv 423).** It was enforced by a
+> `dimension-bare-numeric` check reporting 532 sites, on the grounds that a bare `h-32` on a box was
+> ambiguous. After the base-multiplier fix `h-32` and `h-[32px]` are exactly equivalent **and both
+> self-describing**, so that check was **retired rather than left reporting 532 non-defects**. Arbitrary
+> px stays the recommended form for non-icons purely because it visibly *isn't* the icon axis — nothing
+> enforces it, and nothing renders differently if you use either. The **"An icon"** row is unchanged and
+> still gated by `check:icons`.
 
 **Why rem.** The app's type scale is entirely rem (`--body-default-size: 0.875rem`), so a rem icon
 responds to the reader's root font size — the setting users actually change — while staying
