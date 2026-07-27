@@ -267,7 +267,7 @@ put first turned out not to exist — see the Scale section.)
       legitimately small glyphs (star ratings, badge-pill icons, sort chevrons) and most sit **beside
       text** — so this tranche will pull hard on the em ladder and is likely where the "no home for a
       12px-label inline icon" open question has to be settled rather than side-stepped.
-- [x] **Mandatory per-tranche reachability check.** Run `.claude/scripts/codecheck-orphan-components.mjs`
+- [ ] **Mandatory per-tranche reachability check — standing, re-runs every tranche.** Run `.claude/scripts/codecheck-orphan-components.mjs`
       over every file in a tranche **before** editing it. Conv 419 measured that **5 of its 43 icon
       fixes landed on dead code** — hitting `TestimonialsBrowse`, the same file Conv 404's `[A11Y]`
       batch already wasted a fix on 15 convs earlier. tsc/lint/tests/build are all green over dead
@@ -282,6 +282,17 @@ put first turned out not to exist — see the Scale section.)
 Full double-root-font sweep across all 67 routes plus PLATO state coverage. Any inline icon that
 doesn't move between 16px and 24px root is a missed site. Any clipped/overflowing element is a
 container that didn't follow its icon.
+
+Conv 420 put numbers against two of the states named above — a route walk over seeded data reaches
+**neither**, so this phase has to drive them deliberately rather than hope to pass through them:
+
+- [ ] **Empty states — 40 of tranche 2's 44 sites are still unproven.** They render only behind a
+      "list is empty" condition; the direct probe saw **4** (on `/admin`), and `/learning` measured
+      identically before and after. Force or seed the empty condition per route; a green `icons:scan`
+      is not evidence about elements it never rendered.
+- [ ] **`ModeratorInvite`'s success / declined / valid-invite states.** Only the **error** state was
+      live-verified (Conv 420, `/invite/mod/<bad-token>`). The other three share the same card markup
+      but need a valid token to render.
 
 ### Phase 6 — Tighten the guard 📋
 
@@ -301,6 +312,13 @@ number can ever be misread again — the deeper fix this block only works around
   there, but it is a workaround, and a genuine 12px-label *inline* icon still has no home. Decide
   whether to add a step or re-anchor when the first such site appears; `text-h2` (24px) is still
   unconfirmed either way.
+- **The ~390 non-icon bare-numerics — whose axis?** (opened Conv 420 by tranche 2's premise re-test.)
+  R1 flags *any* `w-/h-/size-N`, and roughly 390 of the overridden ten sit on things that are not
+  icons: skeleton loader bars, badge circles, unread dots, avatar `<img>`s, one text-column width.
+  The standard puts them in the "neither" bucket, so *this* axis does not govern them — yet they
+  carry exactly the same `N`-means-two-things ambiguity, and while they sit in the baseline it can
+  never reach zero (Phase 6). Decide: their own axis, an arbitrary-px sweep, or an explicit
+  permanent carve-out in the baseline.
 - **Matt's ladder.** He formalized only Small 20 / Medium 24. We ship 11 steps because 16px is the
   most-used size (72 sites) and isn't in his set. If Matt returns to the project, reconcile.
 - **Pixel-grid softness.** At a 1.3× root font a 20px glyph renders 26px and can sit off-grid.

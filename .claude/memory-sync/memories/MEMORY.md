@@ -16,7 +16,7 @@
 - [link](feedback_no_simplest_fix.md) — §Solution Quality detail: Conv 100 principle quote + drift signal-lists (`TODO:`/"for now" vs consolidating call sites, reading changelogs).
 - [link](feedback_default_durable_no_ask.md) — §Solution Quality/§Critical Rule detail: multi-conv-scope counter-case + Conv 131 [TDS-AUTH] precedent.
 - [link](feedback_surface_and_track_all_issues.md) — §Issue Surfacing detail: Sessions 386/390 + Conv 340 incidents; self-monitoring trigger words (stale/pre-existing/out-of-scope); "I'll handle at /r-end" = no-op promise.
-- [link](feedback_current_tasks_persistence.md) — §Task Persistence detail: CURRENT-TASKS.md is the WRITE-THROUGH board (edit directly, no Task-tool overlay — server-gated off Conv 406). Format: 🎯 Now / ⏸️ Parked TOCs + alphabetical `### [CODE]` bodies (never move) + ✅ Done this conv. RESUME-STATE narrative-only. Boundary skills VALIDATE via `current-tasks-check.sh`. [CURTASKS] 350-352, detach 406.
+- [link](feedback_current_tasks_persistence.md) — §Task Persistence detail: CURRENT-TASKS.md IS the state — write-through, no Task-tool overlay; 🎯 Now/⏸️ Parked TOCs + alphabetical `### [CODE]` bodies that never move. [CURTASKS] 350-352, detach 406.
 - [link](feedback_todowrite_mnemonic_codes.md) — §Task Persistence detail: code format/derivation/collision (`[GE]`→`[GE2]`); Conv 135 origin; PLAN.md uses longer codes.
 - [link](feedback_rend_discipline.md) — §Conv Lifecycle detail: Conv 062 vanished-alert incident; Conv 108 r-commit-autonomous / r-end-needs-approval change; new-conv-number traceability.
 - [link](feedback_git_dash_c_enforcement.md) — §Dual-Repo detail: Conv 109 wrong-repo near-miss; tilde-literal dodges `$VAR` simple_expansion; Conv 214 [GUARD-VERIFY] guard must detect `git -C`.
@@ -26,7 +26,8 @@
 - [link](feedback_verify_baselines_in_conv.md) — §Baseline Verification detail: Conv 101→102 (5 silently-broken time-fragile tests) + Conv 104 (10 `.astro` errors, astro-check gate added).
 - [link](feedback_memory_index_load_bearing.md) — §Memory detail: one-liners must expose distinctive markers not topic labels; `[link]` label convention (Conv 213); index-vs-body drift discipline; Conv 150/151.
 - [link](user_hands_off_pilot_workflow.md) — §User WIP File detail: "CC is sole author" architectural implications (sync trusts mirror, skill state needs no locking); USER-WIP.md carve-out (CC read-only).
-- [link](feedback_assess_ask_before_acting.md) — Conv 407 Fable-5: user named a branch, CC silently retargeted a newer one; grep-patched a premise change (Focus line survived 2 sweeps). Surface scope choices as questions; premise change ⇒ full-doc rewrite.
+- [link](feedback_assess_ask_before_acting.md) — Conv 407: CC silently retargeted a branch the user had named, and grep-patched a premise change. Surface scope choices as questions; a changed premise ⇒ full-doc rewrite.
+- [link](feedback_retest_task_premise_before_executing.md) — [PREMISE] a tasked count/target set is usually OVER-SCOPED — written from the implementation, not the consumers (7×, Convs 418-420). Re-derive it before the first edit. No shell-loops over findings.
 
 ---
 
@@ -36,12 +37,12 @@
 - [link](project_route_gen_cross_repo.md) — route-doc regen (`route-api-map`/`route-matrix.mjs`) writes BOTH repos; `git status` both before commit. Conv 201.
 - [link](feedback_db_setup_shorthand.md) — "run the {local/staging} D1 {level} script" → `npm run db:setup:{target}:{level}`; machine name from `~/.claude/.machine-name`.
 - [link](project_schema_edit_remote_d1_propagation.md) — [D1-SCHEMA-REMOTE] `0001_schema.sql` edits do NOT reach an already-migrated remote D1 → `ALTER TABLE ADD COLUMN` or reseed. Conv 394.
-- [link](project_wrangler_exact_pin_miniflare_dedupe.md) — [MF-SKEW] `wrangler` EXACT-pinned `4.112.0` (no caret, load-bearing) so its miniflare dedupes with astro-dev's → caret revives the `_cf_ALARM` crash; workers-types=v5 (tsc-clean); re-align if `@astrojs/cloudflare` bumps. Conv 416.
-- [link](project_code_repo_shared_with_client.md) — [TC-BRANCH-GATE] CODE repo is SHARED with the client (`brian-July-7`, colliding `Conv NNN:` prefixes) — never bare-sweep branches there; allowlist `^jfg-dev`. Docs repo is ours alone. Conv 396.
-- [link](project_task_tools_child_session_leak.md) — [TASK-TOOLS-VERIFY] Conv 406 ROOT-CAUSE: Task*/TodoWrite killed by an UNDOCUMENTED server gate `uZ()` reading remote config `tengu_vellum_ash` vs the model ID — not our config, not a version bump (binary identical 214/215/216; `vellum`=0 changelog hits). Project HARD-DETACHED → write-through `CURRENT-TASKS.md`. `/model` non-1M probe untested. `Grep`/`Glob` = separate open upstream bug (#52121/#63525). Decompile the binary's `isEnabled(){}` to diagnose a missing tool. Conv 403→406.
+- [link](project_wrangler_exact_pin_miniflare_dedupe.md) — [MF-SKEW] `wrangler` EXACT-pinned 4.112.0 — no caret, load-bearing (miniflare dedupe with astro-dev); re-align if `@astrojs/cloudflare` bumps. Conv 416.
+- [link](project_code_repo_shared_with_client.md) — [TC-BRANCH-GATE] CODE repo is SHARED with the client — never bare-sweep branches there; allowlist `^jfg-dev`. Docs repo is ours alone. Conv 396.
+- [link](project_task_tools_child_session_leak.md) — [TASK-TOOLS-VERIFY] Task*/TodoWrite are killed by an UNDOCUMENTED server gate (not our config, not a version bump) → project write-through `CURRENT-TASKS.md`. Decompile the binary's `isEnabled(){}` to diagnose any missing tool. Convs 403-406.
 
 ### Navigation & UI
-- [link](feedback_orphaned_components_survive_migration.md) — [ORPHAN-DETECT] Route migrations orphan page-level components while tsc/lint/tests stay GREEN (Conv 339/391). Verify route-reachability before trusting/editing a page component. Conv 392.
+- [link](feedback_orphaned_components_survive_migration.md) — [ORPHAN-DETECT] route migrations orphan page components while tsc/lint/tests stay GREEN — verify route-reachability before editing one. Convs 339/391/392.
 - [link](reference_icon_system.md) — [ICN-NS] 3 icon systems (legacy RETIRED Conv 370); `MattIcon` canonical, **MattIcon-kebab-name-wins**.
 - [link](project_navigation_architecture.md) — AppLayout (Matt shell) = canonical since ROUTE-FLIP (Conv 197); `/old/*` → `layouts/old/AppLayout`→AppNavbar; mind which shell + `startsWith` active-match.
 - [link](reference_astro_slot_forwarding.md) — Astro Fragment-slot forwarding suppresses child `<slot>FALLBACK`; fix = defaults at layout consumer via ternary in unconditional Fragments. Conv 175 [MSH-VIZ].
@@ -55,12 +56,12 @@
 - [link](plato-context.md) — **Load when** PLATO/browser-run/STUMBLE-AUDIT/BrowserIntent discussed — terminology, modes, nav caveats, screenshot conventions.
 - [link](feedback_dom_truth_over_screenshots.md) — Precise layout/position/visibility: trust DOM (`getComputedStyle`/`getBoundingClientRect`/`elementFromPoint`) + dev log, NOT screenshots. Conv 191; duplicate-`style` JSX gotcha.
 - [link](reference_responsive_iframe_harness.md) — [MINWIDTH][SIDEBAR-COLLIDE] responsive testing = exact-SIZE same-origin IFRAME (media queries key off iframe, NOT viewport). Conv 367/368.
-- [link](reference_chrome_bridge_island_stale_cache.md) — [BRIDGE-MEM] client-gated islands: `dev-login` + hard nav + settle-read; [STALE-301] won't-reproduce-in-bridge-Chrome ⇒ stale state in user's Brave (cached 301; `git log -S"redirect(…, 301)"`); also [NUDGE-CACHE-FLASH], [BRIDGE-UPLOAD], blank-first-nav. Conv 258/379/408.
-- [link](reference_playwright_headless_browser_fallback.md) — [BRIDGE-UNREACHABLE] bridge Chrome refuses local dev server (curl 200, Chrome refused both 127.0.0.1+localhost) ⇒ use Playwright headless + `POST /api/auth/dev-login`; run script from INSIDE `~/projects/Peerloop`; `astro dev` = daemon binding `[::1]`-only (`--host 127.0.0.1`; logs via `astro dev logs`). Conv 413.
+- [link](reference_chrome_bridge_island_stale_cache.md) — [BRIDGE-MEM] client-gated islands need `dev-login` + hard nav + settle-read; [STALE-301] won't-reproduce-in-bridge ⇒ stale cache in the user's Brave. Convs 258/379/408.
+- [link](reference_playwright_headless_browser_fallback.md) — [BRIDGE-UNREACHABLE] bridge Chrome refuses the local dev server ⇒ Playwright headless + `POST /api/auth/dev-login`, run from INSIDE `~/projects/Peerloop`; `astro dev` binds `[::1]` only → use `localhost`. Conv 413.
 - [link](feedback_plato_expect_is_legacy_spec.md) — PLATO `expect`/`pageAction` = frozen LEGACY spec; "UI missing" on a Matt page → triage REDESIGN/REGRESSION/NEVER-EXISTED vs preflip BEFORE editing the test. Conv 343.
 - [link](feedback_persistent_dev_server_4321.md) — NO persistent dev server (retired Conv 366) — EPHEMERAL `npm run dev` on demand, killed when done. ≠ preflip :4331.
-- [link](reference_devserver_stale_daemon.md) — [DEVSRV-STALE] 3 daemon-brick variants told apart by `curl`: `000`+bound=mid-run `npm install`; 500 `deps_ssr/…does not exist`=`rm -rf node_modules/.vite`; 200-but-old=browser cache. Teardown = `npx astro dev stop`. Build staying clean ⇒ never the code. Convs 414-420.
-- [link](feedback_codecheck_moment_includes_tests_and_build.md) — `/w-codecheck` trigger = decision point: also decide per-change whether to add prov-sweep + full test suite + build. Anti-pattern: inline `tsc`+`lint`+astro check skipping `/w-codecheck`. Conv 207.
+- [link](reference_devserver_stale_daemon.md) — [DEVSRV-STALE] 3 daemon-brick variants, told apart by one `curl` (`000` / 500 `deps_ssr` / 200-but-stale); teardown = `npx astro dev stop`. Clean build ⇒ never the code. Convs 414-420.
+- [link](feedback_codecheck_moment_includes_tests_and_build.md) — `/w-codecheck` = decision point: also weigh prov-sweep + full suite + build. Anti-pattern: inline `tsc`/`lint` skipping the skill. Conv 207.
 - [link](plato_walk_mocked_service_divergence.md) — [PLATO-SEQ] browser-walk row-identity EXCLUDES `notifications`; [PSA-WAITUNTIL] fixed Conv 384; CUT-2 enroll has NO `payment_intent`.
 
 ### Output & terms

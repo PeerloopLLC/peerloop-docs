@@ -3,6 +3,19 @@
 
 ## 6. Testing & CI/CD
 
+### [ICON-TOK] `icon-no-size-class` Narrowed by a **Structural** Pre-Pass, Not an Allowlist — and a Baseline Correction Is Recorded Separately From Migration (Conv 420)
+**Date:** 2026-07-26 (Conv 420)
+
+**Corrects** the Conv-419 verification entry below: the R2 rule's headline finding ("icon usages with no size class at all" — 51 at introduction, 46 after `[MKTDEAD]`) was **100% false positives**, so its true count was **zero**. `<(MattIcon|[A-Z]\w*Icon|[A-Z]\w*Logo)>` is a **name** test, not a semantic one: 14 hits were `entity/UserIcon`, a `@matt-source` avatar with a typed `size?: 24 | 40` prop (a *better* API than a classname, and explicitly in the standard's "keeps px" bucket); the other 32 were sized one level in, by a component default or a hard-coding wrapper — flagging those call sites **double-counted one definition-line defect as many**.
+
+The rule now asks whether there is provably **no sizing input anywhere** — call site *or* component — via a `selfSizingIcons()` pre-pass that scans each icon definition's **body** for a dimension class or a `size` prop. Rejected: a hand-maintained allowlist (rots silently as components are added); leaving the false positives in the baseline and migrating around them.
+
+**Rationale:** A structural test can't go stale, because it re-derives the answer from the code each run. Left in place, the false positives would have resurfaced in **every** future tranche's triage. The narrowing was itself verified by **injecting a genuinely unsized probe component** (caught, exit 1, +1 violation) and then removing it — a rule change is only trustworthy if it still fails on a known-bad input.
+
+**Consequences:** Baseline 1,694 → 1,448 → 1,363 → 1,337 across three tranches. The **−46 correction is recorded separately from the −200 genuine migration** in the plan and in both commits, so the number can never later read as more progress than it was. **Companion caveat (same conv):** a green `icons:scan` is *not* evidence about code the route-walk can't reach — a direct probe found only **4 of tranche 2's 44** migrated sites ever rendered (they are empty-state marks; the scanner walks routes with seeded data). Check that the verifier **observed** the changed elements — count the new token in the measured set — rather than trusting the pass. Phase 5 must drive empty/error states deliberately. Also: a test coupled to the literal classname `svg.w-48.h-48` failed on unchanged behaviour; `tests/` was swept for the other migrated classnames (no further coupling).
+
+**See:** `scripts/check-icon-sizing.ts`, `scripts/icon-sizing-baseline.json`, `scripts/icon-scan.mjs`, `plan/icon-sizing/README.md`; `docs/sessions/2026-07/20260726_2025 Decisions.md` §2, Learnings §§1, 3; Conv 420.
+
 ### [MKTDEAD] The Bundler Is the Orphan Oracle — Sourcemap `sources` Union Is Ground Truth; knip Does Not Replace Route-Reachability (Conv 419)
 **Date:** 2026-07-26 (Conv 419)
 
@@ -27,7 +40,7 @@ Only the bundler resolves both, because tree-shaking *is* the question being ask
 
 The `[ICON-TOK]` migration ships with its own verification, because neither "does it compile" nor "do pages look right" answers *"is an icon poorly sized because a class was missed or under-specified?"*:
 
-- **`npm run check:icons`** (`scripts/check-icon-sizing.ts`) — static guard over a committed baseline (1,863 at introduction, 1,694 after `[MKTDEAD]`), **new-violations-only**, with `--update-baseline` as the only mutation path so baseline growth is always a reviewable diff. Its first run found **51 icon usages with no size class at all** — the user's exact stated concern, invisible to every other gate.
+- **`npm run check:icons`** (`scripts/check-icon-sizing.ts`) — static guard over a committed baseline (1,863 at introduction, 1,694 after `[MKTDEAD]`), **new-violations-only**, with `--update-baseline` as the only mutation path so baseline growth is always a reviewable diff. Its first run found **51 icon usages with no size class at all** — the user's exact stated concern, invisible to every other gate. **(Conv 420 falsified this: all of them — 46 after `[MKTDEAD]` — were false positives from a name-based match; see the `selfSizingIcons()` narrowing entry above.)**
 - **`npm run icons:scan`** (`scripts/icon-scan.mjs`) — measures 26 routes **at two root font sizes**. The double run is the completeness proof, not just extra coverage: a post-migration *inline* icon that does not move between a 16px and a 24px root is provably still pinned to px.
 
 The `inline-ratio` rule keys on **geometry** — does the icon *vertically overlap* its text (beside) or not (stacked above)? Its first formulation keyed on "is there text nearby" and produced 38 findings that were nearly all course thumbnails, 48px avatars and empty-state illustrations; re-keying on overlap took false positives to **zero**.

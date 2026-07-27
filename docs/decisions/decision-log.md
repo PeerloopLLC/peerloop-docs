@@ -1964,3 +1964,30 @@ Resolves the keep-or-delete call `[CANMSG]` deferred to M6. Endpoint + 7 tests r
 **Rationale:** Zero `src/` callers since `[CANMSG]` rewrote `useCanMessage` as a pure client derivation, and `canMessage()` in `src/lib/messaging.ts` was always the authoritative gate — enforcement is untouched; only an unreferenced read-only echo went away. Keeping it would have meant carrying it as a permanent `[KNIP]` exception. `API-USERS.md`'s follow endpoint now *owns* the visitors-and-self-get-a-value convention it had been documented as mirroring.
 
 **See:** `docs/decisions/03-api-data-fetching.md` entry; `docs/sessions/2026-07/20260726_1657 Decisions.md` §5; Conv 419.
+
+### [ICON-TOK] A Labelled Nav Row Is Classified **Standalone**, Not Inline — and the em Ladder Provably Cannot Serve a 12px Label (Conv 420)
+**Date:** 2026-07-26 (Conv 420)
+
+Nav rows **with labels** take the standalone rem family (`size-icon-20`), not `--icon-inline-*`, on the axis's first genuinely ambiguous classification — the Conv-419 standard's own examples pull both ways ("beside text → inline" by geometry, but "nav-rail icon" is a listed *standalone* example) and geometry loses. Rejected: `size-icon-inline-lg`; adding a 4th inline step / re-anchoring the em ladder (deferred to tranche 3b). Same conv established that the **leverage is at the definition, not the call site**: 94 component-default edits (92 `ui/icons.tsx` + `MattIcon.tsx` → `size-icon-20`, `MenuIcon` → `size-icon-24`) cleared 200 violations and corrected every un-classed usage site-wide, after verifying numerical identity (`h-5 w-5` = 1.25rem = `--icon-20`).
+
+**Rationale:** AdminNavbar's labels are `text-body-small` = 12px, where the em ladder reaches only 13.8px (`md`) / 17.4px (`lg`) against a shipped 20px — it cannot express the size at all, and `[ADMIN-CONF-POLICY]` makes that label deliberately small, a poor thing to chain a glyph to. Answers Conv 419's open em-ratio question **negatively**: recorded as a workaround, not a fix — a genuine 12px-label inline icon still has no expressible size.
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `docs/sessions/2026-07/20260726_2025 Decisions.md` §1, Learnings §2; Conv 420.
+
+### [ICON-TOK] `icon-no-size-class` Narrowed by a **Structural** Pre-Pass, Not an Allowlist — and a Baseline Correction Is Recorded Separately From Migration (Conv 420)
+**Date:** 2026-07-26 (Conv 420)
+
+The R2 rule's 46 reported "icons with no size class" were **100% false positives** (true count zero): 14 were `entity/UserIcon`, an avatar with a typed `size?: 24 | 40` prop, and 32 were sized one level in by a component default or wrapper — double-counting one definition-line defect as many. The rule now asks whether there is provably no sizing input *anywhere* (call site or component) via a `selfSizingIcons()` pre-pass that scans each icon definition's body for a dimension class or `size` prop; verified by injecting a genuinely unsized probe (caught, exit 1) then removing it. Rejected: a hand-maintained allowlist; leaving the false positives in the baseline.
+
+**Rationale:** A name test (`[A-Z]\w*Icon`) is not a semantic one, and the better-designed the component the more likely it misreads it. A structural test re-derives the answer each run and cannot rot; left in place the false positives would have resurfaced in every future tranche's triage. Baseline 1,694 → 1,448 → 1,363 → 1,337, with the −46 correction recorded **separately** from the −200 migration so the number can never read as more progress than it was. Companion caveat: a green `icons:scan` is not evidence about code the route-walk cannot reach — only 4 of tranche 2's 44 sites ever rendered.
+
+**See:** `docs/decisions/06-testing-ci.md` entry; `docs/sessions/2026-07/20260726_2025 Decisions.md` §2, Learnings §§1, 3; Conv 420.
+
+### [ICON-TOK] `ModeratorInvite` Repaired **Wholesale**, Crossing the Standard's Spacing Exclusion — a Bounded, Measured Exception (Conv 420)
+**Date:** 2026-07-26 (Conv 420)
+
+`ModeratorInvite.tsx` is an entire component still in Tailwind-v3 semantics — measured live, an 8×8px glyph inside a 16×16px circle on an 8px-padded card (the author wrote `w-8 h-8` / `w-16 h-16` / `p-8` meaning 32 / 64 / 32). Converted whole to the codebase's literal-px convention (90 classes) **including spacing**, which the Conv-419 standard deliberately excluded. Rejected: icon-only (a 32px glyph in a 16px container overflows — worse than today); a separate task; also un-parking `BecomeATeacherPage`. Same tranche fixed `PublicProfile.tsx:290` (`h-12 w-12` meaning 48px → `size-icon-48`).
+
+**Rationale:** The icon axis alone could not repair a user-facing defect, so the boundary had to be crossed or the defect left shipped. Safe because the blast radius was measured first: only 7 files use the v3-era palette, only 2 carry overridden icon classes, and the second is already parked. Re-measured at 64×64 circle / 32×32 icon / 32px padding; 36 component tests still pass. Only the error state was live-verified.
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `docs/sessions/2026-07/20260726_2025 Decisions.md` §3, Learnings §5; Conv 420.

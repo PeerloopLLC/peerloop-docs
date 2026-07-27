@@ -511,9 +511,9 @@ npm run check:icons -- --update-baseline   # re-snapshot scripts/icon-sizing-bas
 **What it does:**
 - Walks `git ls-files src` (`.ts`/`.tsx`/`.astro`), skipping `src/styles/` and comment lines (a comment naming `h-4 w-4` is documentation, not a violation)
 - **R1 `bare-numeric-*`** — any bare-numeric `w-`/`h-`/`size-N`, reported as `bare-numeric-overridden` (means N px, reads as N×4) or `bare-numeric-multiplier` (means N×4, and breaks if N is ever added to the override set)
-- **R2 `icon-no-size-class`** — an icon component (`MattIcon`, `*Icon`, `*Logo`) rendered with no size class at all, so it falls back to intrinsic size or 100% of its container. Found **51** such usages on the first run — the failure mode runtime scanning only catches where you happen to navigate
+- **R2 `icon-no-size-class`** — an icon component (`MattIcon`, `*Icon`, `*Logo`) with **provably no sizing input anywhere**: none at the call site *and* none in the component itself, so it falls back to intrinsic size or 100% of its container — the failure mode runtime scanning only catches where you happen to navigate. **Narrowed Conv 420:** the first cut tested the call site only and reported 51 (46 by the time it was worked). Reading all 46 showed every one was a false positive — 14 were `@components/entity/UserIcon`, an avatar with a typed `size?: 24 | 40` prop that the standard puts in the "neither" bucket (the rule had matched on the *name* ending in `Icon`); the other 32 resolved their size one level in, via a `className = 'h-5 w-5'` parameter default or a hard-coding wrapper, whose *definition* lines R1 already counts. A `selfSizingIcons()` pre-pass now scans each component's definition body for a dimension class or a `size` prop — structural, so it can't rot the way a hand-maintained allowlist would. True count after the narrowing: **0**
 - **R3 `icon-arbitrary-px`** — arbitrary `size-[Npx]` on an icon component; informational until the migration's final phase
-- **New-violations-only.** ~1,400 bare-numeric classes pre-date the rule, so a hard gate would be red on day one and immediately ignored. Compares per-file counts against `scripts/icon-sizing-baseline.json` (same shape as `KNOWN_ORPHANS` in the orphan detector) so a violation *moving within* a file isn't a regression. `--update-baseline` is the only supported mutation path, which keeps baseline growth a reviewable diff
+- **New-violations-only.** ~1,600 bare-numeric classes pre-dated the rule, so a hard gate would be red on day one and immediately ignored. Compares per-file counts against `scripts/icon-sizing-baseline.json` (same shape as `KNOWN_ORPHANS` in the orphan detector) so a violation *moving within* a file isn't a regression. `--update-baseline` is the only supported mutation path, which keeps baseline growth a reviewable diff
 
 **Exit code:** 0 = no new violations; 1 = regression (so it can join `/w-codecheck`).
 
@@ -529,7 +529,7 @@ Runtime icon measurement (Conv 419 [ICON-TOK], Phase 2) — the **runtime** half
 npm run icons:scan                      # compare against the baseline
 npm run icons:scan -- --update          # write/refresh scripts/icon-scan-baseline.json
 npm run icons:scan -- --routes /a,/b    # limit to specific routes
-npm run icons:scan -- --json out.json   # dump raw measurements
+npm run icons:scan -- --json out.json   # per-route summary: { count, scaled }
 ```
 
 **What it does:**

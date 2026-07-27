@@ -3,6 +3,30 @@
 
 ## 5. UI/UX & Components
 
+### [ICON-TOK] A Labelled Nav Row Is Classified **Standalone**, Not Inline — and the em Ladder Provably Cannot Serve a 12px Label (Conv 420)
+**Date:** 2026-07-26 (Conv 420)
+
+Refines the Conv-419 axis below on its first genuinely ambiguous classification. Nav rows **with labels** take the **standalone rem** family (`size-icon-20`), not `--icon-inline-*` — the Conv-419 standard's own examples pull both ways ("beside text → inline" by geometry, but "nav-rail icon" is listed as a *standalone* example), and geometry loses. Rejected: `size-icon-inline-lg` (honours the beside-text rule); adding a 4th inline step or re-anchoring the em ladder (deferred, see below).
+
+**Rationale:** AdminNavbar's labels are `text-body-small` = 12px, where the em ladder reaches only **13.8px (`md`) or 17.4px (`lg`)** against a shipped 20px — it **cannot express the shipped size at all**. `[ADMIN-CONF-POLICY]` also makes the admin label deliberately small, which is a poor thing to chain a glyph's size to. Standalone rem is visually neutral and treats a nav glyph as a fixed affordance.
+
+**Consequences:** 17 AdminNavbar sites migrated neutrally (via the `MattIcon` default — see the component-defaults note below). Answers the Conv-419 open question about em ratios with a **negative** result: the three inline steps are anchored on 14px body text and **do not serve a 12px label**, so this is recorded as a **workaround, not a fix** — a genuine 12px-label inline icon still has no expressible size, and tranche 3b is expected to force the question (add a 4th inline step vs re-anchor the ladder).
+
+**Also established this conv — the leverage is at the definition, not the call site:** 94 component-default edits (92 `ui/icons.tsx` + `MattIcon.tsx` → `size-icon-20`; `MenuIcon` → `size-icon-24`) cleared **200** violations and corrected every un-classed usage site-wide, because a call site that omits a class renders whatever its component's default supplies. Defaults were migrated only after verifying **numerical identity** (`h-5 w-5` = `calc(0.25rem × 5)` = 1.25rem = `--icon-20`; `h-6 w-6` = 1.5rem = `--icon-24`, both landing on Matt's formalized Small-20 / Medium-24 steps), so the change is provably neutral rather than hopefully neutral. Migrations are also scoped **per tag, not per file**: `w-64 h-64` / `h-48 w-48` serve both icons *and* the wrapper circles those icons sit inside, so a global replace would resize containers too.
+
+**See:** `src/components/icons/MattIcon.tsx`, `src/components/ui/icons.tsx`, `src/components/admin/AdminNavbar.tsx`, `plan/icon-sizing/README.md`; `docs/sessions/2026-07/20260726_2025 Decisions.md` §1, Learnings §2; Conv 420.
+
+### [ICON-TOK] `ModeratorInvite` Repaired **Wholesale**, Crossing the Standard's Spacing Exclusion — a Bounded, Measured Exception (Conv 420)
+**Date:** 2026-07-26 (Conv 420)
+
+`ModeratorInvite.tsx` is an entire component still in **Tailwind-v3 semantics** — measured live at `/invite/mod/<bad-token>`, its glyph rendered **8×8px inside a 16×16px circle on an 8px-padded card**, because the author wrote `w-8 h-8` / `w-16 h-16` / `p-8` meaning 32 / 64 / 32. It is converted **whole** to the codebase's literal-px convention (90 classes: `p-8`→`p-32`, `space-y-4`→`space-y-16`, `mb-4`→`mb-16`, skeleton bars off 8px/4px; icons → `size-icon-32`/`-20`; badge circles → `size-[64px]`), **including spacing** — which the Conv-419 standard deliberately excluded (`p`/`m`/`gap` are out of the icon axis). Rejected: icon-only (a 32px glyph inside a container left at 16px **overflows** — worse than today); logging it as its own task; also un-parking `BecomeATeacherPage` to close the class entirely.
+
+**Rationale:** The icon axis alone could not repair a user-facing defect, so the boundary had to be crossed or the defect left shipped. The exception is safe because the **blast radius was measured first and is bounded**: only **7 files** use the v3-era palette and only **2** carry overridden icon classes — and the second (`BecomeATeacherPage`) is already parked. Reading the file end-to-end is what converted "4 flagged icon classes" into the real 90-class systemic picture; when a component predates a global scale change, the icons are the *visible* symptom of a file-wide problem.
+
+**Consequences:** Re-measured at 64×64 circle / 32×32 icon / 32px card padding; palette and button styling intact (36 `ModeratorInvite` tests still pass). Same tranche fixed `PublicProfile.tsx:290` (error mark `h-12 w-12` meaning 48px → `size-icon-48`; its card already used modern Matt tokens, so only the icon was wrong). The exception is recorded in `plan/icon-sizing/README.md` with the authorising decision attached, so it reads as authorised rather than as scope drift. **Open:** only the error state was live-verified — success / declined / valid-invite need a valid token.
+
+**See:** `src/components/invite/ModeratorInvite.tsx`, `src/components/profile/PublicProfile.tsx`, `plan/icon-sizing/README.md`; `docs/sessions/2026-07/20260726_2025 Decisions.md` §3, Learnings §5; Conv 420.
+
 ### [ICON-TOK] Icon Size Is Its Own Token Axis, Split Three Ways by Role — `--icon-*` (rem) / `--icon-inline-*` (em) / Fixed px (Conv 419)
 **Date:** 2026-07-26 (Conv 419)
 
@@ -18,7 +42,7 @@ Rejected: arbitrary `size-[Npx]` everywhere (unambiguous but permanently untoken
 
 **Rationale:** There were **no icon-size tokens at all**, so the real choice was "wrong tokens vs no tokens", not "tokens vs arbitrary values". The type scale is entirely rem, so an icon pinned in px beside growing text halves in relative size for exactly the user who enlarged it — answering "*should* icons scale with font size?" as **yes for text-adjacent, no for fixed chrome**. `em` beats `rem` for the inline family because it tracks the actual label: a converted site measured 16.1px beside 14px text, 24.1px at a 24px root, and **27.6px when only the label was raised to 24px** — the third measurement is the one `rem` cannot produce.
 
-**Consequences:** New token axis + Tailwind bridge; 43 sites migrated (38 on reachable code — see `[MKTDEAD]`); `docs/as-designed/matt-design-system/05-color-and-tokens.md`'s never-implemented Conv-172 `--Icon-Size-*` proposal marked superseded; the ~1,694-site migration promoted to the **ICON-SIZING** PLAN block (`plan/icon-sizing/README.md`, 6 dependency-ordered phases). Two guards shipped with it (see `06-testing-ci.md` § `[ICON-TOK]` verification). Open: 40 of the 43 migrated sites remain on `rem` pending per-site inline/standalone classification; the `em` ratios are anchored on 14px body text and will shift beside `text-body-small` / `text-h2`.
+**Consequences:** New token axis + Tailwind bridge; 43 sites migrated (38 on reachable code — see `[MKTDEAD]`); `docs/as-designed/matt-design-system/05-color-and-tokens.md`'s never-implemented Conv-172 `--Icon-Size-*` proposal marked superseded; the ~1,694-site migration promoted to the **ICON-SIZING** PLAN block (`plan/icon-sizing/README.md`, 6 dependency-ordered phases). Two guards shipped with it (see `06-testing-ci.md` § `[ICON-TOK]` verification). Open: 40 of the 43 migrated sites remain on `rem` pending per-site inline/standalone classification; the `em` ratios are anchored on 14px body text and will shift beside `text-body-small` / `text-h2`. **(Conv 420 answered that last point negatively — the em ladder cannot express a shipped 20px glyph beside a 12px label; see the labelled-nav-row entry above.)**
 
 **See:** `src/styles/tokens-primitives.css`, `src/styles/tokens-tailwind-bridge.css`; `docs/sessions/2026-07/20260726_1657 Decisions.md` §1, Learnings §2; Conv 419.
 

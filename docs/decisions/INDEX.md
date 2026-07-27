@@ -259,6 +259,8 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [[ICON-TOK] A Labelled Nav Row Is Classified **Standalone**, Not Inline — and the em Ladder Provably Cannot Serve a 12px Label (Conv 420)](05-ui-ux-components.md#icon-tok-a-labelled-nav-row-is-classified-standalone-not-inline--and-the-em-ladder-provably-cannot-serve-a-12px-label-conv-420)
+- [[ICON-TOK] `ModeratorInvite` Repaired **Wholesale**, Crossing the Standard's Spacing Exclusion — a Bounded, Measured Exception (Conv 420)](05-ui-ux-components.md#icon-tok-moderatorinvite-repaired-wholesale-crossing-the-standards-spacing-exclusion--a-bounded-measured-exception-conv-420)
 - [[ICON-TOK] Icon Size Is Its Own Token Axis, Split Three Ways by Role — `--icon-*` (rem) / `--icon-inline-*` (em) / Fixed px (Conv 419)](05-ui-ux-components.md#icon-tok-icon-size-is-its-own-token-axis-split-three-ways-by-role----icon--rem----icon-inline--em--fixed-px-conv-419)
 - [[ICON-TOK] Matt's Figma "Icon Size" Collection Is Credited Inside a CC-Owned Ladder, Not Adopted Wholesale (Conv 419)](05-ui-ux-components.md#icon-tok-matts-figma-icon-size-collection-is-credited-inside-a-cc-owned-ladder-not-adopted-wholesale-conv-419)
 - [[MSG-ADOPT-A] A Prop Most Call Sites Would Pass a Constant For Is Optional With a Hook-Derived Default — `MessageUserButton.signedIn` (Conv 418)](05-ui-ux-components.md#msg-adopt-a-a-prop-most-call-sites-would-pass-a-constant-for-is-optional-with-a-hook-derived-default--messageuserbuttonsignedin-conv-418)
@@ -417,6 +419,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [6. Testing & CI/CD](06-testing-ci.md)
 
+- [[ICON-TOK] `icon-no-size-class` Narrowed by a **Structural** Pre-Pass, Not an Allowlist — and a Baseline Correction Is Recorded Separately From Migration (Conv 420)](06-testing-ci.md#icon-tok-icon-no-size-class-narrowed-by-a-structural-pre-pass-not-an-allowlist--and-a-baseline-correction-is-recorded-separately-from-migration-conv-420)
 - [[MKTDEAD] The Bundler Is the Orphan Oracle — Sourcemap `sources` Union Is Ground Truth; knip Does Not Replace Route-Reachability (Conv 419)](06-testing-ci.md#mktdead-the-bundler-is-the-orphan-oracle--sourcemap-sources-union-is-ground-truth-knip-does-not-replace-route-reachability-conv-419)
 - [[ICON-TOK] Icon-Sizing Verification Is Two Gates — a New-Violations-Only Static Guard Plus a Two-Root-Font Runtime Scan (Conv 419)](06-testing-ci.md#icon-tok-icon-sizing-verification-is-two-gates--a-new-violations-only-static-guard-plus-a-two-root-font-runtime-scan-conv-419)
 - [[R2-SEED] Dev R2 Placeholder-Blob Seeding — Makes Uploaded Course Files Demoable in Local Dev (Conv 415)](06-testing-ci.md#r2-seed-dev-r2-placeholder-blob-seeding--makes-uploaded-course-files-demoable-in-local-dev-conv-415)
