@@ -259,6 +259,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [[ICON-TOK] The Inline **em** Icon Family Is Rescinded — the Rule Collapses to Two-Way, Everything rem (Conv 421)](05-ui-ux-components.md#icon-tok-the-inline-em-icon-family-is-rescinded--the-rule-collapses-to-two-way-everything-rem-conv-421)
 - [[ICON-TOK] A Labelled Nav Row Is Classified **Standalone**, Not Inline — and the em Ladder Provably Cannot Serve a 12px Label (Conv 420)](05-ui-ux-components.md#icon-tok-a-labelled-nav-row-is-classified-standalone-not-inline--and-the-em-ladder-provably-cannot-serve-a-12px-label-conv-420)
 - [[ICON-TOK] `ModeratorInvite` Repaired **Wholesale**, Crossing the Standard's Spacing Exclusion — a Bounded, Measured Exception (Conv 420)](05-ui-ux-components.md#icon-tok-moderatorinvite-repaired-wholesale-crossing-the-standards-spacing-exclusion--a-bounded-measured-exception-conv-420)
 - [[ICON-TOK] Icon Size Is Its Own Token Axis, Split Three Ways by Role — `--icon-*` (rem) / `--icon-inline-*` (em) / Fixed px (Conv 419)](05-ui-ux-components.md#icon-tok-icon-size-is-its-own-token-axis-split-three-ways-by-role----icon--rem----icon-inline--em--fixed-px-conv-419)

@@ -282,32 +282,45 @@ override makes ten numbers mean literal px while every other number keeps Tailwi
 rem-valued, so icons track the user's root font size — verified: `size-icon-16` renders 16×16 at a
 16px root and 20×20 at a 20px root, where `size-[16px]` stays pinned.
 
-### The three-way rule (Conv 419) — which family an icon belongs to
+### The two-way rule (Conv 421) — which family an icon belongs to
 
-Not every small square is an icon, and not every icon should scale the same way. Classify by **role**:
+Not every small square is an icon. Classify by **role**:
 
 | Role | Family | Unit | Example |
 |---|---|---|---|
-| **Inline** — sits beside text | `--icon-inline-{sm,md,lg}` → `size-icon-inline-md` | **em** | glyph before a button label, chevron in a list row, star before a rating |
-| **Standalone** — a glyph with no adjacent text | `--icon-N` → `size-icon-20` | **rem** | nav-rail icon, icon-only button, empty-state mark |
-| **Neither** — dots, avatars, hit targets, brand marks | arbitrary px | px | `size-[6px]` unread dot, 16px avatar, `size-[36px]` tap target, logo |
+| **An icon** — any glyph, whether or not text sits beside it | `--icon-N` → `size-icon-20` | **rem** | nav-rail icon, icon-only button, empty-state mark, glyph before a button label, chevron in a list row, star before a rating |
+| **Not an icon** — dots, avatars, hit targets, brand marks | arbitrary px | px | `size-[6px]` unread dot, 16px avatar, `size-[36px]` tap target, logo |
 
-**Why em for inline (user decision, Conv 419).** The app's type scale is entirely rem
-(`--body-default-size: 0.875rem`), so text already responds to the user's root font size. A rem icon
-tracks the *root*, which means a 16px glyph renders 16px whether its label is `text-body-small`
-(12px) or `text-h2` (24px) — not what "scales with the text" means to a reader. `em` tracks the
-adjacent text. Verified: `size-icon-inline-md` renders 16.1px beside 14px body text, 24.1px when the
-root goes to 24px, and **27.6px when only the button's own label is raised to 24px** — a rem icon
-would have stayed 16px in that last case.
+> **This replaced a three-way rule.** Conv 419 added a third family — `--icon-inline-{sm,md,lg}`,
+> em-valued, for icons sitting beside text so they would track the label rather than the root. It was
+> **rescinded in Conv 421** and the tokens deleted. See *Why the inline em family was rescinded* below.
 
-Ratios are anchored on `--body-default-size` (14px) so migrating an existing 16px inline icon is
-close to visually neutral: `sm` 1em · `md` 1.15em (≈16px) · `lg` 1.45em (≈20px, Matt's Small).
-They are deliberately **not** pixel-named — the rendered size is contextual, so a `-16` suffix
-would lie.
+**Why rem.** The app's type scale is entirely rem (`--body-default-size: 0.875rem`), so a rem icon
+responds to the reader's root font size — the setting users actually change — while staying
+predictable: `size-icon-20` renders 20px at the default root, everywhere, in every context. Every
+`--icon-N` token is pixel-identical to its name at a 16px root, which is what makes migrating a
+pinned `size-[Npx]` site provably neutral.
 
-**Why rem, not em, for standalone.** A standalone glyph has no neighbouring text; `em` would
-inherit whatever font-size happens to be on its container, which is arbitrary. Root-relative is the
-honest choice, and it still respects the user's font preference.
+#### Why the inline em family was rescinded (Conv 421)
+
+Four findings, none of which were available when the em ladder was chosen:
+
+1. **It never fired.** Three times the beside-text case arose it was resolved by classifying *around*
+   the ladder: AdminNavbar nav rows → standalone (Conv 420); the 12px glyph group → repairs
+   (Conv 420); the 187-site arbitrary-px tranche → rem throughout (Conv 421), because em would have
+   shrunk Sidebar glyphs from 20px to ~16px.
+2. **Two thirds was dead.** `-sm` and `-lg` had zero usages at any point. Only `-md` ever shipped —
+   6 sites across 4 files.
+3. **The promise was not reliably delivered.** `em` resolves against the element's own *inherited*
+   font-size — its container's — not a sibling label's. A 14px container wrapping a 12px label sizes
+   the icon off 14px. It behaved as advertised only when container and label already matched, which
+   is precisely the case where rem was fine anyway.
+4. **The 14px anchor was wrong where it mattered.** Against this app's recurring 12px labels the
+   ladder capped at 17.4px — below the 20px those icons already shipped at.
+
+The Conv-419 measurement that motivated em (an inline icon growing to 27.6px when only its label was
+raised to 24px) is real but describes a configuration the app does not use: local font-size overrides
+are vanishingly rare here because the type scale is token-driven and fixed.
 
 **Why fixed px for the rest.** A 6px unread dot, a 16px avatar and a 36px tap target have no text
 relationship. Scaling them breaks their containers or doubles a dot. `ui/icons.tsx` component

@@ -213,7 +213,7 @@
   radius is 404s and legacy-shell pages, not the canonical app. Confirm whether the shell is
   retire-by-default (`[OLD-RETIRE-DEFAULT]`) before investing; a one-line fix may still be worth it.
 - **Fix (one line).** `h-8 w-8` → `size-[32px]` (author intent — avatars are the "neither" category
-  per the three-way rule, so arbitrary px is correct here, not `size-icon-32`).
+  per the two-way rule, so arbitrary px is correct here, not `size-icon-32`).
 
 ### [ICON-AUDIT]
 
@@ -253,6 +253,9 @@
   already logged one instance (46 of a −246 was a measurement correction).
 - **✅ Disposition chosen + executed (Conv 421): re-target at the Matt surface.** See `[ICON-TOK]`
   — the whole `icon-arbitrary-px` class was retired, 187 → 0, baseline 1,337 → **1,150**.
+- **✅ Follow-on (Conv 421): the em inline family was rescinded**, collapsing the rule to two-way.
+  This removes the block's longest-standing open decision (the em ladder, dodged 3×) and converts the
+  ~500 remaining 16/20/24px sites from judgment calls into mechanical, provably-neutral conversions.
 - **Still open from this audit:** Findings 2–4 are recorded, not fixed. Specifically the metric is
   still misleading (788 `bare-numeric-overridden` remains ~44% non-icon), and `[HDR-AVATAR]` is
   unfixed. Decide whether to split the non-icon class out of the 788 before the next tranche.
@@ -362,22 +365,26 @@
   question to be settled. `/messages`, `/notifications`, `/profile` still measure **0% scale with root**.
   Also outstanding: Phase 5 must drive **empty states deliberately** (40 of tranche 2 unproven), and
   someone must decide whether the ~390 non-icon bare-numerics get their own axis or stay ambiguous.
-- **Standard (decided).** Spacing (`p`/`m`/`gap`) keeps the numeric scale — that is what the
-  Conv-174 override was for, settled at 4711 uses vs 55 arbitrary. Dimensions (`w`/`h`/`size`) use
-  the icon axis, split three ways **by role** (user decision, Conv 419):
-  - **Inline** (beside text) → `size-icon-inline-{sm,md,lg}`, **em**, tracks the adjacent label.
-  - **Standalone** (no adjacent text) → `size-icon-N`, **rem**, tracks the root.
-  - **Neither** (dots, avatars, hit targets, brand marks, and `ui/icons.tsx` component *defaults*,
-    which cannot know their call site) → arbitrary px.
+- **Standard (decided; simplified Conv 421).** Spacing (`p`/`m`/`gap`) keeps the numeric scale — that
+  is what the Conv-174 override was for, settled at 4711 uses vs 55 arbitrary. Dimensions
+  (`w`/`h`/`size`) use the icon axis, now split **two ways** by role:
+  - **An icon** — any glyph, whether or not text sits beside it → `size-icon-N`, **rem**.
+  - **Not an icon** (dots, avatars, hit targets, brand marks, and `ui/icons.tsx` component
+    *defaults*, which cannot know their call site) → arbitrary px.
 
   Never `size-16`, `h-4 w-4`, or a bare `size-[Npx]` on something that is actually an icon.
-  Full rationale + the verified em/rem measurements: `matt-design-system/05-color-and-tokens.md`
-  §Icon Size → *The three-way rule*.
+  **The em inline family was RESCINDED Conv 421** — `--icon-inline-{sm,md,lg}` deleted, all 6 call
+  sites → `size-icon-16`. It never fired (3 dodges), `-sm`/`-lg` were never used, `em` resolves
+  against the container's font-size rather than the sibling label's, and its 14px anchor capped at
+  17.4px against this app's 12px labels. This makes the ~500 remaining 16/20/24px sites **mechanical**
+  rather than ~500 judgment calls. Full rationale:
+  `matt-design-system/05-color-and-tokens.md` §Icon Size → *The two-way rule*.
 - **✅ Built Conv 419.** `--icon-{12,14,16,18,20,24,28,32,40,48,64}` in `tokens-primitives.css`
   (rem-valued, pixel-named, matching `--space-N` Decision 1 C) + `--spacing-icon-N` re-exports in
   `tokens-tailwind-bridge.css`. Tailwind v4 resolves `size-*`/`w-*`/`h-*` from the spacing
   namespace, so the tokens must live there; the `icon-` segment is what makes them unambiguous.
-  Plus the em inline family `--icon-inline-{sm,md,lg}` (1em / 1.15em / 1.45em, anchored on
+  Plus (**since RESCINDED — Conv 421, see Standard above**) the em inline family
+  `--icon-inline-{sm,md,lg}` (1em / 1.15em / 1.45em, anchored on
   `--body-default-size` = 14px so migrating a 16px inline icon is visually neutral).
   **Verified live:** `size-icon-16` → 16×16, → 20×20 at a 20px root (rem);
   `size-icon-inline-md` → 16.1px beside 14px text, 24.1px at a 24px root, and **27.6px when only
@@ -706,3 +713,7 @@
 - **`[ICON-TOK]` arbitrary-px class retired** — 187 → 0, baseline 1,337 → **1,150**, 69 files.
   Verified live at two root font sizes: 232/232 unchanged at 16px root, 232/232 scaling at 24px.
   5 gates green (suite 6131). Code `31251d82`.
+- **`[ICON-TOK]` em inline family rescinded** — `--icon-inline-{sm,md,lg}` deleted, 6 call sites →
+  `size-icon-16`, rule collapsed three-way → two-way, scanner rule widened
+  `inline-did-not-scale` → `tokened-did-not-scale`. Closes the block's longest-open decision.
+  5 gates green (suite 6131) + `icons:scan` no regression.

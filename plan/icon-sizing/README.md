@@ -26,15 +26,22 @@ the standard. What remains is the bulk migration — and the harder problem, whi
 ## The standard (decided Conv 419)
 
 Spacing (`p`/`m`/`gap`) keeps the numeric scale; that is what the override was *for*, and it is
-settled at 4,711 uses vs 55 arbitrary. Dimensions split three ways **by role**:
+settled at 4,711 uses vs 55 arbitrary. Dimensions split **two ways** by role (simplified from three
+in Conv 421, when the em inline family was rescinded):
 
 | Role | Family | Unit | Example |
 |---|---|---|---|
-| **Inline** — sits beside text | `size-icon-inline-{sm,md,lg}` | **em** — tracks the label | glyph before a button label, chevron in a row, star before a rating |
-| **Standalone** — no adjacent text | `size-icon-{12…64}` | **rem** — tracks the root | nav-rail icon, icon-only button, empty-state mark |
-| **Neither** — not an icon | arbitrary px | px | 6px unread dot, 16px avatar, 36px tap target, logo, `ui/icons.tsx` defaults |
+| **An icon** — any glyph, text beside it or not | `size-icon-{12…64}` | **rem** — tracks the root | nav-rail icon, icon-only button, empty-state mark, glyph before a button label, chevron in a row, star before a rating |
+| **Not an icon** | arbitrary px | px | 6px unread dot, 16px avatar, 36px tap target, logo, `ui/icons.tsx` defaults |
 
-Rationale, ratios and the verified measurements live in
+> **Rescinded (Conv 421):** a third family — `size-icon-inline-{sm,md,lg}`, em-valued, for icons
+> beside text — existed from Conv 419 until Conv 421. It never fired (three dodges: AdminNavbar, the
+> 12px glyph group, the 187-site arbitrary-px tranche), `-sm`/`-lg` were never used once, `em`
+> resolves against the container's font-size rather than the sibling label's, and its 14px anchor
+> capped at 17.4px against this app's 12px labels. Removing it makes the ~500 remaining 16/20/24px
+> sites mechanical rather than judgment calls.
+
+Rationale and the verified measurements live in
 [matt-design-system/05-color-and-tokens.md § Icon Size](../../docs/as-designed/matt-design-system/05-color-and-tokens.md).
 
 ## Scale
@@ -203,7 +210,8 @@ put first turned out not to exist — see the Scale section.)
       land on Matt's own formalized steps (Small 20 / Medium 24). Also migrated in the same pass: the
       6 local wrappers behind the false-positive call sites (`QuickActionIcon`, `ActivityIcon`,
       `ResourceIcon`, `TypeIcon`, and `PromoteButton`'s three local svgs → `size-icon-inline-md`, its
-      genuine inline case at a 14px label). Runtime scan: **no regression**, 0 findings on all 26
+      genuine inline case at a 14px label — *those 3 svgs moved to `size-icon-16` in Conv 421 when the
+      em family was rescinded*). Runtime scan: **no regression**, 0 findings on all 26
       routes bar the parked 11.
       - ⚠️ **Honest limit:** most of the 200 was *ambiguity* removal, not a rendered-size change —
         `h-5 w-5` was already rem, so the `% scale with root` meters did not move. The gain is that
@@ -262,11 +270,33 @@ put first turned out not to exist — see the Scale section.)
         runtime findings). So there is no third such component waiting.
       - ⚠️ Only the **error** state was live-verified. Success / declined / valid-invite states share
         the same card markup but need a valid token to render.
-- [ ] **Tranche 3b — the 16/20/24px bulk (~369 classes).** This is where the inline-vs-standalone
-      judgment actually lives, so it needs reading, not a script. Of the 15 sites at 12px, 14 are
-      legitimately small glyphs (star ratings, badge-pill icons, sort chevrons) and most sit **beside
-      text** — so this tranche will pull hard on the em ladder and is likely where the "no home for a
-      12px-label inline icon" open question has to be settled rather than side-stepped.
+- [x] **Tranche 4 — the whole `icon-arbitrary-px` class, on the Matt surface (Conv 421).** 187 → **0**,
+      baseline 1,337 → **1,150**, 69 files, 187 line-for-line edits. Re-targeted here after the
+      `[ICON-AUDIT]` walk found the block had been migrating where nothing renders (`/course/[slug]`
+      rendered 26 icons and **0** tokened; `/courses` 87 and **1**). **First tranche whose premise
+      survived re-testing** — R3 matches only icon-component tags, so all 187 were real icons
+      (166 `<MattIcon>` + 21 `ui/icons.tsx`), zero avatars/logos/skeleton bars, unlike tranche 2's 891.
+      Distribution 62×20 · 61×24 · 26×16 · 10×48 · 10×14 · 7×32 · 4×18 · 2×40 · 2×28 · 2×12 · 1×19.
+      **Provably neutral** — all 11 `--icon-N` tokens verified pixel-identical to their names at a
+      16px root. The one off-scale value (`size-[19px]`) snapped to `size-icon-20` per user decision.
+      Scoped per tag, never a file-wide sed; the script's non-square guard correctly refused one
+      conditional ternary (`MessageUserButton`, hand-edited) and 3 reflowed multi-line tags were
+      restored. **Proof: 232 migrated icons render across 10 routes — 232/232 at their exact named px
+      at a 16px root, 232/232 grew at a 24px root.** 5 gates green (suite 6131). Code `31251d82`.
+- [x] **Tranche 5 — rescind the em inline family (Conv 421).** `--icon-inline-{sm,md,lg}` deleted from
+      primitives + the `--spacing-*` bridge; all 6 call sites → `size-icon-16` (16.1px → 16px). The
+      rule is now **two-way**. This closes the block's longest-open decision rather than deferring it a
+      fourth time — see the callout under *Standard* above for the four findings. Scanner rule widened
+      `inline-did-not-scale` → `tokened-did-not-scale` (every token is rem now, so *any* `size-icon-*`
+      that measures the same at both roots is provably still pinned). 5 gates green + `icons:scan` no
+      regression. ⚠️ The 6 converted sites sit behind teacher/creator-profile and feed conditionals
+      that could not be reached live — asserted from the token side, not measured in place.
+- [ ] **Tranche 3b — the 16/20/24px bulk (~500 classes: 230×16 · 186×20 · 86×24).** **No longer a
+      judgment tranche.** With the em family gone (tranche 5) these are mechanical
+      `w-N h-N`/`size-N` → `size-icon-N` conversions, provably neutral wherever N is already the
+      rendered px. The remaining work is separating the real icons from the ~44% of
+      `bare-numeric-overridden` that is skeleton bars, badge circles, dots and avatars — see
+      `[ICON-AUDIT]` finding 4; splitting that class first would make the baseline mean something.
 - [ ] **Mandatory per-tranche reachability check — standing, re-runs every tranche.** Run `.claude/scripts/codecheck-orphan-components.mjs`
       over every file in a tranche **before** editing it. Conv 419 measured that **5 of its 43 icon
       fixes landed on dead code** — hitting `TestimonialsBrowse`, the same file Conv 404's `[A11Y]`

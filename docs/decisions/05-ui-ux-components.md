@@ -3,6 +3,23 @@
 
 ## 5. UI/UX & Components
 
+### [ICON-TOK] The Inline **em** Icon Family Is Rescinded — the Rule Collapses to Two-Way, Everything rem (Conv 421)
+**Date:** 2026-07-27 (Conv 421)
+
+**Supersedes** the three-way split established Conv 419 (below) on its inline arm. `--icon-inline-{sm,md,lg}` is **deleted** — from `tokens-primitives.css`, from the `--spacing-*` bridge re-exports, and from all 6 call sites (→ `size-icon-16`, a 16.1px → 16px change). Icons are now **rem only** (`--icon-N`); arbitrary px remains for genuine non-icons (dots, avatars, hit targets, brand marks). Rejected: keeping the tokens defined-but-unused (leaves a live classification burden on ~500 remaining sites for a family nothing uses); adding a 4th inline step or re-anchoring the ladder (the Conv-420 deferral — this closes it in the other direction).
+
+**Rationale — four findings, none available in Conv 419:**
+1. **It never fired.** Three times the beside-text case arose it was resolved by classifying *around* the ladder: AdminNavbar nav rows → standalone (Conv 420, the decision below); the 12px glyph group → repairs (Conv 420); the 187-site arbitrary-px tranche → rem throughout (Conv 421), since em would have shrunk Sidebar glyphs 20px → ~16px. A rule that never fires is a pending decision, not a rule.
+2. **Two thirds was dead.** `-sm` and `-lg` had **zero** usages at any point; only `-md` shipped, at 6 sites in 4 files — none of which could be reached across 8 route attempts.
+3. **The promise was not reliably delivered.** `em` resolves against the element's own *inherited* font-size — its container's — **not a sibling label's**. A 14px container wrapping a 12px label sizes the icon off 14px. It behaved as advertised only where container and label already matched, which is exactly where rem was fine.
+4. **The 14px anchor was wrong where it mattered** — against this app's recurring 12px labels the ladder capped at 17.4px, below the shipped 20px. (This is the Conv-420 finding below, now read as evidence against the family rather than a gap in it.)
+
+**Consequences:** the ~500 sites remaining in the 16/20/24px band become **mechanical** conversions (`size-[N]`/`w-N h-N` → `size-icon-N`, provably neutral) instead of ~500 arguable inline-vs-standalone judgments — the single largest source of friction left in ICON-SIZING. The runtime scanner's `inline-did-not-scale` rule was **strengthened** to `tokened-did-not-scale`: with every token rem-valued, *any* `size-icon-*` element that measures identically at a 16px and 24px root is provably still pinned, so the completeness proof now covers the whole axis rather than its inline arm. The Conv-419 measurement that motivated em (27.6px when only the label was raised to 24px) is real but describes local font-size overrides, which this token-driven type scale does not use.
+
+**Not verified:** the 6 converted call sites sit behind teacher/creator-profile and feed conditionals that could not be reached live; the change is a 0.1px delta on a numerically verified token, and 5 gates are green, but it is asserted from the static/token side, not measured in place.
+
+**See:** `src/styles/tokens-primitives.css` (tombstone comment retains the full rationale), `src/styles/tokens-tailwind-bridge.css`, `scripts/icon-scan.mjs`, `docs/as-designed/matt-design-system/05-color-and-tokens.md` §The two-way rule; Conv 421.
+
 ### [ICON-TOK] A Labelled Nav Row Is Classified **Standalone**, Not Inline — and the em Ladder Provably Cannot Serve a 12px Label (Conv 420)
 **Date:** 2026-07-26 (Conv 420)
 

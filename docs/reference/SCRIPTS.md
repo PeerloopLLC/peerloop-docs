@@ -534,8 +534,8 @@ npm run icons:scan -- --json out.json   # per-route summary: { count, scaled }
 
 **What it does:**
 - Visits 26 seeded routes (5 viewers via `POST /api/auth/dev-login`, plus 2 logged-out) and measures every `svg` / `img` / checkbox / radio: box size, parent font size, display, overflow
-- **Runs each route at two root font sizes (16px and 24px).** This is the completeness proof, and the reason the script exists rather than a threshold sweep: after migration, an *inline* icon whose rendered size does not change between the two roots is provably still pinned to px — a missed site. It also catches containers that didn't grow with their icon
-- Invariants: `too-small` (<12px), `too-large` (>64px svg), `overflows-parent`, `inline-ratio` (an inline glyph <0.7× or >2.2× its label's font size), `inline-did-not-scale`
+- **Runs each route at two root font sizes (16px and 24px).** This is the completeness proof, and the reason the script exists rather than a threshold sweep: every token on the axis is rem-valued, so **any** `size-icon-*` element whose rendered size does not change between the two roots is provably still pinned to px — a missed site, a stale build, or a competing `w-`/`h-` class winning the cascade. It also catches containers that didn't grow with their icon
+- Invariants: `too-small` (<12px), `too-large` (>64px svg), `overflows-parent`, `inline-ratio` (an inline glyph <0.7× or >2.2× its label's font size), `tokened-did-not-scale` (was `inline-did-not-scale` until Conv 421, when the em family was rescinded and the rule widened from the inline arm to the whole axis)
 - **"Inline" is decided by geometry, not by nearby text** — the icon must *vertically overlap* its label (beside it) rather than sit above it. The first version keyed on "is there text in the same parent" and produced 38 findings that were nearly all course thumbnails, 48px avatars and empty-state illustrations; re-keying on overlap took false positives to zero
 - Baseline-and-diff: migration deliberately changes sizes (px → rem/em), so a bare "did anything change" diff is noise — capture before, classify each delta after
 
