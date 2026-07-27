@@ -3,6 +3,17 @@
 
 ## 6. Testing & CI/CD
 
+### [ICON-TOK] The Icon-Sizing Baseline Splits Into **Governed** and **Informational** Tiers — R1 Classifies Structurally, Not by Line Proximity (Conv 421)
+**Date:** 2026-07-27 (Conv 421)
+
+**Closes `[ICON-AUDIT]` finding 4:** the guard's headline number conflated migration, deletion and rule-narrowing, so it could not be read as progress. R1 (`bare-numeric-overridden`) now classifies each match **structurally** — testing the match's character offset against ranges computed from whole icon **tags** *and* from icon component **definition bodies** — splitting into `icon-bare-numeric-{overridden,multiplier}` (**gated**, counted in the headline total, drives regression) and `dimension-bare-numeric` (**measured and reported, not gated**, stored under a separate `informational` key in the baseline so a jump still shows in the diff). Rejected: precision fixes alone (leaves the classification problem); skipping the split and letting the count fall through migration; scoping it and deciding later. Also rejected during implementation: **line proximity** as the icon-context test — it misread infinite-scroll sentinel `<div>`s as icons.
+
+**Rationale:** Scoping by measurement rather than inheriting the audit's "~44% non-icon" estimate found **three** inflation sources, not one — **51** fraction false positives (`w-1/2` matched as `w-1`), **94** `min-`/`max-` mislabels (reported under a class name absent from the file), and **~418** genuinely non-icon elements (dots, skeletons, avatars, media, boxes). Regex precision alone would have left the classification problem; classification without the precision fix would have meant classifying 145 phantom violations. Calibrated per `[CMH]` **before** commit: 14 regex cases plus an injected 6-shape probe, every shape classified correctly and the gate flagging the probe as a regression.
+
+**Consequences:** Baseline **1,143 → 560 governed + 532 informational**. The lookbehind now captures `min-`/`max-` whole instead of half-matching, and the lookahead rejects `/`, letters and `-`. The scoping also produced the more decision-useful result: the remaining governed work was **94% mechanical**, and the only icons rendering under 12px were in the parked `BecomeATeacherPage` — i.e. no known live icon-size defects. The 532 informational sites have **no owning axis**; whether they get one or stay permanently informational is an open question. Same conv, the runtime scanner's `tokened-did-not-scale` rule was found pairing its two measurement passes by array **index** and re-paired by a stamped `data-icon-scan-id` — at a 24px root a `size-icon-16` measures 24px, exactly matching a `size-icon-24` from the 16px pass, so a one-element shift read as "did not scale".
+
+**See:** `scripts/check-icon-sizing.ts`, `scripts/icon-sizing-baseline.json`, `scripts/icon-scan.mjs`, `docs/reference/SCRIPTS.md`, `plan/icon-sizing/README.md`; `docs/sessions/2026-07/20260727_0837 Decisions.md` §2, Learnings §5; Conv 421.
+
 ### [ICON-TOK] `icon-no-size-class` Narrowed by a **Structural** Pre-Pass, Not an Allowlist — and a Baseline Correction Is Recorded Separately From Migration (Conv 420)
 **Date:** 2026-07-26 (Conv 420)
 

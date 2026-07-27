@@ -260,6 +260,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
 - [[ICON-TOK] The Inline **em** Icon Family Is Rescinded — the Rule Collapses to Two-Way, Everything rem (Conv 421)](05-ui-ux-components.md#icon-tok-the-inline-em-icon-family-is-rescinded--the-rule-collapses-to-two-way-everything-rem-conv-421)
+- [[HDR-AVATAR] The Legacy Shell `Header` Is Repaired **Whole**, Not by the Tasked One-Line Avatar Fix — the Second Bounded v3-Semantics Exception (Conv 421)](05-ui-ux-components.md#hdr-avatar-the-legacy-shell-header-is-repaired-whole-not-by-the-tasked-one-line-avatar-fix--the-second-bounded-v3-semantics-exception-conv-421)
 - [[ICON-TOK] A Labelled Nav Row Is Classified **Standalone**, Not Inline — and the em Ladder Provably Cannot Serve a 12px Label (Conv 420)](05-ui-ux-components.md#icon-tok-a-labelled-nav-row-is-classified-standalone-not-inline--and-the-em-ladder-provably-cannot-serve-a-12px-label-conv-420)
 - [[ICON-TOK] `ModeratorInvite` Repaired **Wholesale**, Crossing the Standard's Spacing Exclusion — a Bounded, Measured Exception (Conv 420)](05-ui-ux-components.md#icon-tok-moderatorinvite-repaired-wholesale-crossing-the-standards-spacing-exclusion--a-bounded-measured-exception-conv-420)
 - [[ICON-TOK] Icon Size Is Its Own Token Axis, Split Three Ways by Role — `--icon-*` (rem) / `--icon-inline-*` (em) / Fixed px (Conv 419)](05-ui-ux-components.md#icon-tok-icon-size-is-its-own-token-axis-split-three-ways-by-role----icon--rem----icon-inline--em--fixed-px-conv-419)
@@ -420,6 +421,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [6. Testing & CI/CD](06-testing-ci.md)
 
+- [[ICON-TOK] The Icon-Sizing Baseline Splits Into **Governed** and **Informational** Tiers — R1 Classifies Structurally, Not by Line Proximity (Conv 421)](06-testing-ci.md#icon-tok-the-icon-sizing-baseline-splits-into-governed-and-informational-tiers--r1-classifies-structurally-not-by-line-proximity-conv-421)
 - [[ICON-TOK] `icon-no-size-class` Narrowed by a **Structural** Pre-Pass, Not an Allowlist — and a Baseline Correction Is Recorded Separately From Migration (Conv 420)](06-testing-ci.md#icon-tok-icon-no-size-class-narrowed-by-a-structural-pre-pass-not-an-allowlist--and-a-baseline-correction-is-recorded-separately-from-migration-conv-420)
 - [[MKTDEAD] The Bundler Is the Orphan Oracle — Sourcemap `sources` Union Is Ground Truth; knip Does Not Replace Route-Reachability (Conv 419)](06-testing-ci.md#mktdead-the-bundler-is-the-orphan-oracle--sourcemap-sources-union-is-ground-truth-knip-does-not-replace-route-reachability-conv-419)
 - [[ICON-TOK] Icon-Sizing Verification Is Two Gates — a New-Violations-Only Static Guard Plus a Two-Root-Font Runtime Scan (Conv 419)](06-testing-ci.md#icon-tok-icon-sizing-verification-is-two-gates--a-new-violations-only-static-guard-plus-a-two-root-font-runtime-scan-conv-419)

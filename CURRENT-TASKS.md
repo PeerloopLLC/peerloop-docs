@@ -198,7 +198,10 @@
 
 ### [ICON-AUDIT]
 
-- **State:** 📋 queued · `[Opus]` — **findings surfaced Conv 421, disposition not yet chosen**
+- **State:** 📋 queued — **disposition chosen and executed Conv 421**; kept as the audit record. Findings
+  1 and 4 are closed (re-target + baseline split); 2–3 are historical-accuracy notes, not live defects.
+  `[Opus]` stripped — no design decision remains here (the surviving one, the fate of the 532
+  `dimension-bare-numeric` sites, lives under `[ICON-TOK]` Phase 6).
 - **What this was.** A direct audit of everything `[ICON-TOK]` has changed across Convs 419–420,
   done from the diffs + a live browser walk rather than from the plan's own summaries. Method:
   resolve every changed dimension class through the ten-value override table to a rendered px, then
@@ -719,7 +722,7 @@
   rendering <12px are in the parked `BecomeATeacherPage`. Code `14f56f7c`.
 - **`[ICON-TOK]` mechanical sweep — icon debt `560 → 25`, all residue parked.** 539 classes / 99
   files, line-for-line. Premise re-derived against the checker before the first edit and it **held**.
-  Two bugs in my own sweep caught before damage (a whole-file string regex desynchronised by an
+  Two bugs in my own sweep — one caught, one shipped cosmetically (a whole-file string regex desynchronised by an
   apostrophe in JSX prose → 80 silent misses; whitespace collapse eating newlines) — proof that
   nothing was mis-converted is that `dimension-bare-numeric` measured **532 before and after**.
   Verified live: **437 icons, 437/437 exact at 16px root, 437/437 scaling at 24px** across 18 routes.

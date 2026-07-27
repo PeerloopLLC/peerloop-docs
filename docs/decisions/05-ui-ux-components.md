@@ -28,6 +28,17 @@ Conv 420 migrated PromoteButton's three svgs from a literal 16px to `size-icon-i
 
 **See:** `src/styles/tokens-primitives.css` (tombstone comment retains the full rationale), `src/styles/tokens-tailwind-bridge.css`, `scripts/icon-scan.mjs`, `docs/as-designed/matt-design-system/05-color-and-tokens.md` §The two-way rule; Conv 421.
 
+### [HDR-AVATAR] The Legacy Shell `Header` Is Repaired **Whole**, Not by the Tasked One-Line Avatar Fix — the Second Bounded v3-Semantics Exception (Conv 421)
+**Date:** 2026-07-27 (Conv 421)
+
+`src/components/layout/Header.tsx` was tasked as a one-line avatar change (`h-8 w-8` → `size-icon-32`); measurement showed it was not isolatable. The **whole component is still in Tailwind-v3 semantics**: the bar is `h-16` — meaning 64px to its author — and renders **17px** under the `--spacing-*` override, with 28px logo text overflowing it. **15 classes** converted to the codebase's literal-px convention, preserving v3 author intent. Rejected: the tasked avatar-only fix (a 32px avatar inside a 17px bar is *worse* than today); deferring it as "just the legacy shell".
+
+**Rationale:** This is the `ModeratorInvite` precedent (Conv 420, user-authorised) applied a second time — a legacy-semantics component where the icon axis **alone cannot repair a visible defect**, so the standard's spacing exclusion has to be crossed or the defect left shipped. The decisive evidence that it was broken rather than deliberately compact is a **fingerprint no author would write**: `px-4 sm:px-6 lg:px-8` resolves to **4px → 24px → 8px**, padding that increases then *decreases* across breakpoints, because 6 is not in the overridden set but 4 and 8 are.
+
+**Consequences:** Header **17px → 65px**, avatar **8px → 32px**. The task's own scope was wrong twice over: `h-8 w-8` appears **twice** (the `<img>` *and* the initials fallback), and the blast radius is **7 live non-`/old` routes**, not legacy pages only — every 404, `/receipt/[id]` (a Conv-410 deliverable), `/certificates/[id]`, `/diploma/[id]`, `/verify/[id]`, and `/invite/mod/[token]`, whose *content* Conv 420 repaired while leaving this shell broken. "Legacy shell" described the component's lineage, not its reach.
+
+**See:** `src/components/layout/Header.tsx`; the `ModeratorInvite` wholesale-repair entry below (Conv 420) for the precedent; `docs/sessions/2026-07/20260727_0837 Decisions.md` §3, Learnings §6; Conv 421.
+
 ### [ICON-TOK] A Labelled Nav Row Is Classified **Standalone**, Not Inline — and the em Ladder Provably Cannot Serve a 12px Label (Conv 420)
 **Date:** 2026-07-26 (Conv 420)
 

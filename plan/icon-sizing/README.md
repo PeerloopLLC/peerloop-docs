@@ -2,10 +2,14 @@
 
 **Focus:** Migrate ~1,700 dimension classnames onto the Conv-419 icon token axis, and be able to
 *demonstrate* no page shipped a mis-sized icon — not merely believe it.
-**Status:** 🔥 IN PROGRESS (Conv 420 — three migration tranches landed; baseline **1,337**, down from 1,694.
-Conv 419 built the foundation, standard and Phases 1–2 at baseline 1,694, itself down from 1,863 after
-that conv's `[MKTDEAD]` dead-code purge)
-**Task code:** `[ICON-TOK]` · related `[ICON-4PX]` (residue), `[RG-PUBLIC]` (gates one file), `[MKTDEAD]` (shrank the baseline)
+**Status:** 🟢 MIGRATION COMPLETE (Conv 421) — **no live icon-size debt remains anywhere.** Governed icon
+debt is **25**, all of them in the parked `BecomeATeacherPage` (gated behind `[RG-PUBLIC]`). Phases 1–4
+are done; **Phases 5 (completeness proof) and 6 (tighten the guard) remain**, plus the two open questions
+below. Trajectory: baseline 1,863 → 1,694 (Conv 419 `[MKTDEAD]` purge) → 1,337 (Conv 420, three tranches)
+→ 1,150 (tranche 4) → 1,143 → **560 governed + 532 informational** (tranche 7's axis split) → **25**
+(tranche 3b's mechanical sweep).
+**Task code:** `[ICON-TOK]` · related `[ICON-4PX]` (residue, now exactly 25 classes), `[RG-PUBLIC]` (gates
+the one remaining file), `[MKTDEAD]` (shrank the baseline), `[ICON-AUDIT]` (Conv 421 course-correction)
 
 ---
 
@@ -21,7 +25,10 @@ That shipped 4px icons, two near-invisible 4px checkboxes, and five `ui/icons.ts
 
 Conv 419 fixed the unambiguous half (43 sites — **honestly 38**: the reachability check afterwards
 showed 5 had landed on dead code, which `[MKTDEAD]` then deleted), built the token axis, and agreed
-the standard. What remains is the bulk migration — and the harder problem, which is proving it landed.
+the standard. Convs 420–421 then ran the bulk migration to ground: **the icon axis is now migrated and
+the harder problem — proving it landed — is half done.** 437 migrated icons are measured correct at two
+root font sizes across 18 routes; the other **49 routes, plus empty/modal/error states, are still
+unproven** (Phase 5), and the guard has not yet been promoted to a hard error (Phase 6).
 
 ## The standard (decided Conv 419)
 
@@ -50,20 +57,26 @@ Re-measured **after** `[MKTDEAD]` (Conv 419) deleted 80 dead-marketing files; th
 are kept alongside because 169 baseline violations — a full **10%** — lived in code no route could
 reach, and a census that counts them over-scopes the migration.
 
-| | Conv 420 | Conv 419 | pre-`[MKTDEAD]` |
-|---|---|---|---|
-| `.astro` pages (route-matrix) | 67 | 67 | 67 |
-| icon-component usages | 626 (198 `MattIcon` + 428 `ui/icons`) | 626 | 860 |
-| `ui/icons.tsx` exports | 98 | 98 | 98 |
-| **`check:icons` baseline total** | **1,337** | 1,694 | 1,863 |
-| — bare-numeric, overridden ten | **788** ← ambiguous, mean N px | 898 | — |
-| — bare-numeric, non-overridden N | **362** ← ambiguous, mean N × 4 px | 558 | — |
-| — of the overridden ten, actually **on an icon** | ~369, now all ≥16px | — | — |
-| — of the overridden ten, **not an icon** (skeletons, badge circles, dots, avatars) | ~390 — out of scope for this axis | — | — |
-| — arbitrary px *on an icon component* | **187** | 192 | — |
-| — icon usage with **no size class at all** | **0** (rule was wrong — see below) | 46 | 51 |
-| arbitrary `size-[Npx]`/`w-[Npx]`/`h-[Npx]` site-wide | 557 | 562 | 605 |
-| routes swept so far | 18 of 67 | 18 of 67 | — |
+| | **Conv 421** | Conv 420 | Conv 419 | pre-`[MKTDEAD]` |
+|---|---|---|---|---|
+| `.astro` pages (route-matrix) | 67 | 67 | 67 | 67 |
+| icon-component usages | `MattIcon` re-censused at **199** call sites (`[ICON-AUDIT]`); `ui/icons` not re-counted | 626 (198 `MattIcon` + 428 `ui/icons`) | 626 | 860 |
+| `ui/icons.tsx` exports | — | 98 | 98 | 98 |
+| **`check:icons` governed total** | **25** — all in the parked `BecomeATeacherPage` | **1,337** | 1,694 | 1,863 |
+| **informational total** (measured, ungated) | **532** — split out by tranche 7 | — (conflated into the total) | — | — |
+| — bare-numeric, overridden ten | superseded by the governed/informational split | **788** ← ambiguous, mean N px | 898 | — |
+| — bare-numeric, non-overridden N | superseded by the governed/informational split | **362** ← ambiguous, mean N × 4 px | 558 | — |
+| — of the overridden ten, actually **on an icon** | **25** left (was ~369; 539 swept in tranche 3b) | ~369, now all ≥16px | — | — |
+| — of the overridden ten, **not an icon** (skeletons, badge circles, dots, avatars) | **532** exactly, now measured — dots 114 / skeletons 64 / avatars 33 / media 29 / boxes | ~390 (estimate) — out of scope for this axis | — | — |
+| — arbitrary px *on an icon component* | **0** — class retired (tranche 4) | **187** | 192 | — |
+| — icon usage with **no size class at all** | **0** | **0** (rule was wrong — see below) | 46 | 51 |
+| arbitrary `size-[Npx]`/`w-[Npx]`/`h-[Npx]` site-wide | — (icon share is 0; the remainder is genuine non-icon px, which the standard keeps) | 557 | 562 | 605 |
+| routes swept so far | 18 of 67 | 18 of 67 | 18 of 67 | — |
+| migrated icons verified live at two root font sizes | **437 / 437** exact at 16px, **437 / 437** growing at 24px | 33 (probe) + 4 of 44 empty-state marks | — | — |
+
+> The Conv-420 "~390 non-icon" figure was an **estimate**; tranche 7 measured it and found **532**, plus
+> two pure-noise sources the estimate never saw (51 fraction false positives, 94 `min-`/`max-` mislabels).
+> The governed total therefore fell 1,143 → 560 *before* a single class was migrated — see tranche 7.
 
 **Latent trap:** those non-overridden uses (`h-5`, `h-6`, `h-10`) are correct *today* purely
 because 5, 6 and 10 aren't in the override set. Adding any of them later 4×-shrinks all of them
@@ -93,7 +106,36 @@ is 200.
 **The transferable lesson.** This is the fifth consecutive task premise written by reading the
 *implementation* rather than enumerating the *consumers* (after `[CANMSG]`, `[MSG-ADOPT-A]`,
 `[MSG-ADOPT-B]`, `[COURSETAB-HASH]` in Convs 418–419). The check costs one tool call. Re-test the
-premise of every remaining phase here before executing it.
+premise of every remaining phase here before executing it. *Conv 421 kept doing exactly that, and the
+practice paid both ways: tranche 2's and the Conv-420 premises were over-scoped again, while **tranches
+4 and 3b were the first premises to survive re-testing** and were executed as written. Generalised into
+`memory/feedback_retest_task_premise_before_executing.md` — the root cause is reading a thing's own
+definition and inferring what its consumers do, with three faces: **count, reachability, context**.*
+
+### `[ICON-AUDIT]` — the mid-block audit that re-targeted the work (Conv 421)
+
+Prompted by a standing user concern that the migration might have drifted the app's appearance. All four
+prior icon commits (`8dbdd41f`, `65bd6456`, `c429f150`, `41c19000`) were audited **from the diffs plus a
+live 20-route browser walk** — deliberately *not* from this plan's own summaries — resolving every changed
+dimension class through the ten-value override table to a rendered pixel value.
+
+**The concern itself was answered: appearance had not drifted.** 153 of 206 changed dimension lines (74%)
+were pixel-identical; the 53 that moved were almost all `4px → 16px` restorations of icons that had been
+shipping as near-invisible specks. The live walk found zero sub-11px glyphs except one.
+
+But four real problems surfaced, and they set the rest of the conv's agenda:
+
+1. **The migration was landing where nothing renders.** `/course/[slug]` rendered 26 icons and **0**
+   tokened; `/courses` rendered 87 and **1**. → re-targeted at the Matt surface (tranche 4).
+2. **5 changed files had been deleted two commits later by `[MKTDEAD]`** — effort spent on code that no
+   longer exists, the same failure mode the standing reachability check exists to prevent.
+3. **"`MattIcon`'s default fixes it site-wide" was 23 of 199 call sites.** The other **176 pass their own
+   `className`**, so tranche 1's headline overstated its reach — the default only governs the un-classed
+   minority. Recorded here because tranche 1 below still reads as the stronger claim.
+4. **The baseline conflated migration, deletion and rule-narrowing** into one falling number, so it could
+   not be read as progress. → fixed by tranche 7's governed/informational split.
+
+`[HDR-AVATAR]` was also logged out of this walk (→ tranche 6).
 
 ---
 
@@ -171,7 +213,7 @@ cries wolf gets ignored, which is the same failure new-violations-only baselinin
 and this block cannot retroactively answer "did it break anything". Everything from Phase 4 onward does
 have a genuine before; that gap is confined to those 43 sites.
 
-### Phase 3 — Classify by role 🔄 (started Conv 420)
+### Phase 3 — Classify by role ✅ SETTLED (Convs 420–421)
 
 Tag each baselined site inline / standalone / neither. **This is the judgment and the bulk of the
 work, and it needs reading rather than grepping** — Conv 419 tried a text-adjacency heuristic and it
@@ -194,14 +236,26 @@ deliberately small — a poor thing to chain a glyph to. This is the first real 
 open question about em ratios: **the three inline steps are anchored on 14px body text and do not
 serve a 12px label.** Expect the same call at other `text-body-small` sites.
 
-### Phase 4 — Migrate in tranches 🔄
+**Settled Conv 421 — the inline/standalone judgment was abolished, and the classifier made structural.**
+Rescinding the em family (tranche 5) collapsed the role question from three ways to two, so "is this icon
+beside text?" stopped being a question the migration had to answer at all — which is what turned the
+remaining ~500 sites from judgment calls into the mechanical sweep of tranche 3b. The residual
+icon-vs-not-an-icon call is now made **by the checker itself**, structurally: match offsets tested against
+ranges from whole icon **tags** *and* icon component **definition bodies** (tranche 7). Line proximity was
+tried and rejected — it misread infinite-scroll sentinel `<div>`s as icons.
+
+### Phase 4 — Migrate in tranches ✅ COMPLETE (bar the parked residue)
 
 By role, then by value, re-running both scanners after each tranche. Not one sweep. Every bare-numeric
 class has a deterministic true value (overridden → N px, else → N × 4 px), so the mechanical part
 scripts cleanly; the classification from Phase 3 is what decides the target family.
 
-Remaining order: standalone → inline → the arbitrary px. (The "46 no-size-class usages" that Conv 419
-put first turned out not to exist — see the Scale section.)
+Planned order was standalone → inline → arbitrary px. What actually ran: defaults (1) → large standalone
+(2) → the sub-12px defects (3a) → **arbitrary px (4)**, pulled forward by `[ICON-AUDIT]` → the em rescind
+(5) → `[HDR-AVATAR]` (6) → the axis split (7) → **the mechanical sweep (3b)**, which the rescind had turned
+from a judgment exercise into a script. The "46 no-size-class usages" Conv 419 put first turned out not to
+exist — see the Scale section. **All tranches are landed; the only remaining icon debt is the 25-class
+parked residue at the foot of this list.**
 
 - [x] **Tranche 1 — icon-component defaults (Conv 420).** 94 defaults → **200 violations cleared**,
       the single highest-leverage edit available: `MattIcon.tsx:43` alone corrects every un-classed
@@ -209,14 +263,18 @@ put first turned out not to exist — see the Scale section.)
       `calc(0.25rem × 5)` = 1.25rem, identical to `--icon-20`; `h-6 w-6` = 1.5rem = `--icon-24`. Both
       land on Matt's own formalized steps (Small 20 / Medium 24). Also migrated in the same pass: the
       6 local wrappers behind the false-positive call sites (`QuickActionIcon`, `ActivityIcon`,
-      `ResourceIcon`, `TypeIcon`, and `PromoteButton`'s three local svgs → `size-icon-inline-md`, its
-      genuine inline case at a 14px label — *those 3 svgs moved to `size-icon-16` in Conv 421 when the
-      em family was rescinded*). Runtime scan: **no regression**, 0 findings on all 26
-      routes bar the parked 11.
+      `ResourceIcon`, `TypeIcon`, and `PromoteButton`'s three local svgs → `size-icon-inline-md`,
+      believed at the time to be its genuine inline case at a 14px label — *that belief was wrong and
+      those 3 svgs became a shipped defect; see tranche 5*). Runtime scan: **no regression**, 0 findings
+      on all 26 routes bar the parked 11.
       - ⚠️ **Honest limit:** most of the 200 was *ambiguity* removal, not a rendered-size change —
         `h-5 w-5` was already rem, so the `% scale with root` meters did not move. The gain is that
         the sizes are now named and the 5-joins-the-override-set landmine is defused for 94 sites.
         Only the 7 wrapper/PromoteButton sites actually moved fixed-px → rem/em.
+      - ⚠️ **Corrected by `[ICON-AUDIT]` (Conv 421): "site-wide" was 23 of 199 `MattIcon` call sites.**
+        The other **176 pass their own `className`**, which overrides the default — so this edit's real
+        reach was the un-classed minority, not the whole app. The claim above is left standing as what
+        was believed at the time; this is the measured figure.
 - [x] **Tranche 2 — large standalone icons (Conv 420).** 44 sites / 85 classes at 32/40/48/64px →
       `size-icon-{32,40,48,64}`. Baseline 1,448 → **1,363**. Chosen as the lowest-judgment slice: at
       that size an icon is essentially never inline, and reading all 44 confirmed it — every one is an
@@ -337,14 +395,19 @@ put first turned out not to exist — see the Scale section.)
       (not the scoping script) before the first edit, per `[PREMISE]` — and it **held**: 539 of 560
       had an exact `--icon-N` at the size they already rendered. **All 25 remaining are in
       `BecomeATeacherPage`**, parked behind `[RG-PUBLIC]` and already tracked as `[ICON-4PX]`.
-      - **Two bugs in the sweep itself, both caught before damage.** (i) The first pass ran one
+      - **Two bugs in the sweep itself — one caught, one shipped.** (i) The first pass ran one
         string regex over each whole file, so a single apostrophe in JSX prose (`don't`) mis-paired
         every quote after it and silently skipped the rest of that file — **80 misses**. Rewritten to
         scan strings *locally inside each icon tag*, where a mis-pair cannot propagate; containment
         also tightened so **both ends** of a string must sit in the same icon region (checking only
         the start would let a mis-parsed literal reach out and rewrite non-icon classes).
-        (ii) Whitespace collapse ate newlines and reflowed a multi-line `className` template literal;
-        now collapses only spaces/tabs.
+        (ii) Whitespace collapse damaged template-literal formatting. This one **shipped**: the fix
+        stopped newlines being eaten but still collapsed runs of 2+ spaces *anywhere*, including
+        continuation-line indentation, so `HomeworkEditor.tsx:553-554` went out in `4a653e96` with a
+        template literal flattened to a single space of indent. Syntactically valid, all 5 gates
+        green, purely cosmetic — but it shipped, and the r-end docs agent caught it, not me. Fixed at
+        r-end. **A whitespace-normalising codemod must anchor to line starts**, and the
+        `dimension-bare-numeric` invariant below proves nothing about formatting.
       - **The check that mattered:** `dimension-bare-numeric` measured **532 before and after**, so
         zero non-icon classes were touched — the pairing bug caused misses only, never wrong
         conversions. That single number is the cheapest possible proof and is worth re-running on any
@@ -364,16 +427,33 @@ put first turned out not to exist — see the Scale section.)
       fixes landed on dead code** — hitting `TestimonialsBrowse`, the same file Conv 404's `[A11Y]`
       batch already wasted a fix on 15 convs earlier. tsc/lint/tests/build are all green over dead
       code, so nothing else in the pipeline catches it. *Conv 420: ran clean — `PASS`, every component
-      route-reachable, no wasted edits.*
-- [ ] **`[ICON-4PX]` residue** — `/become-a-teacher`, 11 measured findings, gated behind the parked
-      `[RG-PUBLIC]`. A deliberate park, not a blocker; fold into whichever tranche runs when the
-      marketing redesign is scheduled.
+      route-reachable, no wasted edits.* **Conv 421 widened what "reachable" has to mean.**
+      `[ICON-AUDIT]` found the check is necessary but not sufficient on two axes: (i) 5 files edited by
+      earlier tranches were **deleted two commits later** by `[MKTDEAD]`, which no pre-edit check can
+      foresee; (ii) route-reachable is not the same as *icon*-reachable — `/course/[slug]` was fully
+      reachable yet rendered 26 icons of which **0** were tokened, so tranches were landing on files that
+      render nothing this axis governs. Pair the orphan check with a **render census** of the target
+      surface before choosing a tranche, not just after.
+- [ ] **`[ICON-4PX]` residue — now the block's *entire* remaining icon debt, and it is exactly 25
+      classes.** All 25 sit in `BecomeATeacherPage` (`/become-a-teacher`), the second and last of the 7
+      legacy-v3-semantics files, gated behind the parked `[RG-PUBLIC]` marketing redesign. Conv 421's
+      sweep (3b) cleared everything around it, so **no live icon-size debt remains anywhere else in the
+      app.** A deliberate park, not a blocker; fold into whichever tranche runs when the marketing
+      redesign is scheduled. Being legacy-v3 throughout, expect the `ModeratorInvite` / `Header`
+      remedy — repair the component whole — rather than an icon-axis-only edit.
 
 ### Phase 5 — Completeness proof 📋
 
 Full double-root-font sweep across all 67 routes plus PLATO state coverage. Any inline icon that
 doesn't move between 16px and 24px root is a missed site. Any clipped/overflowing element is a
 container that didn't follow its icon.
+
+**Conv 421 got the *rendered* half of this a long way:** 437 migrated icons across **18 routes** measured
+at both roots, **437/437** at their exact named px at 16px and **437/437** growing at 24px (232 at tranche
+4, 437 after 3b). The scanner's completeness rule was also widened `inline-did-not-scale` →
+`tokened-did-not-scale`, which — now that every token is rem — makes *any* `size-icon-*` that measures
+identically at both roots provable evidence of a missed site, across the whole axis rather than just the
+inline arm. What Phase 5 still owes is the **49 unswept routes** and the states below.
 
 Conv 420 put numbers against two of the states named above — a route walk over seeded data reaches
 **neither**, so this phase has to drive them deliberately rather than hope to pass through them:
@@ -393,24 +473,37 @@ baseline to zero. Ship the **bare-number lint rule** listed under Phase 1 here i
 earlier. Decide then whether the `--spacing-*` numeric override should be renamed outright so no
 number can ever be misread again — the deeper fix this block only works around.
 
+**Now genuinely in reach (Conv 421).** The precondition is met — `icon-arbitrary-px` is retired (0) and
+the governed total is **25**, all of them behind one parked task. So:
+
+- [ ] **Promote the governed icon rules warn → error** once `[RG-PUBLIC]` clears the last 25, driving the
+      governed baseline to **zero**. This is now a single-file dependency, not a migration.
+- [ ] **Decide the fate of the 532 `dimension-bare-numeric` sites** (new, Conv 421) — the informational
+      tier is a holding pattern, not a destination. Until they get an owning axis or an explicit permanent
+      carve-out, "the baseline reaches zero" means only the icon half. See the open question below.
+- [ ] **Ship the bare-number lint rule** (carried from Phase 1) — `check:icons` still only refuses *new*
+      violations against a re-generatable baseline; nothing is editor-visible.
+
 ---
 
 ## Open questions
 
-- **`em` ratios — partly answered Conv 420, and the answer was "they don't stretch".** `md` = 1.15em
-  was anchored on `--body-default-size` (14px). Against a `text-body-small` (12px) label the ladder
-  tops out at 17.4px (`lg`), so it cannot express AdminNavbar's 20px glyphs at all. That case was
-  resolved by classifying the nav as **standalone** rather than by adding a step — the right call
-  there, but it is a workaround, and a genuine 12px-label *inline* icon still has no home. Decide
-  whether to add a step or re-anchor when the first such site appears; `text-h2` (24px) is still
-  unconfirmed either way.
-- **The ~390 non-icon bare-numerics — whose axis?** (opened Conv 420 by tranche 2's premise re-test.)
-  R1 flags *any* `w-/h-/size-N`, and roughly 390 of the overridden ten sit on things that are not
-  icons: skeleton loader bars, badge circles, unread dots, avatar `<img>`s, one text-column width.
-  The standard puts them in the "neither" bucket, so *this* axis does not govern them — yet they
-  carry exactly the same `N`-means-two-things ambiguity, and while they sit in the baseline it can
-  never reach zero (Phase 6). Decide: their own axis, an arbitrary-px sweep, or an explicit
-  permanent carve-out in the baseline.
+- ~~**`em` ratios**~~ — **✅ CLOSED Conv 421 by rescinding the family outright** (tranche 5). The block's
+  longest-open question, dodged three times, is not answered so much as dissolved: there are no em tokens
+  left to ratio. The four findings that decided it are in the callout under *The standard*. The residual
+  worry it encoded — "a 12px-label inline icon has no home" — is moot under the two-way rule, where such an
+  icon simply takes `size-icon-16` like any other. Conv 421's counterfactual measurement showed the ladder
+  had been *actively harmful* where it did fire: 6 of 7 `PromoteButton` icons were rendering at 13.8px, a
+  −14% shrink, because their container is 12px.
+- **The 532 non-icon bare-numerics — whose axis?** (opened Conv 420 as "~390"; **measured at 532 by
+  Conv 421's tranche 7**, which also split them out of the governed total into an `informational` tier.)
+  Dots (114), skeletons (64), avatars (33), media (29), boxes. The standard puts them in the "neither"
+  bucket, so *this* axis does not govern them — yet they carry exactly the same `N`-means-two-things
+  ambiguity. They are now **measured and reported but ungated**, which stops them distorting this block's
+  progress metric but is explicitly a holding pattern. Decide: their own axis, an arbitrary-px sweep, or an
+  explicit permanent carve-out. Note the two *pure noise* sources tranche 7 removed are already gone and
+  are not part of the 532 — 51 fraction false positives (`w-1/2` matched as `w-1`) and 94 `min-`/`max-`
+  mislabels (`min-w-0` reported as `w-0`, under a class name absent from the file and therefore ungreppable).
 - **Matt's ladder.** He formalized only Small 20 / Medium 24. We ship 11 steps because 16px is the
   most-used size (72 sites) and isn't in his set. If Matt returns to the project, reconcile.
 - **Pixel-grid softness.** At a 1.3× root font a 20px glyph renders 26px and can sit off-grid.
