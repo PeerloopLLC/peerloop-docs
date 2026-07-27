@@ -717,6 +717,14 @@
   non-icon), R1 classifies structurally by tag + definition ranges, calibrated per `[CMH]` before
   commit. Scoping also established the remaining 560 is **94% mechanical** and that the only icons
   rendering <12px are in the parked `BecomeATeacherPage`. Code `14f56f7c`.
+- **`[ICON-TOK]` mechanical sweep — icon debt `560 → 25`, all residue parked.** 539 classes / 99
+  files, line-for-line. Premise re-derived against the checker before the first edit and it **held**.
+  Two bugs in my own sweep caught before damage (a whole-file string regex desynchronised by an
+  apostrophe in JSX prose → 80 silent misses; whitespace collapse eating newlines) — proof that
+  nothing was mis-converted is that `dimension-bare-numeric` measured **532 before and after**.
+  Verified live: **437 icons, 437/437 exact at 16px root, 437/437 scaling at 24px** across 18 routes.
+  Also fixed a false positive in the new `tokened-did-not-scale` rule (two-pass pairing was by array
+  index; now by stamped element id). Code `4a653e96`.
 - **All 6 rescinded sites live-verified (second pass)** — and the rescind proved to be a **repair**:
   a counterfactual measurement shows the em token had been rendering **6 of 7 PromoteButton icons at
   13.8px (−14%)** because their container is 12px, not the 14px Conv 420 assumed. Shipped that way

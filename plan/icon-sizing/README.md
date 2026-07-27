@@ -332,13 +332,33 @@ put first turned out not to exist — see the Scale section.)
       violations came from 94 of those). Line proximity was tried and rejected: it misread
       infinite-scroll sentinels as icons. Calibrated per `[CMH]` before commit — 14 regex cases + an
       injected 6-shape probe, all correct, gate correctly flags the probe. Code `14f56f7c`.
-- [ ] **Tranche 3b — the remaining 560 governed icon classes.** **94% is mechanical.** Classified by
-      what each renders *today*: **596 have an exact `--icon-N` at that size** → provably-neutral
-      renames (230×20px · 176×16px · 86×24px · 30×12px · 24×40px · 22×48px · 15×64px · 13×32px);
-      3 are off-ladder (56px, needs a snap decision); 8 render >64px. **The only icons rendering
-      under 12px are in `BecomeATeacherPage`**, parked behind `[RG-PUBLIC]` — so there are **no known
-      live icon-size defects left** outside the parked page. Treat as a mechanical sweep with
-      spot-verification, not a judgment tranche.
+- [x] **Tranche 3b — the mechanical sweep (Conv 421). Icon debt 560 → 25.** 539 classes across 99
+      files, 311 insertions / 311 deletions, line-for-line. Premise re-derived against the checker
+      (not the scoping script) before the first edit, per `[PREMISE]` — and it **held**: 539 of 560
+      had an exact `--icon-N` at the size they already rendered. **All 25 remaining are in
+      `BecomeATeacherPage`**, parked behind `[RG-PUBLIC]` and already tracked as `[ICON-4PX]`.
+      - **Two bugs in the sweep itself, both caught before damage.** (i) The first pass ran one
+        string regex over each whole file, so a single apostrophe in JSX prose (`don't`) mis-paired
+        every quote after it and silently skipped the rest of that file — **80 misses**. Rewritten to
+        scan strings *locally inside each icon tag*, where a mis-pair cannot propagate; containment
+        also tightened so **both ends** of a string must sit in the same icon region (checking only
+        the start would let a mis-parsed literal reach out and rewrite non-icon classes).
+        (ii) Whitespace collapse ate newlines and reflowed a multi-line `className` template literal;
+        now collapses only spaces/tabs.
+      - **The check that mattered:** `dimension-bare-numeric` measured **532 before and after**, so
+        zero non-icon classes were touched — the pairing bug caused misses only, never wrong
+        conversions. That single number is the cheapest possible proof and is worth re-running on any
+        future sweep.
+      - **Verified live across 18 routes: 437 migrated icons render, 437/437 at their exact named px
+        at a 16px root, 437/437 grew at a 24px root** (232 last tranche). Code `4a653e96`.
+- [x] **Scanner false positive fixed (Conv 421), surfaced by the sweep.** `tokened-did-not-scale`
+      fired on `/admin`. Not a real defect: `collect()` skips zero-size elements, so anything
+      changing visibility between the two passes shifts the array — and **at a 24px root a
+      `size-icon-16` measures 24px, exactly matching a `size-icon-24` from the 16px pass**, so a
+      one-element shift reads as "did not scale". The passes are now paired by a **stamped element
+      id** rather than array position (the `% scale with root` summary too). Direct measurement
+      confirmed every `size-icon-24` on `/admin` scales 24 → 36px. Lesson: pair by identity, never by
+      index, whenever two measurement passes can differ in membership.
 - [ ] **Mandatory per-tranche reachability check — standing, re-runs every tranche.** Run `.claude/scripts/codecheck-orphan-components.mjs`
       over every file in a tranche **before** editing it. Conv 419 measured that **5 of its 43 icon
       fixes landed on dead code** — hitting `TestimonialsBrowse`, the same file Conv 404's `[A11Y]`
