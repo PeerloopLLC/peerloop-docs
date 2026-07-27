@@ -27,38 +27,37 @@
 
 1. [ICON-TOK](#icon-tok) — icon-size token axis: foundation built, ~2k-site migration outstanding
 2. [ICON-AUDIT](#icon-audit) — Conv 421 audit: migration is landing off-surface; metric inflated
-3. [HDR-AVATAR](#hdr-avatar) — live 8×8px avatar in the legacy shell header (shipping now)
-4. [ICON-4PX](#icon-4px) — residue: `/become-a-teacher`, gated on RG-PUBLIC
-5. [MERGE-BRIAN-JULY7](#merge-brian-july7) — client branch assessment/integration
-6. [A11Y](#a11y) — accessibility lint triage
-7. [RHOOKS](#rhooks) — react-hooks lint triage
-8. [KNIP](#knip) — dead-export oracle → gate
-9. [PROV-SWEEP-DEBT2](#prov-sweep-debt2) — `prov:sweep` gate silently red (10 unregistered)
-10. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
-11. [EDITSAFE](#editsafe) — anchored-edit discipline
-12. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
-13. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
-14. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
-15. [HOME-FIXES](#home-fixes) — Home route fix bucket
-16. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
-17. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
-18. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
-19. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
-20. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
-21. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
-22. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
-23. [RSFD](#rsfd) — port `r-start-from-dirty`
-24. [DEPEXP](#depexp) — dependency-probe hygiene
-25. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
-26. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
-27. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
-28. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
-29. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
-30. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
-31. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
-32. [DEVSRV-STALE](#devsrv-stale) — un-parked: stale/bricked astro dev daemon recurred
-33. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
-34. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
+3. [ICON-4PX](#icon-4px) — residue: `/become-a-teacher`, gated on RG-PUBLIC
+4. [MERGE-BRIAN-JULY7](#merge-brian-july7) — client branch assessment/integration
+5. [A11Y](#a11y) — accessibility lint triage
+6. [RHOOKS](#rhooks) — react-hooks lint triage
+7. [KNIP](#knip) — dead-export oracle → gate
+8. [PROV-SWEEP-DEBT2](#prov-sweep-debt2) — `prov:sweep` gate silently red (10 unregistered)
+9. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
+10. [EDITSAFE](#editsafe) — anchored-edit discipline
+11. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
+12. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
+13. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
+14. [HOME-FIXES](#home-fixes) — Home route fix bucket
+15. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
+16. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
+17. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
+18. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
+19. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
+20. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
+21. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
+22. [RSFD](#rsfd) — port `r-start-from-dirty`
+23. [DEPEXP](#depexp) — dependency-probe hygiene
+24. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
+25. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
+26. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
+27. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
+28. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
+29. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
+30. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
+31. [DEVSRV-STALE](#devsrv-stale) — un-parked: stale/bricked astro dev daemon recurred
+32. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
+33. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
 ## ⏸️ Parked  (gated — out of rotation)
 
 - [ORPHAN-BACKLOG](#orphan-backlog) — gate: marketing redesign (RG-PUBLIC)
@@ -197,24 +196,6 @@
 - **State:** 📋 queued (deferred per-route bucket)
 - **What:** deferred bucket of per-route fixes captured while sweeping the Home (`/`) route — batch later.
 
-### [HDR-AVATAR]
-
-- **State:** 📋 queued — **live defect, shipping now**; found by the Conv 421 `[ICON-AUDIT]` walk
-- **What.** `src/components/layout/Header.tsx:137` — the signed-in user's avatar carries
-  `h-8 w-8 rounded-full object-cover`. Under the Conv-174 override `h-8` = **8px**, so it renders as
-  an **8×8px speck** next to the user's name. Measured live at 1280×900 on 5 routes
-  (`/invite/mod/<bad-token>` and every 404 — `/teachers/brian`, `/creators/brian`, `/settings`,
-  `/dashboard`), and visible in the Conv-421 screenshot as a dark dot before "Sarah Miller".
-- **Why it survived the block so far.** It is an `<img>` avatar, not an icon, so tranche 2 explicitly
-  classified it into the **~390 "non-icon" bucket** that the icon axis "does not govern" — but the
-  defect it exhibits is exactly the one this block exists to fix. That bucket needs an owner
-  (see `[ICON-AUDIT]`), not a blanket exemption.
-- **Scope note.** `layout/Header.tsx` is the **legacy shell**, not the Matt `AppLayout` — so the blast
-  radius is 404s and legacy-shell pages, not the canonical app. Confirm whether the shell is
-  retire-by-default (`[OLD-RETIRE-DEFAULT]`) before investing; a one-line fix may still be worth it.
-- **Fix (one line).** `h-8 w-8` → `size-[32px]` (author intent — avatars are the "neither" category
-  per the two-way rule, so arbitrary px is correct here, not `size-icon-32`).
-
 ### [ICON-AUDIT]
 
 - **State:** 📋 queued · `[Opus]` — **findings surfaced Conv 421, disposition not yet chosen**
@@ -256,9 +237,16 @@
 - **✅ Follow-on (Conv 421): the em inline family was rescinded**, collapsing the rule to two-way.
   This removes the block's longest-standing open decision (the em ladder, dodged 3×) and converts the
   ~500 remaining 16/20/24px sites from judgment calls into mechanical, provably-neutral conversions.
-- **Still open from this audit:** Findings 2–4 are recorded, not fixed. Specifically the metric is
-  still misleading (788 `bare-numeric-overridden` remains ~44% non-icon), and `[HDR-AVATAR]` is
-  unfixed. Decide whether to split the non-icon class out of the 788 before the next tranche.
+- **✅ Finding 4 closed (Conv 421): the metric now means something.** Scoped by measuring, which found
+  **three** inflation sources, not one: 51 fraction false positives (`w-1/2` matched as `w-1`), 94
+  `min-`/`max-` mislabels (reported under a class name absent from the file), and ~418 genuinely
+  non-icon elements. R1 now classifies structurally into `icon-bare-numeric-*` (gated) vs
+  `dimension-bare-numeric` (measured, not gated). **Baseline 1,143 → 560 governed + 532
+  informational.** Calibrated per `[CMH]` before commit (14 regex cases + a 6-shape injected probe).
+- **✅ `[HDR-AVATAR]` closed (Conv 421)** — see `## ✅ Done this conv`.
+- **Still open:** findings 2–3 are recorded, not acted on (5 files were deleted 2 commits after being
+  edited; the MattIcon-default claim was ~8× over-scoped). Both are historical accuracy notes rather
+  than live defects — no action needed unless the record is being relied on.
 
 ### [ICON-4PX]
 
@@ -717,6 +705,18 @@
   `size-icon-16`, rule collapsed three-way → two-way, scanner rule widened
   `inline-did-not-scale` → `tokened-did-not-scale`. Closes the block's longest-open decision.
   5 gates green (suite 6131) + `icons:scan` no regression.
+- **`[HDR-AVATAR]` fixed** — not the one-line change the task described: the whole legacy shell
+  header was in v3 semantics (bar `h-16` meaning 64px, **rendering 17px**, 28px logo overflowing it),
+  so a 32px avatar alone would have been worse. Repaired whole per the `ModeratorInvite` precedent,
+  15 classes. Task was under-scoped two ways — `h-8 w-8` appears **twice** (img + initials fallback),
+  and the blast radius is **7 live non-`/old` routes** (every 404, `/receipt/[id]`,
+  `/certificates/[id]`, `/diploma/[id]`, `/verify/[id]`, `/invite/mod/[token]`), not just legacy.
+  Verified 17px → 65px, avatar 8px → 32px. 5 gates green (suite 6131). Code `530b306f`.
+- **`[ICON-TOK]` baseline split — the metric is now a progress bar.** `1,143 → 560 governed + 532
+  informational`. Three inflation sources measured (51 fraction FPs · 94 min-/max- mislabels · ~418
+  non-icon), R1 classifies structurally by tag + definition ranges, calibrated per `[CMH]` before
+  commit. Scoping also established the remaining 560 is **94% mechanical** and that the only icons
+  rendering <12px are in the parked `BecomeATeacherPage`. Code `14f56f7c`.
 - **All 6 rescinded sites live-verified (second pass)** — and the rescind proved to be a **repair**:
   a counterfactual measurement shows the em token had been rendering **6 of 7 PromoteButton icons at
   13.8px (−14%)** because their container is 12px, not the 14px Conv 420 assumed. Shipped that way

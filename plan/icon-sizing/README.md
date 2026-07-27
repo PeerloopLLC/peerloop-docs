@@ -304,12 +304,41 @@ put first turned out not to exist — see the Scale section.)
         14px label" — **the label is 12px**, so they silently shrank and shipped that way, uncaught
         because the site was never live-verified. Finding 4 of the rescind, demonstrated on the em
         family's own flagship use.
-- [ ] **Tranche 3b — the 16/20/24px bulk (~500 classes: 230×16 · 186×20 · 86×24).** **No longer a
-      judgment tranche.** With the em family gone (tranche 5) these are mechanical
-      `w-N h-N`/`size-N` → `size-icon-N` conversions, provably neutral wherever N is already the
-      rendered px. The remaining work is separating the real icons from the ~44% of
-      `bare-numeric-overridden` that is skeleton bars, badge circles, dots and avatars — see
-      `[ICON-AUDIT]` finding 4; splitting that class first would make the baseline mean something.
+- [x] **Tranche 6 — `[HDR-AVATAR]`: repair the legacy shell header (Conv 421).** The tasked defect
+      was one line (`layout/Header.tsx:137`, an avatar at `h-8 w-8` = 8px). **Not fixable in
+      isolation:** measured live, the bar itself is `h-16` meaning 64px and rendering **17px**, with
+      28px logo text overflowing it — a 32px avatar in a 17px bar is worse, not better. Same
+      situation as `ModeratorInvite` (tranche 3a), so the same remedy: 15 classes converted whole to
+      the literal-px convention. The task was also under-scoped — `h-8 w-8` appears **twice**, on the
+      `<img>` and on the initials-fallback `<div>`. **Blast radius 21 pages via `LandingLayout`, 7 of
+      them live non-`/old`:** every 404, `/receipt/[id]` (a Conv-410 deliverable), `/certificates/[id]`,
+      `/diploma/[id]`, `/verify/[id]`, `/invite/mod/[token]` — whose *content* tranche 3a repaired
+      while leaving this shell around it. Fingerprint worth remembering: padding was
+      `px-4 sm:px-6 lg:px-8` → **4px → 24px → 8px**, increasing then *decreasing*, because 6 is not
+      in the override set. Verified 17px → 65px, avatar 8px → 32px; `icons:scan` no longer reports
+      the `8×8 near "Sarah Miller"` finding. Code `530b306f`.
+- [x] **Tranche 7 — split the icon axis out of the dimension count (Conv 421).** Baseline
+      **1,143 → 560 governed + 532 informational**. Scoped first by measuring, not assuming; three
+      inflation sources found, of which only one was the known "non-icon" problem:
+      - **51 fraction false positives** — `\b` before `/` is a boundary, so `w-1/2` matched as `w-1`.
+        Pure noise: a percentage width never consults the spacing scale.
+      - **94 `min-`/`max-` mislabels** — `\b` after a hyphen is a boundary, so `min-w-0` matched as
+        `w-0`, reported under a class name **absent from the file** and therefore ungreppable. Real
+        ambiguity, but on a box constraint, not an icon.
+      - **~418 non-icon elements** — dots (114), skeletons (64), avatars (33), media (29), boxes.
+      R1 now classifies structurally: match offset tested against ranges from whole icon **tags**
+      (reusing R3's matcher, so multi-line tags work) **and** icon component **definition bodies**
+      (where a `className = 'h-5 w-5'` default sizes every un-classed call site — tranche 1's 200
+      violations came from 94 of those). Line proximity was tried and rejected: it misread
+      infinite-scroll sentinels as icons. Calibrated per `[CMH]` before commit — 14 regex cases + an
+      injected 6-shape probe, all correct, gate correctly flags the probe. Code `14f56f7c`.
+- [ ] **Tranche 3b — the remaining 560 governed icon classes.** **94% is mechanical.** Classified by
+      what each renders *today*: **596 have an exact `--icon-N` at that size** → provably-neutral
+      renames (230×20px · 176×16px · 86×24px · 30×12px · 24×40px · 22×48px · 15×64px · 13×32px);
+      3 are off-ladder (56px, needs a snap decision); 8 render >64px. **The only icons rendering
+      under 12px are in `BecomeATeacherPage`**, parked behind `[RG-PUBLIC]` — so there are **no known
+      live icon-size defects left** outside the parked page. Treat as a mechanical sweep with
+      spot-verification, not a judgment tranche.
 - [ ] **Mandatory per-tranche reachability check — standing, re-runs every tranche.** Run `.claude/scripts/codecheck-orphan-components.mjs`
       over every file in a tranche **before** editing it. Conv 419 measured that **5 of its 43 icon
       fixes landed on dead code** — hitting `TestimonialsBrowse`, the same file Conv 404's `[A11Y]`
