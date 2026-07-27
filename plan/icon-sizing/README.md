@@ -590,6 +590,41 @@ list. Nothing below blocks Phase 6; they are the honest tail.
       are also 98 of the 107 counted defaults, so they dominate any "unproven sites" figure this block
       quotes. Keep (and exclude from the denominator), or remove and let the 6 callers name their size.
 
+### Phase 6 — Tighten the guard 🔄 (Conv 423: the root cause is fixed)
+
+**The ambiguity this whole block works around is gone — fixed at the root, not swept.** Conv 423
+scoped the "rename the `--spacing-*` override" idea the section below calls "the deeper fix", found
+it cost **4,911 sites across 295 files**, and found a one-line alternative in the same measurement.
+
+- **What the measurement showed.** Numeric spacing splits **4,911 overridden vs 361 multiplier** —
+  93% of usage already meant literal px. So the exception was never the ten overridden numbers; it
+  was the *other* nineteen. And Tailwind v4 resolves any un-named `p-N` as `calc(var(--spacing) * N)`
+  from a **base multiplier this project had never touched**. Verified empirically by compiling the
+  real stylesheet, not from the docs: un-named numbers emit `calc(var(--spacing) * N)`, named ones
+  emit `var(--spacing-N)`, and `size-icon-N` is independent of both.
+- **The fix: `--spacing: 0.0625rem`.** Every one of the ten `--space-N` and eleven `--icon-N` tokens
+  is *exactly* `N × 0.0625rem` (`--space-4` = 0.25rem, `--icon-14` = 0.875rem …), so the base was
+  simply off by a factor of four. Setting it makes N mean N px for **every** number — including ones
+  nobody has typed yet, which no call-site sweep can reach. **Proof of blast radius: compiling the
+  real stylesheet before and after diffs exactly one line in 185 KB** — every emitted utility rule is
+  byte-identical, so all 4,911 overridden sites are untouched.
+- **The 449-site sweep, provably neutral.** The sites that *did* rely on the ×4 reading were rewritten
+  `N → N×4`, which preserves their computed value (`N×4 × 0.0625rem` ≡ `N × 0.25rem`). 354 integer +
+  **95 fractional** (`py-0.5`, `gap-1.5` — a gap found only because the first regex deliberately
+  rejected a trailing `.`), across 99 files. An independent verifier that parses the **git diff**
+  rather than the sweep's own report confirms **449 of 449 are exactly N→N×4 and nothing else moved**.
+- **Verified live: 4,206 strict measurements over 12 routes, zero mismatches** (`npm run spacing:scan`,
+  new). The invariant tested is `X-N` measures N px — which simultaneously proves the base change and
+  that all 449 rewrites kept their value, with no before-run needed.
+- **5 gates green:** tsc clean · astro 0 errors · eslint 0 errors (166 pre-existing warnings) · 6131
+  tests · build complete. Two tests pinned `AdminBadge`'s literal class names and were updated.
+
+**Consequence to decide (not pre-empted):** `icon-bare-numeric-overridden` / `-multiplier` police an
+ambiguity that no longer exists, and the same is true of the 532 `dimension-bare-numeric` sites — they
+are now self-describing. Both counters are unchanged (25 / 532) because the rules still fire on
+*shape*; what changed is that the defect they name is gone. Whether the icon rules get retired,
+reframed as a readability axis, or left as-is is an open decision.
+
 ### Phase 6 — Tighten the guard 📋
 
 Once no arbitrary px remains on icon elements, promote those rules from warn to error and drive the

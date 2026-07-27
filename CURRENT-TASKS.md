@@ -59,6 +59,7 @@
 32. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
 33. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
 34. [TLFMT](#tlfmt) — r-end ref documents a TIMELINE.md shape the file no longer uses
+35. [OUTLINE-V4B](#outline-v4b) — 3 residual `outline-none` sites the Conv-244 fix missed
 ## ⏸️ Parked  (gated — out of rotation)
 
 - [ORPHAN-BACKLOG](#orphan-backlog) — gate: marketing redesign (RG-PUBLIC)
@@ -276,6 +277,23 @@
 
 ### [ICON-TOK]
 
+- **✅ Conv 423 — Phase 6: the ambiguity is fixed at the ROOT, not swept.** Scoping the "rename the
+  `--spacing-*` override" idea priced it at **4,911 sites / 295 files**, and the same measurement found
+  the one-line alternative: numeric spacing splits **4,911 overridden vs 361 multiplier**, so the
+  exception was the nineteen *un*-overridden numbers, not the ten overridden ones — and every
+  `--space-N` and `--icon-N` token is exactly `N × 0.0625rem`, i.e. Tailwind's untouched base
+  multiplier was off by 4×. Setting **`--spacing: 0.0625rem`** makes N mean N px for every number,
+  including ones never yet typed. **Blast radius proven by compiling the real stylesheet twice: one
+  line differs in 185 KB**, every emitted utility rule byte-identical. The 449 sites that did rely on
+  the ×4 reading (354 integer + **95 fractional**, a gap the first regex's trailing-`.` rejection hid)
+  were rewritten `N → N×4`, provably value-preserving; an independent verifier reading the **git diff**
+  — not the sweep's own report — confirms 449 of 449 conform. **Live: 4,206 strict measurements over 12
+  routes, 0 mismatches** via new `npm run spacing:scan`. 5 gates green (suite 6131; 2 `AdminBadge` tests
+  pinned literal class names and were updated). **Three of my own instruments produced wrong output
+  before being corrected** — SQL `%Y-%m-01` read as a margin utility, index-paired diff hunks, and 184
+  "mismatches" that were all variant-shadowed elements; each caught by a number looking implausible.
+  **Open decision surfaced, not pre-empted:** the icon rules now police an ambiguity that no longer
+  exists (counters unchanged at 25 / 532 because they fire on shape).
 - **State:** 🔄 active · `[Opus]` — **foundation + standard Conv 419; tranches 1–3a Conv 420;
   arbitrary-px class retired Conv 421** (baseline 1,694 → 1,337 → **1,150**). Migration outstanding
   and **multi-conv**.
@@ -597,6 +615,20 @@
 - **Then — detector wiring:** snapshot residuals into `KNOWN_ORPHANS`, wire the detector into `/w-codecheck` as a hard gate (only NEW orphans fail). A `.ts` variant (scope `src/components/**` only — `src/lib/**` has entry points) can be productionized then.
 - **Refs:** `.claude/scripts/codecheck-orphan-components.mjs`, `[[feedback_orphaned_components_survive_migration]]`, `.claude/skills/w-codecheck`, `[KNIP]`.
 
+### [OUTLINE-V4B]
+
+- **State:** 📋 queued — small, mechanical, but touches focus behaviour so not folded into an unrelated commit.
+- **What:** `npm run check:tailwind` reports 1 issue: `outline-none` (v3) should be `outline-hidden` (v4).
+  3 sites remain — `src/components/ui/ClickableRow.tsx:73` (`focus-visible:outline-none`) and
+  `src/components/course/TeachersTabList.tsx:133,142` (`focus:outline-none`).
+- **Why it exists:** `[OUTLINE-V4]` (✅ Conv 244) fixed the ×4 sites in the SESS-GRAD booking files and
+  closed; these 3 were never in that scope. Confirmed **pre-existing** in Conv 423 by grepping `HEAD` —
+  it is not fallout from the spacing sweep, which only ever changed numbers.
+- **Care:** v4's `outline-hidden` is a behaviour change, not a rename — it preserves the outline for
+  forced-colors mode. Both call sites pair it with a visible `ring`, which is the intended shape, so the
+  swap should be safe; verify focus rings still render on keyboard focus after changing.
+- **Refs:** `scripts/check-tailwind-v4.sh`, CLAUDE.md §Baseline Verification. Surfaced Conv 423.
+
 ### [PLATO-SEQ]
 
 - **State:** ⏸️ parked · `[Opus]` · **gate: post-launch** — active work complete
@@ -778,4 +810,6 @@
 
 ## ✅ Done this conv
 
-_(none yet — cleared at each /r-start)_
+- **[ICON-TOK] Phase 6 root fix** — `--spacing: 0.0625rem` + 449-site `N→N×4` sweep across 99 files;
+  every Tailwind number now means its own pixel count. Blast radius proven at one line of compiled
+  CSS; live-verified 4,206 strict measurements / 0 mismatches; 5 gates green. New `npm run spacing:scan`.
