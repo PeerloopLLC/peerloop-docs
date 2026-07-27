@@ -2,21 +2,31 @@
 
 **Focus:** Migrate ~1,700 dimension classnames onto the Conv-419 icon token axis, and be able to
 *demonstrate* no page shipped a mis-sized icon — not merely believe it.
-**Status:** 🟢 MIGRATION COMPLETE (Conv 421) · **PROOF COMPLETE (Conv 422)** · **ROOT CAUSE FIXED
-(Conv 423)** — **no live icon-size debt remains anywhere.** Governed icon debt is **25**, all of them in
-the parked `BecomeATeacherPage` (gated behind `[RG-PUBLIC]`). Phases 1–5 are done and **Phase 6 now
-reduces to a single item** — the warn→error promotion, still gated on `[RG-PUBLIC]`; its other two items
-were closed/cancelled in Conv 423, and **both of the block's open decision questions are now closed**
-(the 532-site informational tier; the `--icon-N` family) — only the two standing notes at the foot of
-*Open questions* remain, and neither gates anything. Trajectory: baseline
+**Status:** 🟢 **ALL SIX PHASES COMPLETE (Conv 424)** — MIGRATION COMPLETE (Conv 421) · PROOF COMPLETE
+(Conv 422) · ROOT CAUSE FIXED (Conv 423) · **GUARD HARDENED (Conv 424)**. Governed icon debt is **0**:
+the last 25 classes lived in `BecomeATeacherPage`, and **13 of them turned out to be a checker range bug
+rather than icons at all**; the 12 real ones were fixed by repairing the file directly rather than waiting
+on the parked `[RG-PUBLIC]` marketing redesign (user call).
+`check:icons` is now an **absolute error at zero**, `--update-baseline`
+refuses to write a non-zero governed baseline, and the check is wired into `npm run verify` (it had never
+been in the aggregate chain). **Every open decision question is closed** — the 532-site informational tier
+(Conv 423), the `--icon-N` family (Conv 423), the `.astro` blind spot and the 98 `ui/icons.tsx` defaults
+(both Conv 424) — leaving only the two standing notes at the foot of *Open questions*, neither of which
+gates anything. Trajectory: baseline
 1,863 → 1,694 (Conv 419 `[MKTDEAD]` purge) → 1,337 (Conv 420, three tranches) → 1,150 (tranche 4) →
 1,143 → **560 governed + 532 informational** (tranche 7's axis split) → **25** (tranche 3b's mechanical
-sweep) → **25 governed, informational tier retired** (Conv 423's root fix). Coverage as of Conv 422:
-**50 of 50 in-scope pages** (80 URLs / 97 route-states), **1,858 tokened renders, zero
-`tokened-did-not-scale`**.
-**Task code:** `[ICON-TOK]` · related `[ICON-4PX]` (residue, now exactly 25 classes), `[RG-PUBLIC]` (gates
-the one remaining file), `[MKTDEAD]` (shrank the baseline), `[ICON-AUDIT]` (Conv 421 course-correction,
-✅ closed Conv 423), `[SPACING-VIS]` (Conv 423 follow-up — Chrome-bridge visual pass at a 16px base)
+sweep) → **25 governed, informational tier retired** (Conv 423's root fix) → **0 governed** (Conv 424).
+Coverage as of Conv 422: **50 of 50 in-scope pages** (80 URLs / 97 route-states), **1,858 tokened renders,
+zero `tokened-did-not-scale`**.
+**One tail item remains, and it does not gate anything:** `[ICON-STATES]` — drive interaction-gated and
+loading states over the **528 attributable call sites** (see *Residue*). `[ICON-LIC]` (third-party icon
+attribution + brand-logo trademark review) is parked behind MVP-GOLIVE and is a legal/compliance axis, not
+a sizing one.
+**Task code:** `[ICON-TOK]` (✅ closed Conv 424) · related `[ICON-4PX]` (✅ cleared Conv 424),
+`[ICON-STATES]` (the tail), `[RG-PUBLIC]` (**no longer gates this block** — its icon dependency was removed
+Conv 424), `[MKTDEAD]` (shrank the baseline), `[ICON-AUDIT]` (Conv 421 course-correction, ✅ closed Conv
+423), `[SPACING-VIS]` (Conv 423 follow-up — Chrome-bridge visual pass, ✅ done Conv 424), `[ICON-LIC]`
+(parked, MVP-GOLIVE)
 
 ---
 
@@ -44,8 +54,9 @@ the standard. Convs 420–421 then ran the bulk migration to ground, and **Conv 
 every in-scope page (50 of 50 — 80 URLs / 97 route-states, including deliberately-driven empty and
 post-POST states) was measured at two root font sizes — **1,858 tokened renders, zero
 `tokened-did-not-scale`** — and per-element attribution now answers which *source sites* have provably
-rendered (**238 of 629**, with 61 `.astro` sites a named blind spot). What remains is state coverage
-(interaction-gated UI, loading skeletons) and Phase 6: the guard has not yet been promoted to a hard error.
+rendered (**238 of 629**, with 61 `.astro` sites a named blind spot). **Conv 424 closed Phase 6** — the
+guard is now a hard, absolute error at zero, wired into `npm run verify`. What remains is state coverage
+(interaction-gated UI, loading skeletons), tracked as `[ICON-STATES]`.
 
 ## The standard (decided Conv 419)
 
@@ -117,6 +128,15 @@ reach, and a census that counts them over-scopes the migration.
 > twice, which is the third time this block's headline number carried elements that could not have been
 > defects. Shape census at the same moment (heuristic, 142 files): dots 137 · skeletons 117 · layout
 > guards 95 · boxes 92 · avatars 58 · media 33.
+>
+> **Conv 424 took the governed total 25 → 0, and 13 of those 25 were never icons.** `iconRanges()`
+> windowed each icon *definition* as `[def.start, nextDef.start ?? text.length]`, so the **last**
+> definition in a file claimed every offset to EOF — spans, range inputs and avatar circles hundreds of
+> lines later were governed as icons. Bounding each window at the next top-level statement (new
+> `topLevelEndAfter()`) gives **12** real sites, all fixed. This is the **fourth** time a headline number
+> in this block carried elements that could not have been defects (after tranche 1's 46, tranche 7's 51
+> fractions + 94 `min-`/`max-`, and Conv 423's 93 `min-w-0`). The ledger denominator also fell
+> **635 → 528** the same conv, once the 107 defaults and 61 `.astro` sites were excluded by decision.
 
 **Latent trap:** those non-overridden uses (`h-5`, `h-6`, `h-10`) are correct *today* purely
 because 5, 6 and 10 aren't in the override set. Adding any of them later 4×-shrinks all of them
@@ -288,7 +308,7 @@ icon-vs-not-an-icon call is now made **by the checker itself**, structurally: ma
 ranges from whole icon **tags** *and* icon component **definition bodies** (tranche 7). Line proximity was
 tried and rejected — it misread infinite-scroll sentinel `<div>`s as icons.
 
-### Phase 4 — Migrate in tranches ✅ COMPLETE (bar the parked residue)
+### Phase 4 — Migrate in tranches ✅ COMPLETE (Conv 424 cleared the last parked residue)
 
 By role, then by value, re-running both scanners after each tranche. Not one sweep. Every bare-numeric
 class has a deterministic true value (overridden → N px, else → N × 4 px), so the mechanical part
@@ -298,8 +318,8 @@ Planned order was standalone → inline → arbitrary px. What actually ran: def
 (2) → the sub-12px defects (3a) → **arbitrary px (4)**, pulled forward by `[ICON-AUDIT]` → the em rescind
 (5) → `[HDR-AVATAR]` (6) → the axis split (7) → **the mechanical sweep (3b)**, which the rescind had turned
 from a judgment exercise into a script. The "46 no-size-class usages" Conv 419 put first turned out not to
-exist — see the Scale section. **All tranches are landed; the only remaining icon debt is the 25-class
-parked residue at the foot of this list.**
+exist — see the Scale section. **All tranches are landed, and Conv 424 cleared the 25-class parked
+residue at the foot of this list: governed icon debt is 0.**
 
 - [x] **Tranche 1 — icon-component defaults (Conv 420).** 94 defaults → **200 violations cleared**,
       the single highest-leverage edit available: `MattIcon.tsx:43` alone corrects every un-classed
@@ -608,10 +628,11 @@ correctly; the regex did not implement it. `\s+` fixes it — true split **107 d
 61 `.astro`** = 690. Same lesson as the Conv-421 index-pairing false positive: *verify the instrument
 against a number you can predict before quoting its output.*
 
-### Residue after Convs 422–423 — named, countable, not unbounded
+### Residue after Convs 422–424 — named, countable, not unbounded
 
 Phase 5 and the attribution ledger between them convert every remaining unknown on this axis into a
-list. Nothing below blocks Phase 6; they are the honest tail.
+list. **Three of the four items below closed in Conv 424** (two of them user decisions); the one that
+remains is the block's only outstanding work and gates nothing.
 
 - [x] ~~**`[SPACING-VIS]` — Chrome-bridge visual pass**~~ — **✅ DONE Conv 424.** All **53 canonical routes**
       inspected at a true 1280 viewport across 5 roles + signed-out; **zero Conv-423 regressions**. Also proved
@@ -626,7 +647,8 @@ list. Nothing below blocks Phase 6; they are the honest tail.
       itself suspect — `[BRIDGE-UNREACHABLE]` (Conv 413) recorded a workaround and was then treated as
       settled fact for ten convs without ever being diagnosed.
 
-- [ ] **Drive interaction-gated and loading states — the block's one remaining piece of real work.**
+- [ ] **`[ICON-STATES]` — drive interaction-gated and loading states. The block's one remaining piece of
+      real work** (task body on the board; 📋 queued, gates nothing).
       *(Counts restated Conv 424: the denominator is now **528 attributable call sites**, after the 107
       component defaults and 61 `.astro` sites were excluded as decided above — so the residue is smaller
       than the "391 of 629" figure written here at Conv 422, and is call-sites-only.)* These sites are not dead code
@@ -657,6 +679,58 @@ list. Nothing below blocks Phase 6; they are the honest tail.
       and `reportLedger()` now excludes them from the denominator and reports them separately, exactly as
       it already treated `.astro`. Ledger denominator: **635 → 528 attributable call sites.**
 
+### Phase 6 — Tighten the guard ✅ COMPLETE (Convs 423–424)
+
+Original scope was three items: promote the icon rules warn → error and drive the baseline to zero; ship
+the editor-visible **bare-number lint rule** listed under Phase 1; and *"decide whether the `--spacing-*`
+numeric override should be renamed outright — the deeper fix this block only works around."* Conv 423
+executed the third clause and the answer dissolved the second; Conv 424 delivered the first.
+
+**Conv 423 — the root fix, which removed the ambiguity rather than sweeping it.** Scoping the literal
+rename priced it at **4,911 sites / 295 files**, but the *distribution* behind that number was the
+finding: **4,911 overridden vs 361 multiplier** means 93% of numeric spacing already meant literal px, so
+the exception was the nineteen *un*-overridden numbers, not the ten overridden ones. Tailwind v4 resolves
+every un-named `p-N` as `calc(var(--spacing) * N)` from a base multiplier this project had never touched
+(stock `0.25rem`), while all ten `--space-N` and all eleven `--icon-N` tokens are exactly `N × 0.0625rem`
+— the base was off by a factor of four. **`--spacing: 0.0625rem` makes N mean N px for every number,
+including ones nobody has typed yet**, which no call-site sweep can reach. Proven safe before it was
+applied by compiling the real stylesheet before and after: **exactly one line differs in 185 KB of
+compiled CSS**. The 449 call sites that *did* rely on the ×4 reading were swept `N → N×4` (value-preserving
+by construction), 354 integer + 95 fractional across 99 files, verified by an instrument that parses the
+**git diff** rather than the sweep's own report — **449 of 449 exactly N→N×4, nothing else moved** — then
+live by the new `npm run spacing:scan` (4,206 strict measurements over 12 routes, 0 mismatches). Code
+`dc1f031e` (101 files). Consequences settled the same conv: the two governed icon rules **kept but
+REFRAMED** to a readability rationale (their mis-render claim is now false); `dimension-bare-numeric`
+**RETIRED outright** with the baseline omitting the `informational` key rather than writing `{}`; and the
+**bare-number lint rule CANCELLED deliberately** — its whole purpose was making an ambiguity visible in
+the editor, and there is no ambiguity left to surface, so it would flag correct code for a defect that
+cannot occur.
+
+**Conv 424 — the promotion, and the last 25 cleared.** The remaining item was gated on `[RG-PUBLIC]`;
+per user decision the gate was cleared by fixing `BecomeATeacherPage` directly instead (a live canonical
+route, not one of the 404'd `/old` marketing pages).
+
+- [x] **`iconRanges()` range bug found first — 13 of the 25 "violations" were not icons.** The last icon
+      definition in a file claimed every offset to EOF, the very line-proximity failure that function's
+      own doc-comment says it rejects. Bounded at the next top-level statement (`topLevelEndAfter()`);
+      25 → 12. **Verified it did not over-correct** by injecting a bare-numeric default into a multi-line
+      icon body — still caught, 12 → 14.
+- [x] **The 12 real sites fixed** → `size-icon-32`, plus 4 visually-broken non-icon boxes to arbitrary px.
+      Measured live: benefit icons 8×8 → 32×32, check/close circles 8×8 → 32×32, step circles + avatars
+      12×12 → 48×48, sub-12px SVGs 6 → 0; at a 24px root the icons scale to 48px while the px boxes stay
+      pinned, which is the proof they landed on opposite sides of the two-way standard.
+- [x] **Governed rules promoted warn → error, absolute at zero** — not baseline-relative. The
+      baseline-relative design existed because a hard gate would have been red on day one at 1,863
+      violations; that rationale is spent.
+- [x] **The laundering path closed:** `--update-baseline` now refuses to write a non-zero governed
+      baseline. *A baseline-relative gate with an open re-snapshot escape hatch is not a gate.* Verified by
+      injection — clean → exit 0, violation → exit 1, launder attempt → exit 1.
+- [x] **`check:icons` wired into `npm run verify`.** It had **never** been in the aggregate chain, so the
+      promotion would have been nominal: *an error nothing runs is still a warning.*
+- [x] **Runtime `icons:scan` baseline regenerated** — `/become-a-teacher` 14 → **20 tokened**; app-wide
+      **0 known findings / 0 unreachable routes**.
+
+5 gates green (tsc · astro 0/0 · eslint 0 errors · **6131 tests / 395 files** · build). Code `4e45bc14`.
 
 ---
 

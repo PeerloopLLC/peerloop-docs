@@ -3,6 +3,17 @@
 
 ## 5. UI/UX & Components
 
+### [ICON-TOK] The 98 `ui/icons.tsx` Size Defaults Are **Kept** as the Fallback but **Excluded From the Residue Denominator** — 0 of 395 Resolved Usages Rely on One (Conv 424)
+**Date:** 2026-07-27 (Conv 424)
+
+`ui/icons.tsx`'s 98 `size-icon-20` defaults stay exactly as they are; `reportLedger()` stops counting them as unproven residue and reports them separately. Rejected: removing them by making `className` required in `IconProps`; keeping them inside the denominator. **Corrects** the Conv-422 figure ("6 app-wide usages omit `className`, 4 of them in the parked page") — all six were **name collisions**: `PromoteButton` and `BecomeATeacherPage` define their own local `CheckIcon`/`CloseIcon`, and `SocialPost` imports a different `entity/UserIcon`. Resolving each `from '@components/ui/icons'` import to its local (possibly aliased) name gives the true figure: **0 of 395**.
+
+**Rationale:** If no usage relies on a default, a default can never be *proven* by rendering — counting them as unproven residue overstated the gap permanently, by construction. They still earn their place as the fallback that makes a future `<FeedIcon />` render at 20px rather than unsized.
+
+**Consequences:** Ledger denominator **635 → 528** attributable call sites (the stale plan figure "391 of 629" restated as 528). Method note: for "who consumes X?", resolve imports — grepping a bare tag name cannot distinguish a local wrapper from an imported export.
+
+**See:** `src/components/ui/icons.tsx`, `scripts/icon-scan.mjs` (`reportLedger()`), `plan/icon-sizing/README.md`; `docs/sessions/2026-07/20260727_1610 Decisions.md` §6, Learnings §5; Conv 424.
+
 ### [ICON-TOK] Tailwind v4's **Base `--spacing` Multiplier** Is Set to `0.0625rem` — a Bare Number Now Means Its Own Pixel Count Everywhere (Conv 423)
 **Date:** 2026-07-27 (Conv 423)
 

@@ -3,6 +3,28 @@
 
 ## 6. Testing & CI/CD
 
+### [ICON-TOK] Phase 6 Ships an **Absolute** Icon Gate Wired Into `npm run verify` — and `--update-baseline` Refuses to Launder a Non-Zero Governed Baseline (Conv 424)
+**Date:** 2026-07-27 (Conv 424)
+
+`check:icons` is promoted warn → **error, absolute at zero**: any governed violation fails, not merely a per-file increase over the baseline. Two structural additions make the promotion real rather than nominal — (1) `check:icons` had **never been in `npm run verify`**, so it is now wired into the chain; (2) `--update-baseline` **refuses to write a non-zero governed baseline**, closing the re-snapshot escape hatch. Rejected: keeping the baseline-relative design. The gate was unblocked by a second decision — clearing `[RG-PUBLIC]` by fixing `BecomeATeacherPage` on the icon axis **now** rather than waiting for the marketing redesign, since `/become-a-teacher` is a live canonical route (200, renders), not one of the 404'd `/old` marketing pages.
+
+**Rationale:** The baseline-relative design existed only because a hard gate would have been red on day one at 1,863 violations; with the baseline at zero that rationale is spent. A baseline-relative gate with an open re-snapshot path is not a gate — it preserves exactly the escape hatch the promotion removes.
+
+**Consequences:** Verified by injection — clean → exit 0, violation → exit 1, launder attempt → exit 1, chain fails fast; 5 gates green (6131 tests / 395 files). Promotion also forced a correctness fix first: `iconRanges()` windowed each icon *definition* as `[def.start, nextDef.start ?? text.length]`, so the last definition claimed every offset to EOF and **13 of the 25 reported violations were not icons** — an error-level gate would have enshrined a line-proximity heuristic the function's own doc-comment rejects. A new `topLevelEndAfter()` bounds each window (25 → 12 real sites), verified not over-corrected by injecting a bare-numeric default into a multi-line icon body (still caught, 12 → 14). `[ICON-TOK]` Phase 6 and `[ICON-4PX]` both closed; `[RG-PUBLIC]` stays parked with its icon dependency annotated as removed.
+
+**See:** `scripts/check-icon-sizing.ts`, `scripts/icon-sizing-baseline.json`, `package.json` (`verify`), `src/components/marketing/BecomeATeacherPage.tsx`, `plan/icon-sizing/README.md`; `docs/sessions/2026-07/20260727_1610 Decisions.md` §§3, 4, Learnings §§3, 7; Conv 424.
+
+### [ICON-TOK] The `.astro` Attribution Blind Spot Is **Accepted and Documented Permanently** — the Gap Is Completeness *Reporting*, Not Correctness (Conv 424)
+**Date:** 2026-07-27 (Conv 424)
+
+Closes the Phase-5 open question ("build an `.astro` source matcher, or document the gap"). `.astro`-SSR'd icons have no React fiber, so runtime attribution can never prove them rendered; rather than build a source-level matcher tied to route coverage, the ledger **names them as a blind spot and excludes them from the residue denominator**, with the rationale written into `icon-scan.mjs` output and the plan.
+
+**Rationale:** Measurement changed the stakes before the choice was made — `check:icons` **does** statically enforce `.astro` (verified by injection → exit 1, +2 violations; 70 icon tags across 21 files), so those sites cannot regress unnoticed. A matcher would improve a *metric* rather than protect the codebase.
+
+**Consequences:** The blind spot is a permanent, named line in the ledger instead of a recurring open question; the residue denominator counts only attributable call sites.
+
+**See:** `scripts/icon-scan.mjs`, `plan/icon-sizing/README.md`; `docs/sessions/2026-07/20260727_1610 Decisions.md` §5; Conv 424.
+
 ### [ICON-TOK] The `dimension-bare-numeric` Informational Tier Is **Retired Outright** and Phase 6's Bare-Number Lint Rule Is **Cancelled** — the Root Fix Removed What They Measured (Conv 423)
 **Date:** 2026-07-27 (Conv 423)
 

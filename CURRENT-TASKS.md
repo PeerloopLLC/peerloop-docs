@@ -61,6 +61,8 @@
 34. [LH1](#lh1) — 23 typography tokens hardcode `line-height: 1` (TYPO-FDN axis)
 35. [BRIDGE-RESIZE](#bridge-resize) — `resize_window` silently ignores width
 36. [ICON-STATES](#icon-states) — Phase-5 tail: drive hidden/loading states over 528 call sites
+37. [GATEPAR](#gatepar) — `/w-codecheck` vs `npm run verify` diverged on the icon gate
+38. [VPHARNESS](#vpharness) — persist the exact-size iframe harness as a script
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -108,7 +110,7 @@
 
 ### [LH1]
 
-- **State:** 📋 queued — TYPO-FDN axis. Surfaced Conv 424.
+- **State:** 📋 queued · `[Opus]` — TYPO-FDN axis. Surfaced Conv 424.
 - **What:** **23** typography tokens in `src/styles/tokens-typography.css` hardcode `line-height: 1`,
   e.g. `--body-small-line-height: 1` → `text-body-small` renders **12px font on a 12px line box**
   (ratio 1.00). Visible as cramped 2-line clamped card descriptions on `/communities`, `/course/[slug]`.
@@ -234,6 +236,35 @@
 - **What:** Conv 398 deleted `src/emails/WelcomeEmail.tsx` + `PaymentReceiptEmail.tsx` (dead). Both still listed in `docs/reference/resend.md` + `DEVELOPMENT-GUIDE.md` — both **manual** category, so the r-end docs agent left them by policy.
 - **Next:** remove/annotate the two templates (verify each mention is the deleted template, not a live one).
 - **Refs:** `docs/reference/resend.md`, `docs/reference/DEVELOPMENT-GUIDE.md`. Surfaced Conv 398.
+
+### [GATEPAR]
+
+- **State:** 📋 queued — surfaced by the `/r-end` docs agent, Conv 424.
+- **What:** the two "run every gate" entry points have **diverged**. Conv 424 wired `check:icons` into
+  `npm run verify`, but `/w-codecheck` (`.claude/skills/w-codecheck/SKILL.md`) still runs only
+  TypeScript · ESLint · Tailwind · Astro + the grep gates, and **CLAUDE.md §Baseline Verification** +
+  `CLAUDE-OFFLOAD.md` both define the baseline as **five** gates.
+- **The decision, not the edit:** should the icon guard become a **sixth baseline gate**? If yes, update
+  `/w-codecheck`, CLAUDE.md §Baseline Verification and the offload doc together. If no, record why
+  `verify` and the baseline definition legitimately differ — otherwise the next conv will "fix" one of
+  them by guessing.
+- **Why it matters:** an inconsistency between the documented baseline and the executable chain is the
+  class of drift that makes a green report untrustworthy.
+- **Refs:** `package.json` (`verify`), `.claude/skills/w-codecheck/SKILL.md`, `CLAUDE.md §Baseline
+  Verification`, `docs/reference/SCRIPTS.md`. Surfaced Conv 424.
+
+### [VPHARNESS]
+
+- **State:** 📋 queued · low priority (tooling convenience).
+- **What:** persist the **exact-size same-origin iframe harness** as a reusable script instead of
+  re-injecting it inline. Conv 424 rebuilt it twice after the parent page reloaded mid-conv.
+- **The two non-obvious parts worth encoding:** (1) the app's own CSS reset caps embedded elements at
+  `max-width:100%`, which silently clamps the iframe — it must be overridden `!important` alongside
+  `width` + `min-width`; (2) `transform: scale()` to fit the window, with slack, because the capture
+  crops roughly the last 16 CSS px otherwise.
+- **Why it exists at all:** `resize_window` never applies width (see `[BRIDGE-RESIZE]`), so this is the
+  only way to measure or eyeball a viewport wider than the window manager grants.
+- **Refs:** `[BRIDGE-RESIZE]`, `memory/reference_responsive_iframe_harness.md`. Surfaced Conv 424.
 
 ### [HOME-FIXES]
 

@@ -2079,3 +2079,36 @@ With the base multiplier set, `size-icon-16` and `size-16` compute to the same 1
 **Consequences:** The icon rule messages were **reframed** to a readability rationale rather than the now-false mis-render claim. `check:icons` keeps its 25-site gate.
 
 **See:** `docs/decisions/05-ui-ux-components.md` entry; `scripts/check-icon-sizing.ts`; `docs/sessions/2026-07/20260727_1404 Decisions.md` §4, Learnings §1; Conv 423.
+
+### [ICON-TOK] Phase 6 Ships an **Absolute** Icon Gate Wired Into `npm run verify` — and `--update-baseline` Refuses to Launder a Non-Zero Governed Baseline (Conv 424)
+**Date:** 2026-07-27 (Conv 424)
+
+`check:icons` promoted warn → **error, absolute at zero** (any governed violation fails, not merely a per-file increase); wired into `npm run verify`, where it had **never** run; `--update-baseline` now refuses to write a non-zero governed baseline. Unblocked by clearing `[RG-PUBLIC]` — `BecomeATeacherPage` fixed on the icon axis now rather than waiting for the marketing redesign, since `/become-a-teacher` is a live canonical route. Rejected: keeping the baseline-relative design; waiting for the redesign.
+
+**Rationale:** The baseline-relative design existed only because a hard gate would have been red at 1,863 violations; that rationale is spent. A baseline-relative gate with an open re-snapshot path is not a gate, and an error nothing runs is still a warning.
+
+**Consequences:** Verified by injection — clean → exit 0, violation → exit 1, launder attempt → exit 1; 5 gates green (6131 tests / 395 files). Forced a correctness fix first: `iconRanges()`'s last def-window ran to EOF, so 13 of 25 reported violations were not icons; `topLevelEndAfter()` bounds each window (25 → 12). `[ICON-TOK]` Phase 6 and `[ICON-4PX]` closed.
+
+**See:** `docs/decisions/06-testing-ci.md` entry; `scripts/check-icon-sizing.ts`, `package.json`; `docs/sessions/2026-07/20260727_1610 Decisions.md` §§3, 4; Conv 424.
+
+### [ICON-TOK] The `.astro` Attribution Blind Spot Is **Accepted and Documented Permanently** — the Gap Is Completeness *Reporting*, Not Correctness (Conv 424)
+**Date:** 2026-07-27 (Conv 424)
+
+Phase-5 open question settled: no source-level `.astro` matcher. The ledger names `.astro` icons as a blind spot and excludes them from the residue denominator, with the rationale written into `icon-scan.mjs` output and the plan. Rejected: building a matcher tied to route coverage.
+
+**Rationale:** `check:icons` **does** statically enforce `.astro` (injection → exit 1, +2 violations; 70 icon tags / 21 files), so those sites cannot regress — a matcher would improve a metric rather than protect the codebase.
+
+**Consequences:** A permanent named line in the ledger instead of a recurring open question.
+
+**See:** `docs/decisions/06-testing-ci.md` entry; `scripts/icon-scan.mjs`; `docs/sessions/2026-07/20260727_1610 Decisions.md` §5; Conv 424.
+
+### [ICON-TOK] The 98 `ui/icons.tsx` Size Defaults Are **Kept** as the Fallback but **Excluded From the Residue Denominator** — 0 of 395 Resolved Usages Rely on One (Conv 424)
+**Date:** 2026-07-27 (Conv 424)
+
+Defaults stay; `reportLedger()` reports them separately instead of as unproven residue. Rejected: removing them by making `className` required in `IconProps`; keeping them in the denominator. **Corrects** the Conv-422 figure ("6 usages omit `className`") — all six were name collisions with local `CheckIcon`/`CloseIcon` wrappers and a different `entity/UserIcon`; resolving imports gives **0 of 395**.
+
+**Rationale:** A default no usage relies on can never be *proven* by rendering, so counting them as residue overstated the gap permanently. They remain the fallback that makes a future `<FeedIcon />` render at 20px rather than unsized.
+
+**Consequences:** Denominator **635 → 528** attributable call sites; plan's stale "391 of 629" restated.
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `src/components/ui/icons.tsx`, `scripts/icon-scan.mjs`; `docs/sessions/2026-07/20260727_1610 Decisions.md` §6, Learnings §5; Conv 424.

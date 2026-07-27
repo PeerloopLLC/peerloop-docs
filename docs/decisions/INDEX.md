@@ -259,6 +259,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [[ICON-TOK] The 98 `ui/icons.tsx` Size Defaults Are **Kept** as the Fallback but **Excluded From the Residue Denominator** — 0 of 395 Resolved Usages Rely on One (Conv 424)](05-ui-ux-components.md#icon-tok-the-98-uiiconstsx-size-defaults-are-kept-as-the-fallback-but-excluded-from-the-residue-denominator--0-of-395-resolved-usages-rely-on-one-conv-424)
 - [[ICON-TOK] Tailwind v4's **Base `--spacing` Multiplier** Is Set to `0.0625rem` — a Bare Number Now Means Its Own Pixel Count Everywhere (Conv 423)](05-ui-ux-components.md#icon-tok-tailwind-v4s-base---spacing-multiplier-is-set-to-00625rem--a-bare-number-now-means-its-own-pixel-count-everywhere-conv-423)
 - [[ICON-TOK] The `--icon-N` Family Is **Kept As-Is** After the Root Fix Made It Behaviourally Redundant — It Is the Only Record of Which Elements Are Icons (Conv 423)](05-ui-ux-components.md#icon-tok-the---icon-n-family-is-kept-as-is-after-the-root-fix-made-it-behaviourally-redundant--it-is-the-only-record-of-which-elements-are-icons-conv-423)
 - [[ICON-TOK] The Inline **em** Icon Family Is Rescinded — the Rule Collapses to Two-Way, Everything rem (Conv 421)](05-ui-ux-components.md#icon-tok-the-inline-em-icon-family-is-rescinded--the-rule-collapses-to-two-way-everything-rem-conv-421)
@@ -423,6 +424,8 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [6. Testing & CI/CD](06-testing-ci.md)
 
+- [[ICON-TOK] Phase 6 Ships an **Absolute** Icon Gate Wired Into `npm run verify` — and `--update-baseline` Refuses to Launder a Non-Zero Governed Baseline (Conv 424)](06-testing-ci.md#icon-tok-phase-6-ships-an-absolute-icon-gate-wired-into-npm-run-verify--and---update-baseline-refuses-to-launder-a-non-zero-governed-baseline-conv-424)
+- [[ICON-TOK] The `.astro` Attribution Blind Spot Is **Accepted and Documented Permanently** — the Gap Is Completeness *Reporting*, Not Correctness (Conv 424)](06-testing-ci.md#icon-tok-the-astro-attribution-blind-spot-is-accepted-and-documented-permanently--the-gap-is-completeness-reporting-not-correctness-conv-424)
 - [[ICON-TOK] The `dimension-bare-numeric` Informational Tier Is **Retired Outright** and Phase 6's Bare-Number Lint Rule Is **Cancelled** — the Root Fix Removed What They Measured (Conv 423)](06-testing-ci.md#icon-tok-the-dimension-bare-numeric-informational-tier-is-retired-outright-and-phase-6s-bare-number-lint-rule-is-cancelled--the-root-fix-removed-what-they-measured-conv-423)
 - [[ICON-TOK] Per-Element Attribution Uses the React 19 Fiber `_debugStack`, Not a Build-Time Stamp — Closed Prop Interfaces Killed the Transform (Conv 422)](06-testing-ci.md#icon-tok-per-element-attribution-uses-the-react-19-fiber-_debugstack-not-a-build-time-stamp--closed-prop-interfaces-killed-the-transform-conv-422)
 - [[ICON-TOK] Phase 5 Proves Completeness by **Computing** Route Coverage (50/50), and the 4 Mis-Tokened Non-Icons Are Fixed, Not Baselined (Conv 422)](06-testing-ci.md#icon-tok-phase-5-proves-completeness-by-computing-route-coverage-5050-and-the-4-mis-tokened-non-icons-are-fixed-not-baselined-conv-422)

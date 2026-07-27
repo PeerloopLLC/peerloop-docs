@@ -265,6 +265,12 @@ Only admin view without a detail panel. Cannot view topic metadata, associated c
 
 `ModeratorDetailContent.tsx` exists as a file but its completeness should be verified at block start. If the panel shows basic info only, it should display moderation activity stats (flags reviewed, actions taken).
 
+**F9. Three admin routes overflow the viewport horizontally (`[ADMIN-OVFLW]`, surfaced Conv 424)**
+
+Measured at a true 1280 viewport during the `[SPACING-VIS]` pass: **`/admin/sessions` (+289px)**, `/admin/moderation` (+96px), `/admin/enrollments` (+75px). On `/admin/sessions` the culprit is a stats grid `grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-16 mb-24` in `SessionsAdmin.tsx` computing **4 tracks of ~310px = 1287px** inside a ~1060px column — `lg:grid-cols-6` is not winning, and `MAIN` (`flex flex-1 flex-col lg:ml-[220px]`) has **no `min-w-0`**, so min-content pushes it wider: the classic flex-overflow shape, which means the likely fix is one class on the layout plus a grid-track review, not three per-page patches.
+
+**Verified NOT a Conv-423 spacing regression:** `SessionsAdmin.tsx` is byte-identical across `dc1f031e`, and both 16 and 24 are in the pre-existing override set, so `gap-16 mb-24` measured the same before the sweep. Task body on the board: `CURRENT-TASKS.md § [ADMIN-OVFLW]`. Files: `SessionsAdmin.tsx`, `ModerationAdmin.tsx`, `EnrollmentsAdmin.tsx`; policy context in `memory/project_admin_conformance_policy.md`.
+
 ### Recommended execution order
 
 1. **Menu restructure** (ADMIN-REVIEW.MENU) — regroup sidebar, promote Analytics, add admin-to-admin links in detail panels
@@ -276,6 +282,8 @@ Only admin view without a detail panel. Cannot view topic metadata, associated c
 7. **ModeratorsAdmin detail panel** (F8) — verify and enhance if needed
 
 Items 1-4 are functional improvements (convenience, workflow). Items 5-7 are polish (nice-to-have for 2-user system).
+
+**F9 (horizontal overflow) sits outside this ordering** — it is a live layout defect on three routes, not a convenience improvement, and is cheap enough to take whenever an admin route is next touched.
 
 ## ADMIN-REVIEW.ROLES (absorbed from ROLES block)
 
