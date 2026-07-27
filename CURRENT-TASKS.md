@@ -256,12 +256,27 @@
   *did* confirm tranche 1 (33 elements on `size-icon-20`/`-16`, all 33 scaling). One test coupled to
   the literal classname `svg.w-48.h-48` failed and was updated; swept `tests/` for the rest — no
   further coupling. 5 gates green (suite 6131).
-- **Next:** Phase 4 tranche 3 — the remaining ~421 icon classes in the overridden set, concentrated at
-  16px (174) and 20px (139). **These are the inline/standalone judgment calls**, unlike tranche 2's
-  large marks, so they need reading. `/messages`, `/notifications`, `/profile` still measure **0% scale
-  with root** — that is where genuinely-pinned px is concentrated. Also outstanding: Phase 5 must drive
-  **empty states deliberately** (40 of tranche 2 remain unproven), and someone must decide whether the
-  ~390 non-icon bare-numerics get their own axis or stay ambiguous.
+- **✅ Conv 420 — Tranche 3a (sub-12px = two real defects, not ambiguity).** Baseline 1,363 → **1,337**.
+  Working up from the smallest rendered sizes found the only two places the override had shipped
+  something visibly wrong. **`ModeratorInvite.tsx`** is a whole component in Tailwind-v3 semantics —
+  measured live at `/invite/mod/<bad-token>`, its error glyph rendered **8×8px in a 16×16px circle** on
+  a card with **8px** padding (author wrote `w-8 h-8`/`w-16 h-16`/`p-8` meaning 32/64/32). That is what
+  a user sees when a moderator invite link is bad. The icon axis alone couldn't fix it — a 32px glyph
+  in a container stuck at 16px would overflow — so **per user decision the whole component was fixed**,
+  crossing into the spacing scale as a bounded one-component exception: 90 classes to the literal-px
+  convention, icons to `size-icon-32`/`-20`, circles to `size-[64px]`. Re-measured: **64×64 circle,
+  32×32 icon, 32px padding**, palette/button intact, 36 tests still pass. **`PublicProfile.tsx:290`** —
+  error mark at 12px where `h-12` meant 48 → `size-icon-48`. **The legacy class is bounded:** only 7
+  files use the v3 palette, only 2 had overridden icon classes (the other is the parked
+  `BecomeATeacherPage`). ⚠️ Only the *error* state was live-verified; success/declined/valid share the
+  markup but need a valid token. 5 gates green (suite 6131), `icons:scan` no regression.
+- **Next:** Tranche 3b — the ~369 icon classes at 16/20/24px. **This is where inline-vs-standalone
+  judgment actually lives**, so it needs reading, not a script: of the 15 sites at 12px, 14 are
+  legitimately small glyphs (stars, badge pills, sort chevrons) and most sit *beside text*, so this
+  tranche will pull hard on the em ladder and likely forces the "no home for a 12px-label inline icon"
+  question to be settled. `/messages`, `/notifications`, `/profile` still measure **0% scale with root**.
+  Also outstanding: Phase 5 must drive **empty states deliberately** (40 of tranche 2 unproven), and
+  someone must decide whether the ~390 non-icon bare-numerics get their own axis or stay ambiguous.
 - **Standard (decided).** Spacing (`p`/`m`/`gap`) keeps the numeric scale — that is what the
   Conv-174 override was for, settled at 4711 uses vs 55 arbitrary. Dimensions (`w`/`h`/`size`) use
   the icon axis, split three ways **by role** (user decision, Conv 419):
@@ -596,10 +611,12 @@
 
 ## ✅ Done this conv
 
-- **`[ICON-TOK]` Phase 4 Tranches 1 + 2** — baseline 1,694 → **1,363**. T1: 94 icon-component defaults
+- **`[ICON-TOK]` Phase 4 Tranches 1 + 2 + 3a** — baseline 1,694 → **1,337**. T1: 94 icon-component defaults
   → the token axis (200 violations) plus a rule correction, the tasked "46 no-size-class icons" being
-  all false positives. T2: 44 large standalone icons (85 classes). 5 gates green (suite 6131),
-  `icons:scan` no regression. Task stays active — multi-conv.
+  all false positives. T2: 44 large standalone icons (85 classes). T3a: two genuine shipped defects — the whole
+  `ModeratorInvite` component (8px glyph in a 16px circle, live-measured before/after) and
+  `PublicProfile`'s 12px error mark. 5 gates green (suite 6131), `icons:scan` no regression.
+  Task stays active — multi-conv.
 - **`[DEVSRV-STALE]`** — 4th occurrence (2nd of the Vite-dep-cache variant, this time killing `/`
   itself). Found a cleaner teardown, `npx astro dev stop`, and wrote the long-tasked
   `memory/reference_devserver_stale_daemon.md` covering all three variants.

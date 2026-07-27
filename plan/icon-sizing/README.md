@@ -2,7 +2,7 @@
 
 **Focus:** Migrate ~1,700 dimension classnames onto the Conv-419 icon token axis, and be able to
 *demonstrate* no page shipped a mis-sized icon — not merely believe it.
-**Status:** 🔥 IN PROGRESS (Conv 420 — two migration tranches landed; baseline **1,363**, down from 1,694.
+**Status:** 🔥 IN PROGRESS (Conv 420 — three migration tranches landed; baseline **1,337**, down from 1,694.
 Conv 419 built the foundation, standard and Phases 1–2 at baseline 1,694, itself down from 1,863 after
 that conv's `[MKTDEAD]` dead-code purge)
 **Task code:** `[ICON-TOK]` · related `[ICON-4PX]` (residue), `[RG-PUBLIC]` (gates one file), `[MKTDEAD]` (shrank the baseline)
@@ -48,10 +48,10 @@ reach, and a census that counts them over-scopes the migration.
 | `.astro` pages (route-matrix) | 67 | 67 | 67 |
 | icon-component usages | 626 (198 `MattIcon` + 428 `ui/icons`) | 626 | 860 |
 | `ui/icons.tsx` exports | 98 | 98 | 98 |
-| **`check:icons` baseline total** | **1,363** | 1,694 | 1,863 |
-| — bare-numeric, overridden ten | **806** ← ambiguous, mean N px | 898 | — |
-| — bare-numeric, non-overridden N | **370** ← ambiguous, mean N × 4 px | 558 | — |
-| — of the overridden ten, actually **on an icon** | ~421 (was ~501 pre-tranche-2) | — | — |
+| **`check:icons` baseline total** | **1,337** | 1,694 | 1,863 |
+| — bare-numeric, overridden ten | **788** ← ambiguous, mean N px | 898 | — |
+| — bare-numeric, non-overridden N | **362** ← ambiguous, mean N × 4 px | 558 | — |
+| — of the overridden ten, actually **on an icon** | ~369, now all ≥16px | — | — |
 | — of the overridden ten, **not an icon** (skeletons, badge circles, dots, avatars) | ~390 — out of scope for this axis | — | — |
 | — arbitrary px *on an icon component* | **187** | 192 | — |
 | — icon usage with **no size class at all** | **0** (rule was wrong — see below) | 46 | 51 |
@@ -239,6 +239,34 @@ put first turned out not to exist — see the Scale section.)
       - **Scanner note (checked, no action):** `MAX_ICON_PX = 64` will *not* start false-positiving as
         icons become rem. `invariants()` evaluates size rules over the **16px** measurements only; the
         24px run feeds the scale/overflow comparison. So `size-icon-48` reads 48px there, not 72px.
+- [x] **Tranche 3a — the sub-12px group turned out to be two real defects, not ambiguity (Conv 420).**
+      Baseline 1,363 → **1,337**. Working down from the smallest rendered sizes found the only two
+      places in the app where the override had shipped something visibly wrong:
+      - **`ModeratorInvite.tsx` — a whole component written in Tailwind-v3 semantics.** Measured live
+        at `/invite/mod/<bad-token>`: the error glyph rendered **8×8px inside a 16×16px circle**, on a
+        card with **8px** padding, because the author wrote `w-8 h-8` / `w-16 h-16` / `p-8` meaning
+        32 / 64 / 32. This is what a person sees when a moderator invite link is bad, expired or
+        accepted. **The icon axis alone could not fix it** — moving the glyph to 32px inside a
+        container that stayed 16px would overflow. **User decision: fix the whole component**,
+        crossing into the spacing scale the standard otherwise excludes, as a bounded one-component
+        exception. 90 classes converted to the codebase's literal-px convention (`p-8`→`p-32`,
+        `space-y-4`→`space-y-16`, and the two skeleton bars that were rendering at 8px and 4px), icons
+        to `size-icon-32`/`-20`, the circles to `size-[64px]`. Re-measured after: **64×64 circle,
+        32×32 icon, 32px padding**, palette and button intact. 36 component tests still pass.
+      - **`PublicProfile.tsx:290`** — an error-state mark at **12px where `h-12 w-12` meant 48px**.
+        Its card already used modern Matt tokens, so only the icon was wrong → `size-icon-48`,
+        matching the pattern tranche 2 established for exactly this shape.
+      - **The legacy-semantics class is bounded — worth knowing, and it is small.** Only **7** files
+        use the v3-era palette at all, and only **2** of those carry overridden icon classes: this one
+        and `BecomeATeacherPage` (parked behind `[RG-PUBLIC]`, and the source of all 11 remaining
+        runtime findings). So there is no third such component waiting.
+      - ⚠️ Only the **error** state was live-verified. Success / declined / valid-invite states share
+        the same card markup but need a valid token to render.
+- [ ] **Tranche 3b — the 16/20/24px bulk (~369 classes).** This is where the inline-vs-standalone
+      judgment actually lives, so it needs reading, not a script. Of the 15 sites at 12px, 14 are
+      legitimately small glyphs (star ratings, badge-pill icons, sort chevrons) and most sit **beside
+      text** — so this tranche will pull hard on the em ladder and is likely where the "no home for a
+      12px-label inline icon" open question has to be settled rather than side-stepped.
 - [x] **Mandatory per-tranche reachability check.** Run `.claude/scripts/codecheck-orphan-components.mjs`
       over every file in a tranche **before** editing it. Conv 419 measured that **5 of its 43 icon
       fixes landed on dead code** — hitting `TestimonialsBrowse`, the same file Conv 404's `[A11Y]`
