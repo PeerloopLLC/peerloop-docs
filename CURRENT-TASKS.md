@@ -300,6 +300,43 @@
     rewriter reflowed were restored to preserve formatting.
   - 5 gates green: tsc clean · astro 0 errors · eslint 0 errors (166 pre-existing warnings) ·
     **6131 tests pass** · build complete. Code `31251d82`.
+- **🔄 Conv 422 — Phase 5 (completeness proof), in progress.**
+  - **Route coverage closed: 50 of 50 in-scope pages** now have at least one scanned URL (80 distinct
+    URLs / 95 route-states, up from 26). Computed by matching the scanner's route list against the
+    page files with Astro's own specificity ordering, not asserted. The plan's "67 routes" counted
+    `/old/*` (14, retire-by-default) and `/dev/*` (3, provenance opt-out); the governed surface is
+    **50**, six of which are `[...tab]` catch-alls rendering 2–7 tabs each.
+  - **States driven deliberately.** Empty lists via `usr-admin` (the one seed user that is
+    data-empty *and* capability-bearing — `fraser@meristics.com` has 0 rows but 0 capability flags,
+    so /teaching and /creating bounce it rather than render an empty list). `ModeratorInvite` now has
+    **4 of its 5 view states measured** (valid · error · success · declined) plus the decline
+    **confirmation modal**, via a new opt-in `--drive-invite accept|decline` mode; only the transient
+    `loading` is unmeasured. Previously only `error` had ever been live-verified.
+  - **✅ FIXED — 4 non-icon elements had been wrongly tokened by Conv 420's tranche 2** (`c429f150`),
+    found by this sweep: `analytics/CoursePerformanceTable.tsx:144,147` (a course thumbnail `<img>` +
+    its placeholder `<div>`, `size-icon-40 w-[56px]`), `:71` and `admin/AdminDashboard.tsx:333`
+    (skeleton bars). Per the settled two-way standard these are "not an icon" → arbitrary px. **Not
+    cosmetic:** the token sets height while the adjacent `w-[Npx]` wins for width, so height scaled
+    with the root font while width stayed pinned — the thumbnail distorts 56×40 → 56×60 at a 24px
+    root — and each was a permanent false positive in `tokened-did-not-scale`, i.e. a mis-classified
+    element poisoning the block's own completeness instrument. Fixed to `h-[40px]`/`h-[24px]`/
+    `h-[32px]`, pixel-identical at the default root (40/24/32 are all in the override set, so `h-N`
+    already meant N px). **Both counters stayed put (25 governed / 532 informational)** — the check
+    that the edits landed in neither bucket rather than being silently reclassified. A source-wide
+    scan for the same shape (a token co-occurring with a competing `w-`/`h-`) now returns **0**, and
+    the re-run sweep shows `tokened-did-not-scale` back to **0**.
+  - **This is the phase justifying its own cost.** Tranche 2's own record admitted R1 matched ~44%
+    non-icon elements; these four are the ones that reached an actual edit. No static rule caught
+    them — only rendering the page at two root sizes did.
+  - **`icons:scan` baseline regenerated** over the widened coverage (it described 26 routes, not 95).
+  - **Residue Phase 5 does NOT prove:** coverage is per *page*, not per *element* — nothing maps a
+    rendered icon back to its source site, so "every rendered token scaled" ≠ "every source site
+    rendered". Interaction-gated UI (dropdowns, slide-over panels, other modals) and loading
+    skeletons stay unmeasured. Closing that needs per-element source attribution (a dev-only stamp) —
+    its own decision, not an assumption.
+  - Scanner robustness: one bad seed email (`marcus.thompson@`, actually `marcus.t@`) aborted the
+    whole run at route 46 of 95; a failed login now skips that user's group and continues. Logins are
+    grouped per user (6, not 95).
 - **✅ Conv 420 — Tranche 1 (icon-component defaults) + a rule correction.**
   - **The tasked target didn't exist.** The "46 icon usages with **no size class at all**" that
     Conv 419 called the sharpest finding were **all false positives**: 14 were `entity/UserIcon`,
@@ -349,13 +386,18 @@
   files use the v3 palette, only 2 had overridden icon classes (the other is the parked
   `BecomeATeacherPage`). ⚠️ Only the *error* state was live-verified; success/declined/valid share the
   markup but need a valid token. 5 gates green (suite 6131), `icons:scan` no regression.
-- **Next:** Tranche 3b — the ~369 icon classes at 16/20/24px. **This is where inline-vs-standalone
-  judgment actually lives**, so it needs reading, not a script: of the 15 sites at 12px, 14 are
-  legitimately small glyphs (stars, badge pills, sort chevrons) and most sit *beside text*, so this
-  tranche will pull hard on the em ladder and likely forces the "no home for a 12px-label inline icon"
-  question to be settled. `/messages`, `/notifications`, `/profile` still measure **0% scale with root**.
-  Also outstanding: Phase 5 must drive **empty states deliberately** (40 of tranche 2 unproven), and
-  someone must decide whether the ~390 non-icon bare-numerics get their own axis or stay ambiguous.
+- **Next (rewritten Conv 422 — the old "Tranche 3b" line was stale).** Tranche 3b *was* the Conv-421
+  mechanical sweep (560 → 25) and the em-ladder question it feared was dissolved by the rescind, so
+  **no migration work remains**. Verified live at Conv-422 start: `check:icons` = **25 governed ·
+  baseline 25 · delta +0**, 532 informational. What is left is proof and enforcement:
+  - **Phase 5 — completeness proof.** **49 of 67 routes unswept.** Plus two state classes a seeded
+    route walk never reaches and must be driven deliberately: **empty states** (40 of tranche 2's 44
+    sites still unproven — the probe saw 4, on `/admin`) and **`ModeratorInvite`'s success/declined/
+    valid states** (only the error state was ever live-verified; needs a valid token).
+  - **Phase 6 — tighten the guard.** Promote the governed rules warn → error (now a single-file
+    dependency: all 25 sit in `BecomeATeacherPage`, behind `[RG-PUBLIC]`); **decide the fate of the
+    532 `dimension-bare-numeric` sites** (the informational tier is a holding pattern, not a
+    destination — the block's one live open question); ship the editor-visible bare-number lint rule.
 - **Standard (decided; simplified Conv 421).** Spacing (`p`/`m`/`gap`) keeps the numeric scale — that
   is what the Conv-174 override was for, settled at 4711 uses vs 55 arbitrary. Dimensions
   (`w`/`h`/`size`) use the icon axis, now split **two ways** by role:
@@ -696,39 +738,4 @@
 
 ## ✅ Done this conv
 
-- **`[ICON-AUDIT]` findings surfaced** — audited all 4 icon commits from diffs + a live 20-route
-  walk. Appearance had **not** drifted (153 of 206 changed lines pixel-identical; the 53 that moved
-  were mostly 4px→16px restorations), but four real problems surfaced: migration landing off-surface,
-  5 files deleted 2 commits later, the MattIcon-default claim ~8× over-scoped, and a metric that
-  can't be read as a progress bar. Body kept — findings 2–4 still open.
-- **`[ICON-TOK]` arbitrary-px class retired** — 187 → 0, baseline 1,337 → **1,150**, 69 files.
-  Verified live at two root font sizes: 232/232 unchanged at 16px root, 232/232 scaling at 24px.
-  5 gates green (suite 6131). Code `31251d82`.
-- **`[ICON-TOK]` em inline family rescinded** — `--icon-inline-{sm,md,lg}` deleted, 6 call sites →
-  `size-icon-16`, rule collapsed three-way → two-way, scanner rule widened
-  `inline-did-not-scale` → `tokened-did-not-scale`. Closes the block's longest-open decision.
-  5 gates green (suite 6131) + `icons:scan` no regression.
-- **`[HDR-AVATAR]` fixed** — not the one-line change the task described: the whole legacy shell
-  header was in v3 semantics (bar `h-16` meaning 64px, **rendering 17px**, 28px logo overflowing it),
-  so a 32px avatar alone would have been worse. Repaired whole per the `ModeratorInvite` precedent,
-  15 classes. Task was under-scoped two ways — `h-8 w-8` appears **twice** (img + initials fallback),
-  and the blast radius is **7 live non-`/old` routes** (every 404, `/receipt/[id]`,
-  `/certificates/[id]`, `/diploma/[id]`, `/verify/[id]`, `/invite/mod/[token]`), not just legacy.
-  Verified 17px → 65px, avatar 8px → 32px. 5 gates green (suite 6131). Code `530b306f`.
-- **`[ICON-TOK]` baseline split — the metric is now a progress bar.** `1,143 → 560 governed + 532
-  informational`. Three inflation sources measured (51 fraction FPs · 94 min-/max- mislabels · ~418
-  non-icon), R1 classifies structurally by tag + definition ranges, calibrated per `[CMH]` before
-  commit. Scoping also established the remaining 560 is **94% mechanical** and that the only icons
-  rendering <12px are in the parked `BecomeATeacherPage`. Code `14f56f7c`.
-- **`[ICON-TOK]` mechanical sweep — icon debt `560 → 25`, all residue parked.** 539 classes / 99
-  files, line-for-line. Premise re-derived against the checker before the first edit and it **held**.
-  Two bugs in my own sweep — one caught, one shipped cosmetically (a whole-file string regex desynchronised by an
-  apostrophe in JSX prose → 80 silent misses; whitespace collapse eating newlines) — proof that
-  nothing was mis-converted is that `dimension-bare-numeric` measured **532 before and after**.
-  Verified live: **437 icons, 437/437 exact at 16px root, 437/437 scaling at 24px** across 18 routes.
-  Also fixed a false positive in the new `tokened-did-not-scale` rule (two-pass pairing was by array
-  index; now by stamped element id). Code `4a653e96`.
-- **All 6 rescinded sites live-verified (second pass)** — and the rescind proved to be a **repair**:
-  a counterfactual measurement shows the em token had been rendering **6 of 7 PromoteButton icons at
-  13.8px (−14%)** because their container is 12px, not the 14px Conv 420 assumed. Shipped that way
-  since Conv 420, uncaught because the site was never live-verified.
+_(none yet — cleared at each /r-start)_

@@ -442,29 +442,67 @@ parked residue at the foot of this list.**
       redesign is scheduled. Being legacy-v3 throughout, expect the `ModeratorInvite` / `Header`
       remedy — repair the component whole — rather than an icon-axis-only edit.
 
-### Phase 5 — Completeness proof 📋
+### Phase 5 — Completeness proof ✅ (Conv 422)
 
-Full double-root-font sweep across all 67 routes plus PLATO state coverage. Any inline icon that
-doesn't move between 16px and 24px root is a missed site. Any clipped/overflowing element is a
-container that didn't follow its icon.
+Full double-root-font sweep across every in-scope route plus the states a route walk never reaches.
+Any icon that doesn't move between a 16px and a 24px root is a missed site; any clipped or
+overflowing element is a container that didn't follow its icon.
 
-**Conv 421 got the *rendered* half of this a long way:** 437 migrated icons across **18 routes** measured
-at both roots, **437/437** at their exact named px at 16px and **437/437** growing at 24px (232 at tranche
-4, 437 after 3b). The scanner's completeness rule was also widened `inline-did-not-scale` →
-`tokened-did-not-scale`, which — now that every token is rem — makes *any* `size-icon-*` that measures
-identically at both roots provable evidence of a missed site, across the whole axis rather than just the
-inline arm. What Phase 5 still owes is the **49 unswept routes** and the states below.
+**Conv 421 got the *rendered* half a long way:** 437 migrated icons across **18 routes** measured at both
+roots, **437/437** at their exact named px at 16px and **437/437** growing at 24px. The scanner's
+completeness rule was also widened `inline-did-not-scale` → `tokened-did-not-scale`, which — now that
+every token is rem — makes *any* `size-icon-*` measuring identically at both roots provable evidence of
+a missed site, across the whole axis rather than just the inline arm.
 
-Conv 420 put numbers against two of the states named above — a route walk over seeded data reaches
-**neither**, so this phase has to drive them deliberately rather than hope to pass through them:
+**Conv 422 closed the coverage half, and it caught something.**
 
-- [ ] **Empty states — 40 of tranche 2's 44 sites are still unproven.** They render only behind a
-      "list is empty" condition; the direct probe saw **4** (on `/admin`), and `/learning` measured
-      identically before and after. Force or seed the empty condition per route; a green `icons:scan`
-      is not evidence about elements it never rendered.
-- [ ] **`ModeratorInvite`'s success / declined / valid-invite states.** Only the **error** state was
-      live-verified (Conv 420, `/invite/mod/<bad-token>`). The other three share the same card markup
-      but need a valid token to render.
+- [x] **Route coverage: 50 of 50 in-scope pages.** 80 distinct URLs / 95 route-states, up from 26.
+      **The "67 routes" figure was wrong for this purpose** — it counted `/old/*` (14,
+      retire-by-default) and `/dev/*` (3, provenance opt-out). The governed surface is **50**, and six
+      of those are `[...tab]` catch-alls rendering 2–7 tabs each, so the real surface is larger than a
+      page count suggests. Coverage is now *computed* (route list matched against the page files using
+      Astro's own specificity ordering), not asserted — the first version of that probe reported 4
+      false gaps by letting `course/[slug]/[...tab]` claim `/course/x/book`.
+- [x] **Empty states.** Driven by scanning the list routes a second time as `usr-admin`. The driver
+      must be data-empty **and capability-bearing**: the obvious pick (`fraser@meristics.com`, 0
+      enrollments / 0 notifications / 0 conversations) also has **0 capability flags**, so /teaching
+      and /creating bounce it instead of rendering an empty list. *"0 rows" is not "renders the empty
+      state" — the route guard decides.*
+- [x] **`ModeratorInvite` — 4 of its 5 view states now measured** (`valid`, `error`, `success`,
+      `declined`), plus the decline **confirmation modal**. Only the transient `loading` is unmeasured.
+      `success`/`declined` exist only after a POST, so they needed the new opt-in
+      `--drive-invite accept|decline` mode, which clicks through the flow. It consumes the seed's
+      pending invite (and `accept` grants a real moderator role), so it is deliberately **not** wired
+      into `npm run icons:scan`; restore with `npm run db:setup:local:dev`. Every `size-icon-*` in
+      those states scaled (16→24, 32→48, 20→30); the only non-scaling elements were `size-[32px]`
+      avatars, correctly arbitrary px.
+
+**What the widened sweep found — 4 non-icons wrongly tokened by tranche 2** (`c429f150`). A course
+thumbnail `<img>` and its placeholder `<div>` (`CoursePerformanceTable.tsx:144,147`) and two skeleton
+bars (`:71`, `AdminDashboard.tsx:333`) had been converted from `h-N w-[Npx]` to `size-icon-N w-[Npx]`.
+Not cosmetic: the token sets height while the adjacent `w-[Npx]` wins for width, so **height scaled
+with the root font while width stayed pinned** — the thumbnail distorts from 56×40 to 56×60 at a 24px
+root. Each was also a permanent false positive in `tokened-did-not-scale`, i.e. a mis-classified
+element was poisoning the block's own completeness instrument. Fixed to `h-[40px]`/`h-[24px]`/`h-[32px]`
+— pixel-identical at the default root (40/24/32 are all in the override set, so `h-N` already meant N
+px), and the governed/informational counts both stayed put (25 / 532), confirming the edits landed in
+neither bucket. A source-wide check for the same shape (a token co-occurring with a competing `w-`/`h-`)
+now returns **0**.
+
+**This is the phase justifying its own cost.** Tranche 2's record already admitted R1 matched ~44%
+non-icon elements; these four are the ones that made it into an actual edit, and no static rule caught
+them — only rendering the page at two root sizes did.
+
+**Scanner robustness (same conv).** One bad seed email aborted the entire run at route 46 of 95,
+losing every later group; a failed login now skips that user's group and continues. Logins are grouped
+per user (6 rather than 95).
+
+**Residue — what Phase 5 still does not prove.** Coverage is per *page*, not per *element*: nothing
+maps a rendered icon back to its source site, so "every rendered token scaled" is not the same claim as
+"every source site rendered". Sites behind interaction-gated UI (dropdown menus, slide-over panels,
+other modals) are still unmeasured, and skeleton/loading states render only while data is in flight.
+Closing that needs per-element source attribution (a dev-only stamp) — worth its own decision, not an
+assumption.
 
 ### Phase 6 — Tighten the guard 📋
 
