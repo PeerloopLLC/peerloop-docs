@@ -58,6 +58,7 @@
 31. [DEVSRV-STALE](#devsrv-stale) — un-parked: stale/bricked astro dev daemon recurred
 32. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
 33. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
+34. [TLFMT](#tlfmt) — r-end ref documents a TIMELINE.md shape the file no longer uses
 ## ⏸️ Parked  (gated — out of rotation)
 
 - [ORPHAN-BACKLOG](#orphan-backlog) — gate: marketing redesign (RG-PUBLIC)
@@ -302,7 +303,7 @@
     **6131 tests pass** · build complete. Code `31251d82`.
 - **🔄 Conv 422 — Phase 5 (completeness proof), in progress.**
   - **Route coverage closed: 50 of 50 in-scope pages** now have at least one scanned URL (80 distinct
-    URLs / 95 route-states, up from 26). Computed by matching the scanner's route list against the
+    URLs / 97 route-states, up from 26). Computed by matching the scanner's route list against the
     page files with Astro's own specificity ordering, not asserted. The plan's "67 routes" counted
     `/old/*` (14, retire-by-default) and `/dev/*` (3, provenance opt-out); the governed surface is
     **50**, six of which are `[...tab]` catch-alls rendering 2–7 tabs each.
@@ -350,7 +351,10 @@
     The regex used `className\s*=\s*`, and `\s*` matches zero spaces, so it swallowed JSX attributes
     (`className="..."`) along with real destructuring defaults (`className = '...'`). The comment
     stated the rule correctly; the regex didn't implement it. `\s+` fixes it — **true count 107
-    defaults, 457 JSX attributes, 61 `.astro` sites.** Third instrument-before-output catch in two
+    defaults, 522 call sites, 61 `.astro` sites** (= 690; an earlier "457" here was a raw
+    `className="` grep that missed template literals and did not partition the total — corrected at
+    r-end by the plan agent re-running the ledger's own classifier). Third instrument-before-output
+    catch in two
     convs.
   - **The residue is state-coverage, not dead code.** `codecheck-orphan-components.mjs` returns
     **PASS — every `src/components/**` component is route-reachable**, so every unproven site sits in
@@ -647,7 +651,7 @@
 
 ### [RSFD]
 
-- **State:** 📋 queued · low priority · `[Opus]` (skill infra)
+- **State:** 📋 queued · low priority (skill infra)
 - **What:** port spt-docs' `/r-start-from-dirty` (retroactively wrap an already-dirty tree in a tracked Conv). **Not a file copy** (Conv-395 audit): 3 deps missing here — `conv-start-core.sh` (peerloop inlines increment/heartbeat at Steps 3/4/5), `r-health.js`, and `event.js` + `.conv-events.jsonl` (**Peerloop has no event-log system**, which the skill's retro-fire Step 6 depends on entirely).
 - **Blocking decision before any build:** does Peerloop want an event log? Without one, a port just increments a counter over a dirty tree and the reasoning is still lost. Must also handle peerloop-only substrate: `conv-session-lock.sh`, `conv-branch-check.sh`, the ~150-line Step 5.7 memory sync.
 - **Refs:** `~/projects/spt-docs/.claude/skills/r-start-from-dirty/SKILL.md`, `[[feedback_skill_sync_same_name_divergence]]`. Surfaced Conv 395.
@@ -688,6 +692,21 @@
 - **Decision (Conv 406): HARD-DETACH from the Task subsystem** — skills/CLAUDE.md/hook rewritten to write-through `CURRENT-TASKS.md` directly, no Task-tool reliance. So this watch no longer blocks work; keep it only to record the gate + run the `/model` probe if curious.
 - **Cross-machine:** MacMiniM4 still carries stale Conv-403 `~/.zshrc` `env -u` guards (harmless no-ops) — clean next time on it.
 - **Refs:** `memory/project_task_tools_child_session_leak.md`, `DOC-DECISIONS.md §3`, `code.claude.com/docs/en/tools-reference.md`. Surfaced Conv 404, root-caused Conv 406.
+
+### [TLFMT]
+
+- **State:** 📋 queued — surfaced by the `/r-end` learn-decide agent, Conv 422
+- **What:** `.claude/skills/r-end/refs/fmt-learn-decide.md` § Timeline Routing documents a
+  `TIMELINE.md` shape that **no longer matches the live file**. The ref describes `## YYYY-Mmm-DD`
+  headings with a `| Conv |` column; the file actually uses `## YYYY-Mon` month sections with
+  `| Date | Ref | Event | Rationale | Concerns |`.
+- **Why it matters:** every future `/r-end` learn-decide agent hits this mismatch and has to improvise
+  the format from the file. Conv 422's agent did exactly that (correctly followed the file, not the
+  ref) — but improvisation is where inconsistent rows come from.
+- **Fix:** update the ref to describe the real shape. Read `TIMELINE.md` first — the ref is the thing
+  that's wrong, not the file. Also check whether `fmt-learn-decide.md`'s "Last Updated" convention
+  claim is accurate: the decision chunks/log/INDEX use a `> Part of…` header rather than a
+  "Last Updated" line, so that instruction is a no-op today.
 
 ### [TESTUNITDOC]
 

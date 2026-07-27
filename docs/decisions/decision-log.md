@@ -2024,3 +2024,25 @@ Closes `[ICON-AUDIT]` finding 4 (the headline number conflated migration, deleti
 **Consequences:** Header 17px → 65px, avatar 8px → 32px. The task's scope was wrong twice over — `h-8 w-8` appears on both the `<img>` and the initials fallback, and the blast radius is **7 live non-`/old` routes** (every 404, `/receipt/[id]`, `/certificates/[id]`, `/diploma/[id]`, `/verify/[id]`, `/invite/mod/[token]`), not legacy pages only.
 
 **See:** `docs/decisions/05-ui-ux-components.md` entry; `docs/sessions/2026-07/20260727_0837 Decisions.md` §3, Learnings §6; Conv 421.
+
+### [ICON-TOK] Phase 5 Proves Completeness by **Computing** Route Coverage (50/50), and the 4 Mis-Tokened Non-Icons Are Fixed, Not Baselined (Conv 422)
+**Date:** 2026-07-27 (Conv 422)
+
+Closes the Conv-420 companion caveat ("a green `icons:scan` is not evidence about code the route-walk can't reach"). Scanner widened **26 routes → 95+ route-states**; coverage **computed, not asserted** via a probe matching the route list against page files, ranking matchers by **Astro specificity** (its first output gave 4 false gaps — `course/[slug]/[...tab]` claiming `/course/x/book`, and the mixed literal+param segment `@[handle]` mis-parsed) → **50/50**. Route inventory re-derived, not inherited: the plan's "67 routes" counted `/old/*` (14) and `/dev/*` (3), so the governed surface is **50 pages**. `ModeratorInvite`'s POST-only `success`/`declined` states driven by an opt-in `--drive-invite accept|decline` mode. Rejected: baselining the 4 new findings as known; fixing without regenerating.
+
+**Rationale:** The 4 findings were real — Conv 420's tranche 2 (`c429f150`) tokened a course thumbnail `<img>`, its placeholder `<div>` and two skeleton bars; the token sets height while the adjacent `w-[Npx]` wins width, so a thumbnail distorts **56×40 → 56×60 at a 24px root**. Each was also a permanent false positive in the block's own completeness instrument.
+
+**Consequences:** **1,858 tokened icon renders across 97 route-states, zero `tokened-did-not-scale`.** 4 sites → `h-[40px]`/`h-[24px]`/`h-[32px]` (pixel-identical at the default root); source-wide check for the same shape = **0**. Both static counters **unchanged (25 / 532)** — invariant-counter proof the edits landed in neither bucket. Baseline regenerated (97 route-states, 0 unreachable, 10 known findings all on the parked `/become-a-teacher`). Also encoded: a failing login **degrades rather than aborts** (one guessed seed email killed the run at route 46 of 95), and an empty-state driver must be data-empty **and** capability-bearing (`fraser@meristics.com` has 0 flags → guarded routes bounce it; use `usr-admin`).
+
+**See:** `docs/decisions/06-testing-ci.md` entry; `scripts/icon-scan.mjs`; `docs/sessions/2026-07/20260727_1246 Decisions.md` §2, Learnings §§4, 8; Conv 422.
+
+### [ICON-TOK] Per-Element Attribution Uses the React 19 Fiber `_debugStack`, Not a Build-Time Stamp — Closed Prop Interfaces Killed the Transform (Conv 422)
+**Date:** 2026-07-27 (Conv 422)
+
+The approved design was a dev-only babel/Vite transform stamping `data-icon-src="file:line"` at each call site. **The spike killed it:** a stamp only reaches the DOM if the receiver forwards unknown props, and `MattIcon` (`{name, className}`) plus all 98 `ui/icons.tsx` components (`{className}`) have **closed interfaces with no `...rest`** — the attribute is silently dropped. Attribution instead walks the React 19 dev fiber: `_debugSource` **was removed in React 19** (verified empirically via a live fiber probe), but `_debugStack` survives as an Error carrying the JSX creation stack; walking up while `className` is the same string lands on the call site. Rejected: adding `...rest` to the shared icon primitives to serve a dev-only measurement.
+
+**Rationale:** No babel plugin, no Vite transform, no production change, no prod-build risk — **95% attribution** (252 of 265 over 6 routes). Reading the target prop signatures *before* building the transform turned a multi-hour build into a 10-minute spike.
+
+**Consequences:** Two inherent limits encoded in the tool: `error.stack` is **not** source-mapped (frames carry served/transformed module lines) so **the ledger aggregates per file**, and `.astro`-SSR'd icons have no fiber so **61 sites are a named blind spot** excluded from the residue denominator. Final ledger: **629 attributable static sites / 176 files, 238 proven rendered (38%)**. Instrument bug caught by implausibility: `className\s*=\s*` matched destructuring defaults *and* JSX attributes, mislabelling **625 of 690** sites as defaults (27 in `Sidebar.tsx`, a consumer); `\s+` gives **107 / 457 / 61**. Measured: `ui/icons.tsx`'s 98 `size-icon-20` defaults are **near-dead by construction** — **6** app-wide usages omit `className` vs **381** that pass one.
+
+**See:** `docs/decisions/06-testing-ci.md` entry; `scripts/icon-scan.mjs` (`--ledger`); `docs/sessions/2026-07/20260727_1246 Decisions.md` §§1, 3, Learnings §§1, 2, 3, 5, 6, 7; Conv 422.

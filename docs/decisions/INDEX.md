@@ -421,6 +421,8 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [6. Testing & CI/CD](06-testing-ci.md)
 
+- [[ICON-TOK] Per-Element Attribution Uses the React 19 Fiber `_debugStack`, Not a Build-Time Stamp — Closed Prop Interfaces Killed the Transform (Conv 422)](06-testing-ci.md#icon-tok-per-element-attribution-uses-the-react-19-fiber-_debugstack-not-a-build-time-stamp--closed-prop-interfaces-killed-the-transform-conv-422)
+- [[ICON-TOK] Phase 5 Proves Completeness by **Computing** Route Coverage (50/50), and the 4 Mis-Tokened Non-Icons Are Fixed, Not Baselined (Conv 422)](06-testing-ci.md#icon-tok-phase-5-proves-completeness-by-computing-route-coverage-5050-and-the-4-mis-tokened-non-icons-are-fixed-not-baselined-conv-422)
 - [[ICON-TOK] The Icon-Sizing Baseline Splits Into **Governed** and **Informational** Tiers — R1 Classifies Structurally, Not by Line Proximity (Conv 421)](06-testing-ci.md#icon-tok-the-icon-sizing-baseline-splits-into-governed-and-informational-tiers--r1-classifies-structurally-not-by-line-proximity-conv-421)
 - [[ICON-TOK] `icon-no-size-class` Narrowed by a **Structural** Pre-Pass, Not an Allowlist — and a Baseline Correction Is Recorded Separately From Migration (Conv 420)](06-testing-ci.md#icon-tok-icon-no-size-class-narrowed-by-a-structural-pre-pass-not-an-allowlist--and-a-baseline-correction-is-recorded-separately-from-migration-conv-420)
 - [[MKTDEAD] The Bundler Is the Orphan Oracle — Sourcemap `sources` Union Is Ground Truth; knip Does Not Replace Route-Reachability (Conv 419)](06-testing-ci.md#mktdead-the-bundler-is-the-orphan-oracle--sourcemap-sources-union-is-ground-truth-knip-does-not-replace-route-reachability-conv-419)

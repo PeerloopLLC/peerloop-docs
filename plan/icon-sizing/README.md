@@ -2,12 +2,13 @@
 
 **Focus:** Migrate ~1,700 dimension classnames onto the Conv-419 icon token axis, and be able to
 *demonstrate* no page shipped a mis-sized icon — not merely believe it.
-**Status:** 🟢 MIGRATION COMPLETE (Conv 421) — **no live icon-size debt remains anywhere.** Governed icon
-debt is **25**, all of them in the parked `BecomeATeacherPage` (gated behind `[RG-PUBLIC]`). Phases 1–4
-are done; **Phases 5 (completeness proof) and 6 (tighten the guard) remain**, plus the two open questions
-below. Trajectory: baseline 1,863 → 1,694 (Conv 419 `[MKTDEAD]` purge) → 1,337 (Conv 420, three tranches)
-→ 1,150 (tranche 4) → 1,143 → **560 governed + 532 informational** (tranche 7's axis split) → **25**
-(tranche 3b's mechanical sweep).
+**Status:** 🟢 MIGRATION COMPLETE (Conv 421) · **PROOF COMPLETE (Conv 422)** — **no live icon-size debt
+remains anywhere.** Governed icon debt is **25**, all of them in the parked `BecomeATeacherPage` (gated
+behind `[RG-PUBLIC]`). Phases 1–5 are done; **only Phase 6 (tighten the guard) remains**, plus the two
+open questions below. Trajectory: baseline 1,863 → 1,694 (Conv 419 `[MKTDEAD]` purge) → 1,337 (Conv 420,
+three tranches) → 1,150 (tranche 4) → 1,143 → **560 governed + 532 informational** (tranche 7's axis
+split) → **25** (tranche 3b's mechanical sweep). Coverage as of Conv 422: **50 of 50 in-scope pages**
+(80 URLs / 97 route-states), **1,858 tokened renders, zero `tokened-did-not-scale`**.
 **Task code:** `[ICON-TOK]` · related `[ICON-4PX]` (residue, now exactly 25 classes), `[RG-PUBLIC]` (gates
 the one remaining file), `[MKTDEAD]` (shrank the baseline), `[ICON-AUDIT]` (Conv 421 course-correction)
 
@@ -25,10 +26,12 @@ That shipped 4px icons, two near-invisible 4px checkboxes, and five `ui/icons.ts
 
 Conv 419 fixed the unambiguous half (43 sites — **honestly 38**: the reachability check afterwards
 showed 5 had landed on dead code, which `[MKTDEAD]` then deleted), built the token axis, and agreed
-the standard. Convs 420–421 then ran the bulk migration to ground: **the icon axis is now migrated and
-the harder problem — proving it landed — is half done.** 437 migrated icons are measured correct at two
-root font sizes across 18 routes; the other **49 routes, plus empty/modal/error states, are still
-unproven** (Phase 5), and the guard has not yet been promoted to a hard error (Phase 6).
+the standard. Convs 420–421 then ran the bulk migration to ground, and **Conv 422 proved it landed**:
+every in-scope page (50 of 50 — 80 URLs / 97 route-states, including deliberately-driven empty and
+post-POST states) was measured at two root font sizes — **1,858 tokened renders, zero
+`tokened-did-not-scale`** — and per-element attribution now answers which *source sites* have provably
+rendered (**238 of 629**, with 61 `.astro` sites a named blind spot). What remains is state coverage
+(interaction-gated UI, loading skeletons) and Phase 6: the guard has not yet been promoted to a hard error.
 
 ## The standard (decided Conv 419)
 
@@ -57,26 +60,32 @@ Re-measured **after** `[MKTDEAD]` (Conv 419) deleted 80 dead-marketing files; th
 are kept alongside because 169 baseline violations — a full **10%** — lived in code no route could
 reach, and a census that counts them over-scopes the migration.
 
-| | **Conv 421** | Conv 420 | Conv 419 | pre-`[MKTDEAD]` |
-|---|---|---|---|---|
-| `.astro` pages (route-matrix) | 67 | 67 | 67 | 67 |
-| icon-component usages | `MattIcon` re-censused at **199** call sites (`[ICON-AUDIT]`); `ui/icons` not re-counted | 626 (198 `MattIcon` + 428 `ui/icons`) | 626 | 860 |
-| `ui/icons.tsx` exports | — | 98 | 98 | 98 |
-| **`check:icons` governed total** | **25** — all in the parked `BecomeATeacherPage` | **1,337** | 1,694 | 1,863 |
-| **informational total** (measured, ungated) | **532** — split out by tranche 7 | — (conflated into the total) | — | — |
-| — bare-numeric, overridden ten | superseded by the governed/informational split | **788** ← ambiguous, mean N px | 898 | — |
-| — bare-numeric, non-overridden N | superseded by the governed/informational split | **362** ← ambiguous, mean N × 4 px | 558 | — |
-| — of the overridden ten, actually **on an icon** | **25** left (was ~369; 539 swept in tranche 3b) | ~369, now all ≥16px | — | — |
-| — of the overridden ten, **not an icon** (skeletons, badge circles, dots, avatars) | **532** exactly, now measured — dots 114 / skeletons 64 / avatars 33 / media 29 / boxes | ~390 (estimate) — out of scope for this axis | — | — |
-| — arbitrary px *on an icon component* | **0** — class retired (tranche 4) | **187** | 192 | — |
-| — icon usage with **no size class at all** | **0** | **0** (rule was wrong — see below) | 46 | 51 |
-| arbitrary `size-[Npx]`/`w-[Npx]`/`h-[Npx]` site-wide | — (icon share is 0; the remainder is genuine non-icon px, which the standard keeps) | 557 | 562 | 605 |
-| routes swept so far | 18 of 67 | 18 of 67 | 18 of 67 | — |
-| migrated icons verified live at two root font sizes | **437 / 437** exact at 16px, **437 / 437** growing at 24px | 33 (probe) + 4 of 44 empty-state marks | — | — |
+| | **Conv 422** | Conv 421 | Conv 420 | Conv 419 | pre-`[MKTDEAD]` |
+|---|---|---|---|---|---|
+| `.astro` pages (route-matrix) | **50 in scope** (67 exist; 14 `/old/*` + 3 `/dev/*` are out) | 67 | 67 | 67 | 67 |
+| icon-component usages | — (not re-censused) | `MattIcon` re-censused at **199** call sites (`[ICON-AUDIT]`); `ui/icons` not re-counted | 626 (198 `MattIcon` + 428 `ui/icons`) | 626 | 860 |
+| `ui/icons.tsx` exports | **98**, each defaulting to `size-icon-20` — but only **6** app-wide usages omit `className` (vs 381 that pass one) | — | 98 | 98 | 98 |
+| **`check:icons` governed total** | **25** (unchanged) | **25** — all in the parked `BecomeATeacherPage` | **1,337** | 1,694 | 1,863 |
+| **informational total** (measured, ungated) | **532** (unchanged) | **532** — split out by tranche 7 | — (conflated into the total) | — | — |
+| — bare-numeric, overridden ten | superseded by the governed/informational split | superseded by the governed/informational split | **788** ← ambiguous, mean N px | 898 | — |
+| — bare-numeric, non-overridden N | superseded by the governed/informational split | superseded by the governed/informational split | **362** ← ambiguous, mean N × 4 px | 558 | — |
+| — of the overridden ten, actually **on an icon** | **25** | **25** left (was ~369; 539 swept in tranche 3b) | ~369, now all ≥16px | — | — |
+| — of the overridden ten, **not an icon** (skeletons, badge circles, dots, avatars) | **532** | **532** exactly, now measured — dots 114 / skeletons 64 / avatars 33 / media 29 / boxes | ~390 (estimate) — out of scope for this axis | — | — |
+| — arbitrary px *on an icon component* | **0** | **0** — class retired (tranche 4) | **187** | 192 | — |
+| — icon usage with **no size class at all** | **0** | **0** | **0** (rule was wrong — see below) | 46 | 51 |
+| arbitrary `size-[Npx]`/`w-[Npx]`/`h-[Npx]` site-wide | — | — (icon share is 0; the remainder is genuine non-icon px, which the standard keeps) | 557 | 562 | 605 |
+| routes swept so far | **50 of 50 in-scope pages** — 80 URLs / **97 route-states**, 0 unreachable | 18 of 67 | 18 of 67 | 18 of 67 | — |
+| migrated icons verified live at two root font sizes | **1,858 tokened renders** across 97 route-states, **0** `tokened-did-not-scale` | **437 / 437** exact at 16px, **437 / 437** growing at 24px | 33 (probe) + 4 of 44 empty-state marks | — | — |
+| static `size-icon-*` sites **proven rendered** (per-element ledger) | **238 of 629 (38%)** across 176 files — 107 defaults + 522 call sites; **+61 `.astro` sites** = named blind spot | — | — | — | — |
 
 > The Conv-420 "~390 non-icon" figure was an **estimate**; tranche 7 measured it and found **532**, plus
 > two pure-noise sources the estimate never saw (51 fraction false positives, 94 `min-`/`max-` mislabels).
 > The governed total therefore fell 1,143 → 560 *before* a single class was migrated — see tranche 7.
+>
+> **Conv 422 retired the 67-route denominator.** Every "N of 67" above is measured against a page count
+> that included 14 `/old/*` pages (retire-by-default) and 3 `/dev/*` pages (provenance opt-out). The
+> governed surface is **50 pages** — and six of those are `[...tab]` catch-alls rendering 2–7 tabs each,
+> which is why 50 pages expand to 80 distinct URLs and 97 route-states.
 
 **Latent trap:** those non-overridden uses (`h-5`, `h-6`, `h-10`) are correct *today* purely
 because 5, 6 and 10 aren't in the override set. Adding any of them later 4×-shrinks all of them
@@ -456,7 +465,7 @@ a missed site, across the whole axis rather than just the inline arm.
 
 **Conv 422 closed the coverage half, and it caught something.**
 
-- [x] **Route coverage: 50 of 50 in-scope pages.** 80 distinct URLs / 95 route-states, up from 26.
+- [x] **Route coverage: 50 of 50 in-scope pages.** 80 distinct URLs / 97 route-states, up from 26.
       **The "67 routes" figure was wrong for this purpose** — it counted `/old/*` (14,
       retire-by-default) and `/dev/*` (3, provenance opt-out). The governed surface is **50**, and six
       of those are `[...tab]` catch-alls rendering 2–7 tabs each, so the real surface is larger than a
@@ -493,9 +502,9 @@ now returns **0**.
 non-icon elements; these four are the ones that made it into an actual edit, and no static rule caught
 them — only rendering the page at two root sizes did.
 
-**Scanner robustness (same conv).** One bad seed email aborted the entire run at route 46 of 95,
-losing every later group; a failed login now skips that user's group and continues. Logins are grouped
-per user (6 rather than 95).
+**Scanner robustness (same conv).** One bad seed email aborted the entire run at route 46 (of the
+then-95-entry list), losing every later group; a failed login now skips that user's group and continues.
+Logins are grouped per user (6 rather than one per route).
 
 ### Per-element call-site attribution ✅ (Conv 422)
 
@@ -556,9 +565,30 @@ now a **named, countable list per file** rather than an unbounded worry.
 690** sites as "component defaults" — including 27 in `Sidebar.tsx`, a consumer. The regex used
 `className\s*=\s*`, and `\s*` matches zero spaces, so it swallowed JSX attributes (`className="..."`)
 along with genuine destructuring defaults (`className = '...'`). The code comment stated the rule
-correctly; the regex did not implement it. `\s+` fixes it — true split **107 defaults / 457 JSX
-attributes / 61 `.astro`**. Same lesson as the Conv-421 index-pairing false positive: *verify the
-instrument against a number you can predict before quoting its output.*
+correctly; the regex did not implement it. `\s+` fixes it — true split **107 defaults / 522 call sites /
+61 `.astro`** = 690. Same lesson as the Conv-421 index-pairing false positive: *verify the instrument
+against a number you can predict before quoting its output.*
+
+### Residue after Conv 422 — named, countable, not unbounded
+
+Phase 5 and the attribution ledger between them convert every remaining unknown on this axis into a
+list. Nothing below blocks Phase 6; they are the honest tail.
+
+- [ ] **Drive interaction-gated and loading states.** The unproven 391 of 629 sites are not dead code
+      (`codecheck-orphan-components.mjs` returns **PASS**) — they are states no route walk enters:
+      dropdown menus, slide-over panels, modals, and loading/skeleton branches. The ledger prints them
+      **per file**, so this is a countable worklist rather than "more coverage", and it is the natural
+      successor to the `--drive-invite` pattern Phase 5 already established for post-POST states.
+- [ ] **Decide the `.astro` blind spot: separate attribution route, or documented permanently?** 61
+      static sites / 151 rendered icons are outside fiber-walking entirely (SSR without a `client:*`
+      directive). Options are a source-level `.astro` matcher tied to route coverage, or accepting the
+      current treatment — reported as a named blind spot and excluded from the residue denominator.
+      Leaving it undecided means 61 sites read as permanently unproven.
+- [ ] **Decide whether the ~98 near-dead `ui/icons.tsx` defaults stay.** Each of the 98 exports defaults
+      to `size-icon-20`, but only **6** usages app-wide omit `className` (4 of them in the parked
+      `BecomeATeacherPage`) against **381** that pass their own. They are correct and harmless, but they
+      are also 98 of the 107 counted defaults, so they dominate any "unproven sites" figure this block
+      quotes. Keep (and exclude from the denominator), or remove and let the 6 callers name their size.
 
 ### Phase 6 — Tighten the guard 📋
 

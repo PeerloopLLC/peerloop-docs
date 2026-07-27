@@ -34,7 +34,7 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `npm run verify` | Run all 5 gates: typecheck → check → lint → test → build |
 | `npm run check:tailwind` | Check for Tailwind v4 compatibility issues |
 | `npm run check:icons` | Static icon-sizing guard — fails only on **new** bare-numeric dimension classes vs a committed baseline (`--update-baseline`, `--verbose`) |
-| `npm run icons:scan` | Runtime icon measurement — measures 26 routes at two root font sizes and diffs against a baseline (needs dev server + dev seed) |
+| `npm run icons:scan` | Runtime icon measurement — measures 97 route-states at two root font sizes and diffs against a baseline (needs dev server + dev seed) |
 | `npm run knip` | Report unused files, exports, and dependencies (module-graph reachability oracle, Astro-aware) |
 
 ---

@@ -39,7 +39,7 @@ All commands run from the code repo: `cd ../Peerloop && npm run <name>`
 | `npm run prov:page-report` | DOM page-conformity report — rendered-page check for unvetted UI (runtime companion to `prov:sweep`) |
 | `npm run prim:treewalk` | Static primitive-candidate surveyor — source-graph walk that nominates raw markup for vetting (static primary to `prov:page-report`'s runtime backstop) |
 | `npm run check:icons` | Static icon-sizing guard — bare-numeric `w-`/`h-`/`size-` classes, new-violations-only against a committed baseline (exit 1 on regression) |
-| `npm run icons:scan` | Runtime icon measurement — 26 routes at two root font sizes, diffed against a committed baseline (informational; needs dev server + dev seed) |
+| `npm run icons:scan` | Runtime icon measurement — 97 route-states at two root font sizes, diffed against a committed baseline (informational; needs dev server + dev seed) |
 
 ### Testing
 
@@ -533,19 +533,31 @@ npm run icons:scan                      # compare against the baseline
 npm run icons:scan -- --update          # write/refresh scripts/icon-scan-baseline.json
 npm run icons:scan -- --routes /a,/b    # limit to specific routes
 npm run icons:scan -- --json out.json   # per-route summary: { count, scaled }
+npm run icons:scan -- --ledger          # force the completeness ledger on a --routes subset
+npm run icons:scan -- --drive-invite accept|decline   # MUTATES the dev DB — see below
 ```
 
 **What it does:**
-- Visits 26 seeded routes (3 viewers via `POST /api/auth/dev-login` — a student/teacher, a creator and an admin — plus 2 logged-out) and measures every `svg` / `img` / checkbox / radio: box size, parent font size, display, overflow
+- Visits **97 route-states** (80 distinct URLs; 5 signed-in viewers via `POST /api/auth/dev-login` plus 12 logged-out entries) and measures every `svg` / `img` / checkbox / radio: box size, parent font size, display, overflow. Widened from 26 routes in Conv 422 (Phase 5) — the governed surface is **50 in-scope `.astro` pages** (67 exist; 14 are `/old/*`, retire-by-default, and 3 are `/dev/*`, which opts out of provenance), six of them `[...tab]` catch-alls rendering 2–7 tabs each
+- **Entries are `[email, route, state?]`.** The optional `state` label marks a deliberately-driven condition *and* disambiguates the result key when the same URL is scanned twice — without it the second measurement overwrites the first. 28 entries carry one, across 9 labels (`empty`, `enrolled`, `404`, `valid`, `not-completed`, `not-found`, `valid-pending`, `already-accepted`, `error`). Empty lists are driven by `admin@peerloop.com` — an empty-state driver must be data-empty **and** capability-bearing, since capability-guarded routes bounce a flag-less user rather than rendering an empty list
+- **Logins are grouped per user** (6 logins, not one per route), and a failed login **skips that user's group and counts its routes unreachable** rather than aborting the sweep — one bad seed email previously killed a run at route 46 of 95, discarding every later group's measurements
 - **Runs each route at two root font sizes (16px and 24px).** This is the completeness proof, and the reason the script exists rather than a threshold sweep: every token on the axis is rem-valued, so **any** `size-icon-*` element whose rendered size does not change between the two roots is provably still pinned to px — a missed site, a stale build, or a competing `w-`/`h-` class winning the cascade. It also catches containers that didn't grow with their icon
 - Invariants: `too-small` (<12px), `too-large` (>64px svg), `overflows-parent`, `inline-ratio` (an inline glyph <0.7× or >2.2× its label's font size), `tokened-did-not-scale` (was `inline-did-not-scale` until Conv 421, when the em family was rescinded and the rule widened from the inline arm to the whole axis)
 - **The two passes are paired by a stamped element id, not by array position** (fixed Conv 421). `collect()` skips zero-size elements, so anything that changes visibility between the passes shifts the array — and at a 24px root a `size-icon-16` measures 24px, *exactly* matching a `size-icon-24` from the 16px pass, so a one-element shift silently reads as "did not scale". That produced a false `tokened-did-not-scale` on `/admin`. Each element is now stamped with `data-icon-scan-id` **before** the visibility filter, and both the invariant check and the `% scale with root` summary look up by that id
 - **"Inline" is decided by geometry, not by nearby text** — the icon must *vertically overlap* its label (beside it) rather than sit above it. The first version keyed on "is there text in the same parent" and produced 38 findings that were nearly all course thumbnails, 48px avatars and empty-state illustrations; re-keying on overlap took false positives to zero
 - Baseline-and-diff: migration deliberately changes sizes (px → rem/em), so a bare "did anything change" diff is noise — capture before, classify each delta after
+- **Completeness ledger (Conv 422)** — converts page-level coverage into *per-element* coverage by attributing each rendered icon back to the source site that wrote its size class, then diffing that against a static per-file `size-icon-*` inventory. Prints on a full run; suppressed on a `--routes` subset (a ledger built from a subset understates coverage and reads as a much larger residue than exists) unless `--ledger` forces it
+
+**Attribution — how, and its two inherent limits.** Attribution uses the React 19 dev fiber's `_debugStack`, walking up while `className` is the same string to land on the element written at the call site. `_debugSource` was **removed in React 19**; a build-time `data-icon-src` stamp is *not* an option here because `MattIcon` and every `ui/icons.tsx` component has a closed prop interface (no `...rest`), so an injected attribute is silently dropped. Two limits are therefore encoded in the tool:
+
+- **Stack line numbers are transformed-module lines, not source lines** (Vite dev `error.stack` is not source-mapped). They are valid as stable per-site *identities* but must never be read as source pointers — which is why the ledger aggregates per file
+- **`.astro` icons have no React fiber** (SSR without a `client:*` directive), so they are unattributable by this method. They are reported as a named blind spot and **excluded from the residue denominator** rather than counted as unproven work
+
+**`--drive-invite accept|decline`** is an opt-in state driver for `ModeratorInvite`, whose `success` / `declined` views exist only after a POST and are unreachable by URL. It clicks through the invite (capturing the decline confirmation modal), **returns early without running the main sweep**, and **mutates the dev DB** — it consumes the seed pending invite. Restore afterwards with `npm run db:setup:local:dev`.
 
 **Requires:** a running dev server (`ICON_SCAN_URL`, default `http://localhost:4321` — use `localhost`, not `127.0.0.1`; the astro dev daemon binds `[::1]` only) and dev seed data (`npm run db:setup:local:dev`) for the dynamic route segments. Run from inside `~/projects/Peerloop` so Playwright resolves from `./node_modules`.
 
-**Coverage caveat:** 67 `.astro` pages exist and this reaches a subset; modal / empty / error states need PLATO rather than a URL.
+**Coverage caveat:** route coverage is complete (50/50 in-scope pages). The remaining residue is **state** coverage, not route coverage — interaction-gated UI (dropdown menus, slide-over panels, modals) and loading/skeleton states still need PLATO rather than a URL, and the `.astro` sites above are a permanent blind spot for attribution.
 
 **Called by:** `npm run icons:scan`
 
