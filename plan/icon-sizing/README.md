@@ -497,12 +497,68 @@ them — only rendering the page at two root sizes did.
 losing every later group; a failed login now skips that user's group and continues. Logins are grouped
 per user (6 rather than 95).
 
-**Residue — what Phase 5 still does not prove.** Coverage is per *page*, not per *element*: nothing
-maps a rendered icon back to its source site, so "every rendered token scaled" is not the same claim as
-"every source site rendered". Sites behind interaction-gated UI (dropdown menus, slide-over panels,
-other modals) are still unmeasured, and skeleton/loading states render only while data is in flight.
-Closing that needs per-element source attribution (a dev-only stamp) — worth its own decision, not an
-assumption.
+### Per-element call-site attribution ✅ (Conv 422)
+
+Phase 5's page-level coverage could not answer *"which source sites have never rendered at all?"* This
+closes that. **The planned approach was killed by its own spike, which is the point of spiking.**
+
+**Why a build-time stamp cannot work.** The intended design was a dev-only babel/Vite transform
+stamping `data-icon-src="file:line"` at each call site. `MattIcon` and every component in
+`ui/icons.tsx` have **closed prop interfaces** (`{name, className}` / `{className}`, no `...rest`), so
+an injected attribute is silently dropped. Making it work would have meant changing shared production
+primitives to serve a dev-only measurement — a bad trade, and one only visible by reading the
+components first.
+
+**What works instead — zero production footprint.** React 19 **did** remove `_debugSource` (verified
+empirically, not taken from memory), but `_debugStack` survives and carries the JSX creation stack.
+The `<svg>`'s own stack points at the icon component's internals (`MattIcon.tsx:71`); one fiber up —
+the `<MattIcon>` element itself — points at the caller (`Sidebar:351`). So: **walk up while
+`className` is the same string; the outermost such fiber is where the class was written.** An
+un-classed `<FeedIcon />` is the deliberate exception — the walk stops at the `<svg>` and attributes to
+`icons.tsx`, which is correct, because that is where the class literally lives and where the static
+inventory counts it. **95% of rendered tokened icons attribute** (252 of 265 over 6 routes). No babel
+plugin, no Vite transform, no production change, no prod-build risk.
+
+**Two limits encoded in the tool, not glossed.**
+
+1. **Line numbers are transformed-module lines, not source lines** — `IconLabelChip.tsx:43` in the
+   served module is an interface declaration in the `.tsx`. They are valid as *stable per-site
+   identities* (distinct sites get distinct numbers; a site rendered in a loop keeps one), so the
+   ledger aggregates **per file** and never prints a source line it cannot stand behind.
+2. **`.astro` icons have no React fiber** (SSR without a `client:*` directive), so they are outside
+   this method entirely — 61 static sites and 151 rendered icons, reported as a **named blind spot**
+   rather than counted as residue.
+
+**The ledger (97 route-states):**
+
+```
+629 static `size-icon-*` sites across 176 files · 238 proven rendered (38%)
+    107 component DEFAULTS  +  522 call sites
+  + 61 sites in .astro files — not attributable by this method
+120 files carry at least one unproven site
+```
+
+**Reading it honestly — the largest single block is not a coverage gap.** `ui/icons.tsx` shows 99 of
+99 unproven, 98 of them defaults. Measured: the file exports **98** icon components each defaulting to
+`size-icon-20`, but only **6 usages in the whole app omit `className`** (4 of those in the parked
+`BecomeATeacherPage`) against **381** that pass their own. Those defaults are **near-dead by
+construction**, not un-swept. This is the third independent measurement undercutting the Conv-420
+"component defaults are the high-leverage target" claim, after the audit's "MattIcon's default fires on
+23 of 199 call sites".
+
+**The residue is state-coverage, not dead code.** `codecheck-orphan-components.mjs` returns
+**PASS — every `src/components/**` component is route-reachable**, so every unproven site sits in code a
+user can reach; it simply never rendered under the states driven. The remaining work is therefore
+driving interaction-gated UI (dropdown menus, slide-over panels, modals) and loading/skeleton states —
+now a **named, countable list per file** rather than an unbounded worry.
+
+**⚠️ The ledger's own first output was wrong, and the number is what caught it.** It reported **625 of
+690** sites as "component defaults" — including 27 in `Sidebar.tsx`, a consumer. The regex used
+`className\s*=\s*`, and `\s*` matches zero spaces, so it swallowed JSX attributes (`className="..."`)
+along with genuine destructuring defaults (`className = '...'`). The code comment stated the rule
+correctly; the regex did not implement it. `\s+` fixes it — true split **107 defaults / 457 JSX
+attributes / 61 `.astro`**. Same lesson as the Conv-421 index-pairing false positive: *verify the
+instrument against a number you can predict before quoting its output.*
 
 ### Phase 6 — Tighten the guard 📋
 

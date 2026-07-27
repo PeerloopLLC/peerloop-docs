@@ -329,11 +329,32 @@
     non-icon elements; these four are the ones that reached an actual edit. No static rule caught
     them — only rendering the page at two root sizes did.
   - **`icons:scan` baseline regenerated** over the widened coverage (it described 26 routes, not 95).
-  - **Residue Phase 5 does NOT prove:** coverage is per *page*, not per *element* — nothing maps a
-    rendered icon back to its source site, so "every rendered token scaled" ≠ "every source site
-    rendered". Interaction-gated UI (dropdowns, slide-over panels, other modals) and loading
-    skeletons stay unmeasured. Closing that needs per-element source attribution (a dev-only stamp) —
-    its own decision, not an assumption.
+  - **✅ Per-element attribution BUILT (Conv 422) — the residue above is now measured, not guessed.**
+    The plan was a dev-only babel stamp; the spike **killed that approach and found a better one**.
+    A call-site stamp cannot work: `MattIcon` and every `ui/icons.tsx` component have **closed prop
+    interfaces** (`{name, className}` / `{className}`, no `...rest`), so an injected `data-icon-src`
+    is silently dropped — making it work would have meant editing shared production primitives to
+    serve a dev-only measurement. Instead: **React 19's `_debugStack`** already carries the JSX
+    creation stack. `_debugSource` *was* removed in React 19 (verified empirically, not assumed), but
+    walking up while `className` is the same string lands on the element written at the call site.
+    **95% of rendered tokened icons attribute** (252 of 265 over 6 routes). **No babel plugin, no
+    Vite transform, no production change, no prod-build risk.**
+  - **Two limits encoded rather than papered over.** (1) The stack's line numbers are
+    **transformed-module lines, not source lines** (`IconLabelChip.tsx:43` is an interface
+    declaration in the source) — valid as *stable site identities*, so the ledger aggregates per FILE
+    and never prints a source line it can't stand behind. (2) `.astro` icons render server-side with
+    **no React fiber**, so they are outside this method entirely — reported as a named blind spot,
+    not counted as residue.
+  - **⚠️ The ledger's own first output was wrong, caught because the number was implausible.** It
+    labelled **625 of 690** sites "component defaults" — including 27 in `Sidebar.tsx`, a consumer.
+    The regex used `className\s*=\s*`, and `\s*` matches zero spaces, so it swallowed JSX attributes
+    (`className="..."`) along with real destructuring defaults (`className = '...'`). The comment
+    stated the rule correctly; the regex didn't implement it. `\s+` fixes it — **true count 107
+    defaults, 457 JSX attributes, 61 `.astro` sites.** Third instrument-before-output catch in two
+    convs.
+  - **The residue is state-coverage, not dead code.** `codecheck-orphan-components.mjs` returns
+    **PASS — every `src/components/**` component is route-reachable**, so every unproven site sits in
+    code a user can reach; it just never rendered under the states driven.
   - Scanner robustness: one bad seed email (`marcus.thompson@`, actually `marcus.t@`) aborted the
     whole run at route 46 of 95; a failed login now skips that user's group and continues. Logins are
     grouped per user (6, not 95).
