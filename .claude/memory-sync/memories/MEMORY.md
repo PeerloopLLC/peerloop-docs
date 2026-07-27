@@ -27,7 +27,7 @@
 - [link](feedback_memory_index_load_bearing.md) — §Memory detail: one-liners must expose distinctive markers not topic labels; `[link]` label convention (Conv 213); index-vs-body drift discipline; Conv 150/151.
 - [link](user_hands_off_pilot_workflow.md) — §User WIP File detail: "CC is sole author" architectural implications (sync trusts mirror, skill state needs no locking); USER-WIP.md carve-out (CC read-only).
 - [link](feedback_assess_ask_before_acting.md) — Conv 407: CC silently retargeted a branch the user had named, and grep-patched a premise change. Surface scope choices as questions; a changed premise ⇒ full-doc rewrite.
-- [link](feedback_retest_task_premise_before_executing.md) — [PREMISE] a tasked count/target set is usually OVER-SCOPED — written from the implementation, not the consumers (7×, Convs 418-420). Re-derive it before the first edit. No shell-loops over findings.
+- [link](feedback_retest_task_premise_before_executing.md) — [PREMISE] verify against CONSUMERS not the definition — wrong counts, wrong "unreachable" (a 200 rendering an empty shell), wrong context anchors (14px assumed / 12px actual → −14% shipped). 10×, Convs 418-421. Measure visuals live. No shell-loops over findings.
 
 ---
 
