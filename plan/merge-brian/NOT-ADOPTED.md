@@ -7,15 +7,14 @@ through with him directly.
 
 - **Review target:** pivot snapshot `8a1e677f` (tip of `origin/brian-July-7`, 07-20 11:29) — the point
   he and the user agreed to review from. His later `brian-July-20` exploration is out of scope.
-- **Decided so far:** **5 of the 6 review areas are complete** — the course page, the courses
-  catalogue, communities, the site-wide shell and the sessions-files feature. Only the "misc" area is
-  still unreviewed. This document now holds **19 entries**: 4 declined outright, 7 declined for now
-  (open to his case), and 8 where we took the idea but not the whole build.
-- **As of:** Conv 428 (2026-07-28). **Living document — updated as each screen walk completes.**
-- **Since Conv 427:** the shell and sessions-files areas were both reviewed. Two things worth saying
-  plainly to him: several of his changes we had recorded as "not yet decided" turned out to have been
-  settled already during the earlier screen reviews, and one change filed under sessions-files was
-  actually the booking-rules change, which had already been declined. Nothing was decided twice.
+- **The review is COMPLETE.** All six areas have been walked — the course page, the courses catalogue,
+  communities, the site-wide shell, the sessions-files feature and the remaining miscellaneous changes.
+  Every change of his now has a decision; nothing is left unreviewed.
+- **As of:** Conv 428 (2026-07-28).
+- **Worth saying plainly when walking this through:** the great majority of his work is in the product.
+  What follows is the minority we did not take, and in most of those cases we took the intent and built
+  it differently rather than rejecting the idea. Several of his changes also **surfaced real bugs on our
+  side**, which are now fixed — see that section below.
 
 ## How to read it
 
@@ -292,6 +291,14 @@ removed them properly; the version history keeps the old code if we ever want it
 
 ### Where his work fixed real defects on our side
 
+*(Updated Conv 428 — a fourth one.)* **The booking screen could name the wrong teacher.** On the
+confirmation step, the line "Selected at enrollment" was worked out from the teacher the page opened
+with, but displayed underneath whichever teacher was currently chosen. Since the wizard lets you step
+back and choose again, picking a different teacher left that line sitting under the wrong name — telling
+the student their enrollment was bound to a teacher it was not. Your one-line change keyed it to the
+chosen teacher instead, and we took it. (We did not take the "Change" button next to it — that belongs
+to the booking-rule change still open between us.)
+
 Worth saying out loud, because the ledger otherwise reads one-directionally. Four of his changes
 were not design preferences at all — they caught things genuinely broken or wrong on our branch:
 
@@ -332,20 +339,20 @@ Neither of these is a judgment on the design — the code was dead at the pivot:
 
 ---
 
-## 5 · ⬜ Not yet reviewed
+## 5 · ✅ Review complete — nothing unreviewed
 
-**One of the six review units is left.** Everything else has been walked and decided.
+**Nothing is left unreviewed.** All six areas are walked, and every change has a decision.
 
-| Screen / area | His work there |
-|---|---|
-| **Misc** | Session booking, workspace page touches, story browsing |
+The final area — the miscellaneous changes — was mostly adopted. We took your local course cover
+artwork (it removes a dependency on an external image service, which had been hiding a genuine
+broken-image bug on our side), the ignore-file entry, and a one-line change in the booking screen that
+turned out to fix a real fault of ours. We did not take the "Change teacher" button, because the
+booking rule it depends on is the one policy question still open between us, and we did not take the
+renaming of "Learning" to "My Courses", for the reason given further up.
 
-The sessions-files feature turned out to need no decision at all: its file-ordering column and its
-public asset route had already been adopted during the course-detail and communities reviews, its
-"preloaded into the room" flag was already declined, and the one remaining file in it was a change to
-booking rules rather than to files. The **"Peer Teachers" renaming has now been adopted in full** — it
-had already reached the course pages, and the admin, analytics and course-editor screens have been
-brought in line, so the whole product uses one term.
+The **"Peer Teachers" renaming is now adopted in full** — it had already reached the course pages, and
+the admin, analytics and course-editor screens have been brought in line, so the whole product uses one
+term.
 
 ---
 

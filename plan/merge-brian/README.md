@@ -45,7 +45,7 @@
 | 3 | `/community/[slug]` + `/communities` (+`[COMM-BRAND]` feature decision) | ✅ **COMPLETE for everything buildable (Conv 426)** — 20 files censused, **16 mechanisms (N1–N16)**: **2 ADOPT · 12 ADAPT · 2 DROP** (both DROPs carried from earlier walks). **All 13 buildable ones BUILT** across three tiers — A: N14 storage route + N5 Join/Leave rebinding · B: N16 aggregates, N11 hero card, N12 marks, N6 640px geometry, N7 search-first, N9 role pills, N10 compact sort, N3 label · C: N1 identity band, N4 shared course card, N13 logo upload + settings UI. **All 3 findings closed:** **F3** (course-thumbnail uploads 404 — pre-existing, no `/api/storage/` route) **FIXED by N14** and live-proved to gate before R2 · **F4** (Join/Leave dead on client-side nav) **CONFIRMED live with a control, then FIXED by N5** · **F5** (224px header square, 320×224 thumb — a Conv-423-preserved `[DEMO-HOME]` 4× artifact) **superseded** by N1 (band now 96px) and N4. **§3 is now COMPLETE** — N8 shipped in Conv 427 with §2 M4, both discharged by the one `[REC-REHOME]` decision. Divergences pinned by tests: role pills KEEP the Matt palette (N9); no invented journey CTA (N4); SVG rejected (N13); visibility-filtered + weighted aggregates (N16). 5 gates green, suite 6165→**6234** (+69), `prov:sweep` at baseline |
 | 4 | **Site-wide shell track** (`[BACK-X]` back-nav, `SubNav`/`SubNavItem`, `Sidebar`, forms, `AppLayout`) | ✅ **COMPLETE (Conv 428)** — 11 files censused, **7 already dispositioned by §1–§3**, leaving 4 live mechanisms: **1 ADAPT · 1 ADOPT · 2 DROP**. `[BACK-X]` → keep breadcrumbs, drop the back button (its handler is literally `history.back()`, desktop-only where browser Back is always visible), keep the sticky title as new `StickyViewTitle.astro` on `/session/[id]`. `[FEED-WIDTH]` → DROP re-affirmed (geometry + rails stand or fall together; rails on a course workspace cut against the ≥75% completion metric). Sidebar "My Courses" → DROP (collides with `/courses`). "Peer Teachers" → ADOPT, finishing the half-applied relabel across 9 sites. See the §4 build log |
 | 5 | Sessions-files feature (`0006` + storage API) — adopt/reject as a feature | ✅ **COMPLETE (Conv 428)** — **the feature question was already answered**: `display_order` ADOPTED (§1 M3), `in_room` DROPPED (§1), `/api/storage/[...key]` ADOPTED (§3 N14), and `api/sessions/index.ts` turned out to be **teacher switching mis-filed here**, already declined (our 403 verified still enforced). Real residue = 4 items, 3 of them course-chrome not files: **1 ADAPT · 3 DROP** — demo binaries DROP (repo is client-shared; `[R2-SEED]` covers it), `CourseMiniHeader` DROP, sticky rail DROP (mutually exclusive with §4's title bar), journey band **below** tabs ADAPT (fixes our own course-vs-session inconsistency). See the §5 build log |
-| 6 | Misc ("Peer Teachers" relabel, `SessionBooking`, workspace touches) | ⬜ — **the relabel is half-applied:** landed on the 5 course surfaces (§1 M4) but `AdminDashboard.tsx:74`/`:423` + `api/admin/analytics/users.ts:242` still read bare `Teachers`. Finish-or-reject is this unit's call (leaving it may be defensible under `[ADMIN-CONF-POLICY]`) |
+| 6 | Misc ("Peer Teachers" relabel, `SessionBooking`, workspace touches) | ✅ **COMPLETE (Conv 428)** — 7 mechanisms: **3 ADOPT · 3 DROP · 1 already-adopted**. ADOPT: a **real booking defect** ("Selected at enrollment" could render under the wrong teacher after stepping back), the local course cover SVGs (removing the external picsum dependency that masked §3 F3), and `Peer Teacher Management` — **a gap §4 S4 left**, since that census grepped exact `Teachers` tokens and never saw `Teacher Management`. DROP: the "Change" button (UI half of declined teacher switching), the `/learning`→"My Courses" rename (other half of §4 S3), and nothing else outstanding. See the §6 build log |
 
 **Disposition vocabulary:** **ADOPT** (reimplement the intent as-is) · **ADAPT** (take the idea, different mechanism) · **DROP** (with one-line reason; called REJECT before Conv 408 — the user's term is DROP) — recorded per change in each screen section, then implemented cosmetic-first; internal deps (schema/API) surface via the screens that need them.
 
@@ -1132,4 +1132,55 @@ MERGE-BRIAN work = **§6 only**.
 
 ## 6 · Misc review
 
-_(pending)_
+✅ **Walk COMPLETE + BUILT (Conv 428).** 7 mechanisms — **3 ADOPT · 1 already-adopted · 3 DROP**. This
+closes the review programme: **all six units are now complete.**
+
+### Dispositions
+
+| # | Mechanism | Disposition | Reasoning |
+|---|---|---|---|
+| M1a | `SessionBooking` **"Change"** button beside the selected teacher, jumping back to the Teacher step | **DROP** | It is the UI half of **teacher switching**, already declined (ledger §1). Adopting it without the API change would build a dead end — pick another teacher, receive the 403 we deliberately kept |
+| M1b | His inline `selectedTeacher.id === assignedTeacherId`, replacing the `isAssignedTeacher` variable | **ADOPT — a real defect on our side** | Ours computed `isAssignedTeacher` from `preSelected?.id` (line 96) but rendered it under `selectedTeacher.name` (line 537). `canNavigateTo` lets the user return to any earlier step, so: open `/book?st=<assigned teacher>` → step back → pick a different teacher → **"Selected at enrollment" renders under the wrong teacher**. A false statement about which teacher the enrollment is bound to. Independent of teacher switching |
+| M2 | `/learning` renamed **"My Courses"** (page title, tab label, 2 breadcrumb strings, a comment) | **DROP** | The same relabel dropped as §4 S3 — this is simply its other half; he renamed the whole workspace, not just the sidebar entry |
+| M3 | `.gitignore` += `.playwright-mcp/` | **ADOPT** | Trivial, and we do use Playwright as the browser-bridge fallback |
+| M4 | Bespoke course cover SVGs replacing `picsum.photos` seed URLs | **ADOPT** | Removes an external dependency from dev/staging seeding — and external seed URLs are exactly what masked the real thumbnail 404 that §3 F3 found. Unlike the §5 demo documents these are **text**, ~22 KB for all six, so the client-shared-repo objection doesn't apply. Safety-scanned: no `<script>`, no `foreignObject`, no external refs; each carries `role="img"` + `aria-label` |
+| M5 | `CourseListItem.description` + `.community` type fields | **already adopted** | Present at `mock-data.ts:248` / `:259` via §2 M9 / M11. No action |
+| M6 | `Teacher Management` → **`Peer Teacher Management`** | **ADOPT** | **A gap left by §4 S4.** That census grepped `'Teachers'` / `"Teachers"` / `>Teachers<` and so never saw `Teacher Management`; two sites (`TeachersAdmin.tsx:435`, `admin/teachers.astro:12`) were still unrelabelled after S4 was reported complete |
+
+### Build log — §6 (Conv 428, all 5 gates green + live-verified)
+
+**M4 reached further than his diff suggested.** He also edits `migrations-dev/0001_seed_dev.sql` — which my
+earlier completeness sweep missed, because the exclusion regex for `migrations` also swallowed
+`migrations-dev`. That file is the actual dev data source, so without it M4 would have been a **no-op in
+dev**: `seed-feeds.mjs` and `mock-data.ts` alone don't feed `/courses`. Six course `thumbnail_url`s
+rewired there. Deliberately **not** taken from the same hunk: his `accent_color` column (declined,
+ledger §1) and unrelated teacher-availability seed rows.
+
+**Live-verified** (after `db:setup:local:dev` — the seed change needs a reseed):
+- `/courses` → all **6** card covers are `/images/courses/*.svg`, zero picsum; SVG served `200 image/svg+xml`.
+- `/admin/teachers` → `h1` and document title both "Peer Teacher Management"; no bare "Teacher Management".
+- **M1b walked end-to-end**: `/course/ai-tools-overview/book?st=usr-guy-rymberg` as sarah (assigned
+  teacher = Guy) → "Selected at enrollment" **shown** (correct) → clicked the completed Teacher step →
+  selected **Marcus** → label **absent** (correct). Before the fix it would have rendered under Marcus.
+
+One stale test assertion updated (`TeachersAdmin.test.tsx:155`). 5 gates green; suite **6215**; lint 0
+errors; `prov:sweep` at baseline.
+
+**§6 result: 3 ADOPT · 3 DROP · 1 already-adopted.**
+
+---
+
+## Programme complete
+
+**All six review units are walked and every buildable disposition is built.** Across the programme:
+§1 `/course/[slug]` · §2 `/courses` · §3 communities · §4 site-wide shell · §5 sessions-files · §6 misc.
+
+Two patterns recurred often enough to be worth stating for any future client-branch review:
+
+1. **A unit's recorded scope is a claim, not a fact.** §4 looked like 11 files and was 4 mechanisms;
+   §5 looked like a feature decision and had none left; §2's M3 blocker was false in every load-bearing
+   clause. Re-testing scope against the *consumers* before building repeatedly turned multi-conv work
+   into single-slice work.
+2. **Mis-filing is normal.** `api/sessions/index.ts` sat in §5 but was teacher switching; the
+   "Peer Teachers" relabel spanned §1, §4 and §6; `migrations-dev` hid inside a `migrations` glob.
+   The census, not the map, is authoritative.
