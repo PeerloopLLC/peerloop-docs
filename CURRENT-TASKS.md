@@ -614,7 +614,12 @@
   `availableSoon` · M6 tokenised flat pills · M7 visible compact sort · M8 opt-in `compact`/`dense`).
   5 gates green, suite **6131 → 6139** (new `CoursesFilters.test.tsx`, 8 tests), live-verified signed
   in and signed out.
-- **MERGE-BRIAN §2 Tier C — BUILT (13 of 14 mechanisms; M10 open).** Shared `CourseCoverPanel` +
+- **MERGE-BRIAN §2 M10 — narrowed and BUILT.** Its disposition ("share the cover panel, keep our hero")
+  was unbuildable as written, so the choice went back to the user → *price sticker only*. Shared
+  `CoursePriceSticker` extracted; hero renders it at the same top:12/right:12 offsets as the card and
+  drops the price from its CTA (`$249 • Enroll Now` → `Enroll Now`). Hero still 198px. **§2 is now
+  complete for all 14 buildable mechanisms**; only M3/M4 remain, gated on their prerequisites.
+- **MERGE-BRIAN §2 Tier C — BUILT (13 of 14 mechanisms; M10 then closed above).** Shared `CourseCoverPanel` +
   `cover-story` card variant (M9), `CommunityAffiliation` extracted and used by both surfaces (M11),
   enrolled markers with `[DIPLOMA]` wording and no invented CTA (M12), persistent-underline link chips
   (M13), `formatPrice` decimals dropped with a `formatPriceExact` carve-out for the receipt (M14 —

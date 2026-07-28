@@ -39,7 +39,7 @@
 | # | Review unit | Status |
 |---|---|---|
 | 1 | `/course/[slug]` detail | ✅ **COMPLETE (Conv 412)** — dispositions DONE (Conv 408, 12 mechanisms: 9 ADAPT · 3 DROP · 0 ADOPT). **All 9 ADAPT built:** Tier A+B (Conv 409, M1/M4/M5 + M6/M7/M12) · Tier C M10/[RECEIPT] (Conv 410) · Tier C M2 `[SESS-TAB]` (Conv 411) · Tier C M3 `[SESS-FILES]` (Conv 412) · hero refinement `[HERO]` (Conv 413) · colour-theme toggle `[TAB-THEME]` (Conv 414) · UI + messages follow-ups (Convs 415–419, incl. the **MESSAGES mini-plan M1–M6, COMPLETE Conv 419** — see build logs). Only the 3 DROPs unbuilt (2 soft/revisitable) |
-| 2 | `/courses` catalog | 🔄 **dispositions DONE + Tiers A/B/C BUILT (Conv 425), M10 open** — 16 mechanisms: 3 ADOPT · 12 ADAPT · 1 DROP. **Built: 13 of 14** — M1 M2 M15 M16 (shell) · M5 M6 M7 M8 (toolbar) · M9 M11 M12 M13 M14 (card), plus finding **F1**, a pre-existing site-wide doubled form-chrome defect, measured and fixed. 5 gates green (suite **6153**, +22 new tests) + live-verified. **Open:** **M10** — its disposition is unbuildable as stated (our hero has no cover panel to share; giving it one turns it into the card, the option not chosen) → needs a narrower call. M3 + M4 stay gated on `[ROLE-CRS-LIST]` / `[REC-REHOME]` |
+| 2 | `/courses` catalog | ✅ **COMPLETE for everything buildable (Conv 425)** — 16 mechanisms: 3 ADOPT · 12 ADAPT · 1 DROP. **All 14 buildable ones built** — M1 M2 M15 M16 (shell) · M5 M6 M7 M8 (toolbar) · M9 M10 M11 M12 M13 M14 (card + hero sticker), plus finding **F1**, a pre-existing site-wide doubled form-chrome defect, measured and fixed. M10's disposition proved unbuildable as written and was re-decided by the user as *price sticker only*. 5 gates green (suite **6155**, +24 new tests), everything live-verified. **Only remaining §2 work:** M3 + M4, gated on `[ROLE-CRS-LIST]` / `[REC-REHOME]` |
 | 3 | `/community/[slug]` + `/communities` (+`[COMM-BRAND]` feature decision) | ⬜ |
 | 4 | **Site-wide shell track** (`[BACK-X]` back-nav, `SubNav`/`SubNavItem`, `Sidebar`, forms, `AppLayout`) | ⬜ |
 | 5 | Sessions-files feature (`0006` + storage API) — adopt/reject as a feature | ⬜ |
@@ -550,12 +550,32 @@ underline — plus that `stacked`/`overlay` are unaffected. `tests/ssr/courses.t
 loader's `description` and the LEFT-JOIN community chain (including that a course outside a
 progression still loads with `community: null`). Suite **6139 → 6153** (397 files). 5 gates green.
 
-**🔴 M10 NOT built — the disposition under-specifies and I did not guess.** "Share the cover panel,
-keep our hero" is unbuildable as literally stated: our hero renders the course art as a **full-bleed
-dark backdrop with white text over a scrim**, so there is no cover panel to share. Giving it one means
-the art becomes a 180px left panel, which leaves the remaining band with nothing dark behind its white
-text — i.e. the hero stops being the dark hero and becomes the card, which is exactly the option the
-walk did **not** choose. Needs a narrower decision; see the §2 walk result.
+**M10 — surfaced as under-specified, then narrowed and BUILT (Conv 425).** "Share the cover panel, keep
+our hero" is unbuildable as literally stated: our hero renders the course art as a **full-bleed dark
+backdrop with white text over a scrim**, so there is no cover panel to share, and giving it one leaves
+the band's white text on nothing — the hero becomes the card, the option the walk declined. Rather than
+guess, the choice went back to the user, who picked **price sticker only**.
+
+Built as `CoursePriceSticker.tsx` — extracted from `CourseCoverPanel` so "the same sticker" stays true
+by construction rather than by maintenance. The hero renders it top-right (**measured top:12 right:12
+from the hero's corner — the same offsets as on the card**), gated on `!isEnrolled` (once you own the
+course the price is history and the CTA becomes "Continue learning"). The hero CTA dropped its embedded
+price accordingly: `$249 • Enroll Now` → **`Enroll Now`**, so the price appears exactly once per hero
+(verified: one `$249` on the page) and both surfaces read the same way. Hero height unchanged at
+**198px**. +2 tests.
+
+**⚠️ The Tier-B verification gap is now CLOSED.** With the window on-screen (`visibilityState:
+"visible"`) the pill arrows verify fully: smooth scroll moves the row 0 → 455, the left arrow enables
+once scrolled, the right arrow disables exactly at `scrollLeft === maxScroll` (1538), and the sticky
+"All" pill holds at offset 0 while the row scrolls beneath it.
+
+**🔴 Both earlier "failures" were the same harness artifact.** The unverifiable smooth scroll AND a
+price sticker that screenshotted as solid black while its DOM was provably correct (56×22, white,
+topmost on `elementFromPoint`) were both caused by the Chrome window being extended past the right edge
+of the display — user-diagnosed. A loud-mutation test (force `background:red`) proved the element
+painted. Recorded as `[BRIDGE-OFFSCREEN-WINDOW]` in
+`memory/reference_playwright_headless_browser_fallback.md`: before concluding "doesn't render", check
+`visibilityState` and whether the element's rect lies beyond `innerWidth`.
 
 ### §2 walk result (Conv 425)
 
