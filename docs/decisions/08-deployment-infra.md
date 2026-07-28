@@ -3,6 +3,28 @@
 
 ## 8. Deployment & Infrastructure
 
+### [THUMB-404] Public R2 Assets Are Served Through a Two-Prefix Allowlist, Never a Bucket Proxy (MERGE-BRIAN §3 N14, Conv 426)
+**Date:** 2026-07-28 (Conv 426)
+
+`src/pages/api/storage/[...key].ts` is **new** and closes `[THUMB-404]` — the upload endpoints have always written `/api/storage/{key}` into `courses.thumbnail_url` (`api/me/courses/[id]/thumbnail.ts:131`) while no route ever served that shape, so every creator-uploaded thumbnail was a dead link. The route serves **only** `courses/*/thumbnail/` and `communities/*/logo/`; traversal is rejected, and unknown prefixes are answered **identically to missing objects** (404, no distinguishing signal). ETag/304 revalidation + immutable caching. Rejected: serving any key from the bucket.
+
+**Rationale:** Community resources, homework submissions and session recordings share the same R2 bucket and each have their own auth-gated endpoints — a bucket proxy would silently bypass all of them. With one bucket of mixed sensitivity, the *route* is the security boundary, and answering unknown prefixes the same as missing objects keeps private-key existence unobservable.
+
+**Consequences:** Verified live rather than only in unit tests — with a real object seeded at `homework/sub-1/secret.pdf` the route still 404s, proving the allowlist gates *before* R2 is consulted. `tests/api/storage/key.test.ts` pins the behaviour. The defect survived so long because dev and staging seeds use external `picsum.photos` URLs, so the broken path is reachable only by performing a real upload.
+
+**See:** `src/pages/api/storage/[...key].ts`; `tests/api/storage/key.test.ts`; `docs/sessions/2026-07/20260728_0834 Decisions.md` §6, Learnings §1; Conv 426.
+
+### Uploaded Brand Marks Are Raster-Only — SVG Rejected Because Our Own Origin Serves Them (MERGE-BRIAN §3 N13, Conv 426)
+**Date:** 2026-07-28 (Conv 426)
+
+The community logo upload endpoint (`api/me/communities/[slug]/logo.ts`, new this conv) accepts `image/jpeg`, `image/png`, `image/webp`, `image/gif` **only**. The client branch's `ALLOWED_TYPES` included `image/svg+xml`; not adopted.
+
+**Rationale:** An SVG is an executable document (script, `foreignObject`), and these objects are served from our own origin by the N14 asset route — so an uploaded SVG would be same-origin active content. The existing course-thumbnail endpoint already excludes SVG, so raster-only also keeps the two upload paths consistent.
+
+**Consequences:** Endpoint validation and the settings UI's `accept` attribute agree; a test pins the rejection. Old objects are deleted only *after* the row points at the new one, so a mid-flight failure can't leave `logo_url` referencing a deleted key.
+
+**See:** `src/pages/api/me/communities/[slug]/logo.ts`; `tests/api/me/communities/logo.test.ts`; `docs/sessions/2026-07/20260728_0834 Decisions.md` §5; Conv 426.
+
 ### [MF-SKEW] wrangler vs astro-dev Miniflare Version Skew — Resolved by an Exact-Pin wrangler 4.112.0 + workers-types v5 That Dedupes miniflare (Conv 416)
 **Date:** 2026-07-25 (Conv 416)
 

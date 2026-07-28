@@ -28,43 +28,44 @@
 1. [MERGE-BRIAN-JULY7](#merge-brian-july7) — client branch assessment/integration
 2. [ROLE-CRS-LIST](#role-crs-list) — teaching/moderating course lists (blocks §2 M3)
 3. [REC-REHOME](#rec-rehome) — rehome course recommendations (blocks §2 M4)
-4. [A11Y](#a11y) — accessibility lint triage
-5. [RHOOKS](#rhooks) — react-hooks lint triage
-6. [KNIP](#knip) — dead-export oracle → gate
-7. [PROV-SWEEP-DEBT2](#prov-sweep-debt2) — `prov:sweep` gate silently red (10 unregistered)
-8. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
-9. [EDITSAFE](#editsafe) — anchored-edit discipline
-10. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
-11. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
-12. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
-13. [HOME-FIXES](#home-fixes) — Home route fix bucket
-14. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
-15. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
-16. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
-17. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
-18. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
-19. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
-20. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
-21. [RSFD](#rsfd) — port `r-start-from-dirty`
-22. [DEPEXP](#depexp) — dependency-probe hygiene
-23. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
-24. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
-25. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
-26. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
-27. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
-28. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
-29. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
-30. [DEVSRV-STALE](#devsrv-stale) — un-parked: stale/bricked astro dev daemon recurred
-31. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
-32. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
-33. [TLFMT](#tlfmt) — r-end ref documents a TIMELINE.md shape the file no longer uses
-34. [OUTLINE-V4B](#outline-v4b) — 3 residual `outline-none` sites the Conv-244 fix missed
-35. [ADMIN-OVFLW](#admin-ovflw) — 3 admin routes overflow horizontally (pre-existing, not Conv-423)
-36. [LH1](#lh1) — 23 typography tokens hardcode `line-height: 1` (TYPO-FDN axis)
-37. [BRIDGE-RESIZE](#bridge-resize) — `resize_window` silently ignores width
-38. [ICON-STATES](#icon-states) — Phase-5 tail: drive hidden/loading states over 528 call sites
-39. [GATEPAR](#gatepar) — `/w-codecheck` vs `npm run verify` diverged on the icon gate
-40. [VPHARNESS](#vpharness) — persist the exact-size iframe harness as a script
+4. [SPACING-4X](#spacing-4x) — sweep for other 4× size artifacts Conv 423 preserved
+5. [A11Y](#a11y) — accessibility lint triage
+6. [RHOOKS](#rhooks) — react-hooks lint triage
+7. [KNIP](#knip) — dead-export oracle → gate
+8. [PROV-SWEEP-DEBT2](#prov-sweep-debt2) — `prov:sweep` gate silently red (10 unregistered)
+9. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
+10. [EDITSAFE](#editsafe) — anchored-edit discipline
+11. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
+12. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
+13. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
+14. [HOME-FIXES](#home-fixes) — Home route fix bucket
+15. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
+16. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
+17. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
+18. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
+19. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
+20. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
+21. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
+22. [RSFD](#rsfd) — port `r-start-from-dirty`
+23. [DEPEXP](#depexp) — dependency-probe hygiene
+24. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
+25. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
+26. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
+27. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
+28. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
+29. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
+30. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
+31. [DEVSRV-STALE](#devsrv-stale) — un-parked: stale/bricked astro dev daemon recurred
+32. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
+33. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
+34. [TLFMT](#tlfmt) — r-end ref documents a TIMELINE.md shape the file no longer uses
+35. [OUTLINE-V4B](#outline-v4b) — 3 residual `outline-none` sites the Conv-244 fix missed
+36. [ADMIN-OVFLW](#admin-ovflw) — 3 admin routes overflow horizontally (pre-existing, not Conv-423)
+37. [LH1](#lh1) — 23 typography tokens hardcode `line-height: 1` (TYPO-FDN axis)
+38. [BRIDGE-RESIZE](#bridge-resize) — `resize_window` silently ignores width
+39. [ICON-STATES](#icon-states) — Phase-5 tail: drive hidden/loading states over 528 call sites
+40. [GATEPAR](#gatepar) — `/w-codecheck` vs `npm run verify` diverged on the icon gate
+41. [VPHARNESS](#vpharness) — persist the exact-size iframe harness as a script
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -330,7 +331,7 @@
 
 - **State:** 🔄 active · `[Opus]` (HOLD lifted Conv 407 — client conversation happened; integration planning)
 - **📦 §1 BUILD progress (Conv 409–411):** **Tier A+B BUILT (409)** — Tier A cosmetic: M1 hero-compress (`CourseHeader.tsx`, 360→166px) · M5 band-compact + `actionable` links (`CourseJourneyStepper.astro` + `_course-tabs.ts`) · M4 "Peer Teachers" relabel + count-gated search island (`TeachersTabList.tsx`). Tier B shared-primitive (all **opt-in**): M6 `[TAB-SCROLL]` (`SubNav preserveScroll` + script) · M7 `[TAB-FLOAT/COMPACT]` (`SubNavItem dense` — tokenised, no gradient) · M12 `MattCourseFeed` (compact composer + tokenised skeletons). **Tier C M10 + [RECEIPT] BUILT (410):** M10 `[COMM-BAND]` (`communities.logo_url` + reseed + loader join + `CourseHeader` affiliation line; `accent_color`/palette/picker DROPPED) · `[RECEIPT]` (own durable `/receipt/[id]` view, owner-only + printable; M5 Payment step retargeted off `/success`). All 5 gates green + live-verified; prov:sweep unchanged at `[PROV-SWEEP-DEBT2]` baseline. **Tier C M2 `[SESS-TAB]` BUILT (411):** merged curriculum-first Modules tab — IA user-decided (route `/modules`, label "Modules", 2nd position); `ModulesTab.astro` rewritten with the enrolled session overlay + `MySessionsTab.astro` deleted; new `fetchCourseModulesView` loader (reuses positional SoT `resolveModuleAssignments`); `/sessions` 301→`/modules`; session-family hrefs retargeted; 5 gates green (suite **6542**, +3 durable fixture tests) + live-verified on `:4321` against the david-n8n booked-not-completed fixture; prov:sweep unchanged. Code `5ac9493d`. **Tier C M3 `[SESS-FILES]` BUILT (412):** per-module + course-wide file strips folded into the Modules tab — `session_resources.display_order` column (folded into `0001` + reseed; `in_room` NOT adopted), loader `is_public`-gated + `display_order`-ordered with a non-null `href` guard (dead-link defect avoided), `ModulesTab.astro` strips wired to `/api/resources/:id/download` (uploads) / external URL (links), +3 loader tests. 5 gates green (suite **6550**) + live-verified (anon → public-only; enrolled david → 2 uploads under Module 1 ordered 003→001). Fixed a latent Conv-411 `TS2367` in `courses.test.ts:412` inline. Also, on discovering the **Resources tab was a functional regression** (pre-flip `ResourcesTabContent.tsx` rendered files; Conv-188 Matt flip replaced it with an empty stub — DISC-DROP), the user asked for a parity diff → **2 gaps closed** so M3 is a faithful superset: per-file **descriptions** rendered + **role-aware visibility** (`canViewAllFiles` param: creator/admin/moderator see all files unenrolled). Then **retired the Resources tab** — `/resources` 301→`/modules`, removed from `VALID_TABS`/`buildCourseExploreTabs`, orphaned `ResourcesTab.astro` deleted + registry regenerated. **🔴 Fixed a `gen-registries.ts` scanner false-positive** (regex matched `@matt-source <node>` in Avatar's prose → falsely registered a `@matt-inspired` component; reworded prose, prov:sweep back to baseline). **§1 is now 9 of 9 ADAPT built = COMPLETE.** **Remaining:** §2–6 disposition walks (`/courses`, communities, shell track, sessions-files-feature, misc). Detail: `plan/merge-brian/README.md §1 Build logs + Resources-tab decision`.
-- **📦 §3 `/community/*` + `/communities` — DISPOSITIONS DONE **and all 13 buildable mechanisms BUILT** (Conv 426).** Tier A: **N14** `/api/storage/[...key]` (allowlisted public asset server — closes `[THUMB-404]`; live-proved to gate before R2) + **N5** Join/Leave `astro:page-load` rebinding + Leave self-heal (**F4 confirmed live with a hard-load control before fixing**). Tier B: **N16** loader aggregates (visibility-filtered like the Courses tab; review-count-**weighted** rating) · **N11** named `hero` card variant + courses band (tokenised `--Primary-Light`, zero raw hex) · **N12** brand marks on all 3 variants · **N6** 640px left-anchored geometry (measured 640/left-1035) · **N7** search-first `sr-only h1` · **N9** `RoleTabBar variant="pill"` **retaining the Matt role palette** (his build drops it) · **N10** visible labelled compact sort · **N3** "Community Feed" label fix. Tier C: **N1** identity band (**272px→96px**, byline `by X · Public · N members · N posts`, description de-duplicated) · **N4** shared `cover-story` card with `href` attribution override and **no invented journey CTA** · **N13** logo upload endpoint + settings UI (**SVG rejected**; verified end-to-end upload→serve→403-on-non-owner). Suite 6165→**6234** (+69, 4 new test files), 5 gates green, `prov:sweep` at baseline. Remaining: **N8 only**, gated on `[REC-REHOME]`. Detail: `plan/merge-brian/README.md §3`.
+- **📦 §3 `/community/*` + `/communities` — DISPOSITIONS DONE **and all 13 buildable mechanisms BUILT** (Conv 426).** Tier A: **N14** `/api/storage/[...key]` (allowlisted public asset server — closes `[THUMB-404]`; live-proved to gate before R2) + **N5** Join/Leave `astro:page-load` rebinding + Leave self-heal (**F4 confirmed live with a hard-load control before fixing**). Tier B: **N16** loader aggregates (visibility-filtered like the Courses tab; review-count-**weighted** rating) · **N11** named `hero` card variant + courses band (tokenised `--Primary-Light`, zero raw hex) · **N12** brand marks on all 3 variants · **N6** 640px left-anchored geometry (measured 640/left-1035) · **N7** search-first `sr-only h1` · **N9** `RoleTabBar variant="pill"` **retaining the Matt role palette** (his build drops it) · **N10** visible labelled compact sort · **N3** "Community Feed" label fix. Tier C: **N1** identity band (**272px→96px**, byline `by X · Public · N members · N posts`, description de-duplicated) · **N4** shared `cover-story` card with `href` attribution override and **no invented journey CTA** · **N13** logo upload endpoint + settings UI (**SVG rejected**; verified end-to-end upload→serve→403-on-non-owner). Suite 6165→**6234** (+69, 5 new test files), 5 gates green, `prov:sweep` at baseline. Remaining: **N8 only**, gated on `[REC-REHOME]`. Detail: `plan/merge-brian/README.md §3`.
 - **📄 Client-facing ledger (Conv 426):** `plan/merge-brian/NOT-ADOPTED.md` — everything of Brian's that is **not** in our app (❌ declined · 🟡 declined-for-now · 🔵 took-the-idea-left-the-build · ⏸️ prerequisite-gated · ⬜ unreviewed), written for a live walkthrough **with him**. Now covers §1–§3 (42 distinct mechanisms: 6 ADOPT · 32 ADAPT · 4 DROP), including a "where his work fixed real defects on our side" section — the thumbnail 404, the Join/Leave dead-button, the mislabelled feed tab and the 224px square. **Standing obligation — README ground rule 9:** every new disposition updates it in the same conv (DROP → §1/§2 · ADAPT's left-behind part → §3 · gated → §4 · finished walk leaves §5). Reasons stated as consequences, never internal shorthand; the user's own verbatim stance stays out of it.
 - **HOLD LIFTED (Conv 407):** the user confirmed the Brian conversation has happened → integration may proceed. (The Conv-396 HOLD principle survives as method: his rationale still isn't in git — request the "approved Option B / mockup" artifacts his commits cite; client-originated changes get a consequence audit.)
 - **🧭 Client directives (Conv 407, from the user↔Brian conversation):** (1) **NO adoption "as is" — ever** (user: *"I know I won't be merging any of his work as is"*); his branch is a **reference exhibit**, adoption = selective reimplementation of intent with a consequence audit per change. (2) Watch areas he flagged: `/course/[slug]` page changes (implications for other detail pages), **breadcrumb/back-nav rework** (`[BACK-X]` `BackHeader.astro` — site-wide), **colour changes that may contradict role-based colour theming** (his `accent_color` community branding + `CourseCoverPanel` hex deviations are the known collision points).
@@ -547,6 +548,15 @@
   test-doc drift.
 - **Refs:** `docs/reference/TEST-UNIT.md`, `.claude/scripts/sync-gaps.sh`.
 
+### [SPACING-4X]
+
+- **State:** 📋 queued
+- **What:** Sweep for other **4× rendered-size artifacts** that the Conv-423 spacing-base fix faithfully preserved. `dc1f031e` correctly rewrote size-preserving (`w-56`→`w-224`, `w-80 h-56`→`w-320 h-224`) because pre-fix those classes resolved through Tailwind's stock `0.25rem` base to 4× their apparent intent. The migration was right; what it preserved in places was a pre-existing `[DEMO-HOME]`-class bug.
+- **Why:** Conv 426 found **two** such instances on one page (`/community/[slug]` identity square at 224px beside a 96px mobile value, and a Courses-tab thumbnail at 320×224 for what reads as a list-row thumb). Both were found incidentally while reviewing the client branch — Brian had independently flagged the first. Nobody has swept for others.
+- **Shape:** grep the Conv-423 commit for size-class rewrites where the *new* number is ≥4× a neighbouring literal (`w-[96px]` next to `w-224`), or where the value is implausible for its role (list thumbnails, avatars, icon wells). Measure live before changing anything — the rendered size is by definition unchanged since Conv 423, so this is a *design-intent* judgement, not a regression.
+- **Note:** both known instances are already gone — superseded by MERGE-BRIAN §3 N1 and N4. This task is only about the unswept remainder.
+- **Refs:** `plan/merge-brian/README.md §3 finding F5`, code `dc1f031e`, `memory/reference_tailwind_intellisense_canonical_suggestions.md`.
+
 ### [TSLASH]
 
 - **State:** 📋 queued · [Opus]
@@ -611,4 +621,4 @@
 ## ✅ Done this conv
 
 - **[THUMB-404]** ✅ — course-thumbnail uploads no longer 404. Built `GET /api/storage/[...key]` (MERGE-BRIAN §3 N14): prefix allowlist (`courses/*/thumbnail/`, `communities/*/logo/`), traversal rejection, ETag/304, immutable caching. **Live-proved the allowlist gates BEFORE R2** — a real object seeded at `homework/sub-1/secret.pdf` still 404s, so private-key existence is unobservable. +18 tests.
-- **[MERGE-BRIAN-JULY7] §3 walk + build** ✅ — 16 mechanisms dispositioned (3 ADOPT · 11 ADAPT · 2 DROP) and **all 13 buildable ones shipped** across 3 tiers. Findings F3 (fixed by N14), F4 (Join/Leave dead on client-side nav — **confirmed live with a control**, then fixed) and F5 (224px / 320×224 4× artifacts — superseded) all closed. Only N8 remains, gated on `[REC-REHOME]`. 5 gates green, suite 6165→**6234**, `prov:sweep` at baseline.
+- **[MERGE-BRIAN-JULY7] §3 walk + build** ✅ — 16 mechanisms dispositioned (2 ADOPT · 12 ADAPT · 2 DROP) and **all 13 buildable ones shipped** across 3 tiers. Findings F3 (fixed by N14), F4 (Join/Leave dead on client-side nav — **confirmed live with a control**, then fixed) and F5 (224px / 320×224 4× artifacts — superseded) all closed. Only N8 remains, gated on `[REC-REHOME]`. 5 gates green, suite 6165→**6234**, `prov:sweep` at baseline.

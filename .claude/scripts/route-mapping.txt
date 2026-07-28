@@ -42,6 +42,7 @@ certificates|API-PLATFORM.md
 resources|API-COURSES.md
 reviews|API-SESSIONS.md
 stream|API-COMMUNITY.md
+storage|API-PLATFORM.md
 # Two-level me/* sub-route mappings (checked before fallback to me → API-ENROLLMENTS.md)
 me/profile|API-USERS.md
 me/settings|API-USERS.md

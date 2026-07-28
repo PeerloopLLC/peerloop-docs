@@ -343,6 +343,7 @@ List the authenticated creator's communities with stats.
       "description": "Learn web development",
       "icon": null,
       "cover_image_url": null,
+      "logo_url": null,
       "is_public": true,
       "is_system": false,
       "member_count": 5,
@@ -391,6 +392,8 @@ Update community settings. If name changes, slug is regenerated.
 
 **Request:** Any subset of `{ name, description, icon, is_public, cover_image_url }`.
 
+**`logo_url` is returned but not writable here** (Conv 426, [MERGE-BRIAN §3 · N13]) — the brand mark is written only by `POST`/`DELETE /api/me/communities/[slug]/logo` below, so a PATCH body carrying `logo_url` is ignored.
+
 **Errors:** 400 (empty name, no changes), 403 (not owner), 404 (not found)
 
 ### DELETE /api/me/communities/[slug]
@@ -402,6 +405,63 @@ Archive community (soft-delete). Sets `is_archived = 1`.
 - Cannot archive communities with active enrollments (`status IN ('enrolled', 'in_progress')`)
 
 **Errors:** 400 (system community, active enrollments), 403 (not owner), 404 (not found)
+
+### POST /api/me/communities/[slug]/logo
+
+Upload a community brand mark to R2 and point `communities.logo_url` at it.
+
+**Source:** `src/pages/api/me/communities/[slug]/logo.ts` · Added Conv 426 ([MERGE-BRIAN §3 · N13])
+
+**Auth:** JWT required; caller must be the community's `creator_id`. The community must not be archived.
+
+**Request:** `multipart/form-data` with a `file` field.
+
+**Allowed types:** `image/jpeg`, `image/png`, `image/webp`, `image/gif`
+
+**SVG is deliberately rejected.** An SVG is an executable document (`script`, `foreignObject`) and these assets are served from our own origin by `GET /api/storage/[...key]`, so an uploaded SVG would be same-origin active content. The course-thumbnail endpoint already excludes SVG; this matches it.
+
+**Max size:** 2MB (a small square mark, not a banner)
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "logo_url": "/api/storage/communities/comm-.../logo/1753...",
+  "key": "communities/comm-.../logo/1753..."
+}
+```
+
+**Notes:**
+- Key shape is `communities/{communityId}/logo/{timestamp}.{ext}` — timestamped, so a replacement never reuses a path and the serving route can cache immutably.
+- The old R2 object is deleted **only after** the row points at the new one, so a mid-flight failure can never leave `logo_url` referencing a deleted key. The delete is best-effort (a failure logs and does not fail the request) and is guarded on the `communities/` prefix so a hand-set external `logo_url` cannot be used to delete an arbitrary key.
+- Uploads persist immediately — they do **not** join the settings form's Save/Cancel cycle (UI: `src/components/creators/communities/CommunitySettings.tsx`).
+- This is the write path for the `communities.logo_url` column shipped in Conv 410 ([COMM-BAND]); before this endpoint nothing outside the dev seed could set it.
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 400 | Community slug required / No file provided / Invalid file type / File too large |
+| 401 | Authentication required |
+| 403 | Not authorized to edit this community |
+| 404 | Community not found |
+| 500 | Server configuration error / Failed to upload logo |
+| 503 | Database not available / Storage not available |
+
+**Tests:** `tests/api/me/communities/logo.test.ts`
+
+### DELETE /api/me/communities/[slug]/logo
+
+Remove the brand mark: sets `communities.logo_url = NULL`, then best-effort deletes the R2 object.
+
+**Auth:** identical to POST (owner of a non-archived community).
+
+**Response (200):**
+```json
+{ "success": true, "logo_url": null }
+```
+
+**Errors:** same table as POST, minus the file-validation 400s and the `Storage not available` 503 (a missing R2 binding still clears the column).
 
 ### GET /api/me/communities/[slug]/members
 

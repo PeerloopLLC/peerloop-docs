@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-07-22 Conv 407 (client branch = reference exhibit, intent-extraction methodology, no as-is adoption — §1; timecard author-allowlist at the extraction choke point + Fable-5 focus-off trial with the reasoning-gate contract — §3)
+**Last Updated:** 2026-07-28 Conv 426 (client-facing `NOT-ADOPTED.md` companion ledger for a review block + cross-conv maintenance obligations become plan-doc ground rules, not board tasks — §5)
 
 ---
 
@@ -1974,6 +1974,28 @@ Personal Obsidian vault (synced via Obsidian Sync) remains separate from peerloo
 ---
 
 ## 5. Documentation Conventions
+
+### A Review Block Whose Output Is Discussed With the Client Gets a Second, Client-Facing Document (NOT-ADOPTED Ledger, Conv 426)
+**Date:** 2026-07-28 (Conv 426)
+
+MERGE-BRIAN now carries two documents. `plan/merge-brian/README.md` records *what we decided and why we built it that way* (internal); `plan/merge-brian/NOT-ADOPTED.md` is the **inverse view, written for the client** — every mechanism of his we did not ship, organised under five explicit statuses so "not adopted" doesn't flatten four different meanings: ❌ declined · 🟡 declined-for-now · 🔵 took-the-idea-left-the-build · ⏸️ prerequisite-gated · ⬜ unreviewed. It also carries a "where his work fixed real defects on our side" section, making it two-directional rather than a list of rejections, and a section explaining why his migration files never land even when the feature ships. Internal-only content (e.g. the user's verbatim Conv-407 stance) is deliberately excluded. Rejected: summarising in chat; appending a section to the README.
+
+**Rationale:** The two views have different audiences and different registers — appending to the README would mix internal shorthand into a document read aloud with the client, and chat wouldn't survive the conv. Generalises: any review block whose output will be walked through with an external party warrants a companion doc authored for that reader.
+
+**See:** `plan/merge-brian/NOT-ADOPTED.md`; `plan/merge-brian/README.md`; `docs/sessions/2026-07/20260728_0834 Decisions.md` §1.
+
+> **Insight:** A rejection list is a hostile artifact unless it also records what the other side got right.
+
+### A Cross-Conv Maintenance Obligation Becomes a Ground Rule in the Plan Doc, Not a Task on the Board (Conv 426)
+**Date:** 2026-07-28 (Conv 426)
+
+"Keep the ledger updated as we go" was made structural rather than a promise: `plan/merge-brian/README.md` **ground rule 9** requires every disposition to mirror into `NOT-ADOPTED.md` in the same conv, and specifies exactly where each disposition type lands (DROP → §1/§2 · an ADAPT's left-behind part → §3 · gated → §4 · a finished walk leaves §5). Pointers added from the README header, PLAN.md and the task body. Rejected: a recurring task on the board.
+
+**Rationale:** The block's ground rules are read at the start of every walk — i.e. at the moment the dispositions are being written — so a ninth rule fires exactly when it is needed. A board task is a reminder to do it later, which is when it gets skipped. Proximity to the trigger beats priority on a list.
+
+**Consequences:** The §3 dispositions were mirrored into the ledger in the same conv with no separate prompting.
+
+**See:** `plan/merge-brian/README.md` ground rule 9; `docs/sessions/2026-07/20260728_0834 Decisions.md` §2.
 
 ### Unified Margins/Layout Style Guide — Doc-First, Code Deferred
 **Date:** 2026-06-15 (Conv 288)

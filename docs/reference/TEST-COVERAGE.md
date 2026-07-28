@@ -2,7 +2,8 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-07-28 (Conv 425 — MERGE-BRIAN §2 `/courses` catalog: **+3 new component test files**, all under `tests/components/courses/`. `CourseCatalogCard.test.tsx` (14 — the new `cover-story` variant: shared cover panel + price sticker, description-over-tagline body with fallback, the sticker proven to be the *shared* `CoursePriceSticker` and kept `pointer-events-none` so it can't eat the stretched card link, the shared `CommunityAffiliation` line and its absent-community null, enrolled journey markers with "Diploma earned" pinned against "Certificate" ([DIPLOMA]) and the CTA left exactly as the host passed it, persistently-underlined link chips, plus two cases pinning the untouched `stacked`/`overlay` variants), `CoursesFilters.test.tsx` (10 — topic pill row incl. the full `FilterState` contract his pivot nulled, Level/Length still reachable behind the Filters toggle, the `hidden sm:flex` pill row + `sm:hidden` collapse select writing the same topic state, visible labelled sort, role-tab collapse-to-search) and `CoursesCatalog.test.tsx` (8 — empty-state copy keyed off the `courses.length === 0` invariant: platform-empty only when the catalog really is, filter-blame for topic/level/length, precise search-only and availableSoon messages, filter message preferred when a query *and* an attribute filter are both set). Components 79→82, Vitest Total 395→398, All Test Files 423→426. `tests/ssr/courses.test.ts` grew **29→31** in place (+2 — the cover-story `description` field and the progression→community affiliation chain on the browse loader); its row here was corrected **20→31**, the 20 being pre-existing drift. Per-file component case counts + the Courses category roll-up are in TEST-COMPONENTS.md, reconciled in lockstep. Sibling `TEST-UNIT.md` still **not** updated — stale since Conv 253, tracked as `[TESTUNITDOC]`.)
+**Last Updated:** 2026-07-28 (Conv 426 — MERGE-BRIAN §3 communities: **+5 new test files**. `tests/api/storage/key.test.ts` (18 — the new public R2 asset route: the prefix allowlist must gate *before* R2 is consulted, so a private key and a missing key are indistinguishable; traversal (`..`) rejection; ETag/`If-None-Match` → 304; immutable caching; `contentType` from `httpMetadata` with extension-sniff fallback), `tests/api/me/communities/logo.test.ts` (17 — owner gate, raster-only validation incl. the deliberate SVG rejection, the 2MB cap, and old-object-deleted-only-after-the-row-moves ordering; hands `FormData` **directly** to the handler because under jsdom a `File` round-tripped through `new Request(…).formData()` comes back with `size` 9 regardless of input, which silently neutered the size-cap assertion), `tests/components/communities/CommunityCatalogCard.test.tsx` (16 — the tokenised identity band, the named `hero` variant, brand marks across all three variants and the absent-medallion treatment), `tests/components/RoleTabBar.test.tsx` (12 — the opt-in `variant="pill"` with the Matt role palette **retained**, so a later "just match his version" edit fails rather than silently regressing) and `tests/ssr/communities.test.ts` (6 — per-community aggregates on the browse loader: review-count-weighted rating pinned at 4.61 and explicitly asserted *not* 4.80, the number a flat `AVG(rating)` produces, plus the `is_active=1 AND is_archived=0 AND deleted_at IS NULL` visibility filter so a card cannot advertise courses the Courses tab will not list). API Endpoints 240→242 (new `tests/api/storage/` category; Me 63→64), Components 82→84, SSR 4→5, Vitest Total 398→403, All Test Files 426→431. Per-file component case counts + the category roll-ups are in TEST-COMPONENTS.md, reconciled in lockstep. Sibling `TEST-UNIT.md` still **not** updated — stale since Conv 253, tracked as `[TESTUNITDOC]`.)
+**Prev:** 2026-07-28 (Conv 425 — MERGE-BRIAN §2 `/courses` catalog: **+3 new component test files**, all under `tests/components/courses/`. `CourseCatalogCard.test.tsx` (14 — the new `cover-story` variant: shared cover panel + price sticker, description-over-tagline body with fallback, the sticker proven to be the *shared* `CoursePriceSticker` and kept `pointer-events-none` so it can't eat the stretched card link, the shared `CommunityAffiliation` line and its absent-community null, enrolled journey markers with "Diploma earned" pinned against "Certificate" ([DIPLOMA]) and the CTA left exactly as the host passed it, persistently-underlined link chips, plus two cases pinning the untouched `stacked`/`overlay` variants), `CoursesFilters.test.tsx` (10 — topic pill row incl. the full `FilterState` contract his pivot nulled, Level/Length still reachable behind the Filters toggle, the `hidden sm:flex` pill row + `sm:hidden` collapse select writing the same topic state, visible labelled sort, role-tab collapse-to-search) and `CoursesCatalog.test.tsx` (8 — empty-state copy keyed off the `courses.length === 0` invariant: platform-empty only when the catalog really is, filter-blame for topic/level/length, precise search-only and availableSoon messages, filter message preferred when a query *and* an attribute filter are both set). Components 79→82, Vitest Total 395→398, All Test Files 423→426. `tests/ssr/courses.test.ts` grew **29→31** in place (+2 — the cover-story `description` field and the progression→community affiliation chain on the browse loader); its row here was corrected **20→31**, the 20 being pre-existing drift. Per-file component case counts + the Courses category roll-up are in TEST-COMPONENTS.md, reconciled in lockstep. Sibling `TEST-UNIT.md` still **not** updated — stale since Conv 253, tracked as `[TESTUNITDOC]`.)
 **Prev:** 2026-07-26 (Conv 419b — [MKTDEAD] dead-marketing purge: **−13 test files** deleted with the components they covered — `components/marketing/` ×8 (`AboutPage`, `ContactPage`, `FaqPage`, `ForCreatorsPage`, `HowItWorksPage`, `PricingPage`, `PrivacyPolicyPage`, `TermsOfServicePage`), `components/stories/StoriesBrowse`, `components/testimonials/TestimonialsBrowse`, and `unit/admin-intel/` ×3 (`admin-community-tab`, `admin-course-tab`, `admin-dashboard-card`). Their 56 components were provably dead: the 14 `/old/*` marketing pages have rendered "Coming soon." stubs for a long time, so the bundler had been tree-shaking the components out — confirmed via sourcemap `sources`, not inferred. `BecomeATeacherPage.test.tsx` deliberately KEPT: `/become-a-teacher` is live. Vitest Total 408→395, All Test Files 436→423; Components 89→79, Unit 17→14. Suite 6586→6131. Detail-table follow-up (docs agent, same conv): dropped the 3 stale `tests/unit/admin-intel/` rows and corrected three detail-section headers that the Summary table had already moved past — "Unit Tests (17 files)"→14, "API Tests (241 files)"→240 and "Me (64 files)"→63 (the latter two from the `[MSG-CLEANUP]` can-message deletion above). Component detail lives in TEST-COMPONENTS.md, reconciled in lockstep.)
 **Prev:** 2026-07-26 (Conv 419 — [MSG-ADOPT-B]/[COURSETAB-HASH]/[ICON-4PX]/[MSG-CLEANUP]: +1 **new** component test file `tests/components/useRoleTabs.test.ts` (6 — the `ready` gate: a deep-linked tab survives an unresolved render, still shows once the viewer resolves with the role, still resets once resolved *without* it, `ready` defaults true, the sibling-island event carries the deep-linked tab, and tab-change syncs the hash; 3 of the 6 fail if the gate is reverted). **−1 file:** `tests/api/me/can-message/[userId].test.ts` (7) deleted with its endpoint — `[CANMSG]` had left `GET /api/me/can-message/:userId` with no UI caller, so `[MSG-CLEANUP]` removed both; `canMessage()` in `src/lib/messaging.ts` was always the authoritative gate and is untouched. API Endpoints 241→240, Components 88→89, **Vitest Total 408 unchanged** (+1/−1), All Test Files 436 unchanged. One file extended in place: `tests/components/messages/MessageUserButton.test.tsx` 21→24 (`icon` widened to `string | ReactNode` so the 3 profile-header `Button` sites keep their own 16px glyph). Per-file component case counts are in TEST-COMPONENTS.md. Sibling `TEST-UNIT.md` still **not** updated — stale since Conv 253.)
 **Prev:** 2026-07-26 (Conv 418 — [CANMSG]/[MSG-ICON]/[MSG-ADOPT-A]: +1 **new** test file `tests/ssr/soft-deleted-users.test.ts` (3 — pins the `deleted_at IS NULL` filters added to `fetchCommunityDetailData` / `fetchTeacherProfileData` / `fetchCreatorProfileData`, which the now-local `useCanMessage` derivation depends on). SSR 3→4, Vitest Total 407→408, All Test Files 435→436. Two files were rewritten/extended in place, so no file-count change: `tests/lib/useCanMessage.test.ts` 5→7 (the hook no longer calls `GET /api/me/can-message/:userId` at all — one case now pins that the API is never called in any auth state) and `tests/components/messages/MessageUserButton.test.tsx` 11→21 (the `appearance="bare"` icon trigger + `signedIn` resolving from `useAuthStatus()` when the prop is omitted). Per-file component case counts are in TEST-COMPONENTS.md. Sibling `TEST-UNIT.md` still **not** updated — stale since Conv 253, needs its own reconciliation.)
@@ -53,19 +54,19 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 
 | Category | Files | Test Cases | Location |
 |----------|:-----:|:----------:|----------|
-| API Endpoints | 240 | — | `tests/api/` |
-| Components | 82 | — | `tests/components/` |
+| API Endpoints | 242 | — | `tests/api/` |
+| Components | 84 | — | `tests/components/` |
 | Pages | 9 | — | `tests/pages/` |
 | Lib | 33 | — | `tests/lib/` |
 | Integration | 10 | — | `tests/integration/` |
-| SSR | 4 | — | `tests/ssr/` |
+| SSR | 5 | — | `tests/ssr/` |
 | Unit | 14 | — | `tests/unit/` |
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 3 | — | `tests/plato/` |
 | Src (co-located) | 2 | — | `src/__tests__/` |
-| **Vitest Total** | **398** | — | |
+| **Vitest Total** | **403** | — | |
 | E2E (Playwright) | 28 | — | `e2e/` |
-| **All Test Files** | **426** | — | |
+| **All Test Files** | **431** | — | |
 
 ---
 
@@ -98,7 +99,7 @@ Test files use path aliases instead of deep relative imports:
 
 ---
 
-## API Tests — `tests/api/` (240 files)
+## API Tests — `tests/api/` (242 files)
 
 Tests mirror the API route structure with 1:1 file mapping:
 
@@ -330,7 +331,7 @@ tests/api/
 | `tests/api/homework/[id]/submissions/[subId].test.ts` | 13 |
 | `tests/api/homework/submissions/[id]/download.test.ts` | 13 |
 
-### Me — `tests/api/me/` (63 files)
+### Me — `tests/api/me/` (64 files)
 
 | Area | File | Tests |
 |------|------|:-----:|
@@ -373,6 +374,7 @@ tests/api/
 | | `tests/api/me/creator-analytics/teacher-performance.test.ts` | 7 |
 | **Communities** | | |
 | | `tests/api/me/communities/index.test.ts` | 16 |
+| | `tests/api/me/communities/logo.test.ts` | 17 |
 | | `tests/api/me/communities/[slug]/index.test.ts` | 15 |
 | | `tests/api/me/communities/[slug]/members.test.ts` | 11 |
 | | `tests/api/me/communities/[slug]/progressions.test.ts` | 23 |
@@ -458,6 +460,14 @@ tests/api/
 |------|:-----:|
 | `tests/api/stories/index.test.ts` | 14 |
 | `tests/api/stories/[id].test.ts` | 8 |
+
+### Storage — `tests/api/storage/` (1 file)
+
+| File | Tests |
+|------|:-----:|
+| `tests/api/storage/key.test.ts` | 18 |
+
+`GET /api/storage/[...key]` public asset route (Conv 426, [MERGE-BRIAN §3 · N14]) — the allowlist must gate *before* R2 is consulted, so a private key is answered identically to a missing one; traversal rejection; ETag/304 revalidation; immutable cache headers.
 
 ### Stream — `tests/api/stream/` (1 file)
 
@@ -595,11 +605,12 @@ tests/api/
 
 ---
 
-## SSR Tests — `tests/ssr/` (4 files)
+## SSR Tests — `tests/ssr/` (5 files)
 
 | File | Tests | Coverage |
 |------|:-----:|----------|
 | `tests/ssr/about.test.ts` | 7 | About page SSR rendering |
+| `tests/ssr/communities.test.ts` | 6 | Community browse-loader aggregates (Conv 426, [MERGE-BRIAN §3 · N16]) — review-count-weighted rating (`SUM(rating × rating_count) / SUM(rating_count)`) pinned at 4.61 and explicitly asserted *not* 4.80, the value a flat `AVG(rating)` gives; course-count subquery filtered `is_active = 1 AND is_archived = 0 AND deleted_at IS NULL` to match `fetchCommunityProgressionsData`, so a card cannot advertise courses the Courses tab will not list; `logoUrl` on both list and detail shapes |
 | `tests/ssr/courses.test.ts` | 31 | Course pages SSR (+ Conv 165 [CRT-1] role flags on `fetchCourseTabData`; + Conv 425 browse-loader `description` for the cover-story card body and the progression→community affiliation chain, which tolerates a course with no community) |
 | `tests/ssr/soft-deleted-users.test.ts` | 3 | `deleted_at IS NULL` at the three loaders the client messaging derivation depends on ([CANMSG], Conv 418) — a soft-deleted member is omitted from the community member directory (`fetchCommunityDetailData`), and `fetchTeacherProfileData` / `fetchCreatorProfileData` return no profile for a soft-deleted teacher/creator |
 | `tests/ssr/static.test.ts` | 14 | Static page generation |
@@ -797,7 +808,7 @@ See [TEST-E2E.md](TEST-E2E.md) for details.
 
 ---
 
-## Component Tests — `tests/components/` (82 files)
+## Component Tests — `tests/components/` (84 files)
 
 See [TEST-COMPONENTS.md](TEST-COMPONENTS.md) for the full breakdown by category.
 

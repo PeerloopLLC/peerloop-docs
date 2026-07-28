@@ -123,7 +123,10 @@ if [[ -d "$CODE_REPO/src/pages/api" ]]; then
       [[ -z "$doc" ]] && doc="API-REFERENCE.md"
 
       # Build [param] variant for docs that use bracket notation instead of :param
-      bracket_route=$(echo "$api_route" | sed 's|:\([a-zA-Z]*\)|[\1]|g')
+      # The `.` in the character class handles Astro rest params: `[...key]` became
+      # `:...key` above, and without the dots it restored as `[]...key`, which never
+      # matches a doc. First such route was `/api/storage/[...key]` (Conv 426).
+      bracket_route=$(echo "$api_route" | sed 's|:\([.a-zA-Z]*\)|[\1]|g')
 
       # Search for route in target doc — try multiple notations
       last_segment=$(basename "$api_route")

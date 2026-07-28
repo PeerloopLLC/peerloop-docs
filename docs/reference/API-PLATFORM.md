@@ -1,6 +1,6 @@
 # API Reference: Platform
 
-Platform stats, topics, tags, testimonials, stories, marketing, and health check endpoints. Part of [API Reference](API-REFERENCE.md).
+Platform stats, topics, tags, testimonials, stories, marketing, public asset delivery, and health check endpoints. Part of [API Reference](API-REFERENCE.md).
 
 ---
 
@@ -502,6 +502,47 @@ Check R2 storage connectivity by performing write/read/delete test.
 - CI/CD health checks
 
 ---
+
+---
+
+## Storage (Public Asset Delivery)
+
+### GET /api/storage/[...key]
+
+Serve a world-readable object out of the R2 bucket. This is the read side of the `/api/storage/{key}` URL convention that the upload endpoints write into the database (`courses.thumbnail_url`, `communities.logo_url`).
+
+**Authentication:** None (public assets only — see the allowlist below)
+
+**Source:** `src/pages/api/storage/[...key].ts` · Added Conv 426 ([MERGE-BRIAN §3 · N14], closes `[THUMB-404]`)
+
+**Allowlist, not a bucket proxy.** The same bucket holds **private** objects (community resources, homework submissions, session recordings) that have their own auth-gated download endpoints. This route serves only key shapes matching `PUBLIC_KEY_PATTERNS` and 404s everything else — *before* R2 is consulted, so a private key is indistinguishable from a missing one:
+
+| Prefix pattern | Written by |
+|----------------|------------|
+| `courses/{courseId}/thumbnail/{file}` | `POST /api/me/courses/[id]/thumbnail` |
+| `communities/{communityId}/logo/{file}` | `POST /api/me/communities/[slug]/logo` |
+
+Add a prefix only for an asset class that is public **by design**, and only when the upload path that generates the key is itself owner-gated.
+
+**Traversal:** any key containing `..` is rejected before pattern-matching.
+
+**Caching:** keys are timestamped by their upload endpoints, so a replacement always produces a new key. Responses carry `Cache-Control: public, max-age=31536000, immutable` and R2's quoted `ETag`; an `If-None-Match` hit returns `304` with no body.
+
+**Content-Type:** `object.httpMetadata.contentType` recorded at upload, falling back to extension sniffing via `getMimeType(key)`.
+
+**Response (200):** the object body.
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 404 | Not found (missing key, non-allowlisted prefix, or traversal attempt — all answered identically) |
+| 503 | Storage not available (no R2 binding) |
+| 500 | Failed to serve asset |
+
+**Tests:** `tests/api/storage/key.test.ts`
+
+**Why it was missing:** the upload endpoints have always stored `/api/storage/{key}` strings, but no route served that path — every creator-uploaded course thumbnail was a dead link. It went unnoticed because the dev/staging seeds use external `picsum.photos` URLs, so the broken path is only reachable by performing a real upload.
 
 ---
 

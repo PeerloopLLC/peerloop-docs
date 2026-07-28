@@ -25,8 +25,8 @@ FROM \ TO	/	/@[handle]	/404	/admin	/admin/analytics	/admin/announcements	/admin/
 /admin/users	foot			nav	nav			nav	nav	nav	nav	nav	nav	nav			nav	nav	nav	nav	foot							foot																																							
 /become-a-teacher																												link											btn																												
 /certificates/[id]	link																																																																		btn
-/communities	link			nav																	foot		nav					foot											modal	nav	nav	nav	nav															btn					modal				
-/community/[slug]/[...tab]	link	card		nav																	foot		redir					link			tab	card							redir	nav	btn	nav	nav																				modal				
+/communities	link			nav																	foot		nav					foot				card							modal	nav	nav	nav	nav															btn					modal				
+/community/[slug]/[...tab]	link	card		nav																	foot		redir					link			tab	card							redir	nav	btn	nav	nav																				crumb				
 /course/[slug]/[...tab]	link			nav																	foot		nav			tab		link								link			modal	nav	btn	nav	nav																			crumb	redir				
 /course/[slug]/book	foot			nav																	foot		nav			tab		redir											redir	nav	btn	nav	nav																			crumb	modal				
 /course/[slug]/success	foot			nav																	foot		nav			tab		link											modal	nav	nav	nav	nav																			crumb	modal				

@@ -2200,3 +2200,36 @@ The `/courses` sticky toolbar took 174px at 375×760 (36% of the viewport with h
 **Consequences:** New `CoursesCatalog.test.tsx` (8 tests); the stronger role-tab false claim (4 sites) logged to `[COURSES-FIXES]` with file/line refs.
 
 **See:** `docs/decisions/05-ui-ux-components.md` entry; `src/components/courses/CoursesCatalog.tsx`; `docs/sessions/2026-07/20260728_0449 Decisions.md` §8, Learnings §10; Conv 425.
+
+### [THUMB-404] Public R2 Assets Are Served Through a Two-Prefix Allowlist, Never a Bucket Proxy (MERGE-BRIAN §3 N14, Conv 426)
+**Date:** 2026-07-28 (Conv 426)
+
+New `src/pages/api/storage/[...key].ts` closes `[THUMB-404]` — the upload endpoints have always written `/api/storage/{key}` into `courses.thumbnail_url` while no route ever served that shape, so every creator-uploaded thumbnail was a dead link. Serves **only** `courses/*/thumbnail/` and `communities/*/logo/`; traversal rejected; unknown prefixes answered identically to missing objects. Rejected: serving any key from the bucket.
+
+**Rationale:** Community resources, homework submissions and session recordings share the same bucket and each have their own auth-gated endpoints — a bucket proxy would silently bypass all of them. The route, not the bucket, is the security boundary.
+
+**Consequences:** Verified live with a real object seeded at `homework/sub-1/secret.pdf` — still 404s, proving the allowlist gates *before* R2 is consulted so private-key existence is unobservable. The defect hid behind seed data (dev/staging seeds use external `picsum.photos` URLs).
+
+**See:** `docs/decisions/08-deployment-infra.md` entry; `src/pages/api/storage/[...key].ts`; `docs/sessions/2026-07/20260728_0834 Decisions.md` §6, Learnings §1; Conv 426.
+
+### Uploaded Brand Marks Are Raster-Only — SVG Rejected Because Our Own Origin Serves Them (MERGE-BRIAN §3 N13, Conv 426)
+**Date:** 2026-07-28 (Conv 426)
+
+The new community logo upload endpoint accepts `image/jpeg`, `image/png`, `image/webp`, `image/gif` only; the client branch's `image/svg+xml` was not adopted.
+
+**Rationale:** An SVG is an executable document (script, `foreignObject`) and these objects are served from our own origin by the N14 asset route, so an uploaded SVG would be same-origin active content. The existing course-thumbnail endpoint already excludes SVG.
+
+**Consequences:** Endpoint and the settings UI's `accept` attribute agree; a test pins the rejection. Old objects deleted only after the row points at the new one.
+
+**See:** `docs/decisions/08-deployment-infra.md` entry; `src/pages/api/me/communities/[slug]/logo.ts`; `docs/sessions/2026-07/20260728_0834 Decisions.md` §5; Conv 426.
+
+### RoleTabBar Gains an Opt-In Pill Variant — the Role Palette Is Retained in Both Treatments (MERGE-BRIAN §3 N9, Conv 426)
+**Date:** 2026-07-28 (Conv 426)
+
+The client branch forked `CommunitiesRoleTabs` off the shared `RoleTabBar` into a bespoke pill row and dropped the Matt role palette with it. Adopted as an opt-in `variant="pill"` on the primitive instead. Rejected: dropping role colours to match `/courses`; declining N9 and keeping the underline strip.
+
+**Rationale:** The pill shape was the improvement; the colour removal was a side-effect of reimplementing the row. Role theming is one of the three client-flagged collision watch areas (ground rule 3). Same shape as §1's SubNav adoptions and §2 M8 — restyle the primitive with a variant, don't copy markup into one consumer.
+
+**Consequences:** `/courses` role tabs and `dev/primitives` unchanged; 12 tests pin the palette in both treatments.
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `src/components/RoleTabBar.tsx`; `docs/sessions/2026-07/20260728_0834 Decisions.md` §3, Learnings §5; Conv 426.

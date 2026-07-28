@@ -48,6 +48,7 @@ Routes referenced in code but **no matching .astro page exists:**
 | `/careers` | `[Footer]` |
 | `/community-guidelines` | `/invite/mod/[token]` |
 | `/community/[slug]` | `/community/[slug]/[...tab]`, `/course/[slug]/[...tab]`, `/course/[slug]/book`, `/course/[slug]/success` |
+| `/community/[slug]/courses` | `/communities` |
 | `/contact` | `[Footer]` |
 | `/cookies` | `[Footer]` |
 | `/course/[slug]` | `/`, `/admin/enrollments`, `/community/[slug]/[...tab]`, `/course/[slug]/[...tab]`, `/course/[slug]/book`, `/course/[slug]/success`, `/courses`, `/creating/[...tab]`, `/dev/primitives`, `/diploma/[id]`, `/learning/[...tab]`, `/receipt/[id]`, `/session/[id]`, `/teacher/[handle]`, `/teaching/[...tab]`, `/teaching/courses/[courseId]`, `/verify/[id]` |
@@ -501,6 +502,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Inbound from:**
 - `[AuthModals]` (modal)
 - `/` (btn)
+- `/community/[slug]/[...tab]` (crumb)
 - `/course/[slug]/[...tab]` (redir)
 - `/invite/mod/[token]` (btn)
 - `/profile/[...tab]` (btn)
@@ -522,6 +524,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/creator/[handle]` (card)
 - `/login` (redir)
 - `/messages` (btn)
+- `/signup` (crumb)
 
 **Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
 
@@ -759,6 +762,8 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 
 **Outbound (page-specific):**
 - `/` (link)
+- `/community/[slug]/courses` (tab) ⚠️
+- `/creator/[handle]` (card)
 - `/onboarding` (btn)
 
 **Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
@@ -1110,6 +1115,7 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Inbound from:**
 - `/@[handle]` (card)
 - `/admin/teachers` (card)
+- `/communities` (card)
 - `/community/[slug]/[...tab]` (card)
 - `/courses` (card)
 - `/creator/[handle]` (card)

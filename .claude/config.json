@@ -383,7 +383,7 @@
         "category": "driftCheck",
         "pattern": "docs/reference/TEST-*.md",
         "sourceOfTruth": ["../Peerloop/tests/**", "../Peerloop/e2e/**"],
-        "sharedBasenames": ["download.test.ts", "index.test.ts", "stats.test.ts", "delete.test.ts", "update.test.ts", "create.test.ts"],
+        "sharedBasenames": ["download.test.ts", "index.test.ts", "stats.test.ts", "delete.test.ts", "update.test.ts", "create.test.ts", "communities.test.ts"],
         "checks": ["file-count", "phantom-entries", "path-format"],
         "consumers": ["sync-gaps.sh#4", "w-sync-docs#1"]
       },

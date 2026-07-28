@@ -14,9 +14,25 @@ Peerloop stores images in Cloudflare R2 and renders them with standard HTML `<im
 **Cloudflare R2** is the sole image storage backend.
 
 - Course thumbnails are uploaded via `POST /api/me/courses/[id]/thumbnail` and stored in R2 at `courses/{courseId}/thumbnail/{timestamp}.{ext}`
-- Images are served through a proxy route: `/api/storage/{key}`
-- Allowed types: JPEG, PNG, WebP, GIF
-- Max size: 5MB per thumbnail
+- Community brand marks are uploaded via `POST /api/me/communities/[slug]/logo` and stored at `communities/{communityId}/logo/{timestamp}.{ext}` (Conv 426)
+- Images are served through `GET /api/storage/[...key]` — see **Serving: the public-asset allowlist** below
+- Allowed types: JPEG, PNG, WebP, GIF. **SVG is deliberately excluded** on every upload path — it is an executable document (`script`, `foreignObject`) and these assets are served from our own origin, so an uploaded SVG would be same-origin active content.
+- Max size: 5MB per course thumbnail, 2MB per community logo
+
+### Serving: the public-asset allowlist
+
+`src/pages/api/storage/[...key].ts` (added Conv 426, [MERGE-BRIAN §3 · N14]) is the read side of the `/api/storage/{key}` convention. It is an **allowlist, not a bucket proxy** — the same R2 bucket also holds private objects (community resources, homework submissions, session recordings) that have their own auth-gated download endpoints, so this route serves only these key shapes and 404s everything else:
+
+| Prefix pattern | Written by |
+|----------------|------------|
+| `courses/{courseId}/thumbnail/{file}` | `POST /api/me/courses/[id]/thumbnail` |
+| `communities/{communityId}/logo/{file}` | `POST /api/me/communities/[slug]/logo` |
+
+The allowlist is evaluated **before** R2 is consulted, so a private key is indistinguishable from a missing one. Keys containing `..` are rejected. Add a prefix only for an asset class that is public by design, whose upload path is itself owner-gated.
+
+Because upload keys are timestamped, a replacement never reuses a path — responses carry `Cache-Control: public, max-age=31536000, immutable` plus R2's `ETag` (with `If-None-Match` → 304), and no cache purge is ever needed.
+
+> **This route did not exist until Conv 426.** The upload endpoints had always written `/api/storage/{key}` into the database, so every creator-uploaded course thumbnail was a dead link (`[THUMB-404]`). It went unnoticed because the dev and staging seeds use external `picsum.photos` URLs — the broken path is only reachable by performing a real upload, which no test and no seeded browse-through does.
 
 ### Schema: Image URL Columns
 
@@ -28,7 +44,7 @@ Peerloop stores images in Cloudflare R2 and renders them with standard HTML `<im
 | `course_modules` | `thumbnail_url` | Not yet used | None |
 | `team_members` | `avatar_url` | Seed data | None |
 | `communities` | `cover_image_url` | Seed data | None |
-| `communities` | `logo_url` | Seed data | None (upload flow TBD — Conv 410 [COMM-BAND]) |
+| `communities` | `logo_url` | R2 upload | `POST /api/me/communities/[slug]/logo` (write path added Conv 426; column shipped Conv 410 [COMM-BAND]) |
 
 > `communities.icon` is an emoji or icon **name**, not an image URL, so it is intentionally omitted from this table.
 
@@ -124,6 +140,8 @@ When traffic grows and image performance matters, three options were evaluated:
 | 2026-02-16 | Plain `<img>` + R2 for MVP | Low image volume (~4 courses, <10 users). Optimization adds complexity with no measurable benefit yet. |
 | 2026-02-16 | Astro image service set to `no-op` | Not using `<Image>` component. Suppresses Cloudflare sharp warning. |
 | 2026-02-16 | Cloudinary and CF Image Resizing deferred | Both viable post-MVP. Decision depends on traffic patterns and transform needs. |
+| 2026-07-28 | `/api/storage/[...key]` serves a **prefix allowlist**, not the bucket | Community resources, homework submissions and session recordings share the bucket and have their own auth-gated endpoints. A bucket proxy would silently bypass all of them. Verified live: a real object at `homework/sub-1/secret.pdf` still 404s. |
+| 2026-07-28 | SVG rejected on community-logo upload | An SVG is an executable document served same-origin by the asset route. Matches the existing course-thumbnail endpoint. |
 
 ## When to Revisit
 
@@ -134,7 +152,9 @@ When traffic grows and image performance matters, three options were evaluated:
 
 ## References
 
-- `src/pages/api/me/courses/[id]/thumbnail.ts` — R2 upload endpoint
+- `src/pages/api/me/courses/[id]/thumbnail.ts` — R2 upload endpoint (course thumbnails)
+- `src/pages/api/me/communities/[slug]/logo.ts` — R2 upload/delete endpoint (community brand marks)
+- `src/pages/api/storage/[...key].ts` — public asset server (allowlist, ETag/304, immutable caching)
 - `src/lib/r2.ts` — R2 utility functions
 - `src/components/courses/CourseCard.tsx` — Image rendering with fallback
 - `src/components/messages/Avatar.tsx` — Avatar rendering with fallback

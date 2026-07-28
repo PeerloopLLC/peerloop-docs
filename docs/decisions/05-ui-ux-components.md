@@ -3,6 +3,17 @@
 
 ## 5. UI/UX & Components
 
+### RoleTabBar Gains an Opt-In Pill Variant — the Role Palette Is Retained in Both Treatments (MERGE-BRIAN §3 N9, Conv 426)
+**Date:** 2026-07-28 (Conv 426)
+
+The client branch replaced `CommunitiesRoleTabs`' use of the shared `RoleTabBar` with a bespoke inline pill row and, in doing so, dropped the Matt role palette outright ("Role colors intentionally dropped with the underline form"). Adopted as an **opt-in `variant="pill"` on the shared primitive** instead: the active pill fills with its role background, inactive pills keep the role dot. Rejected: dropping role colours to match `/courses` exactly, as he did; declining N9 and keeping the underline strip.
+
+**Rationale:** The pill *shape* was the improvement he was after; the colour removal was a side-effect of reimplementing the row rather than a considered call — and role-based colour theming is one of the three client-flagged collision watch areas (`plan/merge-brian/README.md` ground rule 3). An opt-in prop gets the look while the primitive keeps owning the palette. Generalises §1's SubNav adoptions and §2 M8: when a client branch restyles a shared component in place, the adoption is "add a variant to the primitive", not "copy his markup into one consumer".
+
+**Consequences:** `/courses` role tabs and `dev/primitives` render unchanged. 12 tests pin the palette in both treatments, so a later "just match his version" edit fails rather than silently regressing.
+
+**See:** `src/components/RoleTabBar.tsx`; `tests/components/RoleTabBar.test.tsx`; `docs/sessions/2026-07/20260728_0834 Decisions.md` §3, Learnings §5; Conv 426.
+
 ### MERGE-BRIAN §2 — /courses Client-Branch Dispositions: 3 ADOPT, 12 ADAPT, 1 DROP (Conv 425)
 **Date:** 2026-07-28 (Conv 425)
 

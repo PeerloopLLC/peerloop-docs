@@ -7,7 +7,7 @@ through with him directly.
 
 - **Review target:** pivot snapshot `8a1e677f` (tip of `origin/brian-July-7`, 07-20 11:29) — the point
   he and the user agreed to review from. His later `brian-July-20` exploration is out of scope.
-- **Decided so far:** 42 distinct mechanisms across 3 of 6 screens — **6 taken as-is · 32 taken in
+- **Decided so far:** 42 distinct mechanisms across 3 of 6 screens — **5 taken as-is · 33 taken in
   part · 4 declined**. Screens 4–6 are not reviewed yet, so nothing on them is decided either way.
 - **As of:** Conv 426 (2026-07-28). **Living document — updated as each screen walk completes.**
 

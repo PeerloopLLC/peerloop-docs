@@ -259,6 +259,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [RoleTabBar Gains an Opt-In Pill Variant — the Role Palette Is Retained in Both Treatments (MERGE-BRIAN §3 N9, Conv 426)](05-ui-ux-components.md#roletabbar-gains-an-opt-in-pill-variant--the-role-palette-is-retained-in-both-treatments-merge-brian-3-n9-conv-426)
 - [MERGE-BRIAN §2 — /courses Client-Branch Dispositions: 3 ADOPT, 12 ADAPT, 1 DROP (Conv 425)](05-ui-ux-components.md#merge-brian-2--courses-client-branch-dispositions-3-adopt-12-adapt-1-drop-conv-425)
 - [[ROLE-CRS-LIST] and [REC-REHOME] — Brian's /courses Removals Are Gated on Rehoming, Not Adopted (MERGE-BRIAN §2 M3/M4, Conv 425)](05-ui-ux-components.md#role-crs-list-and-rec-rehome--brians-courses-removals-are-gated-on-rehoming-not-adopted-merge-brian-2-m3m4-conv-425)
 - [M10 Narrowed to a Shared `CoursePriceSticker` — the Cover Panel Cannot Be Shared With the Dark Hero (MERGE-BRIAN §2, Conv 425)](05-ui-ux-components.md#m10-narrowed-to-a-shared-coursepricesticker--the-cover-panel-cannot-be-shared-with-the-dark-hero-merge-brian-2-conv-425)
@@ -520,6 +521,8 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [8. Deployment & Infrastructure](08-deployment-infra.md)
 
+- [[THUMB-404] Public R2 Assets Are Served Through a Two-Prefix Allowlist, Never a Bucket Proxy (MERGE-BRIAN §3 N14, Conv 426)](08-deployment-infra.md#thumb-404-public-r2-assets-are-served-through-a-two-prefix-allowlist-never-a-bucket-proxy-merge-brian-3-n14-conv-426)
+- [Uploaded Brand Marks Are Raster-Only — SVG Rejected Because Our Own Origin Serves Them (MERGE-BRIAN §3 N13, Conv 426)](08-deployment-infra.md#uploaded-brand-marks-are-raster-only--svg-rejected-because-our-own-origin-serves-them-merge-brian-3-n13-conv-426)
 - [[MF-SKEW] wrangler vs astro-dev Miniflare Version Skew — Resolved by an Exact-Pin wrangler 4.112.0 + workers-types v5 That Dedupes miniflare (Conv 416)](08-deployment-infra.md#mf-skew-wrangler-vs-astro-dev-miniflare-version-skew--resolved-by-an-exact-pin-wrangler-41120--workers-types-v5-that-dedupes-miniflare-conv-416)
 - [Applying an In-Place `0001` Column to a Data-Bearing Remote D1 — Prefer a Surgical ALTER When the Data Must Be Preserved (FEEDBACK-DEPLOY, Conv 394)](08-deployment-infra.md#applying-an-in-place-0001-column-to-a-data-bearing-remote-d1--prefer-a-surgical-alter-when-the-data-must-be-preserved-feedback-deploy-conv-394)
 - [In-Place `0001` Edits Drift Un-Reset Staging DBs — Prefer a Full Reseed Over a Surgical ALTER (PROF500, Conv 363)](08-deployment-infra.md#in-place-0001-edits-drift-un-reset-staging-dbs--prefer-a-full-reseed-over-a-surgical-alter-prof500-conv-363)

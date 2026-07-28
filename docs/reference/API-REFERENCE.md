@@ -16,7 +16,7 @@ Complete documentation for all API endpoints and database access patterns. For C
 | [API-SESSIONS.md](API-SESSIONS.md) | `/api/sessions/*`, `/api/session-invites/*`, `/api/teachers/*` | Video sessions, booking, availability, instant session invites |
 | [API-HOMEWORK.md](API-HOMEWORK.md) | `/api/homework/*`, `/api/submissions/*` | Assignments, submissions, grading |
 | [API-MESSAGES.md](API-MESSAGES.md) | `/api/conversations/*` | Direct messaging, conversations |
-| [API-PLATFORM.md](API-PLATFORM.md) | `/api/stats`, `/api/topics`, `/api/tags`, `/api/health/*`, `/api/certificates/*`, `/api/debug/*` | Platform data, topics, tags, marketing, health checks, certificate verification, debug |
+| [API-PLATFORM.md](API-PLATFORM.md) | `/api/stats`, `/api/topics`, `/api/tags`, `/api/health/*`, `/api/certificates/*`, `/api/storage/*`, `/api/debug/*` | Platform data, topics, tags, marketing, health checks, certificate verification, public asset delivery, debug |
 | [API-ADMIN.md](API-ADMIN.md) | `/api/admin/*` | Admin CRUD operations (requires admin role) |
 | [API-COMMUNITY.md](API-COMMUNITY.md) | `/api/communities/*`, `/api/me/communities/*`, `/api/feeds/*`, `/api/discovery/*`, `/api/stream/*`, `/api/flags` | Communities, feeds, discovery rails, Stream.io token, content flagging |
 | [API-RECOMMENDATIONS.md](API-RECOMMENDATIONS.md) | `/api/recommendations/*` | Personalized course & community recommendations |
@@ -44,6 +44,7 @@ Complete documentation for all API endpoints and database access patterns. For C
 | Sessions | `/api/sessions/*` | Session booking, join, rating (BBB integration) |
 | Homework | `/api/homework/*`, `/api/submissions/*` | Assignments, submissions, grading |
 | Resources | `/api/resources/*` | File downloads from R2 storage |
+| Storage | `/api/storage/[...key]` | Public R2 asset delivery (course thumbnails, community logos) — prefix allowlist, not a bucket proxy |
 | Checkout | `/api/checkout/*` | Stripe Checkout sessions |
 | Stripe Connect | `/api/stripe/*` | Connected account management |
 | Webhooks | `/api/webhooks/*` | External service webhooks (Stripe, BBB) |

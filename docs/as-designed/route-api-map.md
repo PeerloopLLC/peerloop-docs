@@ -10,7 +10,7 @@
 ## Quick Stats
 
 - **Pages scanned:** 67
-- **API endpoints found in UI:** 218
+- **API endpoints found in UI:** 220
 - **Routes reachable from navbar:** 54
 - **Unreachable routes:** 35
 
@@ -315,6 +315,8 @@ Which API calls does each page make?
 | GET | `/api/me/communities` | src/components/creators/communities/CommunityManagement.tsx |
 | PATCH | `/api/me/communities/[param]` | src/components/creators/communities/CommunitySettings.tsx |
 | DELETE | `/api/me/communities/[param]` | src/components/creators/communities/CommunitySettings.tsx |
+| POST | `/api/me/communities/[param]/logo` | src/components/creators/communities/CommunitySettings.tsx |
+| DELETE | `/api/me/communities/[param]/logo` | src/components/creators/communities/CommunitySettings.tsx |
 | GET | `/api/me/communities/[param]/members` | src/components/creators/communities/CommunityManagement.tsx |
 | GET | `/api/me/communities/[param]/progressions` | src/components/creators/communities/CommunityManagement.tsx |
 | POST | `/api/me/communities/[param]/progressions` | src/components/creators/communities/CreateProgressionModal.tsx |
@@ -560,6 +562,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `DELETE /api/me/account` | `/profile/[...tab]` |
 | `DELETE /api/me/availability/overrides/[param]` | `/teaching/[...tab]` |
 | `DELETE /api/me/communities/[param]` | `/creating/communities/[slug]` |
+| `DELETE /api/me/communities/[param]/logo` | `/creating/communities/[slug]` |
 | `DELETE /api/me/communities/[param]/progressions/[param]` | `/creating/communities/[slug]` |
 | `DELETE /api/me/courses/[param]/teachers/[param]` | `/creating/[...tab]` |
 | `DELETE /api/me/notifications` | `/notifications` |
@@ -743,6 +746,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/me/availability/overrides` | `/teaching/[...tab]` |
 | `POST /api/me/certificates/recommend` | `/teaching/[...tab]`, `/teaching/courses/[courseId]` |
 | `POST /api/me/communities` | `/creating/[...tab]` |
+| `POST /api/me/communities/[param]/logo` | `/creating/communities/[slug]` |
 | `POST /api/me/communities/[param]/progressions` | `/creating/communities/[slug]` |
 | `POST /api/me/communities/[param]/resources` | `/community/[slug]/[...tab]` |
 | `POST /api/me/courses` | `/creating/[...tab]` |

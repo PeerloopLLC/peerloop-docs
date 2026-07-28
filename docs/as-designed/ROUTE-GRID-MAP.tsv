@@ -19,7 +19,9 @@ lnk: M01
 ⊘ no footer
 ⊘ no navbar"	"M05 /communities
 btn: A02
-lnk: M01"	"A01 /login
+crd: R02
+lnk: M01
+tab: /community/[slug]/courses"	"A01 /login
 rdr: M01"	"A02 /onboarding
 rdr: M01"	"A03 /reset-password
 btn: A01"	"A04 /signup
@@ -128,7 +130,8 @@ lnk: M01"
 Y - COMMUNITY					C - COURSE					R - RESOURCE				
 "Y01 /community/[slug]/[...tab]
 btn: P02
-crd: R02 /course/[slug] R01
+crd: R02 R01 /course/[slug]
+crm: A04
 lnk: M01 P01
 rdr: M05 /community/[slug] A01
 tab: K03"					"C01 /course/[slug]/[...tab]
