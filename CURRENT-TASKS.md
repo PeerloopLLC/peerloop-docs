@@ -173,6 +173,8 @@
 
 - **State:** 📋 queued (deferred per-route bucket)
 - **What:** deferred bucket of per-route fixes captured while sweeping the Courses route(s) — batch later. Sibling of `[HOME-FIXES]`.
+- **Holds (from the Conv-292 sweep):** `[FILTERS-RESPONSIVE]` (⟂ responsive/compact filters — the Conv-425 compact toolbar plausibly overlaps this but it was never verified against the original intent) + `[TYPO-REVIEW]` (⟂ app-wide typography).
+- **Added Conv 425 — role-tab empty states ignore their `sub` filter.** The all-tab empty state was fixed this conv to distinguish an empty catalog from over-narrow filters; the four ROLE tabs have the same defect class via a different trigger. Each branches on `q` only, so a student on `sub=completed` holding only in-progress enrolments reads *"You haven't enrolled in any courses yet."* — denying enrolments that exist. Same for teaching (`active`/`paused`), created (`published`/`draft`/`retired`) and moderating. Left unfixed deliberately: those tabs are dispositioned for retirement once `[ROLE-CRS-LIST]` lands (MERGE-BRIAN §2 M3), so fix them only if that gate slips. `src/components/courses/CoursesCatalog.tsx` ~lines 366/377/389/408.
 
 ### [DEPEXP]
 
@@ -614,6 +616,14 @@
   `availableSoon` · M6 tokenised flat pills · M7 visible compact sort · M8 opt-in `compact`/`dense`).
   5 gates green, suite **6131 → 6139** (new `CoursesFilters.test.tsx`, 8 tests), live-verified signed
   in and signed out.
+- **Empty-state copy fixed — "no courses" no longer lies about why.** The all-tab empty state ignored
+  topic/level/length, so an over-narrow filter announced *"No courses available right now."* as though the
+  platform were empty. Now keyed off the invariant that `courses.length === 0` is the only genuine
+  nothing-published case; a query **plus** an attribute filter correctly yields the filter message rather
+  than the misleading search-only one. New `CoursesCatalog.test.tsx` (8 tests) pins every branch; suite
+  **6157 → 6165**. Live-verified all three messages plus the restore. Pre-existing (present at merge-base
+  `c50afd82`), and the sibling role-tab `sub`-filter variant was logged to `[COURSES-FIXES]` rather than
+  silently folded in.
 - **Narrow-width sweep of /courses — DONE, 2 defects fixed.** Swept 320/375/640/768/1024/1280 in the
   `[VPHARNESS]` iframe harness: **zero overflow at every width**, cover reflow and `lg`-gated panel both
   correct. Fixed (a) the card title cramped at 375 — 128px over 2 lines beside the CTA → CTA stacks below

@@ -634,11 +634,33 @@ sites, one being `CoursesFilters.tsx` filter rows. At 320 the rewritten bar over
 `flex-wrap` + `min-w-[160px] flex-1` search and `overflow-x-auto` pill row). `MembersFilters` and the
 Home feed-card button are untouched and unverified, so the task stays parked at 2 of 3.
 
-**🟠 Pre-existing copy defect noticed, NOT fixed** (surfaced for a decision): the "all"-tab empty state
-branches on `q` and `availableSoon` only, so narrowing by **topic / level / length** to zero results
-tells the user *"No courses available right now."* — reading as "the platform is empty" rather than
-"your filters matched nothing". Verified pre-existing: the block is at the merge-base `c50afd82` with
-only the `q` branch. The topic pill row makes it easier to reach, which is an argument for fixing it.
+**✅ Pre-existing copy defect — FIXED (Conv 425, user-requested).** The "all"-tab empty state branched on
+`q` and `availableSoon` only, so narrowing by **topic / level / length** to zero results said *"No courses
+available right now."* — claiming the platform was empty when the reader's own filter was to blame, and
+giving them no reason to touch the filters. Pre-existing: the block sits at the merge-base `c50afd82`
+with only the `q` branch.
+
+The fix keys off a small invariant rather than guessing: with no filters applied `allVisible` is just
+`courses` re-sorted, so **`courses.length === 0` is the only genuine "nothing published" case** — an
+empty result over a non-empty catalog is always the filters' doing. Precedence: platform-empty truth
+first, then the multi-filter message, then the two single-filter messages worth keeping (search is
+precise because the reader knows what they typed; `availableSoon` explains a time-window concept that
+"filters" would obscure). A query **plus** an attribute filter now yields the filter message — the old
+search-only copy would have been misleading, since clearing the search still left the topic excluding
+everything.
+
+Live-verified: selecting the "Machine Learning" topic (no courses in the dev seed) reads *"No courses
+match your filters — try removing one."*; search-only still reads *"No courses match your search."*;
+clearing restores 6. The advice is actionable without naming a position — a removable chip and "Clear
+filters" are on screen in every filtered-empty case (confirmed). New
+`tests/components/courses/CoursesCatalog.test.tsx` (8 tests) pins all four branches plus the
+combination case. Suite **6157 → 6165**.
+
+**🟠 Same defect class, different trigger, NOT fixed:** the four role-tab empty states branch on `q` but
+ignore their own **`sub`-filter**, so a student on `sub=completed` with only in-progress enrolments is
+told *"You haven't enrolled in any courses yet."* — denying enrolments that exist. Those tabs are
+dispositioned for retirement once `[ROLE-CRS-LIST]` lands, which is why it was left rather than folded
+in. Tracked in `[COURSES-FIXES]`.
 
 ### §2 walk result (Conv 425)
 
