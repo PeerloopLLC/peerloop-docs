@@ -202,6 +202,28 @@ during onboarding; everyone gets trending, new and popular.
 deleted. **One thing to flag:** the panel only appears on wider screens, so on a phone there is
 currently no recommendations surface at all. That is a known gap, not an oversight.
 
+### Role tabs on `/courses` — now done, after checking where each view lived
+
+He hid the As-Student / Teaching / Created / Moderating tabs on the courses catalog, leaving it as a
+purely public list. We agreed with that, and it is now done — but we held it back until we were sure
+each of those four views existed somewhere else, because on the catalog they were not just filters,
+they were the only way some members reached their own courses.
+
+Checking that turned out to matter, and also turned out to be less work than expected. Three of the
+four views already had a home: a member's enrolled courses live on **My Learning**, a creator's
+courses on the **Creator Studio**, and a teacher's certified courses on the **Teaching** dashboard.
+The moderating view is a special case — moderation is granted per community, not per course, so the
+list of communities you moderate on the communities page is the real version of it; the courses tab
+was a flattened restatement.
+
+The one genuine gap was that the teaching dashboard's list was plainer than the tab it was replacing:
+no search, no Active/Paused split, and a simpler card. Rather than build a new page, we brought that
+existing list up to the same standard — same card, same filters, same underlying data — so nothing
+was lost when the tabs came out.
+
+**What we left behind:** his approach of commenting the tabs out and leaving the code in place. We
+removed them properly; the version history keeps the old code if we ever want it back.
+
 ### Communities (`/communities`, `/community/[slug]`)
 
 | His mechanism | What we left behind |
@@ -249,17 +271,9 @@ Neither of these is a judgment on the design — the code was dead at the pivot:
 
 ## 4 · ⏸️ Deferred — agreed, but blocked on our own work
 
-This is a change we **want** to make and have not made yet, because making it now would strand a
-surface with nowhere else to live. (The recommendation carousels were the other entry here; they have
-since been done — see §3, *Recommendations on `/courses` and `/communities`*.)
-
-### Hiding the As-Student / Teaching / Moderating role tabs on `/courses`
-
-Agreed in principle. Blocked because **`/teaching` has no courses-list page** — its own route comment
-says so, and the teacher dashboard groups students by course but never lists the courses themselves.
-So `/courses#teaching` is currently the only list of a teacher's courses, and the same is true for
-moderating. (`/learning` already covers the student lens.) Those two lists get built first, then the
-tabs come out.
+**Nothing is currently sitting here.** Both entries that were — the recommendation carousels and the
+`/courses` role tabs — have since been built, each after we made the destination ready first. See §3,
+*Recommendations on `/courses` and `/communities`* and *Role tabs on `/courses`*.
 
 ---
 

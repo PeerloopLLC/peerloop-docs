@@ -41,11 +41,11 @@
 | # | Review unit | Status |
 |---|---|---|
 | 1 | `/course/[slug]` detail | ✅ **COMPLETE (Conv 412)** — dispositions DONE (Conv 408, 12 mechanisms: 9 ADAPT · 3 DROP · 0 ADOPT). **All 9 ADAPT built:** Tier A+B (Conv 409, M1/M4/M5 + M6/M7/M12) · Tier C M10/[RECEIPT] (Conv 410) · Tier C M2 `[SESS-TAB]` (Conv 411) · Tier C M3 `[SESS-FILES]` (Conv 412) · hero refinement `[HERO]` (Conv 413) · colour-theme toggle `[TAB-THEME]` (Conv 414) · UI + messages follow-ups (Convs 415–419, incl. the **MESSAGES mini-plan M1–M6, COMPLETE Conv 419** — see build logs). Only the 3 DROPs unbuilt (2 soft/revisitable) |
-| 2 | `/courses` catalog | ✅ **COMPLETE for everything buildable (Conv 425)** — 16 mechanisms: 3 ADOPT · 12 ADAPT · 1 DROP. **All 14 buildable ones built** — M1 M2 M15 M16 (shell) · M5 M6 M7 M8 (toolbar) · M9 M10 M11 M12 M13 M14 (card + hero sticker). **Findings F1** (pre-existing site-wide doubled form chrome, measured and fixed) **and F2** (catalog/detail price split, fixed at the shared helper + a `formatPriceExact` receipt carve-out) **both closed**. M10's disposition proved unbuildable as written and was re-decided by the user as *price sticker only*. Also this conv: a self-audit restoring `prov:sweep` to its 11-issue baseline + removing a stranded `context="catalog"` path, a **narrow-width sweep 320→1280** (zero overflow; two mobile defects fixed; 1 of `[MINWIDTH-320]`'s 3 blockers cleared) and the invariant-keyed empty-state copy fix. 5 gates green (suite 6131 → **6165**, +34 tests / 3 new files), everything live-verified. **§2 is now COMPLETE except M3** — M4 shipped in Conv 427 when `[REC-REHOME]` was decided and built (rails-backed right-rail lanes; `/api/recommendations/courses` deleted). M3 stays gated on `[ROLE-CRS-LIST]` |
+| 2 | `/courses` catalog | ✅ **COMPLETE — all 16 of 16 built (M3 closed Conv 428)** — 16 mechanisms: 3 ADOPT · 12 ADAPT · 1 DROP. **All 14 buildable ones built** — M1 M2 M15 M16 (shell) · M5 M6 M7 M8 (toolbar) · M9 M10 M11 M12 M13 M14 (card + hero sticker). **Findings F1** (pre-existing site-wide doubled form chrome, measured and fixed) **and F2** (catalog/detail price split, fixed at the shared helper + a `formatPriceExact` receipt carve-out) **both closed**. M10's disposition proved unbuildable as written and was re-decided by the user as *price sticker only*. Also this conv: a self-audit restoring `prov:sweep` to its 11-issue baseline + removing a stranded `context="catalog"` path, a **narrow-width sweep 320→1280** (zero overflow; two mobile defects fixed; 1 of `[MINWIDTH-320]`'s 3 blockers cleared) and the invariant-keyed empty-state copy fix. 5 gates green (suite 6131 → **6165**, +34 tests / 3 new files), everything live-verified. **§2 is now COMPLETE except M3** — M4 shipped in Conv 427 when `[REC-REHOME]` was decided and built (rails-backed right-rail lanes; `/api/recommendations/courses` deleted). M3 stays gated on `[ROLE-CRS-LIST]` |
 | 3 | `/community/[slug]` + `/communities` (+`[COMM-BRAND]` feature decision) | ✅ **COMPLETE for everything buildable (Conv 426)** — 20 files censused, **16 mechanisms (N1–N16)**: **2 ADOPT · 12 ADAPT · 2 DROP** (both DROPs carried from earlier walks). **All 13 buildable ones BUILT** across three tiers — A: N14 storage route + N5 Join/Leave rebinding · B: N16 aggregates, N11 hero card, N12 marks, N6 640px geometry, N7 search-first, N9 role pills, N10 compact sort, N3 label · C: N1 identity band, N4 shared course card, N13 logo upload + settings UI. **All 3 findings closed:** **F3** (course-thumbnail uploads 404 — pre-existing, no `/api/storage/` route) **FIXED by N14** and live-proved to gate before R2 · **F4** (Join/Leave dead on client-side nav) **CONFIRMED live with a control, then FIXED by N5** · **F5** (224px header square, 320×224 thumb — a Conv-423-preserved `[DEMO-HOME]` 4× artifact) **superseded** by N1 (band now 96px) and N4. **§3 is now COMPLETE** — N8 shipped in Conv 427 with §2 M4, both discharged by the one `[REC-REHOME]` decision. Divergences pinned by tests: role pills KEEP the Matt palette (N9); no invented journey CTA (N4); SVG rejected (N13); visibility-filtered + weighted aggregates (N16). 5 gates green, suite 6165→**6234** (+69), `prov:sweep` at baseline |
-| 4 | **Site-wide shell track** (`[BACK-X]` back-nav, `SubNav`/`SubNavItem`, `Sidebar`, forms, `AppLayout`) | ⬜ |
-| 5 | Sessions-files feature (`0006` + storage API) — adopt/reject as a feature | ⬜ |
-| 6 | Misc ("Peer Teachers" relabel, `SessionBooking`, workspace touches) | ⬜ |
+| 4 | **Site-wide shell track** (`[BACK-X]` back-nav, `SubNav`/`SubNavItem`, `Sidebar`, forms, `AppLayout`) | ⬜ — the one unit that "cannot be judged on one screen"; also where the two soft §1 DROPs (`[BACK-X]`, `[FEED-WIDTH]`) get revisited |
+| 5 | Sessions-files feature (`0006` + storage API) — adopt/reject as a feature | ⬜ — **smaller than this row implies:** `session_resources` + `display_order` already landed in `0001` (§1 M3, Conv 412) and `/api/storage/[...key].ts` already exists (§3 N14, Conv 426), both files this unit was scoped to cover. Residue = the session-room slice (`session/[id].astro` in-room files, `in_room` explicitly not adopted Conv 412), the `api/sessions/index.ts` edits, and his demo content |
+| 6 | Misc ("Peer Teachers" relabel, `SessionBooking`, workspace touches) | ⬜ — **the relabel is half-applied:** landed on the 5 course surfaces (§1 M4) but `AdminDashboard.tsx:74`/`:423` + `api/admin/analytics/users.ts:242` still read bare `Teachers`. Finish-or-reject is this unit's call (leaving it may be defensible under `[ADMIN-CONF-POLICY]`) |
 
 **Disposition vocabulary:** **ADOPT** (reimplement the intent as-is) · **ADAPT** (take the idea, different mechanism) · **DROP** (with one-line reason; called REJECT before Conv 408 — the user's term is DROP) — recorded per change in each screen section, then implemented cosmetic-first; internal deps (schema/API) surface via the screens that need them.
 
@@ -435,7 +435,7 @@ undecided — nothing here has been silently absorbed by §1's work.
 | M1 `[CRS-LAYOUT]` | **ADAPT** — take Home's 640px left-anchored two-column geometry on `/courses` | `ListingShell` stays untouched for its 3 other consumers (`index`, `communities`, `members`); this page stops varying by `navLayout` (filters always `orientation="top"`) |
 | M16 `[PANEL-REMOVE]` | **DROP his removal** — keep the light-blue panel **and extend it to `/courses`** | Home keeps its Conv-298 panel; `/courses` gains the same `#eff6ff` sticky aside so M1's right region isn't dead space. His site-wide deletion is not adopted |
 | M2 `[CRS-SEARCH-FIRST]` | **ADOPT** — search leads the page | Visible "Browse Courses" h1 + description out, `sr-only` h1 in; toolbar first, nudge banner below it |
-| M3 `[CRS-ROLE-TABS-OFF]` | **ADAPT — hide only after rehoming** | 🔴 **Blocked on a prerequisite:** `/teaching` has no courses-list page (its own route comment says so; `TeacherDashboard` groups students by course but never lists them), so `/courses#teaching` is today the only list of a teacher's courses — same for `#moderating`. `/learning` already covers the student lens. Give teaching + moderation their own course lists **first**, then hide the tabs here. Tracked as `[ROLE-CRS-LIST]` |
+| M3 `[CRS-ROLE-TABS-OFF]` | **ADAPT — hide only after rehoming** · ✅ **BUILT Conv 428** | The recorded blocker was **re-tested and falsified** before building (`[ROLE-CRS-LIST]`, Conv 428). It claimed `/teaching` had no courses list and that `TeacherDashboard` "never lists them" — but `TeacherDashboard` renders `TeacherCertifications` ("My Teaching Certifications", one card per course → `/teaching/courses/{id}`) off the **same** `getTeacherCertifications()` array the tab counts from, and `/teaching/sessions` groups by course too. The cited route comment was about the **route** `/teaching/courses`, not page content. `#moderating` did hold, but is derived from `community_moderators` and is already homed in its native shape at `/communities#moderating`; the disposition also omitted the **Created** lens, covered by `/creating/studio`. So the prerequisite shrank from "two new list pages" to bringing `/teaching`'s existing list up to the tab's function. Role tabs then removed from `/courses` (mount + import deleted, not commented out). See the Conv-428 build log |
 
 **Batch B — filter toolbar (decided Conv 425):**
 
@@ -892,6 +892,61 @@ Build tiers (mirroring §1/§2 staging) — **all three shipped the same conv**;
 
 **Two deliberate divergences from his build to pin in tests**, as §2 did: the role-tab pills **keep**
 the Matt role palette (N9), and the Courses-tab card carries **no invented journey CTA** (N4).
+
+### Build log — §2 M3 `[CRS-ROLE-TABS-OFF]` + `[ROLE-CRS-LIST]` (Conv 428, all 5 gates green + live-verified)
+
+The last §2 mechanism, and the second consecutive one where **re-testing the task's own
+stated blocker turned a product decision into a small build** (`[REC-REHOME]` was the first).
+
+**The premise test.** `[ROLE-CRS-LIST]` was scoped as "give the teaching and moderating
+lenses their own course lists". Checked against consumers rather than the definition
+([[feedback_retest_task_premise_before_executing]]):
+
+| Claim | Verdict |
+|---|---|
+| "`TeacherDashboard` groups students by course but never lists them" | **FALSE** — `TeacherDashboard.tsx:206` renders `TeacherCertifications` = *"My Teaching Certifications"*, one card per course → `/teaching/courses/{id}` (`TeacherCertifications.tsx:20,56`), off the **same** `getTeacherCertifications()` array `CoursesRoleTabs.tsx:41-43` counts the tab from |
+| "`/courses#teaching` is the only list of a teacher's courses" | **FALSE** — `/teaching/sessions` (`TeacherSessionsList.tsx:651-670`) also groups by course with a `Course Details →` link |
+| the cited `/teaching` route comment | **misread** — "There is no courses LIST page" is about the **route** `/teaching/courses` (which redirects), not about page content |
+| "same for `#moderating`" | **HOLDS** — `getModeratedCourseIds()` has 3 consumers (its definition + the 2 role-tab files); `/mod` is a flagged-content queue. **But** it is derived from `community_moderators` (`current-user.ts:576-579`), and `/communities#moderating` already lists those communities — the course view was a second-order flattening of a lens already homed |
+| — | **omission:** the disposition never mentioned the **Created** lens M3 also hides. Covered by `/creating/studio` (`CreatorStudio` = "course list with stats") — but by luck, not analysis |
+
+**What was actually lost** if M3 shipped untouched: the tab's title search + All/Active/Paused
+sub-filter (`CoursesCatalog.tsx:56-66`) and the Matt-styled `CourseTeachingCard`; `/teaching`'s
+list had none of those and a legacy-scale card. That gap — not "no list exists" — was the real
+prerequisite, and it is a [DISC-DROP]-shaped regression if ignored.
+
+**Built.** `TeacherCertifications` rewritten: self-sources from `useCurrentUser()` (no new
+endpoint — the richer `UserTeacherCertification` was already there), renders the shared
+`CourseTeachingCard`, and carries the tab's sub-filter with **identical predicates** plus a
+count-gated search (`SEARCH_THRESHOLD = 4`, the `TeachersTabList` Conv-409 precedent). Panel
+chrome deliberately left on the legacy scale to match its dashboard siblings —
+`[TEACH-ISLAND-RESTYLE]` owns that — so the component stays `data-prov`-unstamped and
+`prov:sweep` holds at its 11-issue baseline. Deliberately **no** `useAuthStatus` gate: the
+parent island already gates on it, and a second gate would render a skeleton over resolved data.
+Then M3: `CoursesRoleTabs` mount + import removed from `courses.astro` (Brian commented his out;
+we delete, git is the retention mechanism).
+
+**🔴 Defect found in live verification, fixed same-conv.** With the tab bar gone,
+`CoursesCatalog`/`CoursesFilters` still read the URL hash — so `/courses#teaching` rendered the
+teaching lens with **no control to leave it** (0 catalog cards, viewer stranded on a stale
+bookmark). `readHashTab()` in both islands now always returns `'all'`; all four role hashes
+re-verified live to render the full public catalog. This is exactly the dormant-subsystem hazard,
+and it is why the leftover branches are tracked rather than left silent → `[CRS-ROLE-DORMANT]`.
+
+**Also fixed:** the `/teaching` availability toggle carried `aria-pressed` with **no accessible
+name** — surfaced because the new sub-filter pills made a bare `pressed: true` query ambiguous;
+given `aria-label="Toggle teaching availability"`.
+
+**Live-verified** on `:4321` (after an `[DEVSRV-STALE]` teardown — a pre-existing daemon was
+serving stale code and 500ing `/teaching`): guy-rymberg (4 certs) → 4 cards with status pill,
+creator, taught/rating/teacher chips, filter pills **and** search box; Paused → 0 + *"No courses
+match this filter."*; search `n8n` → 1; search `zzzz` → *"No courses match your search."*;
+marcus (2 certs) → cards + pills, **no** search box (count gate). `/courses` → no `RoleTabBar`,
+6 catalog cards, rails intact; the only "Teaching" strings on the page are sidebar nav links.
+
+5 gates green — suite 6210 → **6215** (+5 tests), lint 0 errors (160 pre-existing warnings,
+unchanged), `prov:sweep` at baseline. Follow-ups: `[CRS-ROLE-DORMANT]`, `[CRS-COMM-TABSYM]`
+(the `/courses`-vs-`/communities` role-pill asymmetry), `[TDASH-CERTS-DEAD]`.
 
 ### Build log — §2 M4 + §3 N8 `[REC-REHOME]` (Conv 427, all 5 gates green + live-verified)
 
