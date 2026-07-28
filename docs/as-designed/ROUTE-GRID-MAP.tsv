@@ -119,9 +119,8 @@ lnk: M01
 D - DISCOVERY					P - PERSONAL					S - SETTINGS				
 					"P01 /courses
 btn: A02
-crd: R02 /course/[slug]
-lnk: M01
-tab: /course/[slug]/learn C02 /creating/studio"	"P02 /messages
+crd: R02
+lnk: M01"	"P02 /messages
 crd: R01
 lnk: M01
 rdr: A01"	"P03 /notifications
@@ -168,7 +167,7 @@ T - TEACHING					K - CREATING					X - ADMIN
 "T01 /teaching/[...tab]
 btn: R03 P02
 crd: R01 /course/[slug]
-lnk: M01 T02 /profile/payments
+lnk: M01 /profile/payments T02
 rdr: /teaching /teaching/availability
 tab: /teaching/students /teaching/sessions /teaching/analytics C02"	"T02 /teaching/courses/[courseId]
 crd: /course/[slug] R01 R02

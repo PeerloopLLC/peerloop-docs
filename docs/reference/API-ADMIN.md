@@ -1864,11 +1864,16 @@ Get user growth and funnel data.
   ],
   "distribution": [
     { "name": "Students", "value": 650 },
-    { "name": "Teachers", "value": 45 },
-    { "name": "Creators", "value": 12 }
+    { "name": "Peer Teachers", "value": 45 },
+    { "name": "Creators", "value": 12 },
+    { "name": "Multi-role", "value": 8 },
+    { "name": "Admin/Mod", "value": 3 }
   ]
 }
 ```
+
+**Notes:**
+- `distribution` buckets are mutually exclusive and zero-value buckets are omitted from the array.
 
 ### GET /api/admin/analytics/courses
 

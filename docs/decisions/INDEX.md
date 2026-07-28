@@ -215,6 +215,8 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [4. Authentication & Authorization](04-auth.md)
 
+- [The Client-Side Role Gate Is Generalised to All Three Role Workspaces — `useRoleGate(role)` + `RoleGatePanel` (Conv 428)](04-auth.md#the-client-side-role-gate-is-generalised-to-all-three-role-workspaces--userolegaterole--rolegatepanel-conv-428)
+
 - [[MSGBOOT] Client Consumers Gate on the Three-State `authStatus`, Never on a Nullable `getCurrentUser()` (Conv 417)](04-auth.md#msgboot-client-consumers-gate-on-the-three-state-authstatus-never-on-a-nullable-getcurrentuser-conv-417)
 - [Keep One-Teacher-Per-Enrollment — Reject Client-Branch Teacher-Switching (Conv 408)](04-auth.md#keep-one-teacher-per-enrollment--reject-client-branch-teacher-switching-conv-408)
 - [AUTHBUG Fix: Login Gates Visible Success on Real Auth, Reload-Fallback from Cookies, Logout Clears Auth Cache (Conv 365)](04-auth.md#authbug-fix-login-gates-visible-success-on-real-auth-reload-fallback-from-cookies-logout-clears-auth-cache-conv-365)
@@ -259,6 +261,9 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [[ROLE-CRS-LIST] Resolved by Upgrading `/teaching`'s Existing List — the `/courses` Role Tabs Are Retired (MERGE-BRIAN §2 M3, Conv 428)](05-ui-ux-components.md#role-crs-list-resolved-by-upgrading-teachings-existing-list--the-courses-role-tabs-are-retired-merge-brian-2-m3-conv-428)
+- [[BACK-X] Resolved — Breadcrumbs Kept, the Back Button Dropped, the Sticky Title Taken as `StickyViewTitle` (MERGE-BRIAN §4, Conv 428)](05-ui-ux-components.md#back-x-resolved--breadcrumbs-kept-the-back-button-dropped-the-sticky-title-taken-as-stickyviewtitle-merge-brian-4-conv-428)
+- [[FEED-WIDTH] Dropped — Entity Pages Stay Full-Width; Geometry and Rails Stand or Fall Together (MERGE-BRIAN §4, Conv 428)](05-ui-ux-components.md#feed-width-dropped--entity-pages-stay-full-width-geometry-and-rails-stand-or-fall-together-merge-brian-4-conv-428)
 - [[REC-REHOME] Resolved — Course + Community Recommendations Become Discovery-Rails Lanes in the Right Rail (MERGE-BRIAN §2 M4 + §3 N8, Conv 427)](05-ui-ux-components.md#rec-rehome-resolved--course--community-recommendations-become-discovery-rails-lanes-in-the-right-rail-merge-brian-2-m4--3-n8-conv-427)
 - [A Separate `DiscoveryRailCard`, Not a Fourth `CourseCatalogCard` Variant (Conv 427)](05-ui-ux-components.md#a-separate-discoveryrailcard-not-a-fourth-coursecatalogcard-variant-conv-427)
 - [RoleTabBar Gains an Opt-In Pill Variant — the Role Palette Is Retained in Both Treatments (MERGE-BRIAN §3 N9, Conv 426)](05-ui-ux-components.md#roletabbar-gains-an-opt-in-pill-variant--the-role-palette-is-retained-in-both-treatments-merge-brian-3-n9-conv-426)

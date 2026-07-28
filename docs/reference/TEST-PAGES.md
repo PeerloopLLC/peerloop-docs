@@ -2,7 +2,8 @@
 
 Page-level integration tests using Vitest and React Testing Library.
 
-**Last Updated:** 2026-07-12 (Conv 392 — [ORPHAN-PURGE] deleted `courses/CourseDetail.test.tsx` (56) with the retired dead-legacy `CourseDetail` component family (unreachable from any route); Pages 10→9, Courses 1→0 (category removed), coverage 15%→13%.)
+**Last Updated:** 2026-07-28 (Conv 428 — [ROLE-CRS-LIST]: `dashboard/TeacherDashboard.test.tsx` grew **48→53** in place, pinning the function the retired `/courses` teaching role tab used to carry, now absorbed by `TeacherCertifications` — All/Active/Paused sub-filter, count-gated search box, search-by-course-title, and a search-specific empty state (the pre-existing status case was retargeted at the cards). File counts unchanged (9).)
+**Prev:** 2026-07-12 (Conv 392 — [ORPHAN-PURGE] deleted `courses/CourseDetail.test.tsx` (56) with the retired dead-legacy `CourseDetail` component family (unreachable from any route); Pages 10→9, Courses 1→0 (category removed), coverage 15%→13%.)
 **Prev:** 2026-07-09 (Conv 378 — [TEST-PAGE-COUNTS] reconciled per-file *case* counts to on-disk `tests/pages/` truth (vitest JSON reporter, 355 cases / 10 files): Login 20→21, Signup 23→24, CreatorDashboard 45→46, StudentDashboard 29→28, TeacherDashboard 46→48; Auth subtotal 70→72. File-count roll-ups unchanged.)
 **Prev:** 2026-06-26 (Conv 339 — [OLD-PORTED-CLEANUP] deleted `courses/CourseBrowse.test.tsx` (30) with the retired `/old` CourseBrowse page; Pages 11→10, Courses 2→1, coverage 16%→15%)
 
@@ -76,7 +77,7 @@ Each page test follows 6 standard categories (documented in `tests/README.md`):
 |------|-----------|------:|
 | Creator Dashboard | `tests/pages/dashboard/CreatorDashboard.test.tsx` | 46 |
 | Student Dashboard | `tests/pages/dashboard/StudentDashboard.test.tsx` | 28 |
-| Teacher Dashboard | `tests/pages/dashboard/TeacherDashboard.test.tsx` | 48 |
+| Teacher Dashboard | `tests/pages/dashboard/TeacherDashboard.test.tsx` | 53 |
 
 **Subtotal:** 3 files
 

@@ -2,7 +2,8 @@
 
 React component tests using Vitest and React Testing Library.
 
-**Last Updated:** 2026-07-28 (Conv 427 — [REC-REHOME]: **−2 files**, the whole **Recommendations Components** category. `recommendations/RecommendedCommunities.test.tsx` (11) and `recommendations/RecommendedCourses.test.tsx` (9) were deleted with the two carousels they covered — the recommendations surface moved to the right rail as the rails-backed `DiscoveryRails` island, whose logic is pure and tested in `tests/lib/discovery-rails-lanes.test.ts` (a lib test, so it does not land in this file). Recommendations 2→0 files / 20→0 cases, category removed. Grand total files **84→82**, cases **1,890→1,870**.)
+**Last Updated:** 2026-07-28 (Conv 428 — no new or deleted files; **two files changed in place**. `dashboard/TeacherDashboard.test.tsx` **14→17** (+3 for the generalised `useRoleGate('teacher')` gate: the shared `RoleGatePanel` renders instead of this island's fetch-error branch when denied, the teacher API is not called at all when denied, and the skeleton — not the gate — shows while access is still resolving) → Dashboard 90→93. `courses/CourseCatalogCard.test.tsx` **14→13** (−1: the "overlay ignores cover-story-only props" guard went with the `overlay` variant itself — Conv 427's [REC-REHOME] left it with no production call site, so `CourseCardVariant` narrowed to `'stacked' | 'cover-story'`; `CommunityCatalogCard`'s `overlay` was dropped in the same sweep but its 16 cases were retargeted rather than reduced) → Courses 55→54. Grand total files **82** (unchanged), cases **1,870→1,872**.)
+**Prev:** 2026-07-28 (Conv 427 — [REC-REHOME]: **−2 files**, the whole **Recommendations Components** category. `recommendations/RecommendedCommunities.test.tsx` (11) and `recommendations/RecommendedCourses.test.tsx` (9) were deleted with the two carousels they covered — the recommendations surface moved to the right rail as the rails-backed `DiscoveryRails` island, whose logic is pure and tested in `tests/lib/discovery-rails-lanes.test.ts` (a lib test, so it does not land in this file). Recommendations 2→0 files / 20→0 cases, category removed. Grand total files **84→82**, cases **1,890→1,870**.)
 **Prev:** 2026-07-28 (Conv 426 — MERGE-BRIAN §3 communities: **+2 new files**. `communities/CommunityCatalogCard.test.tsx` (16 — the named third **`hero`** variant plus brand marks on all three variants: the tokenised identity band with no raw hex and no gradient, the per-community aggregates row (course count, teacher count, weighted rating, review count), and the absent-medallion treatment when a community has no `logoUrl`; `entity-community` deliberately **not** adopted — our `tokens-semantic.css` defines only the five role entities, so the class would be a no-op) → Community 8→9 files / 102→118 cases. `RoleTabBar.test.tsx` (12 — the opt-in `variant="pill"`: active pill fills with its **role background**, inactive pills keep the role dot, and the default underline treatment is byte-identical, so `/courses` role tabs and `dev/primitives` are untouched; the client branch dropped the role palette with the underline form, and these 12 make a later "just match his version" edit fail rather than silently regress) → new root-level **Shared Primitives** category (1 file / 12). Grand total files **82→84**, cases **1,862→1,890**.)
 **Prev:** 2026-07-28 (Conv 425 — MERGE-BRIAN §2 `/courses` catalog: **+3 new files**, all in the Courses category. `courses/CourseCatalogCard.test.tsx` (14 — the new **`cover-story`** variant, named rather than overloading `overlay + context`: shared cover panel + price sticker, description-preferred body with tagline fallback, the sticker proven to be the shared `CoursePriceSticker` and kept `pointer-events-none` so it can't eat the stretched card link, the shared `CommunityAffiliation` line + its no-community null, enrolled journey markers with "Diploma earned" pinned against "Certificate" ([DIPLOMA]) and the CTA left exactly as the host passed it, persistently-underlined link chips, and two cases pinning `stacked`/`overlay` as untouched), `courses/CoursesFilters.test.tsx` (10 — topic pill row incl. the full `FilterState` contract his pivot nulled, Level/Length still reachable behind the Filters toggle, the `hidden sm:flex` pill row and `sm:hidden` collapse select writing the same topic state so neither half can be deleted alone, visible labelled sort, role-tab collapse-to-search) and `courses/CoursesCatalog.test.tsx` (8 — empty-state copy keyed off the `courses.length === 0` invariant so no future filter can re-open the "platform is empty" bug: filter-blame for topic/level/length, precise search-only + availableSoon messages, filter message preferred when a query *and* an attribute filter are both set). Courses 2→5 files / 23→55 cases. Grand total files **79→82**, cases **1,830→1,862**.)
 **Prev:** 2026-07-26 (Conv 419b — [MKTDEAD] dead-marketing purge: **−10 files** deleted with the 56 provably-dead components they covered. Marketing 9→1 files / 389→49 cases (−`AboutPage` 31, `ContactPage` 57, `FaqPage` 40, `ForCreatorsPage` 42, `HowItWorksPage` 34, `PricingPage` 38, `PrivacyPolicyPage` 51, `TermsOfServicePage` 47; **`BecomeATeacherPage` 49 deliberately KEPT** — `/become-a-teacher` is live). Stories 1→0 / 43→0 and Testimonials 1→0 / 53→0, both categories removed. The 14 `/old/*` marketing pages have rendered "Coming soon." stubs for a long time, so the bundler had been tree-shaking these components out — confirmed via sourcemap `sources`, not inferred. Grand total files **89→79**, cases **2,266→1,830**. Also corrected the `**Total:**` line, which had lagged at 88 since the previous Conv-419 entry.)
@@ -145,7 +146,7 @@ The opt-in pill variant added in Conv 426 ([MERGE-BRIAN §3 · N9]) — the acti
 
 | Component | Test File | Tests |
 |-----------|-----------|:-----:|
-| CourseCatalogCard | `tests/components/courses/CourseCatalogCard.test.tsx` | 14 |
+| CourseCatalogCard | `tests/components/courses/CourseCatalogCard.test.tsx` | 13 |
 | CoursesCatalog | `tests/components/courses/CoursesCatalog.test.tsx` | 8 |
 | CoursesFilters | `tests/components/courses/CoursesFilters.test.tsx` | 10 |
 | EnrollButton | `tests/components/courses/EnrollButton.test.tsx` | 17 |
@@ -177,7 +178,7 @@ The opt-in pill variant added in Conv 426 ([MERGE-BRIAN §3 · N9]) — the acti
 | CreatorDashboard | `tests/components/dashboard/CreatorDashboard.test.tsx` | 20 |
 | CreatorTeacherList | `tests/components/dashboard/CreatorTeacherList.test.tsx` | 18 |
 | EarningsOverview | `tests/components/dashboard/EarningsOverview.test.tsx` | 13 |
-| TeacherDashboard | `tests/components/dashboard/TeacherDashboard.test.tsx` | 14 |
+| TeacherDashboard | `tests/components/dashboard/TeacherDashboard.test.tsx` | 17 |
 | TeacherStudentList | `tests/components/dashboard/TeacherStudentList.test.tsx` | 21 |
 | TeacherUpcomingSessions | `tests/components/dashboard/TeacherUpcomingSessions.test.tsx` | 2 |
 | Cross-TZ day-of (XTZ) | `tests/components/dashboard/cross-timezone-day-of.test.tsx` | 2 |
@@ -303,11 +304,11 @@ The other 8 files here were deleted in Conv 419 ([MKTDEAD]) along with the `src/
 | Auth | 1 | 11 |
 | Booking | 4 | 108 |
 | Community | 9 | 118 |
-| Courses | 5 | 55 |
+| Courses | 5 | 54 |
 | Creator | 2 | 56 |
 | Entity | 1 | 5 |
 | Explore | 1 | 37 |
-| Dashboard | 7 | 90 |
+| Dashboard | 7 | 93 |
 | Invite | 1 | 36 |
 | Learning | 1 | 2 |
 | Layout | 2 | 11 |
@@ -322,7 +323,7 @@ The other 8 files here were deleted in Conv 419 ([MKTDEAD]) along with the `src/
 | UI | 2 | 10 |
 | Shared hooks | 1 | 6 |
 | Shared primitives | 1 | 12 |
-| **Total** | **82** | **1,870** |
+| **Total** | **82** | **1,872** |
 
 ---
 

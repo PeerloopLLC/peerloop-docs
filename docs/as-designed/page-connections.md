@@ -51,17 +51,17 @@ Routes referenced in code but **no matching .astro page exists:**
 | `/community/[slug]/courses` | `/communities` |
 | `/contact` | `[Footer]` |
 | `/cookies` | `[Footer]` |
-| `/course/[slug]` | `/`, `/admin/enrollments`, `/community/[slug]/[...tab]`, `/course/[slug]/[...tab]`, `/course/[slug]/book`, `/course/[slug]/success`, `/courses`, `/creating/[...tab]`, `/dev/primitives`, `/diploma/[id]`, `/learning/[...tab]`, `/receipt/[id]`, `/session/[id]`, `/teacher/[handle]`, `/teaching/[...tab]`, `/teaching/courses/[courseId]`, `/verify/[id]` |
+| `/course/[slug]` | `/`, `/admin/enrollments`, `/community/[slug]/[...tab]`, `/course/[slug]/[...tab]`, `/course/[slug]/book`, `/course/[slug]/success`, `/creating/[...tab]`, `/dev/primitives`, `/diploma/[id]`, `/learning/[...tab]`, `/receipt/[id]`, `/session/[id]`, `/teacher/[handle]`, `/teaching/[...tab]`, `/teaching/courses/[courseId]`, `/verify/[id]` |
 | `/course/[slug]/benefits` | `/course/[slug]/[...tab]`, `/course/[slug]/book`, `/course/[slug]/success` |
 | `/course/[slug]/feed` | `/course/[slug]/success` |
-| `/course/[slug]/learn` | `/course/[slug]/[...tab]`, `/course/[slug]/book`, `/courses`, `/learning/[...tab]`, `/session/[id]` |
+| `/course/[slug]/learn` | `/course/[slug]/[...tab]`, `/course/[slug]/book`, `/learning/[...tab]`, `/session/[id]` |
 | `/course/[slug]/modules` | `/course/[slug]/[...tab]`, `/course/[slug]/book`, `/course/[slug]/success`, `/session/[id]` |
 | `/course/[slug]/reviews` | `/course/[slug]/[...tab]` |
 | `/course/intro-to-claude-code` | `/dev/primitives` |
 | `/creating` | `/creating/[...tab]`, `/creating/apply`, `/creating/communities/[slug]`, `/creator/[handle]`, `[Sidebar]` |
 | `/creating/analytics` | `/creating/[...tab]` |
 | `/creating/communities` | `/creating/[...tab]`, `/creating/communities/[slug]` |
-| `/creating/studio` | `/courses`, `/creating/[...tab]`, `/creating/communities/[slug]` |
+| `/creating/studio` | `/creating/[...tab]`, `/creating/communities/[slug]` |
 | `/creators` | `[Footer]` |
 | `/discover/courses` | `/404`, `/learning/[...tab]` |
 | `/faq` | `/become-a-teacher`, `[Footer]` |
@@ -578,7 +578,6 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/course/[slug]/[...tab]` (tab)
 - `/course/[slug]/book` (tab)
 - `/course/[slug]/success` (tab)
-- `/courses` (tab)
 - `/learning/[...tab]` (tab)
 - `/session/[id]` (redir)
 - `/teacher/[handle]` (tab)
@@ -1206,10 +1205,6 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 
 **Outbound (page-specific):**
 - `/` (link)
-- `/course/[slug]` (card) ⚠️
-- `/course/[slug]/book` (tab)
-- `/course/[slug]/learn` (tab) ⚠️
-- `/creating/studio` (tab) ⚠️
 - `/creator/[handle]` (card)
 - `/onboarding` (btn)
 

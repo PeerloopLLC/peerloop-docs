@@ -38,35 +38,36 @@
 11. [EDITSAFE](#editsafe) — anchored-edit discipline
 12. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
 13. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
-14. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
-15. [HOME-FIXES](#home-fixes) — Home route fix bucket
-16. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
-17. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
-18. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
-19. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
-20. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
-21. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
-22. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
-23. [RSFD](#rsfd) — port `r-start-from-dirty`
-24. [DEPEXP](#depexp) — dependency-probe hygiene
-25. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
-26. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
-27. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
-28. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
-29. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
-30. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
-31. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
-32. [DEVSRV-STALE](#devsrv-stale) — un-parked: stale/bricked astro dev daemon recurred
-33. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
-34. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
-35. [TLFMT](#tlfmt) — r-end ref documents a TIMELINE.md shape the file no longer uses
-36. [OUTLINE-V4B](#outline-v4b) — 3 residual `outline-none` sites the Conv-244 fix missed
-37. [ADMIN-OVFLW](#admin-ovflw) — 3 admin routes overflow horizontally (pre-existing, not Conv-423)
-38. [LH1](#lh1) — 23 typography tokens hardcode `line-height: 1` (TYPO-FDN axis)
-39. [BRIDGE-RESIZE](#bridge-resize) — `resize_window` silently ignores width
-40. [ICON-STATES](#icon-states) — Phase-5 tail: drive hidden/loading states over 528 call sites
-41. [GATEPAR](#gatepar) — `/w-codecheck` vs `npm run verify` diverged on the icon gate
-42. [VPHARNESS](#vpharness) — persist the exact-size iframe harness as a script
+14. [ROUTESTORIES-DRIFT](#routestories-drift) — route-stories.md §3 still documents dissolved /discover routes
+15. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
+16. [HOME-FIXES](#home-fixes) — Home route fix bucket
+17. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
+18. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
+19. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
+20. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
+21. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
+22. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
+23. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
+24. [RSFD](#rsfd) — port `r-start-from-dirty`
+25. [DEPEXP](#depexp) — dependency-probe hygiene
+26. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
+27. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
+28. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
+29. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
+30. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
+31. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
+32. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
+33. [DEVSRV-STALE](#devsrv-stale) — un-parked: stale/bricked astro dev daemon recurred
+34. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
+35. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
+36. [TLFMT](#tlfmt) — r-end ref documents a TIMELINE.md shape the file no longer uses
+37. [OUTLINE-V4B](#outline-v4b) — 3 residual `outline-none` sites the Conv-244 fix missed
+38. [ADMIN-OVFLW](#admin-ovflw) — 3 admin routes overflow horizontally (pre-existing, not Conv-423)
+39. [LH1](#lh1) — 23 typography tokens hardcode `line-height: 1` (TYPO-FDN axis)
+40. [BRIDGE-RESIZE](#bridge-resize) — `resize_window` silently ignores width
+41. [ICON-STATES](#icon-states) — Phase-5 tail: drive hidden/loading states over 528 call sites
+42. [GATEPAR](#gatepar) — `/w-codecheck` vs `npm run verify` diverged on the icon gate
+43. [VPHARNESS](#vpharness) — persist the exact-size iframe harness as a script
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -170,6 +171,8 @@
 - **Pre-existing** — not Conv-404-caused; docs agent correctly declined a drive-by partial edit (Conv-200 manufactured-edit policy).
 - **When picked up:** decide first whether this section stays hand-maintained or becomes `generated` (a `src/components/ui/*` scan would never drift) — that choice IS the work.
 - **Refs:** `docs/reference/_COMPONENTS.md`, `.claude/scripts/docs-registry.mjs doc-category`, `[A11Y]`, `[PROV-SWEEP-DEBT2]`.
+- **Conv 428 addition:** three components were DELETED (`EnrollmentCard`, `CourseModerationCard`, `CoursesRoleTabs`) and four added (`auth/useRoleGate.ts`, `auth/RoleGatePanel.tsx`, `ui/StickyViewTitle.astro`, `pages/_workspace-tabs.ts`), so the `ui/` section is now stale in both directions — it lists gone components and omits new ones.
+
 
 ### [COURSES-FIXES]
 
@@ -440,7 +443,8 @@
 
 ### [RHOOKS]
 
-- **State:** 🔄 active
+- **State:** 🔄 active · `[Opus]`
+- **Conv 428 — tagged `[Opus]`, and the count grew.** The role-gate work added **8** warnings (156→164), one per gated island, all `set-state-in-effect` from `useRoleGate`'s async effect — the same pattern `useCreatorGate` always had. Tagged because the fix is a **subtle cross-cutting refactor**: these effects sit on the auth-bootstrap path, and the three-state race they guard has bitten silently three times (`[MSGBOOT]` 417, `[COURSETAB-HASH]` 419, pre-empted in `[REC-REHOME]` 427). Rewriting them to `useSyncExternalStore`/derivations, as Conv 400 did for `useAuthStatus`, is where local correctness depends on distant invariants.
 - **What:** full `react-hooks` `recommended-latest` set adopted at **warn** (Conv 400) — `eslint.config.js` `.tsx` block spreads `asWarn(reactHooks.configs['recommended-latest'].rules)` (17 rules), then re-overrides `rules-of-hooks` back to `error` (0 violations). No new dep, no `overrides` pin (react-hooks@7.1.1 already ships `eslint ^10`). Gate GREEN. Triage incrementally.
 - **Backlog — 95 warnings** (0 `.astro`; scoped `**/*.{ts,tsx}`): `set-state-in-effect` 93 (accepted baseline) · `purity` 1 · `preserve-manual-memoization` 1. `static-components` + `immutability` fully cleared.
   - **Batch 1 done (Conv 400):** 6 `static-components` hoisted + 4 `immutability` reorders + `FilterContent` inline→element-value. Net −6 (the 4 reorders unmasked latent `set-state-in-effect` the error had hidden).
@@ -450,6 +454,14 @@
 - **Refs:** `../Peerloop/eslint.config.js`, `docs/decisions/06-testing-ci.md §§ RHOOKS/RDOC`, `[A11Y]`, `[LE-TRIAGE]`.
 
 
+
+### [ROUTESTORIES-DRIFT]
+
+- **State:** 📋 queued · doc drift · surfaced by the `/r-end` docs agent, Conv 428
+- **What:** `docs/as-designed/route-stories.md` declares itself the "canonical mapping of **current** routes to user stories", but §3 still documents `/discover`, `/discover/courses` (with role-aware tabs) and `/discover/course/[slug]` — routes dissolved at ROUTE-FLIP (Conv 197) and barred by `[DISC-DROP]`. So the doc's own stated scope is wrong.
+- **Why it wasn't fixed inline:** reconciling ~402 story IDs against the live route set is a pass, not an agent edit. Long-standing drift, unrelated to Conv 428's work.
+- **Note:** the role tabs §3 describes are now doubly gone — `[M3]`/`[CRS-ROLE-DORMANT]` (Conv 428) removed the `/courses` ones too.
+- **Refs:** `docs/as-designed/route-stories.md` §3.
 
 ### [RSFD]
 

@@ -11,7 +11,7 @@
 
 - **Pages scanned:** 67
 - **API endpoints found in UI:** 218
-- **Routes reachable from navbar:** 54
+- **Routes reachable from navbar:** 53
 - **Unreachable routes:** 35
 
 ## 1. Route → API Endpoints
@@ -831,7 +831,6 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/admin/enrollments` — Click "Admin" in sidebar → Link on /admin
 - `/admin/teachers` — Click "Admin" in sidebar → Link on /admin
 - `/admin/users` — Click "Admin" in sidebar → Link on /admin
-- `/course/[slug]/book` — Click "Courses" in sidebar → Link on /courses
 - `/creator/[handle]` — Click "Courses" in sidebar → Link on /courses
 - `/login` — Click "Messages" in sidebar → Link on /messages
 - `/onboarding` — Click "Home" in sidebar → Link on /
@@ -848,13 +847,14 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/admin/payouts` — Click "Admin" in sidebar → Admin sidebar navigation → Click "Payouts" in admin sidebar
 - `/admin/sessions` — Click "Admin" in sidebar → Admin sidebar navigation → Click "Sessions" in admin sidebar
 - `/admin/topics` — Click "Admin" in sidebar → Admin sidebar navigation → Click "Topics" in admin sidebar
+- `/course/[slug]/book` — Click "Home" in sidebar → Link on / → Book Session tab/link on /course/[slug]
 - `/course/[slug]/success` — Click "Home" in sidebar → Link on / → Success (post-checkout redirect) tab/link on /course/[slug]
 - `/diploma/[id]` — Click "Admin" in sidebar → Link on /admin → Link on /admin/enrollments
-- `/session/[id]` — Click "Courses" in sidebar → Link on /courses → Link on /course/[slug]/book
 - `/teacher/[handle]` — Click "Home" in sidebar → Link on / → Link on /@[handle]
 
 ### 4 clicks
 
+- `/session/[id]` — Click "Home" in sidebar → Link on / → Book Session tab/link on /course/[slug] → Link on /course/[slug]/book
 - `/verify/[id]` — Click "Admin" in sidebar → Admin sidebar navigation → Click "Certificates" in admin sidebar → Link on /admin/certificates
 
 ---

@@ -3,6 +3,39 @@
 
 ## 5. UI/UX & Components
 
+### [ROLE-CRS-LIST] Resolved by Upgrading `/teaching`'s Existing List — the `/courses` Role Tabs Are Retired (MERGE-BRIAN §2 M3, Conv 428)
+**Date:** 2026-07-28 (Conv 428)
+
+The `/courses` role tabs (Browse · Teaching · Moderating) are **removed**, and the gating task `[ROLE-CRS-LIST]` is discharged by an upgrade to an existing surface rather than by the two new list pages it was scoped for. `TeacherCertifications` now self-sources from `useCurrentUser()`, renders the shared `CourseTeachingCard`, and carries the tab's All/Active/Paused sub-filter plus its count-gated search; `CoursesCatalog` loses the role views and tab machinery (−210 lines) and `CoursesRoleTabs` + `CourseModerationCard` are deleted. Rejected: building the two new pages as scoped; shipping M3 immediately and accepting the functional deltas. Supersedes the `[ROLE-CRS-LIST]`/M3 half of the Conv-425 entry below (whose `[REC-REHOME]`/M4 half was already superseded in Conv 427) — with that, **all 16 §2 mechanisms are dispositioned and built**.
+
+**Rationale:** Four of the gate's five load-bearing claims were false when tested against *consumers* rather than the comment that described them — `TeacherDashboard` already rendered a teaching course list off the same array the tab counted from, `/teaching/sessions` grouped by course too, the cited "no courses LIST page" comment was about the **route** not the page content, and `#moderating` was community-scoped and already homed. Three of four lenses had homes; the real gap was **function**, not existence. No new endpoint and no new pages therefore beat a build that would have duplicated three existing surfaces.
+
+**Consequences:** Removing the tabs stranded viewers who arrived at `/courses#teaching` from a bookmark — `CoursesCatalog`/`CoursesFilters` still read the URL hash, rendering the teaching lens with **no control to leave it** (0 catalog cards) while all five gates stayed green; `readHashTab()` neutralised in both islands in the same change (`[CRS-HASH-STRAND]`). The availability toggle also gained an accessible name.
+
+**See:** `src/components/dashboard/TeacherCertifications.tsx`, `src/components/courses/CoursesCatalog.tsx`; `plan/merge-brian/README.md` §2 M3; `docs/sessions/2026-07/20260728_1745 Decisions.md` §1, Learnings §§1,5; Conv 428.
+
+### [BACK-X] Resolved — Breadcrumbs Kept, the Back Button Dropped, the Sticky Title Taken as `StickyViewTitle` (MERGE-BRIAN §4, Conv 428)
+**Date:** 2026-07-28 (Conv 428)
+
+The client branch's back-row treatment replaced breadcrumbs site-wide with a `←` button plus a sticky context title. Adopted **in part**: breadcrumbs stay, the back button is **not** built, and the sticky context row ships as `src/components/ui/StickyViewTitle.astro` fed by a `view-title` slot, with `SubNav` pinning off `var(--pin-top, 16px)`; 9 label sites relabelled. Rejected: ADOPT as-is (breadcrumbs gone site-wide); ADAPT with both a back row and breadcrumbs; DROP entirely. Resolves the "8 BACK-X DROP-soft" placeholder from the §1 disposition list.
+
+**Rationale:** His handler is literally `history.back()` and renders **desktop-only** — exactly where the browser's own Back button is always visible — so the control is a duplicate of native chrome in every case but one, and that case is covered by the breadcrumb we kept. The sticky title is the part that adds something the browser cannot supply.
+
+**Consequences:** `StickyViewTitle` mounted on 3 deep pages; the client's site-wide breadcrumb removal is recorded in `plan/merge-brian/NOT-ADOPTED.md` (where a false client-facing claim was also corrected). A §4 census gap surfaced later in §6 — the S4 sweep grepped exact `Teachers` tokens, so `Teacher Management` slipped through and was relabelled in the §6 pass.
+
+**See:** `src/components/ui/StickyViewTitle.astro`; `plan/merge-brian/README.md` §4, `NOT-ADOPTED.md`; `docs/sessions/2026-07/20260728_1745 Decisions.md` §2; Conv 428.
+
+### [FEED-WIDTH] Dropped — Entity Pages Stay Full-Width; Geometry and Rails Stand or Fall Together (MERGE-BRIAN §4, Conv 428)
+**Date:** 2026-07-28 (Conv 428)
+
+`/course/[slug]` keeps its full-width shell. The client branch's 640px feed-width column is not adopted, in either form — neither with the right rail filled nor as bare geometry. Rejected: 640px + `DiscoveryRails` on course detail; 640px geometry only. Resolves the "9 FEED-WIDTH DROP-soft (shell track, revisitable)" placeholder from the §1 disposition list; **listing pages keep the 640px left-anchored geometry**, so the divergence between entity and listing pages is now deliberate.
+
+**Rationale:** The only candidate filler was `DiscoveryRails`, and its value splits by enrolment: for an enrolled student a rail advertising *other* courses is off-task on the one page where course completion is earned, cutting against the **≥75% completion** key metric. Without rails the narrowed column just leaves dead space — which was the original reason the mechanism was soft-dropped in §1.
+
+**Consequences:** Entity pages diverge from listing pages by design, recorded rather than left as an inconsistency for a later sweep to "fix".
+
+**See:** `plan/merge-brian/README.md` §4; `docs/sessions/2026-07/20260728_1745 Decisions.md` §3; Conv 428.
+
 ### [REC-REHOME] Resolved — Course + Community Recommendations Become Discovery-Rails Lanes in the Right Rail (MERGE-BRIAN §2 M4 + §3 N8, Conv 427)
 **Date:** 2026-07-28 (Conv 427)
 
@@ -56,7 +89,7 @@ The client branch hides the `/courses` role tabs (M3) and the "Popular Courses" 
 
 **Rationale:** Verified rather than assumed, and both checks changed the answer. `/teaching` has **no courses-list page** (its own route comment says so; `TeacherDashboard` groups students by course but never lists courses), so `/courses#teaching` is the only list of a teacher's courses. And `/courses` is the **only** consumer of `RecommendedCourses`, so hiding the carousel retires course recommendations site-wide and strands `/api/recommendations/courses`. Each removal would have been a silent functional loss.
 
-**Consequences:** Two new queued tasks; `[REC-REHOME]`'s destination is still open because `[FEEDS]` (Conv 267) bars re-adding panel surfaces to Home. *(Superseded in part, Conv 427: the `[FEEDS]` blocker did not survive re-testing — M4 shipped as right-rail Discovery-Rails lanes; see the Conv-427 entry at the top of this chunk. `[ROLE-CRS-LIST]`/M3 remains open.)*
+**Consequences:** Two new queued tasks; `[REC-REHOME]`'s destination is still open because `[FEEDS]` (Conv 267) bars re-adding panel surfaces to Home. *(**Fully superseded.** Conv 427: the `[FEEDS]` blocker did not survive re-testing — M4 shipped as right-rail Discovery-Rails lanes. Conv 428: `[ROLE-CRS-LIST]`'s own gate was likewise false — M3 shipped as an upgrade to `/teaching`'s existing list and the role tabs were removed. Both Conv-428 and Conv-427 entries are at the top of this chunk.)*
 
 **See:** `plan/merge-brian/README.md` §2 (M3, M4), `CURRENT-TASKS.md`; `docs/sessions/2026-07/20260728_0449 Decisions.md` §2; Conv 425.
 
@@ -1926,6 +1959,6 @@ The orphaned `HomeworkTab` student-submission UI (mounted by no live page since 
 ### MERGE-BRIAN §1 — /course/[slug] Client-Branch Dispositions: 8 ADAPT, 3 DROP, 0 ADOPT (Conv 408)
 **Date:** 2026-07-23 (Conv 408)
 
-The 12 client-branch (`brian-July-7`) mechanisms on `/course/[slug]` were each dispositioned as ADOPT (reimplement as-is) / ADAPT (take intent, our mechanism) / DROP — verdict **8 ADAPT, 3 DROP (2 soft), 0 straight ADOPT**: 1 HDR-ABOVE-TABS ADAPT (compress hero, keep cover/price/CTA, standalone band, our tokens) · 2 SESS-TAB ADAPT-curriculum-first (Modules ≠ Sessions in schema — session-first list can't render for visitors) · 3 SESS-FILES ADAPT (`session_resources` exists; defer dead `in_room`) · 4 TCH-SEARCH ADAPT (relabel "Peer Teachers", gate search behind teacher-count threshold) · 5 BAND-ACTION ADAPT (compact link-only-actionable row) · 6 TAB-SCROLL ADAPT-opt-in · 7 TAB-FLOAT/COMPACT ADAPT-compact-only (drop his 10 raw colours) · 8 BACK-X DROP-soft · 9 FEED-WIDTH DROP-soft (shell track, revisitable) · 10 COMM-BAND ADAPT-logo+affiliation-only (drop dead accent tinting) · 11 Teacher-switching DROP (see 04-auth) · 12 MattCourseFeed ADAPT-tokenised. Ready to BUILD.
+The 12 client-branch (`brian-July-7`) mechanisms on `/course/[slug]` were each dispositioned as ADOPT (reimplement as-is) / ADAPT (take intent, our mechanism) / DROP — verdict **8 ADAPT, 3 DROP (2 soft), 0 straight ADOPT**: 1 HDR-ABOVE-TABS ADAPT (compress hero, keep cover/price/CTA, standalone band, our tokens) · 2 SESS-TAB ADAPT-curriculum-first (Modules ≠ Sessions in schema — session-first list can't render for visitors) · 3 SESS-FILES ADAPT (`session_resources` exists; defer dead `in_room`) · 4 TCH-SEARCH ADAPT (relabel "Peer Teachers", gate search behind teacher-count threshold) · 5 BAND-ACTION ADAPT (compact link-only-actionable row) · 6 TAB-SCROLL ADAPT-opt-in · 7 TAB-FLOAT/COMPACT ADAPT-compact-only (drop his 10 raw colours) · 8 BACK-X DROP-soft *(resolved Conv 428 — ADAPT: button dropped, sticky title taken; see entry at top of chunk)* · 9 FEED-WIDTH DROP-soft (shell track, revisitable) *(resolved Conv 428 — DROP confirmed; see entry at top of chunk)* · 10 COMM-BAND ADAPT-logo+affiliation-only (drop dead accent tinting) · 11 Teacher-switching DROP (see 04-auth) · 12 MattCourseFeed ADAPT-tokenised. Ready to BUILD.
 
 **Rationale:** The client's *intent* is worth harvesting almost everywhere; his *implementation* almost nowhere — raw colours on tokenised primitives, shell-wide blast radius, dead-code features, a behavioral API change with no git rationale. Zero straight ADOPT fits the user's stated resistance to "intrusive, local-focussed" aesthetics. Full per-mechanism rationale in `plan/merge-brian/README.md`.

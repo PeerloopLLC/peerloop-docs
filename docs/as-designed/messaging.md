@@ -65,8 +65,9 @@ Every UI surface showing a user is a potential messaging entry point. This catal
 
 | Surface | File | Viewer | Users Shown | Msg Btn | Relationship |
 |---------|------|--------|------------|:---:|--------------|
-| Enrollment card -- teacher info | `dashboard/EnrollmentCard.tsx` (rendered by `dashboard/StudentDashboard.tsx`) | Student | Assigned teacher | YES | **In-place composer** (`appearance="bare"`, Conv 419) |
-| Course progress card -- teacher info | `courses/CourseProgressCard.tsx` | Student | Assigned teacher | YES | **In-place composer** (`appearance="bare"`, Conv 419) |
+| Course progress card -- teacher info | `courses/CourseProgressCard.tsx` (rendered by `dashboard/StudentDashboard.tsx` and `/learning`) | Student | Assigned teacher | YES | **In-place composer** (`appearance="bare"`, Conv 419) |
+
+> `dashboard/EnrollmentCard.tsx` was the second student-dashboard surface here until **Conv 428** (`[CRS-ROLE-DORMANT]`), when `StudentDashboard` was switched to `CourseProgressCard` — its Matt-inspired replacement, built Conv 222 but until then only mounted on `/learning` — and the legacy card was deleted. Both carried the same `appearance="bare"` composer, so the entry point survives the swap unchanged.
 
 #### C. Teacher Dashboards & Workspace
 
@@ -163,7 +164,7 @@ All messaging surfaces use `/messages?to=${user.id}` consistently. Fixed:
 
 Conv 418 added an `appearance="bare"` variant (`[MSG-ICON]`) — a bare `<button>` rendering the call site's own icon as children with its `className` passed through verbatim and a required `title`, deliberately **not** the `Button` primitive, whose pill radius/border/padding would fight the site's styling — and adopted it at 11 affordances across 9 files (`[MSG-ADOPT-A]`): `SessionBooking` ×2, `SessionParticipantCard`, `TeacherSessionsList`, and the 6 admin detail panels (7). `signedIn` is now optional and resolves from `useAuthStatus()` when omitted, so a call site with no viewer knowledge passes nothing; the two course tabs still pass it explicitly because they know server-side.
 
-**Conv 419 (`[MSG-ADOPT-B]`, M5) converted the last 10 — adoption is now complete.** `users/UserCard.tsx`, `teachers/profiles/TeacherProfileHeader.tsx`, `creators/profiles/CreatorProfileHeader.tsx`, `community/CommunityMembersTab.tsx`, `dashboard/EnrollmentCard.tsx`, `dashboard/TeacherStudentList.tsx`, `dashboard/TeacherUpcomingSessions.tsx`, `dashboard/CreatorTeacherList.tsx`, `teachers/workspace/MyStudents.tsx`, `courses/CourseProgressCard.tsx`. All 10 live-verified across 3 seed users. `booking/SessionRoom.tsx` remains excluded **by design** (see §D) and is the only surface still on a plain link.
+**Conv 419 (`[MSG-ADOPT-B]`, M5) converted the last 10 — adoption is now complete.** `users/UserCard.tsx`, `teachers/profiles/TeacherProfileHeader.tsx`, `creators/profiles/CreatorProfileHeader.tsx`, `community/CommunityMembersTab.tsx`, `dashboard/EnrollmentCard.tsx` *(deleted Conv 428 — see §B)*, `dashboard/TeacherStudentList.tsx`, `dashboard/TeacherUpcomingSessions.tsx`, `dashboard/CreatorTeacherList.tsx`, `teachers/workspace/MyStudents.tsx`, `courses/CourseProgressCard.tsx`. All 10 live-verified across 3 seed users. `booking/SessionRoom.tsx` remains excluded **by design** (see §D) and is the only surface still on a plain link.
 
 Seven took `appearance="bare"`; the **three profile-header sites** (`UserCard`, `TeacherProfileHeader`, `CreatorProfileHeader`) deliberately did **not** — they sit in a row of chromed siblings (e.g. `Book a Session`), so they keep the default `appearance="button"` and the `Button` primitive. That imposes `property1="Small"` padding and a 20px `MattIcon`, which was wrong beside their 16px siblings, so `icon` was widened from `string` to `string | ReactNode`: a call site can now pass its own glyph node and it renders verbatim with no MattIcon substituted. Measured against the sibling `Book a Session` button — 12px/14px/39px, identical.
 

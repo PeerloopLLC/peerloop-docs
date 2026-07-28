@@ -534,15 +534,6 @@ Get aggregated dashboard data for the authenticated Teacher.
     "intro_requests": 1,
     "homework_reviews": 0
   },
-  "certifications": [
-    {
-      "course_id": "crs-ai-tools-overview",
-      "course_title": "AI Tools Overview",
-      "certified_date": "2024-06-01",
-      "students_taught": 8,
-      "is_active": true
-    }
-  ],
   "upcoming_sessions": [
     {
       "id": "sess-sarah-001",
@@ -589,6 +580,7 @@ Get aggregated dashboard data for the authenticated Teacher.
 - `students` limited to 20, includes only `enrolled` or `in_progress` enrollments
 - `past_students` limited to 20, includes only `completed` enrollments; `completed_at` is always set
 - `stats.total_students` counts both current and past students
+- **No `certifications` array** — it was dropped Conv 428 (`[TDASH-CERTS-DEAD]`). The block had no remaining consumer: `TeacherCertifications` self-sources the teacher's certified courses from `useCurrentUser().getTeacherCertifications()`. The `teacher_certifications` join and its transform were removed from the handler, not merely omitted from the response
 
 **Errors:**
 

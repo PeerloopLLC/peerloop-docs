@@ -3,6 +3,17 @@
 
 ## 4. Authentication & Authorization
 
+### The Client-Side Role Gate Is Generalised to All Three Role Workspaces — `useRoleGate(role)` + `RoleGatePanel` (Conv 428)
+**Date:** 2026-07-28 (Conv 428)
+
+`useCreatorGate` is generalised into `src/components/auth/useRoleGate.ts` — one hook parameterised by role (`creator` | `teacher` | `student`) — plus a shared `src/components/auth/RoleGatePanel.tsx` replacing 5 duplicated gate panels. Applied to **all 8 islands** across `/creating`, `/teaching` and `/learning`, i.e. every URL-reachable workspace tab, not just the three overviews. `useCreatorGate` is kept as a thin wrapper so the 5 incumbent call sites do not churn. Rejected: adding a teacher gate only; a server-side redirect; fixing the error state without generalising.
+
+**Rationale:** Closes a verified defect, not a style inconsistency. `useCreatorGate` guarded all five `/creating` islands while `/teaching` and `/learning` had **no equivalent**: a signed-in non-teacher on `/teaching` got a red "Teacher access required" box with a **Retry that can never succeed**, under a header promising earnings — where `/creating` showed a graceful gate with an application path. `/teaching` is where the learn-teach-earn flywheel recruits, so the dead-end error was being shown to exactly the students the platform wants to convert. When comparing sibling surfaces, the *absent* mechanism is the finding, not the differing one. The security model is unchanged: the gate is UX only; server-side Pattern-C endpoint gates remain authoritative.
+
+**Consequences:** +8 `[RHOOKS]`-class warnings. The deeper CurrentUser-first vs API-first split between the three workspaces was deliberately **not** resolved here — deferred as `[WS-DATA-MODEL]`.
+
+**See:** `src/components/auth/useRoleGate.ts`, `src/components/auth/RoleGatePanel.tsx`; `docs/sessions/2026-07/20260728_1745 Decisions.md` §4, Learnings §6; Conv 428.
+
 ### [MSGBOOT] Client Consumers Gate on the Three-State `authStatus`, Never on a Nullable `getCurrentUser()` (Conv 417)
 **Date:** 2026-07-26 (Conv 417)
 
@@ -340,7 +351,7 @@ Two distinct concepts for "is creator" exist and must be used differently:
 **See:** `POLICIES.md` for full policy.
 
 ### useCreatorGate Hook for Client-Side Access Gating
-**Date:** 2026-03-01 (Session 320)
+**Date:** 2026-03-01 (Session 320) · *(Generalised Conv 428 — `useCreatorGate` is now a thin wrapper over `useRoleGate('creator')`; the mechanics below still describe the behaviour. See the Conv-428 entry at the top of this chunk.)*
 
 All `/creating/*` page components use the `useCreatorGate()` hook for client-side access gating. The hook reads `CurrentUser` global state (Permission OR State = Pattern C) with a stale-cache refresh fallback, and returns `{ status: 'loading' | 'creator' | 'not-creator', hasCourses: boolean }`.
 

@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-07-28 Conv 427 (a `driftCheck` doc whose endpoints were deleted is deleted too, not rewritten onto the replacement — follow the concern to its existing doc — §5)
+**Last Updated:** 2026-07-28 Conv 428 (MERGE-BRIAN closed — the client-branch review programme completes at all six units; the one external loose end becomes a watch, not an open block — §1)
 
 ---
 
@@ -17,6 +17,19 @@ This document tracks decisions about **how the peerloop-docs repo itself works**
 ---
 
 ## 1. Repo Architecture
+
+### MERGE-BRIAN Closed — the Client-Branch Review Programme Ends at Six Units; the External Loose End Becomes a Watch (Conv 428)
+**Date:** 2026-07-28 (Conv 428)
+
+The MERGE-BRIAN block (Convs 396–428) is **closed** and moved to `plan/COMPLETED.md`; the PLAN.md row moves to CLOSED and the `[MERGE-BRIAN-JULY7]` task is replaced by a `[BRIAN-ARTIFACTS]` **watch**. All six review units (§1 shell / §2 `/courses` / §3 communities / §4 shell track / §5 sessions-files / §6 misc) are dispositioned and every buildable mechanism — ~55 in total — is built, with the client-facing inverse ledger `plan/merge-brian/NOT-ADOPTED.md` closed out. Rejected: keeping the block open until the Brian walkthrough happens; closing the build work but retaining a thin block. The two carry-forward lessons are archived with it: **a recorded blocker is a claim** (test it against consumers before building the prerequisite) and **a unit's recorded scope is a claim** (census the tree, don't trust the route-impact map).
+
+**Rationale:** The only remaining item is *external* — Brian supplying rationale artifacts for his branch — and an item that no one on this side can advance is a watch, not an active block. Holding a 33-conv programme open on someone else's deliverable makes the board lie about what is workable. Operationalises the Conv-407 reference-exhibit rule to its end state: the exhibit has been fully read, dispositioned, and either reimplemented or explicitly declined in writing.
+
+**Consequences:** Two spin-off tasks filed rather than absorbed — `[CRS-CREATED-CARD]` (the one disposition that proved unbuildable as written: `CourseCreatedCard`'s props and the studio card's `onEdit` contract are incompatible, and rehoming would silently drop the level badge, topic, module count, price and in-place edit modal) and `[WS-DATA-MODEL]`. §4's own census gap (`Teacher Management` missed by an exact-token grep) and a §6 `migrations-dev` omission (an exclusion glob swallowing the sibling directory) were both caught and closed inside the programme, not after it.
+
+**See:** `plan/COMPLETED.md`; `plan/merge-brian/README.md` + `NOT-ADOPTED.md`; `docs/sessions/2026-07/20260728_1745 Decisions.md` §5, Learnings §§1,2,3,8; Conv 428.
+
+---
 
 ### Client Branch Is a Reference Exhibit — Intent Extraction Screen-by-Screen, No As-Is Adoption (Conv 407)
 **Date:** 2026-07-22 (Conv 407)

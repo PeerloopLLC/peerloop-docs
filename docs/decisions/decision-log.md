@@ -2255,3 +2255,47 @@ One new compact card serves both entity types in the rail, rather than adding `v
 **Consequences:** Catalog cards untouched except doc comments. `variant="overlay"` now has zero production call sites on both cards → `[OVERLAY-ORPHAN]` task + NOTE in both headers, rather than a unilateral deletion.
 
 **See:** `docs/decisions/05-ui-ux-components.md` entry; `src/components/discovery/DiscoveryRailCard.tsx`; `docs/sessions/2026-07/20260728_1119 Decisions.md` §§2,4; Conv 427.
+
+### [ROLE-CRS-LIST] Resolved by Upgrading `/teaching`'s Existing List — the `/courses` Role Tabs Are Retired (MERGE-BRIAN §2 M3, Conv 428)
+**Date:** 2026-07-28 (Conv 428)
+
+The `/courses` role tabs are removed and `[ROLE-CRS-LIST]` is discharged by upgrading an existing surface rather than building the two new list pages it was scoped for. `TeacherCertifications` self-sources from `useCurrentUser()`, renders the shared `CourseTeachingCard`, and carries the tab's All/Active/Paused sub-filter + count-gated search; `CoursesCatalog` loses the role views (−210 lines); `CoursesRoleTabs` + `CourseModerationCard` deleted. Rejected: building as scoped; shipping M3 with the deltas. Supersedes the `[ROLE-CRS-LIST]`/M3 half of the Conv-425 M3/M4 entry — with it, all 16 §2 mechanisms are dispositioned and built.
+
+**Rationale:** Four of the gate's five load-bearing claims were false when tested against consumers — `TeacherDashboard` already listed teaching courses off the same array the tab counted, the cited "no courses LIST page" comment was about the route not the content, and `#moderating` was community-scoped and already homed. The gap was function, not existence.
+
+**Consequences:** No new endpoint, no new pages. Removing the tabs stranded `/courses#teaching` bookmarks in a lens with no exit control (0 cards) while all five gates stayed green — `readHashTab()` neutralised in both islands (`[CRS-HASH-STRAND]`); availability toggle given an accessible name.
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `src/components/dashboard/TeacherCertifications.tsx`; `docs/sessions/2026-07/20260728_1745 Decisions.md` §1, Learnings §§1,5; Conv 428.
+
+### [BACK-X] Resolved — Breadcrumbs Kept, the Back Button Dropped, the Sticky Title Taken as `StickyViewTitle` (MERGE-BRIAN §4, Conv 428)
+**Date:** 2026-07-28 (Conv 428)
+
+Breadcrumbs stay, the client branch's `←` back button is not built, and his sticky context row ships as `StickyViewTitle.astro` fed by a `view-title` slot with `SubNav` pinning off `var(--pin-top, 16px)`; 9 label sites relabelled. Rejected: ADOPT as-is (breadcrumbs gone site-wide); back row + breadcrumbs; DROP entirely. Resolves the "8 BACK-X DROP-soft" placeholder from the §1 disposition list.
+
+**Rationale:** The handler is literally `history.back()` and renders desktop-only, where the browser's own Back is always visible; its one non-duplicate case is covered by the breadcrumb we kept. The sticky title is the part the browser cannot supply.
+
+**Consequences:** Mounted on 3 deep pages; his site-wide breadcrumb removal recorded in `NOT-ADOPTED.md` (where a false client-facing claim was corrected). The S4 census grepped exact `Teachers` tokens, so `Teacher Management` slipped through and was caught in §6.
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `src/components/ui/StickyViewTitle.astro`; `docs/sessions/2026-07/20260728_1745 Decisions.md` §2; Conv 428.
+
+### [FEED-WIDTH] Dropped — Entity Pages Stay Full-Width; Geometry and Rails Stand or Fall Together (MERGE-BRIAN §4, Conv 428)
+**Date:** 2026-07-28 (Conv 428)
+
+`/course/[slug]` keeps its full-width shell; the client's 640px feed-width column is not adopted in either form. Rejected: 640px + `DiscoveryRails` on course detail; 640px geometry only. Resolves the "9 FEED-WIDTH DROP-soft" placeholder from §1. Listing pages keep the 640px geometry, so entity-vs-listing divergence is now deliberate.
+
+**Rationale:** The only candidate filler was `DiscoveryRails`, whose value splits by enrolment — advertising other courses is off-task for an enrolled student on the one page where completion is earned, cutting against the ≥75% completion key metric. Without rails the narrowed column leaves dead space, the original reason to soft-drop it.
+
+**Consequences:** Entity pages diverge from listing pages by design, recorded rather than left for a later sweep to "fix".
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `plan/merge-brian/README.md` §4; `docs/sessions/2026-07/20260728_1745 Decisions.md` §3; Conv 428.
+
+### The Client-Side Role Gate Is Generalised to All Three Role Workspaces — `useRoleGate(role)` + `RoleGatePanel` (Conv 428)
+**Date:** 2026-07-28 (Conv 428)
+
+`useCreatorGate` generalises into `useRoleGate(role)` (`creator` | `teacher` | `student`) plus a shared `RoleGatePanel` replacing 5 duplicated panels, applied to all 8 islands across `/creating`, `/teaching` and `/learning` — every URL-reachable workspace tab, not just the overviews. `useCreatorGate` kept as a thin wrapper so the 5 incumbent call sites do not churn. Rejected: teacher gate only; server-side redirect; fixing the error state alone.
+
+**Rationale:** Closes a verified defect, not an inconsistency: a signed-in non-teacher on `/teaching` got a red "Teacher access required" box with a Retry that can never succeed, under a header promising earnings, while `/creating` showed a graceful gate with an application path — and `/teaching` is where the flywheel recruits, so the dead end was shown to exactly the students it wants to convert. Security model unchanged (UX gate only; server-side Pattern-C endpoint gates remain authoritative).
+
+**Consequences:** +8 `[RHOOKS]`-class warnings; the CurrentUser-first vs API-first data-model split across the three workspaces deliberately deferred as `[WS-DATA-MODEL]`.
+
+**See:** `docs/decisions/04-auth.md` entry; `src/components/auth/useRoleGate.ts`; `docs/sessions/2026-07/20260728_1745 Decisions.md` §4, Learnings §6; Conv 428.
