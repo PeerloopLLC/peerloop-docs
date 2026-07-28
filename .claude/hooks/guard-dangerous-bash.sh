@@ -67,6 +67,8 @@ elif has '(DROP[[:space:]]+(TABLE|INDEX|VIEW|TRIGGER)|TRUNCATE[[:space:]]+TABLE|
   reason="Destructive SQL (DROP/TRUNCATE/DELETE FROM) — confirm the target database first."
 elif has "\\bgit\\b${GITOPTS}[[:space:]]+push\\b" && has '(--force\b|--force-with-lease\b|(^|[[:space:]])-f([[:space:]]|$))'; then
   reason="Force push rewrites remote history (also denied for the bare form; this catches the git -C … form deny prefixes miss)."
+elif has '\blsof\b' && has '\b(kill|pkill|killall)\b'; then
+  reason="Port-based process kill (lsof + kill). lsof -ti:PORT returns EVERY process on that port — including the user's Chrome (verified Conv 429: pid was Chrome's NetworkService, not the server) and any pre-existing dev server this session did not start (Conv 393). Use \`npx astro dev stop\` (reads .astro/dev.json, kills only this project's pid)."
 fi
 
 if [ -n "$reason" ]; then

@@ -5,12 +5,13 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 05379449-ab13-47e5-9827-6e2f5fcb3961
+  modified: 2026-07-28T23:14:12.193Z
 ---
 
 **For responsive / minimum-width testing via the Chrome MCP, use an exact-width same-origin iframe — NOT `resize_window` or a DevTools device panel.** (Conv 367 [MINWIDTH].)
 
 **Why the obvious approaches fail:**
-- `resize_window` is laggy/unreliable — it "succeeds" but `innerWidth` lags (measured 341 one call, 1087 the next for the same request); only takes effect after some navigations.
+- `resize_window` **[BRIDGE-RESIZE] is now a complete no-op that reports success** — and it has *degraded across builds*, so re-test rather than assuming: Conv 367 it was merely laggy (values did move — 341 one call, 1087 the next); Conv 424 width was ignored but height still applied; **Conv 429 neither axis moves at all** (asked 900×700 then 1600×500, window stayed 1369×1221 both times, unchanged after a 1500 ms settle, while the tool returned *"Successfully resized window … to 900x700 pixels"*). Same success-shaped-failure class as `navigate` onto a `chrome-error://` page. The iframe harness below is the only reliable path.
 - **MCP browser automation measures/screenshots the REAL page viewport, not a DevTools device-mode panel.** With the user's responsive panel open, `window.innerWidth` still read 1087 (desktop) — DevTools emulation is invisible to the automation, so you can't rely on the user's device panel for measurements.
 - Container-forcing (`el.style.width='320px'`) LIES: `min-[480px]:`/`sm:` media queries key off the real viewport, so responsive classes stay in their desktop state. See [[feedback_dom_truth_over_screenshots]].
 

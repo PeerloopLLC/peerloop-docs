@@ -33,41 +33,38 @@
 6. [A11Y](#a11y) — accessibility lint triage
 7. [RHOOKS](#rhooks) — react-hooks lint triage
 8. [KNIP](#knip) — dead-export oracle → gate
-9. [PROV-SWEEP-DEBT2](#prov-sweep-debt2) — `prov:sweep` gate silently red (10 unregistered)
-10. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
-11. [EDITSAFE](#editsafe) — anchored-edit discipline
-12. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
-13. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
-14. [ROUTESTORIES-DRIFT](#routestories-drift) — route-stories.md §3 still documents dissolved /discover routes
-15. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
-16. [HOME-FIXES](#home-fixes) — Home route fix bucket
-17. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
-18. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
-19. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
-20. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
-21. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
-22. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
-23. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
-24. [RSFD](#rsfd) — port `r-start-from-dirty`
-25. [DEPEXP](#depexp) — dependency-probe hygiene
-26. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
-27. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
-28. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
-29. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
-30. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
-31. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
-32. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
-33. [DEVSRV-STALE](#devsrv-stale) — un-parked: stale/bricked astro dev daemon recurred
-34. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
-35. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
-36. [TLFMT](#tlfmt) — r-end ref documents a TIMELINE.md shape the file no longer uses
-37. [OUTLINE-V4B](#outline-v4b) — 3 residual `outline-none` sites the Conv-244 fix missed
-38. [ADMIN-OVFLW](#admin-ovflw) — 3 admin routes overflow horizontally (pre-existing, not Conv-423)
-39. [LH1](#lh1) — 23 typography tokens hardcode `line-height: 1` (TYPO-FDN axis)
-40. [BRIDGE-RESIZE](#bridge-resize) — `resize_window` silently ignores width
-41. [ICON-STATES](#icon-states) — Phase-5 tail: drive hidden/loading states over 528 call sites
-42. [GATEPAR](#gatepar) — `/w-codecheck` vs `npm run verify` diverged on the icon gate
-43. [VPHARNESS](#vpharness) — persist the exact-size iframe harness as a script
+9. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
+10. [EDITSAFE](#editsafe) — anchored-edit discipline
+11. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
+12. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
+13. [ROUTESTORIES-DRIFT](#routestories-drift) — route-stories.md §3 still documents dissolved /discover routes
+14. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
+15. [HOME-FIXES](#home-fixes) — Home route fix bucket
+16. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
+17. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
+18. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
+19. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
+20. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
+21. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
+22. [RSFD](#rsfd) — port `r-start-from-dirty`
+23. [DEPEXP](#depexp) — dependency-probe hygiene
+24. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
+25. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
+26. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
+27. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
+28. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
+29. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
+30. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
+31. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
+32. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
+33. [TLFMT](#tlfmt) — r-end ref documents a TIMELINE.md shape the file no longer uses
+34. [OUTLINE-V4B](#outline-v4b) — 3 residual `outline-none` sites the Conv-244 fix missed
+35. [ADMIN-OVFLW](#admin-ovflw) — 3 admin routes overflow horizontally (pre-existing, not Conv-423)
+36. [LH1](#lh1) — 23 typography tokens hardcode `line-height: 1` (TYPO-FDN axis)
+37. [BRIDGE-RESIZE](#bridge-resize) — `resize_window` silently ignores width
+38. [ICON-STATES](#icon-states) — Phase-5 tail: drive hidden/loading states over 528 call sites
+39. [GATEPAR](#gatepar) — `/w-codecheck` vs `npm run verify` diverged on the icon gate
+40. [VPHARNESS](#vpharness) — persist the exact-size iframe harness as a script
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -102,16 +99,21 @@
 
 ### [BRIDGE-RESIZE]
 
-- **State:** 👀 watch (tooling) — surfaced Conv 424.
-- **What:** `mcp__claude-in-chrome__resize_window` returns `"Successfully resized window ... to WxH"` but
-  **width is never applied** (height is). Measured: window asked for 900, 1404, 1600 → `innerWidth`
-  stayed **1156** every time. Same success-shaped-failure class as the `navigate`-onto-`chrome-error://`
-  trap from `[BRIDGE-DIAG]`.
-- **Workaround in use:** exact-size same-origin **iframe harness** — set `width` + `min-width` +
-  `max-width:none !important` (the app's CSS reset caps embedded elements at 100%, which silently clamps
-  the iframe), then `transform: scale()` to fit. Gives a true `innerWidth: 1280` with `mq1200` matching.
-- **Next:** re-test on a newer Chrome-in-Claude build; if still broken, report upstream.
-- **Refs:** `memory/reference_responsive_iframe_harness.md`, `[BRIDGE-DIAG]` (Conv 424).
+- **State:** 👀 watch (tooling) · **re-tested Conv 429 — STILL BROKEN, and broader than recorded**
+- **What:** `mcp__claude-in-chrome__resize_window` returns `"Successfully resized window ... to WxH"` and
+  changes nothing. **Conv 429 re-test: BOTH axes are now no-ops** — asked 900x700 then 1600x500, window
+  stayed **1369x1221** both times, still unchanged after a 1500 ms in-page settle.
+- **It has degraded across builds** — so re-test, don't assume: Conv 367 merely laggy (values *did*
+  move: 341 one call, 1087 the next) → Conv 424 width ignored, height still applied → **Conv 429 neither
+  axis moves.** Same success-shaped-failure class as `navigate` onto `chrome-error://` (`[BRIDGE-DIAG]`).
+- **Workaround (unchanged, and now the only path):** exact-size same-origin **iframe harness** — set
+  `width` + `min-width` + `max-width:none !important` (the app's CSS reset caps embedded elements at
+  100%, silently clamping the iframe), then `transform: scale()` to fit. Gives a true `innerWidth: 1280`
+  with `mq1200` matching.
+- **Next: 👉 upstream report is the user's call** (external/outward-facing — not filed autonomously).
+  Everything needed for a report is captured here and in the memory file.
+- **Refs:** `memory/reference_responsive_iframe_harness.md` (updated Conv 429 with the degradation
+  trajectory), `[BRIDGE-DIAG]` (Conv 424).
 
 ### [LH1]
 
@@ -195,40 +197,6 @@
 - **What:** in-place `npm install` probes (during `[A11Y]`) pulled newer transitive optional pins into resolution; a later `npm ci` then failed "out of sync" despite a byte-identical committed lockfile. Reconciled via `npm install` + `git restore package-lock.json`.
 - **Habit to adopt:** run dependency experiments in a throwaway git worktree, or always reconcile (`npm install` then restore the committed lockfile) after in-place probes.
 - **Refs:** `docs/sessions/2026-07/20260720_1245 Learnings.md §5`. Sibling of `[SCRATCH-DEBRIS]`/`[DEVSRV-KILL]`. Surfaced Conv 399.
-
-### [DEVSRV-KILL]
-
-- **State:** 📋 queued · low priority (tooling hygiene)
-- **What:** scope ephemeral dev-server teardown to the spawned PID. Conv 393 a port-based kill (`lsof -ti :4321 | grep 'astro dev'`) killed a **pre-existing** astro dev on :4321 this session didn't start (ours had fallen back to :4322).
-- **Fix:** capture the spawned PID, kill only that on teardown — never a broad `:port + astro dev` match.
-- **Refs:** `memory/feedback_persistent_dev_server_4321`. Surfaced Conv 393.
-
-### [DEVSRV-STALE]
-
-- **State:** 📋 queued — **gate FIRED, un-parked Conv 417** (third occurrence; recurred in consecutive convs)
-- **What:** Conv 414 — user hit an "old version" of the site on :4321 (`/matt` + `/discover` as real routes = **pre-flip**, dissolved Conv 197). Current code verified correct via curl (`/matt`→404). Root cause not pinned at the time: a stale `astro dev` **daemon** persists across sessions (`npm run dev` reported "already running pid 9015"), OR the pre-flip worktree server (`~/projects/Peerloop-preflip` @ 608346a2) bound to 4321, OR Brave's localhost cache.
-- **✅ One variant now root-caused (Convs 416–417):** an `npm install` run **while `astro dev` is up** bricks the running server's in-memory miniflare module runner. Symptom is distinctive: **the port stays bound (`lsof -ti:4321` returns PIDs) but `curl` returns `000`** — a dead daemon holding the socket. Conv 417 hit exactly this from the Conv-416 dependency work; fix was `kill <pids>` then a fresh `npm run dev`. This is a *different* variant from the Conv-414 stale-content one, which remains unpinned.
-- **Why it's un-parked:** flagged by the r-end docs agent as appearing in two consecutive session extracts (2026-07-25 and 2026-07-26), and the earlier extract had said to act "if it bites again". It bit again.
-- **✅ A THIRD variant (Conv 418) — stale Vite dep-optimizer cache.** A long-running `astro dev`
-  (up since the previous conv) 500s on routes importing a pre-optimized dep after new imports are
-  added across several files: `The file does not exist at ".../node_modules/.vite/deps_ssr/
-  react-chartjs-2.js?v=<hash>" ... might be incompatible with the dep optimizer`. Distinctive
-  signature: **the server answers (not `000`) but a specific route 500s**, while `npm run build` is
-  clean — so it is never a code defect. Fix: `rm -rf node_modules/.vite` + restart. ⚠️ The restarted
-  daemon binds **`[::1]` only** → use `localhost:4321`, not `127.0.0.1:4321` (see
-  `[[reference_playwright_headless_browser_fallback]]`). Related to `[VITE-DEPS-WATCH]`.
-- **✅ Vite-cache variant RECURRED Conv 420 (4th occurrence overall, 2nd of this variant)** — same
-  signature, different dep: `curl /` → **HTTP 500**, `The file does not exist at
-  ".../node_modules/.vite/deps_ssr/astro_compiler-runtime.js?v=564df0ce"`. Note it hit the **root
-  route**, so "a specific route 500s" understates it — it takes out any route importing the stale dep.
-- **✅ Cleaner teardown found Conv 420 — `npx astro dev stop`.** Astro's dev daemon has first-class
-  `stop` / `status` / `logs` subcommands (`astro dev --help`). `npx astro dev stop` reports the pid it
-  killed, which is strictly better than the `kill <pids>` this task previously prescribed and directly
-  satisfies `[DEVSRV-KILL]`'s "scope teardown to PID". Full recovery: `npx astro dev stop` →
-  `rm -rf node_modules/.vite` → `npx astro dev --background` → verify `curl localhost:4321` = 200.
-- **✅ Memory written Conv 420:** `memory/reference_devserver_stale_daemon.md` — all three variants,
-  their distinguishing signatures, and the recovery for each.
-- **Refs:** `memory/feedback_persistent_dev_server_4321`, `memory/project_wrangler_exact_pin_miniflare_dedupe`, `[DEVSRV-KILL]`. Surfaced Conv 414, recurred 415/417.
 
 ### [DL-FILENAME]
 
@@ -405,15 +373,6 @@
   or check for an explicit `--dry-run` before probing. `git status` after any exploratory script run.
 - **Optional fix:** give the `scripts/*.mjs` generators an arg guard that prints usage and exits on an
   unrecognised flag, instead of silently running.
-
-### [PROV-SWEEP-DEBT2]
-
-- **State:** 📋 queued (gate silently red)
-- **What:** `npm run prov:sweep` reports **11 issues** (10 UNTRACKED errors + 1 drift) — was 0 at Conv 244. Drift since: components stamp `data-prov-name="X"` on their outer element but were never added to `scripts/matt-inspired-registry.ts`. Offenders: `NavDrawer`, `NavMenuButton`, `communities/CommunitiesFilters`, `courses/CoursesFilters`, `feed/SignupCtaCard`, `settings/LayoutToggle`, `ui/MobileUpNav.astro`, `course/CourseJourneyStepper.astro`, `course/CourseSessionsActions.astro`, **`course/CourseReviewComposer.tsx`** (10th, added Conv 416, spotted Conv 418 — the gate drifts by one every time a stamped component ships unregistered, which is the recurring cost of leaving it red). **Conv 425 did NOT add to this**: its 3 new stamped components (`CourseCoverPanel`, `CoursePriceSticker`, `CommunityAffiliation`) were registered on landing after a self-audit caught the gate at 17, restoring the 11 baseline. Registering-on-landing is the cheap habit that stops this growing.
-- **Verified NOT caused by `[A11Y]` Conv 404** (none in that diff; the 2 new primitives are unstamped).
-- **Related tooling weakness (Conv 412):** `scripts/gen-registries.ts`'s marker regex `/@matt-source\s+\d+:\d+/` matches the marker-with-node **anywhere in a file, incl. prose** — so a `@matt-inspired` component that *references* another's source node in its docstring gets falsely registered as matt-sourced (hit `messages/matt/Avatar.tsx`, whose prose named the UserIcon node it wraps). Mitigated Conv 412 by rewording Avatar's prose; the durable fix is to require the marker to be a standalone provenance line (align with `prov-sweep.ts`'s accept-rule). Low priority.
-- **Why it matters:** a real gate failing unnoticed → the registry⟺marker⟺stamp conformity from `[PRIM-STAMP]` (Conv 217) isn't holding. Each offender needs a registry entry (with `figmaMatchNames`) **or** its stamp removed if not a vetted primitive — decide per component, don't bulk-register.
-- **Refs:** `../Peerloop/scripts/matt-inspired-registry.ts`, `npm run prov:sweep`, `docs/as-designed/matt-provenance.md §12c`, `plan/prim-registry/README.md`, `[PRIM-STAMP]`, `[PROV-SWEEP-DEBT]`. Surfaced Conv 404.
 
 ### [RG-PUBLIC]
 
@@ -624,17 +583,6 @@
 
 ## ✅ Done this conv
 
-- **🏁 MERGE-BRIAN CLOSED** ✅ Conv 428 — all six review units complete; the PLAN.md row moved to `plan/COMPLETED.md`. Nothing of his was merged as-is (the standing rule); ~55 mechanisms reimplemented on our terms, with the client-facing `NOT-ADOPTED.md` ledger closed out for a walkthrough. His branch surfaced **four real defects on our side**, all fixed. The task is replaced by the thin `[BRIAN-ARTIFACTS]` watch — the one open item is **external** (the "approved Option B / mockup" artifacts his commits cite, which exist nowhere in git).
-- **[PROV-SWEEP-DEBT2]** ✅ Conv 428 — **the gate is GREEN for the first time since Conv 416.** It had sat at 11 issues (10 errors) and we had normalised reporting that as "baseline" — including 8 times in this conv — but a red gate cannot detect a *new* offender, which is its entire purpose (the Conv-425 lesson: three newly-stamped components took it 11→17 unnoticed). All 10 were the same shape — a component stamping `data-prov-name` with no registry entry — and each was **checked before registering rather than blanket-added**: 7 carried `@matt-inspired`; `NavDrawer`/`NavMenuButton`/`MobileUpNav` carried only the runtime stamp and were confirmed genuine net-new Peerloop nav primitives ([MOBNAV]/[MOBUP], Convs 361-362). The 11th was the drift item `CourseRail`, whose registration then required the stamp it lacked. Sweep now reports *"Provenance bookkeeping is consistent."*
-- **Role-workspace consistency pass** ✅ Conv 428 — assessment of `/creating` vs `/learning` vs `/teaching` (see conv-turns Turn 15 for the full findings table). **Confirmed nothing was lost.** **🔴 One active defect found and fixed, verified live both before and after:** `useCreatorGate` guarded all 5 creator islands but `/teaching` + `/learning` had **no equivalent**, so a signed-in non-teacher hit the dashboard's fetch-error branch — a red *"Teacher access required"* box and a **Retry that can never succeed** — where `/creating` showed a graceful gate. Fixed by generalising to **`useRoleGate(role)`** (creator/teacher/student; ROLE-SEMANTICS Decision A and the stale-cache refresh preserved) + a shared **`RoleGatePanel`** replacing 5 duplicated panels, applied to **all 6 teaching + 2 learning islands** so every URL-reachable tab is gated. `useCreatorGate` kept as a thin wrapper so the 5 incumbent call sites didn't change. Also: shared **`WorkspaceTabNavItem`** (3 identical interfaces → 1), **icon vocabulary fixed** (Sessions was `calendar` on /learning but `videocam` on /teaching where `calendar` meant Availability), and **`/learning` now hosts the S→T progression nudge**, mirroring how /teaching hosts T→C. Finding 3 (three-state gate on all 3 dashboards) turned out to be **satisfied by this work**, not a separate change. 5 gates green, suite 6214→**6217**; lint 0 errors, warnings 156→164 (one per gated island, all the pre-existing `[RHOOKS]` `set-state-in-effect` class).
-- **[CRS-ROLE-DORMANT] + [OVERLAY-ORPHAN]** ✅ Conv 428 — resolved as **rehome 2, delete the rest**, net **−576 lines**. **Rehomed:** `CourseProgressCard` → `/learning`'s `StudentDashboard`, replacing the legacy `EnrollmentCard` it was built to replace back in Conv 222 but had only ever been reachable from the removed role tabs (verified a strict superset first: same status pill, actions and message button, **plus** a progress bar and level/duration/session chips). **Deleted:** `EnrollmentCard` (176), `CourseModerationCard` (62 — moderating is community-scoped, no home exists), `CoursesRoleTabs` (70, zero imports), the four role branches + `SUB_OPTIONS` + `EmptyState` + tab state + hash/`courses:tabchange` wiring in `CoursesCatalog`, the `isAll` collapse branch in `CoursesFilters`, and the `variant="overlay"` blocks on **both** catalog cards (`[OVERLAY-ORPHAN]`, no call site since Conv 427). `useRoleTabs` deliberately kept — `CommunitiesRoleTabs` still imports it. Lint warnings **160→156**; suite 6215→6214.
-- **[CRS-COMM-TABSYM]** ✅ Conv 428 — **accepted the asymmetry, on evidence.** All four `/courses` lenses had other homes (which is why M3 was safe); on `/communities` only "created" does (`/creating` → `CreatorCommunities`), so **member/teaching/moderating have none**. Recorded as a decision so it doesn't later read as drift.
-- **[TDASH-CERTS-DEAD]** ✅ Conv 428 — `certifications` removed from `/api/me/teacher-dashboard` (the `CertificationRow` interface, its query, the `certItems` transform and the returned field). The test that asserted the array now pins its **absence**, so it can't quietly return.
-- **StickyViewTitle extended to 3 hosts** ✅ Conv 428 — added `/creating/communities/[slug]` (view-type title; the community name is only known client-side) and `/teaching/courses/[courseId]` (course title). Both verified to carry no `SubNav`. 🟠 **Honest limitation unchanged:** at a 1059px window none of the three hosts scroll (each ~1059px of content); on a typical 800px laptop they'd scroll ~260px, which is where the bar earns its 52px.
-- **🟠 Board-hygiene slip, self-corrected** — five of the above completion records had been anchored into the `[MERGE-BRIAN-JULY7]` **task body** rather than this section, so closing that task deleted them. Recovered from git and restored here. `[EDITSAFE]` lesson: a unique anchor is not automatically a *correctly-placed* one — check the section, not just the string.
-- **[ROLE-CRS-LIST]** ✅ Conv 428 — **rescoped after a premise test falsified its own gate**, then built. The recorded blocker ("`/courses#teaching` is the only list of a teacher's courses; `TeacherDashboard` never lists them") was wrong: `TeacherDashboard` renders `TeacherCertifications` — *"My Teaching Certifications"*, one card per course linking to `/teaching/courses/{id}` — off the **same** `getTeacherCertifications()` array the tab counts from, and `/teaching/sessions` groups by course as well. The cited route comment ("no courses LIST page") was about the **route** `/teaching/courses`, not about page content. `#moderating` held, but is community-scoped and already homed at `/communities#moderating`; the gate also silently omitted the **Created** lens (covered by `/creating/studio`). So instead of two new list pages: `TeacherCertifications` rewritten to self-source from `useCurrentUser()`, render the shared `CourseTeachingCard`, and carry the tab's All/Active/Paused sub-filter + count-gated search (`SEARCH_THRESHOLD` 4, `TeachersTabList` precedent). No new endpoint. +5 tests.
-- **MERGE-BRIAN §2 M3 `[CRS-ROLE-TABS-OFF]`** ✅ Conv 428 — role tabs removed from `/courses` (mount + import deleted; not commented out — git is the retention mechanism). **§2 is now COMPLETE (16 of 16).**
-- **🔴 `[CRS-HASH-STRAND]`** ✅ Conv 428 — defect **found in live verification and fixed same-conv**: with the tab bar gone, `CoursesCatalog`/`CoursesFilters` still read the URL hash, so `/courses#teaching` rendered the teaching lens with **no control to leave it** (0 catalog cards, viewer stranded). `readHashTab()` in both islands now always returns `'all'`; all four stale hashes verified live to render the full public catalog.
-- **a11y fix** ✅ Conv 428 — the `/teaching` availability toggle had `aria-pressed` but **no accessible name**; given `aria-label="Toggle teaching availability"` (surfaced because the new sub-filter pills made a bare `pressed: true` query ambiguous).
-- **MERGE-BRIAN §4 shell track — WALK COMPLETE + BUILT** ✅ Conv 428. 11 files censused; **7 already dispositioned by §1–§3** (SubNav `preserveScroll` · SubNavItem `dense` · Input/Select `compact` · IconLabelChip `link` · StickyListingToolbar `dense` · ListingShell panel DROP), leaving **4 live mechanisms: 1 ADAPT · 1 ADOPT · 2 DROP**. **S1 `[BACK-X]` ADAPT** — breadcrumbs KEPT, back button DROPPED (its handler is literally `history.back()` and it renders desktop-only, where browser Back is always visible; its one non-duplicate case is covered by the breadcrumb we kept), sticky title TAKEN as new `StickyViewTitle.astro` + `view-title` slot on `AppLayout` + `SubNav` pin lines moved to `var(--pin-top,16px)`. **S2 `[FEED-WIDTH]` DROP** re-affirmed. **S3** sidebar "My Courses" **DROP**. **S4** "Peer Teachers" **ADOPT** across 9 sites (+4 test assertions), closing the half-applied relabel. 5 gates green, suite 6215, `prov:sweep` at baseline (new component registered).
-- **🔴 Client-facing doc correction** ✅ Conv 428 — `NOT-ADOPTED.md` claimed his breadcrumb removal "was never site-wide — 22 pages keep the breadcrumb bar". **False.** `AppLayout` renders `<slot name="header-bar" />` in exactly one place and that block is commented out on his branch, so **no** page shows a desktop breadcrumb. The old count came from pages that still *contain* breadcrumb markup — the definition, not the consumer. Corrected in the ledger, which is read aloud to the client.
+- **[DEVSRV-KILL]** ✅ Conv 429 — **closed: already solved natively, now proven.** `npx astro dev stop` reads `.astro/dev.json` (`{pid, port, url, background, startedAt}`) and kills exactly the pid this project started. Verified against the **literal Conv-393 failure**, reconstructed: a foreign process was made to squat :4321, our server fell back to **:4322**, and `stop` killed **our 4322 pid** while sparing both the squatter and Chrome. No script needed — the task's "capture the spawned PID" is what astro 7 already does (it prints the pid on start).
+- **🔴 Port-kill hazard found + guarded** ✅ Conv 429 — measured: **`lsof -ti:4321` returned Google Chrome's NetworkService pid** alongside the server, because it lists every process holding a *connection*, not just the listener. `kill $(lsof -ti:4321)` would kill the browser used for live verification — strictly worse than the Conv-393 failure the task recorded. (Conv 393's recorded `lsof -ti :4321 | grep 'astro dev'` also cannot work: `lsof -ti` emits bare pids, so that grep matches nothing.) Added a PreToolUse rule to `.claude/hooks/guard-dangerous-bash.sh` escalating `lsof` + `kill` in one command to an interactive ask, **calibrated per `[CMH]` before commit**: 3 canonical dangerous forms ask, 6 benign forms (incl. `npx astro dev stop`, bare `lsof -ti:4321` inspection, `kill <pid>`) pass, and both pre-existing rules still fire.
+- **[DEVSRV-STALE]** ✅ Conv 429 — **closed: all three variants root-caused, including the one recorded as "never fully root-caused".** (a) **Why daemons outlive convs at all:** in astro 7 `astro dev` **daemonizes itself** — `npm run dev` prints its pid, writes the lock and returns exit 0, so every conv that doesn't explicitly stop it leaves a server running. Not an anomaly; the default. (b) **The stale-content variant is the preflip worktree**, and the mechanism is a trap: `~/projects/Peerloop-preflip` runs **astro 6.3.7, which has no `stop`/`status`/`logs`/`--background` at all**, so `npx astro dev stop` there **silently ignores the argument and STARTS a pre-flip server on :4321** — a teardown command standing the old site up on the main port. (c) **The main repo is blind to it:** locks are per-directory *and* per-major-version, so `npx astro dev status` reports *"No dev server is running."* while :4321 serves pre-flip code. Fingerprinted live: `/matt` **200**, `/discover` **200**, `/old/dashboard` **404** — a pair no current build can produce, since the `/old/*` namespace was *created by* the flip. Memory `reference_devserver_stale_daemon.md` rewritten with the triage table, the fingerprint, and lock-based teardown.
