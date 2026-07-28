@@ -577,6 +577,32 @@ painted. Recorded as `[BRIDGE-OFFSCREEN-WINDOW]` in
 `memory/reference_playwright_headless_browser_fallback.md`: before concluding "doesn't render", check
 `visibilityState` and whether the element's rect lies beyond `innerWidth`.
 
+### Post-build self-audit (Conv 425) — asked "anything outstanding on /courses?"
+
+Checked rather than recalled, and two of the findings were **self-inflicted by this conv's work**:
+
+- **`prov:sweep` had gone 11 → 17 issues** (10 → 13 errors), all three new errors being the components
+  built above, each stamping `data-prov-name` with no `matt-inspired-registry.ts` entry — exactly the
+  drift `[PROV-SWEEP-DEBT2]` warns about. **Registered; gate back to its 11-issue baseline.**
+- **The `cover-story` switch stranded code.** With `/courses` moved off `stacked + context="catalog"`,
+  the only two call sites left were `RecommendedCourses` (`overlay`) and `CoursesCatalog`
+  (`cover-story`) — so every `isCatalog` branch and the `sessionCount` / `durationLabel` /
+  `creatorAvatarUrl` props feeding them became unreachable **while tsc, lint and 6155 tests stayed
+  green** ([ORPHAN-DETECT] in miniature). **Removed** — along with the `context` prop, the
+  `CourseCardContext` type and the `UserAvatar` import. Verified inert live: 6 cards, 6 stickers, 6
+  affiliations, identical geometry either side of the change.
+
+Still outstanding on `/courses`, all pre-existing or gated:
+
+| Item | Status |
+|---|---|
+| M3 role tabs · M4 carousel | gated on `[ROLE-CRS-LIST]` / `[REC-REHOME]` (the latter's destination still undecided — `[FEEDS]` bars Home) |
+| `[COURSES-FIXES]` | holds the Conv-292 sweep deferrals `[FILTERS-RESPONSIVE]` + `[TYPO-REVIEW]`. This conv's compact toolbar plausibly overlaps the first; **not verified, so not claimed** |
+| `[TSLASH]` | names `/courses/` as a duplicate-content risk (site-wide task) |
+| Narrow widths | the cover panel's sub-`@xl` stacked-banner reflow and the wrapped toolbar are **unverified** — everything this conv was measured at 1454px. `[VPHARNESS]` exists for exactly this |
+
+`/courses` itself remains ☑ Swept (Conv 292) in the route-migration ledger; F1 and F2 are both closed.
+
 ### §2 walk result (Conv 425)
 
 **16 mechanisms · 3 ADOPT · 12 ADAPT · 1 DROP.** Two ADAPTs are **gated on prerequisites** and are not

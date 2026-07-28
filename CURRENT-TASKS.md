@@ -423,7 +423,7 @@
 ### [PROV-SWEEP-DEBT2]
 
 - **State:** 📋 queued (gate silently red)
-- **What:** `npm run prov:sweep` reports **11 issues** (10 UNTRACKED errors + 1 drift) — was 0 at Conv 244. Drift since: components stamp `data-prov-name="X"` on their outer element but were never added to `scripts/matt-inspired-registry.ts`. Offenders: `NavDrawer`, `NavMenuButton`, `communities/CommunitiesFilters`, `courses/CoursesFilters`, `feed/SignupCtaCard`, `settings/LayoutToggle`, `ui/MobileUpNav.astro`, `course/CourseJourneyStepper.astro`, `course/CourseSessionsActions.astro`, **`course/CourseReviewComposer.tsx`** (10th, added Conv 416, spotted Conv 418 — the gate drifts by one every time a stamped component ships unregistered, which is the recurring cost of leaving it red).
+- **What:** `npm run prov:sweep` reports **11 issues** (10 UNTRACKED errors + 1 drift) — was 0 at Conv 244. Drift since: components stamp `data-prov-name="X"` on their outer element but were never added to `scripts/matt-inspired-registry.ts`. Offenders: `NavDrawer`, `NavMenuButton`, `communities/CommunitiesFilters`, `courses/CoursesFilters`, `feed/SignupCtaCard`, `settings/LayoutToggle`, `ui/MobileUpNav.astro`, `course/CourseJourneyStepper.astro`, `course/CourseSessionsActions.astro`, **`course/CourseReviewComposer.tsx`** (10th, added Conv 416, spotted Conv 418 — the gate drifts by one every time a stamped component ships unregistered, which is the recurring cost of leaving it red). **Conv 425 did NOT add to this**: its 3 new stamped components (`CourseCoverPanel`, `CoursePriceSticker`, `CommunityAffiliation`) were registered on landing after a self-audit caught the gate at 17, restoring the 11 baseline. Registering-on-landing is the cheap habit that stops this growing.
 - **Verified NOT caused by `[A11Y]` Conv 404** (none in that diff; the 2 new primitives are unstamped).
 - **Related tooling weakness (Conv 412):** `scripts/gen-registries.ts`'s marker regex `/@matt-source\s+\d+:\d+/` matches the marker-with-node **anywhere in a file, incl. prose** — so a `@matt-inspired` component that *references* another's source node in its docstring gets falsely registered as matt-sourced (hit `messages/matt/Avatar.tsx`, whose prose named the UserIcon node it wraps). Mitigated Conv 412 by rewording Avatar's prose; the durable fix is to require the marker to be a standalone provenance line (align with `prov-sweep.ts`'s accept-rule). Low priority.
 - **Why it matters:** a real gate failing unnoticed → the registry⟺marker⟺stamp conformity from `[PRIM-STAMP]` (Conv 217) isn't holding. Each offender needs a registry entry (with `figmaMatchNames`) **or** its stamp removed if not a vetted primitive — decide per component, don't bulk-register.
@@ -614,6 +614,14 @@
   `availableSoon` · M6 tokenised flat pills · M7 visible compact sort · M8 opt-in `compact`/`dense`).
   5 gates green, suite **6131 → 6139** (new `CoursesFilters.test.tsx`, 8 tests), live-verified signed
   in and signed out.
+- **§2 self-audit cleanup — both items I introduced, cleared.** (1) The 3 new stamped components
+  (`CourseCoverPanel`, `CoursePriceSticker`, `CommunityAffiliation`) were registered in
+  `matt-inspired-registry.ts`, taking `prov:sweep` from the 17 issues my work had pushed it to back to
+  its documented **11 (10 errors + 1 drift)** baseline — the debt did not grow this conv. (2) Removed
+  the code my `cover-story` switch stranded: the `context` prop, every `isCatalog` branch, and the
+  `sessionCount` / `durationLabel` / `creatorAvatarUrl` props (plus the now-unused `UserAvatar` import
+  and `CourseCardContext` type). Verified inert live — 6 cards, 6 stickers, 6 affiliations, identical
+  geometry before and after.
 - **MERGE-BRIAN §2 M10 — narrowed and BUILT.** Its disposition ("share the cover panel, keep our hero")
   was unbuildable as written, so the choice went back to the user → *price sticker only*. Shared
   `CoursePriceSticker` extracted; hero renders it at the same top:12/right:12 offsets as the card and
