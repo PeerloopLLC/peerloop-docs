@@ -90,28 +90,53 @@ These four were declined by the user's own read, not by a consequence audit. The
 intact so the conversation can be reopened. On the back-nav work the user's words were: *"I do not
 like the breadcrumb changes, as is, but I can be convinced by him at a later date."*
 
-### `[BACK-X]` back-nav header replacing breadcrumbs on deep routes
+### Removing the breadcrumb row site-wide, and the back button that replaced it
 
-**His change:** an X-style sticky `BackHeader` — `history.back()` with a hierarchical-parent fallback
-for deep-link entry — on **7 deep detail routes** (course tabs/book/success, community tabs, creator
-community, teacher course, session), each dropping its breadcrumb in the trade. *(Worth correcting a
-misconception on our side: this was never a site-wide breadcrumb removal — 22 pages keep the
-breadcrumb bar on his branch.)*
+**Reviewed and decided (shell track).** Your branch switches off the desktop breadcrumb row across the
+whole site and puts a round ← button with a short title at the top of deep pages instead. We have kept
+the breadcrumbs and not taken the button, for two reasons.
 
-**Why not yet:** the behaviour is good and cleanly built. What was declined is the aesthetic of losing
-the breadcrumb on those routes. The cost is structural: a new layout slot plus a `--pin-top: 68px`
-contract that `SubNav` and `CourseRail` must both honour — so it is a shared-shell commitment, not a
-per-page one.
+The first is that the two things answer different questions. A breadcrumb says *where this page sits* —
+which community, which course, which module — and each step is a link you can jump to. A back button
+says *how you arrived*. That distinction matters more here than on a site like X, whose back-only
+pattern this follows: X shows a flat feed of posts, whereas Peerloop content is genuinely nested.
 
-### `[FEED-WIDTH]` 640px column on course detail
+The second is that the button turned out to do exactly what the browser's own Back button does. Its
+code calls the same browser history command, and it only ever appears on desktop — where the browser's
+Back button is always visible in the toolbar. It behaves differently in one situation, when someone
+opens a deep link in a fresh tab with no history to go back to; there it goes to the parent page
+instead. Keeping the breadcrumb covers that situation already, since the parent is right there as a
+link.
 
-**His change:** an opt-in `contentWidth: 'full' | 'feed'` prop on the layout; `'feed'` gives a 640px
-left-anchored column, applied to course detail, book and success.
+**What we did take:** the sticky title line. On a long page, once the header has scrolled out of view,
+nothing tells you what you are looking at — so that part fills a real gap and is now in the product.
 
-**Why not yet:** paired with `[BACK-X]` — back-row, pinned region and 640 column are one continuous
-geometry, and revisiting one means revisiting all of it. **Note the partial reversal:** we *did* adopt
-the 640px left-anchored geometry, on `/courses` (his `[CRS-LAYOUT]`). So the idea has landed; it is
-course *detail* that still runs full-width.
+*A correction to an earlier note in this document, which said the breadcrumb removal applied only to
+seven deep routes while twenty-two pages kept theirs. That was wrong. The layout renders the breadcrumb
+in exactly one place, and on your branch that block is commented out, so no page shows a desktop
+breadcrumb. The earlier count came from pages that still contain breadcrumb markup — which they do,
+but the layout no longer displays it.*
+
+### `[FEED-WIDTH]` narrower content column on course pages
+
+**Reviewed and declined (shell track).** Your branch narrows course detail, booking and confirmation
+pages to the same ~640px column the listing pages use. We have left them full width.
+
+Narrowing only pays for itself if something useful fills the space it frees on the right. The natural
+candidate was the recommendations panel we added to the listing pages — but on a course page that
+splits badly. For someone still deciding, showing other courses is reasonable. For someone already
+enrolled, the course page is where they actually do the work, and putting other courses alongside it
+works against course completion, which is one of the project's headline goals. Without that panel the
+narrower column just leaves empty space, and course detail is the densest page in the product — module
+lists, files, teachers and reviews all need the width. Listing pages and detail pages are allowed to
+differ.
+
+### Renaming the sidebar's "Learning" to "My Courses"
+
+**Reviewed and declined (shell track).** "My Courses" reads clearly on its own, but the product now has
+a `/courses` catalogue that is purely a public list, so two sidebar-level things would be called almost
+the same name while meaning different things — one your enrolled courses, one everything on offer. The
+page itself is also headed "My Learning", so the label and the heading would disagree.
 
 ### `[PANEL-REMOVE]` deleting the light-blue "More coming soon" panel site-wide
 
@@ -279,18 +304,20 @@ Neither of these is a judgment on the design — the code was dead at the pivot:
 
 ## 5 · ⬜ Not yet reviewed
 
-Three of the six review units have no dispositions at all. Nothing in them is declined; nothing is
-agreed.
+Two of the six review units still have no dispositions. Nothing in them is declined; nothing is agreed.
+(The site-wide shell was reviewed and is now fully decided — see the breadcrumb, content-width and
+sidebar-label entries above, and the "Peer Teachers" note below.)
 
 | Screen / area | His work there |
 |---|---|
-| **Site-wide shell** | Back-nav header, `SubNav`/`SubNavItem`, `Sidebar`, listing shell, sticky toolbar, form `Input`/`Select`, chips, app layout |
 | **Sessions files feature** | The migration, session API edits, session page, demo course documents — an adopt/reject decision on the feature as a whole |
-| **Misc** | "Peer Teachers" relabel across admin/analytics/profile, session booking, workspace page touches |
+| **Misc** | Session booking, workspace page touches, story browsing |
 
-Several of these overlap work already done: the per-module file strips shipped as part of the
-course-detail review, and the public asset route that the sessions-files feature needs was adopted in
-the communities review. The remaining feature decisions are open.
+Both overlap work already done: the per-module file strips shipped as part of the course-detail
+review, and the public asset route that the sessions-files feature needs was adopted in the
+communities review — so the sessions-files unit is smaller than it looks. The **"Peer Teachers"
+renaming has now been adopted in full**: it had already reached the course pages, and the admin,
+analytics and course-editor screens have been brought in line, so the whole product uses one term.
 
 ---
 

@@ -43,7 +43,7 @@
 | 1 | `/course/[slug]` detail | ✅ **COMPLETE (Conv 412)** — dispositions DONE (Conv 408, 12 mechanisms: 9 ADAPT · 3 DROP · 0 ADOPT). **All 9 ADAPT built:** Tier A+B (Conv 409, M1/M4/M5 + M6/M7/M12) · Tier C M10/[RECEIPT] (Conv 410) · Tier C M2 `[SESS-TAB]` (Conv 411) · Tier C M3 `[SESS-FILES]` (Conv 412) · hero refinement `[HERO]` (Conv 413) · colour-theme toggle `[TAB-THEME]` (Conv 414) · UI + messages follow-ups (Convs 415–419, incl. the **MESSAGES mini-plan M1–M6, COMPLETE Conv 419** — see build logs). Only the 3 DROPs unbuilt (2 soft/revisitable) |
 | 2 | `/courses` catalog | ✅ **COMPLETE — all 16 of 16 built (M3 closed Conv 428)** — 16 mechanisms: 3 ADOPT · 12 ADAPT · 1 DROP. **All 14 buildable ones built** — M1 M2 M15 M16 (shell) · M5 M6 M7 M8 (toolbar) · M9 M10 M11 M12 M13 M14 (card + hero sticker). **Findings F1** (pre-existing site-wide doubled form chrome, measured and fixed) **and F2** (catalog/detail price split, fixed at the shared helper + a `formatPriceExact` receipt carve-out) **both closed**. M10's disposition proved unbuildable as written and was re-decided by the user as *price sticker only*. Also this conv: a self-audit restoring `prov:sweep` to its 11-issue baseline + removing a stranded `context="catalog"` path, a **narrow-width sweep 320→1280** (zero overflow; two mobile defects fixed; 1 of `[MINWIDTH-320]`'s 3 blockers cleared) and the invariant-keyed empty-state copy fix. 5 gates green (suite 6131 → **6165**, +34 tests / 3 new files), everything live-verified. **§2 is now COMPLETE except M3** — M4 shipped in Conv 427 when `[REC-REHOME]` was decided and built (rails-backed right-rail lanes; `/api/recommendations/courses` deleted). M3 stays gated on `[ROLE-CRS-LIST]` |
 | 3 | `/community/[slug]` + `/communities` (+`[COMM-BRAND]` feature decision) | ✅ **COMPLETE for everything buildable (Conv 426)** — 20 files censused, **16 mechanisms (N1–N16)**: **2 ADOPT · 12 ADAPT · 2 DROP** (both DROPs carried from earlier walks). **All 13 buildable ones BUILT** across three tiers — A: N14 storage route + N5 Join/Leave rebinding · B: N16 aggregates, N11 hero card, N12 marks, N6 640px geometry, N7 search-first, N9 role pills, N10 compact sort, N3 label · C: N1 identity band, N4 shared course card, N13 logo upload + settings UI. **All 3 findings closed:** **F3** (course-thumbnail uploads 404 — pre-existing, no `/api/storage/` route) **FIXED by N14** and live-proved to gate before R2 · **F4** (Join/Leave dead on client-side nav) **CONFIRMED live with a control, then FIXED by N5** · **F5** (224px header square, 320×224 thumb — a Conv-423-preserved `[DEMO-HOME]` 4× artifact) **superseded** by N1 (band now 96px) and N4. **§3 is now COMPLETE** — N8 shipped in Conv 427 with §2 M4, both discharged by the one `[REC-REHOME]` decision. Divergences pinned by tests: role pills KEEP the Matt palette (N9); no invented journey CTA (N4); SVG rejected (N13); visibility-filtered + weighted aggregates (N16). 5 gates green, suite 6165→**6234** (+69), `prov:sweep` at baseline |
-| 4 | **Site-wide shell track** (`[BACK-X]` back-nav, `SubNav`/`SubNavItem`, `Sidebar`, forms, `AppLayout`) | ⬜ — the one unit that "cannot be judged on one screen"; also where the two soft §1 DROPs (`[BACK-X]`, `[FEED-WIDTH]`) get revisited |
+| 4 | **Site-wide shell track** (`[BACK-X]` back-nav, `SubNav`/`SubNavItem`, `Sidebar`, forms, `AppLayout`) | ✅ **COMPLETE (Conv 428)** — 11 files censused, **7 already dispositioned by §1–§3**, leaving 4 live mechanisms: **1 ADAPT · 1 ADOPT · 2 DROP**. `[BACK-X]` → keep breadcrumbs, drop the back button (its handler is literally `history.back()`, desktop-only where browser Back is always visible), keep the sticky title as new `StickyViewTitle.astro` on `/session/[id]`. `[FEED-WIDTH]` → DROP re-affirmed (geometry + rails stand or fall together; rails on a course workspace cut against the ≥75% completion metric). Sidebar "My Courses" → DROP (collides with `/courses`). "Peer Teachers" → ADOPT, finishing the half-applied relabel across 9 sites. See the §4 build log |
 | 5 | Sessions-files feature (`0006` + storage API) — adopt/reject as a feature | ⬜ — **smaller than this row implies:** `session_resources` + `display_order` already landed in `0001` (§1 M3, Conv 412) and `/api/storage/[...key].ts` already exists (§3 N14, Conv 426), both files this unit was scoped to cover. Residue = the session-room slice (`session/[id].astro` in-room files, `in_room` explicitly not adopted Conv 412), the `api/sessions/index.ts` edits, and his demo content |
 | 6 | Misc ("Peer Teachers" relabel, `SessionBooking`, workspace touches) | ⬜ — **the relabel is half-applied:** landed on the 5 course surfaces (§1 M4) but `AdminDashboard.tsx:74`/`:423` + `api/admin/analytics/users.ts:242` still read bare `Teachers`. Finish-or-reject is this unit's call (leaving it may be defensible under `[ADMIN-CONF-POLICY]`) |
 
@@ -1026,7 +1026,71 @@ new components stamped and registered.
 
 ## 4 · Shell track review
 
-_(pending)_
+✅ **Walk COMPLETE + BUILT (Conv 428)** — 11 files censused, **4 live mechanisms** (1 ADAPT · 1 ADOPT ·
+2 DROP). The other 7 files were already dispositioned by the §1–§3 screen walks; the shell track's real
+residue was far smaller than the route-impact map implied.
+
+### Already settled before this walk (stated for the record)
+
+| File | Where it was decided |
+|---|---|
+| `SubNav.astro` | `[TAB-SCROLL]` → ADOPTED as opt-in `preserveScroll` (§1 M6, Conv 409); our implementation differs (`data-preserve-scroll` + sessionStorage vs his `astro:before-preparation` capture), same effect |
+| `SubNavItem.astro` | `[TAB-COMPACT]`/`[TAB-FLOAT]` → ADAPTED as `dense`, tokenised, **no gradient capsule** (§1 M7); the colours he wanted were later revisited as the `[TAB-THEME]` toggle (Conv 414) |
+| `form/Input.tsx` | `compact` + the forms-plugin chrome strip → ADOPTED (§2 M8 + finding F1, Conv 425) |
+| `form/Select.tsx` | `compact` → ADOPTED (§2 M8) |
+| `ui/IconLabelChip.tsx` | `link` tone → ADAPTED with a **persistent** underline, not his hover-only (§2 M13, following Conv 415 `[STEP-LINK]`) |
+| `layout/StickyListingToolbar.astro` | toolbar slimming → ADAPTED as opt-in `dense` (§2 M8) rather than changing the defaults |
+| `layout/ListingShell.astro` | placeholder-panel removal → DROPPED (§2 M16 — panel kept and later filled by `[REC-REHOME]`) |
+
+His `index.astro` change is the same site-wide panel deletion already dropped in §2 M16, and
+`MobileUpNav.astro` is untouched at the pivot — so the census is complete.
+
+### Dispositions
+
+| # | Mechanism | Disposition | Reasoning |
+|---|---|---|---|
+| S1 | `[BACK-X]` `BackHeader.astro` — sticky ← button + view-type title, **and** the site-wide removal of the desktop breadcrumb row | **ADAPT — take the title, drop the button, keep breadcrumbs** | His branch comments the `header-bar` breadcrumb row out site-wide ("DISABLED site-wide per client request"), which is *why* it needed a back button. We keep breadcrumbs, so that hole never opens. The button itself was then examined on the user's instinct that it duplicated browser Back — **it does**: the handler calls `history.back()` in the common in-app case, literally the same call, and renders `lg:` only, i.e. exactly where the browser toolbar Back is always visible. Its one non-duplicate case (deep-link/fresh-tab → route parent) is covered by the breadcrumb we kept. The sticky **title** survives as the one part nothing else provides |
+| S2 | `[FEED-WIDTH]` `contentWidth='feed'` — 640px left-anchored column for course detail / book / success | **DROP** (re-affirms the §1 soft DROP) | The geometry and a right-hand filler stand or fall together. The only candidate filler was `DiscoveryRails`, and its value on `/course/[slug]` splits by enrollment: useful to an unenrolled comparison shopper, but off-task for an **enrolled** student whose course page is a workspace — cutting against the **≥75% completion** key metric on the page where completion is earned. Without rails the 640px column leaves dead space, which was the original §1 reason to drop. Course detail is also the densest page in the product (modules + file strips + teachers + reviews); consistency with the listing pages is a weaker argument than content width, because detail pages legitimately differ from listing pages |
+| S3 | Sidebar `Learning` → `My Courses` | **DROP** | "My Courses" now collides with `/courses`, which M3 (same conv) made purely the public catalog — and our `/learning` page heading is "My Learning", so adopting the sidebar label alone would split label from heading |
+| S4 | `Teachers` → `Peer Teachers` across admin / analytics / studio | **ADOPT** | Settles the half-applied state surfaced earlier this conv: the relabel had landed on the 5 course surfaces (§1 M4) but not admin. Adopting finishes it so the product uses one term. (This is nominally §6 scope; the artifact surfaced here, and deciding it once avoids deciding it twice) |
+
+### Build log — §4 (Conv 428, all 5 gates green + live-verified)
+
+**S1.** New `src/components/ui/StickyViewTitle.astro` (52px sticky row, desktop-only, no button),
+a `view-title` slot on `AppLayout` that sets `--pin-top: 68px` when filled, and `SubNav`'s two pin
+lines moved from a hardcoded `16px` to `var(--pin-top,16px)`. Registered in
+`scripts/matt-inspired-registry.ts` so the stamp doesn't turn `prov:sweep` red (the Conv-425 lesson).
+
+**Where it is deliberately NOT used, and why.** Not on `/course/[slug]`, `/community/[slug]` or
+`/profile` — all three already pin a sticky `SubNav`, so they have pinned context already, and
+stacking a second 52px row runs into the decision already recorded in
+`course/[slug]/[...tab].astro` ("*~275px of chrome. Do not make this sticky.*", Conv 359). The one
+qualifying host is **`/session/[id]`**: deep, no sticky strip, and its journey stepper scrolls away.
+It shows the **course title** rather than the view type, because the course is the context actually
+lost. `/receipt/[id]` can't host it (uses `LandingLayout`, and it's a short printable page).
+
+**🟠 Honest limitation.** Verified live at 1244×1059 the session page's content is 1059px — it does
+not scroll at that viewport, so the bar has nothing to stick past. The pages long enough to need this
+are exactly the pages that already have a sticky strip. The mechanism is built, correct and
+regression-safe, but its practical value on the one available host is thin — flagged for the user
+rather than quietly scoped away.
+
+**S4.** 9 bare `Teachers` label sites relabelled — `AdminDashboard` (nav item + StatCard),
+`CoursePerformanceTable` header, `CourseCreatedCard` button, `CourseEditor` (tab + h3), `AdminNavbar`,
+`TeacherProfile` breadcrumb, `api/admin/analytics/users.ts` chart series. Each was checked to be the
+role name rather than an unrelated string. `StoriesBrowse.tsx` is his-only and doesn't exist here.
+4 tests asserted the old label and were updated.
+
+**Live-verified:** `/session/ses-sarah-ai-1` → bar present, `position: sticky`, `top: 0`, 52px,
+text "AI Tools Overview", breadcrumb still rendered, **no** back button, `--pin-top: 68px` on `<main>`.
+`/course/ai-tools-overview` → no bar, `--pin-top` unset so the strip falls back to `16px` and pins at
+16px exactly as before (the var change is behaviour-identical). `/admin` → 3 "Peer Teachers", zero
+bare "Teachers".
+
+5 gates green; suite **6215** (unchanged — the 4 relabel-assertion updates are edits, not additions);
+lint 0 errors (160 pre-existing warnings); `prov:sweep` at its 11-issue baseline.
+
+**§4 result: 1 ADAPT · 1 ADOPT · 2 DROP.** Remaining MERGE-BRIAN work = §5 and §6.
 
 ## 5 · Sessions-files feature decision
 
