@@ -330,6 +330,8 @@
 
 - **State:** 🔄 active · `[Opus]` (HOLD lifted Conv 407 — client conversation happened; integration planning)
 - **📦 §1 BUILD progress (Conv 409–411):** **Tier A+B BUILT (409)** — Tier A cosmetic: M1 hero-compress (`CourseHeader.tsx`, 360→166px) · M5 band-compact + `actionable` links (`CourseJourneyStepper.astro` + `_course-tabs.ts`) · M4 "Peer Teachers" relabel + count-gated search island (`TeachersTabList.tsx`). Tier B shared-primitive (all **opt-in**): M6 `[TAB-SCROLL]` (`SubNav preserveScroll` + script) · M7 `[TAB-FLOAT/COMPACT]` (`SubNavItem dense` — tokenised, no gradient) · M12 `MattCourseFeed` (compact composer + tokenised skeletons). **Tier C M10 + [RECEIPT] BUILT (410):** M10 `[COMM-BAND]` (`communities.logo_url` + reseed + loader join + `CourseHeader` affiliation line; `accent_color`/palette/picker DROPPED) · `[RECEIPT]` (own durable `/receipt/[id]` view, owner-only + printable; M5 Payment step retargeted off `/success`). All 5 gates green + live-verified; prov:sweep unchanged at `[PROV-SWEEP-DEBT2]` baseline. **Tier C M2 `[SESS-TAB]` BUILT (411):** merged curriculum-first Modules tab — IA user-decided (route `/modules`, label "Modules", 2nd position); `ModulesTab.astro` rewritten with the enrolled session overlay + `MySessionsTab.astro` deleted; new `fetchCourseModulesView` loader (reuses positional SoT `resolveModuleAssignments`); `/sessions` 301→`/modules`; session-family hrefs retargeted; 5 gates green (suite **6542**, +3 durable fixture tests) + live-verified on `:4321` against the david-n8n booked-not-completed fixture; prov:sweep unchanged. Code `5ac9493d`. **Tier C M3 `[SESS-FILES]` BUILT (412):** per-module + course-wide file strips folded into the Modules tab — `session_resources.display_order` column (folded into `0001` + reseed; `in_room` NOT adopted), loader `is_public`-gated + `display_order`-ordered with a non-null `href` guard (dead-link defect avoided), `ModulesTab.astro` strips wired to `/api/resources/:id/download` (uploads) / external URL (links), +3 loader tests. 5 gates green (suite **6550**) + live-verified (anon → public-only; enrolled david → 2 uploads under Module 1 ordered 003→001). Fixed a latent Conv-411 `TS2367` in `courses.test.ts:412` inline. Also, on discovering the **Resources tab was a functional regression** (pre-flip `ResourcesTabContent.tsx` rendered files; Conv-188 Matt flip replaced it with an empty stub — DISC-DROP), the user asked for a parity diff → **2 gaps closed** so M3 is a faithful superset: per-file **descriptions** rendered + **role-aware visibility** (`canViewAllFiles` param: creator/admin/moderator see all files unenrolled). Then **retired the Resources tab** — `/resources` 301→`/modules`, removed from `VALID_TABS`/`buildCourseExploreTabs`, orphaned `ResourcesTab.astro` deleted + registry regenerated. **🔴 Fixed a `gen-registries.ts` scanner false-positive** (regex matched `@matt-source <node>` in Avatar's prose → falsely registered a `@matt-inspired` component; reworded prose, prov:sweep back to baseline). **§1 is now 9 of 9 ADAPT built = COMPLETE.** **Remaining:** §2–6 disposition walks (`/courses`, communities, shell track, sessions-files-feature, misc). Detail: `plan/merge-brian/README.md §1 Build logs + Resources-tab decision`.
+- **📦 §3 `/community/*` + `/communities` — DISPOSITIONS DONE **and all 13 buildable mechanisms BUILT** (Conv 426).** Tier A: **N14** `/api/storage/[...key]` (allowlisted public asset server — closes `[THUMB-404]`; live-proved to gate before R2) + **N5** Join/Leave `astro:page-load` rebinding + Leave self-heal (**F4 confirmed live with a hard-load control before fixing**). Tier B: **N16** loader aggregates (visibility-filtered like the Courses tab; review-count-**weighted** rating) · **N11** named `hero` card variant + courses band (tokenised `--Primary-Light`, zero raw hex) · **N12** brand marks on all 3 variants · **N6** 640px left-anchored geometry (measured 640/left-1035) · **N7** search-first `sr-only h1` · **N9** `RoleTabBar variant="pill"` **retaining the Matt role palette** (his build drops it) · **N10** visible labelled compact sort · **N3** "Community Feed" label fix. Tier C: **N1** identity band (**272px→96px**, byline `by X · Public · N members · N posts`, description de-duplicated) · **N4** shared `cover-story` card with `href` attribution override and **no invented journey CTA** · **N13** logo upload endpoint + settings UI (**SVG rejected**; verified end-to-end upload→serve→403-on-non-owner). Suite 6165→**6234** (+69, 4 new test files), 5 gates green, `prov:sweep` at baseline. Remaining: **N8 only**, gated on `[REC-REHOME]`. Detail: `plan/merge-brian/README.md §3`.
+- **📄 Client-facing ledger (Conv 426):** `plan/merge-brian/NOT-ADOPTED.md` — everything of Brian's that is **not** in our app (❌ declined · 🟡 declined-for-now · 🔵 took-the-idea-left-the-build · ⏸️ prerequisite-gated · ⬜ unreviewed), written for a live walkthrough **with him**. Now covers §1–§3 (42 distinct mechanisms: 6 ADOPT · 32 ADAPT · 4 DROP), including a "where his work fixed real defects on our side" section — the thumbnail 404, the Join/Leave dead-button, the mislabelled feed tab and the 224px square. **Standing obligation — README ground rule 9:** every new disposition updates it in the same conv (DROP → §1/§2 · ADAPT's left-behind part → §3 · gated → §4 · finished walk leaves §5). Reasons stated as consequences, never internal shorthand; the user's own verbatim stance stays out of it.
 - **HOLD LIFTED (Conv 407):** the user confirmed the Brian conversation has happened → integration may proceed. (The Conv-396 HOLD principle survives as method: his rationale still isn't in git — request the "approved Option B / mockup" artifacts his commits cite; client-originated changes get a consequence audit.)
 - **🧭 Client directives (Conv 407, from the user↔Brian conversation):** (1) **NO adoption "as is" — ever** (user: *"I know I won't be merging any of his work as is"*); his branch is a **reference exhibit**, adoption = selective reimplementation of intent with a consequence audit per change. (2) Watch areas he flagged: `/course/[slug]` page changes (implications for other detail pages), **breadcrumb/back-nav rework** (`[BACK-X]` `BackHeader.astro` — site-wide), **colour changes that may contradict role-based colour theming** (his `accent_color` community branding + `CourseCoverPanel` hex deviations are the known collision points).
 - **Task:** assess client branch for impact, integrate what's worth keeping into `jfg-dev-14`. **Discard nothing without review.** Scope will grow.
@@ -433,12 +435,12 @@
 
 ### [REC-REHOME]
 
-- **State:** 📋 queued · `[Opus]` · gate-prerequisite for MERGE-BRIAN §2 M4
-- **What:** give personalized **course recommendations** a home outside `/courses`, so the "Popular Courses" carousel can leave that page.
-- **Why:** Conv 425 §2 disposition walk found `/courses` is the **only** consumer of `RecommendedCourses` — hiding it there (his `[CRS-POPULAR-OFF]`) retires the surface site-wide and strands `/api/recommendations/courses` with no caller.
-- **🔴 Target undecided:** Home is the obvious candidate, but `[FEEDS]` (Conv 267, `memory/project_feeds_hub.md`) explicitly bars re-adding panel surfaces (FeedsHub / ActionCards / TriageStrip) to `/`. Decide the destination before building. `RecommendedCommunities` has the same shape on `/communities` — check whether §3 wants the two solved together.
-- **Blocks:** MERGE-BRIAN §2 **M4 `[CRS-POPULAR-OFF]`** — dispositioned *ADAPT — hide only after rehoming*.
-- **Refs:** `plan/merge-brian/README.md § 2 Dispositions (Batch B)`, `src/components/recommendations/RecommendedCourses.tsx`, `src/pages/api/recommendations/courses.ts`.
+- **State:** 📋 queued · `[Opus]` · gate-prerequisite for MERGE-BRIAN §2 M4 **and** §3 N8
+- **What:** give personalized **course _and_ community recommendations** a home outside `/courses` and `/communities`, so both carousels can leave those pages. **Scope widened Conv 426** (user decision in the §3 walk): the two are solved together because they would compete for the same destination.
+- **Why:** measured, both walks. `/courses` is the **only** consumer of `RecommendedCourses`, and `/communities` is the **only** consumer of `RecommendedCommunities` — each carousel is likewise the only caller of its API (`/api/recommendations/courses`, `/api/recommendations/communities`). Hiding either (his `[CRS-POPULAR-OFF]` / `[COMM-REC-OFF]`) retires that surface site-wide and strands its endpoint.
+- **🔴 Target undecided:** Home is the obvious candidate, but `[FEEDS]` (Conv 267, `memory/project_feeds_hub.md`) explicitly bars re-adding panel surfaces (FeedsHub / ActionCards / TriageStrip) to `/`. Decide the destination — for both surfaces at once — before building.
+- **Blocks:** MERGE-BRIAN §2 **M4 `[CRS-POPULAR-OFF]`** and §3 **N8 `[COMM-REC-OFF]`** — both dispositioned *ADAPT — hide only after rehoming*.
+- **Refs:** `plan/merge-brian/README.md § 2 Dispositions (Batch B)` + `§ 3 Dispositions (Batch B)`, `src/components/recommendations/RecommendedCourses.tsx`, `RecommendedCommunities.tsx`, `src/pages/api/recommendations/{courses,communities}.ts`.
 
 ### [RG-PUBLIC]
 
@@ -608,50 +610,5 @@
 
 ## ✅ Done this conv
 
-- **MERGE-BRIAN §2 `/courses` disposition walk — COMPLETE.** 16 mechanisms inventoried from the pivot
-  and all dispositioned: 3 ADOPT · 12 ADAPT · 1 DROP. Recorded in `plan/merge-brian/README.md § 2`.
-  Two ADAPTs are gated on new prerequisite tasks (`[ROLE-CRS-LIST]`, `[REC-REHOME]`).
-- **MERGE-BRIAN §2 Tier A + B — BUILT.** Page shell (M1 640-left geometry · M2 search-first · M15
-  "Enroll Now" · M16 panel kept and extended) and toolbar (M5 topic pills keeping Level/Length/
-  `availableSoon` · M6 tokenised flat pills · M7 visible compact sort · M8 opt-in `compact`/`dense`).
-  5 gates green, suite **6131 → 6139** (new `CoursesFilters.test.tsx`, 8 tests), live-verified signed
-  in and signed out.
-- **Empty-state copy fixed — "no courses" no longer lies about why.** The all-tab empty state ignored
-  topic/level/length, so an over-narrow filter announced *"No courses available right now."* as though the
-  platform were empty. Now keyed off the invariant that `courses.length === 0` is the only genuine
-  nothing-published case; a query **plus** an attribute filter correctly yields the filter message rather
-  than the misleading search-only one. New `CoursesCatalog.test.tsx` (8 tests) pins every branch; suite
-  **6157 → 6165**. Live-verified all three messages plus the restore. Pre-existing (present at merge-base
-  `c50afd82`), and the sibling role-tab `sub`-filter variant was logged to `[COURSES-FIXES]` rather than
-  silently folded in.
-- **Narrow-width sweep of /courses — DONE, 2 defects fixed.** Swept 320/375/640/768/1024/1280 in the
-  `[VPHARNESS]` iframe harness: **zero overflow at every width**, cover reflow and `lg`-gated panel both
-  correct. Fixed (a) the card title cramped at 375 — 128px over 2 lines beside the CTA → CTA stacks below
-  `@xl`, title now 174px on one line, desktop untouched; (b) the sticky toolbar eating **36% of a 375×760
-  phone** (174px + 48 header + 48 bottom nav) → topic pills hidden below `sm` with a Topic select added to
-  the Filters collapse so filtering moves rather than strands; toolbar **174→138px**, chrome 31%. +2 tests
-  pin the responsive intent. Suite **6157**. Also cleared one of `[MINWIDTH-320]`'s three blockers.
-- **§2 self-audit cleanup — both items I introduced, cleared.** (1) The 3 new stamped components
-  (`CourseCoverPanel`, `CoursePriceSticker`, `CommunityAffiliation`) were registered in
-  `matt-inspired-registry.ts`, taking `prov:sweep` from the 17 issues my work had pushed it to back to
-  its documented **11 (10 errors + 1 drift)** baseline — the debt did not grow this conv. (2) Removed
-  the code my `cover-story` switch stranded: the `context` prop, every `isCatalog` branch, and the
-  `sessionCount` / `durationLabel` / `creatorAvatarUrl` props (plus the now-unused `UserAvatar` import
-  and `CourseCardContext` type). Verified inert live — 6 cards, 6 stickers, 6 affiliations, identical
-  geometry before and after.
-- **MERGE-BRIAN §2 M10 — narrowed and BUILT.** Its disposition ("share the cover panel, keep our hero")
-  was unbuildable as written, so the choice went back to the user → *price sticker only*. Shared
-  `CoursePriceSticker` extracted; hero renders it at the same top:12/right:12 offsets as the card and
-  drops the price from its CTA (`$249 • Enroll Now` → `Enroll Now`). Hero still 198px. **§2 is now
-  complete for all 14 buildable mechanisms**; only M3/M4 remain, gated on their prerequisites.
-- **MERGE-BRIAN §2 Tier C — BUILT (13 of 14 mechanisms; M10 then closed above).** Shared `CourseCoverPanel` +
-  `cover-story` card variant (M9), `CommunityAffiliation` extracted and used by both surfaces (M11),
-  enrolled markers with `[DIPLOMA]` wording and no invented CTA (M12), persistent-underline link chips
-  (M13), `formatPrice` decimals dropped with a `formatPriceExact` carve-out for the receipt (M14 —
-  closes F2). Suite **6139 → 6153**. **M10 deliberately not built** — its disposition is unbuildable
-  as stated; awaiting a narrower decision.
-- **`[FORMCHROME]` — pre-existing site-wide form-chrome defect fixed.** `@tailwindcss/forms` chrome
-  was rendering *inside* our `Input`/`Select` wrappers (own 1px border + 8px/12px padding on the inner
-  control), showing a hard-cornered box nested in the rounded pill on every form, and capping the new
-  `compact` variant at 49px instead of 34px. Fixed as the twin of Conv 223 `[DRV-C]`. Measured before
-  and after; `/login` and `/communities` re-verified.
+- **[THUMB-404]** ✅ — course-thumbnail uploads no longer 404. Built `GET /api/storage/[...key]` (MERGE-BRIAN §3 N14): prefix allowlist (`courses/*/thumbnail/`, `communities/*/logo/`), traversal rejection, ETag/304, immutable caching. **Live-proved the allowlist gates BEFORE R2** — a real object seeded at `homework/sub-1/secret.pdf` still 404s, so private-key existence is unobservable. +18 tests.
+- **[MERGE-BRIAN-JULY7] §3 walk + build** ✅ — 16 mechanisms dispositioned (3 ADOPT · 11 ADAPT · 2 DROP) and **all 13 buildable ones shipped** across 3 tiers. Findings F3 (fixed by N14), F4 (Join/Leave dead on client-side nav — **confirmed live with a control**, then fixed) and F5 (224px / 320×224 4× artifacts — superseded) all closed. Only N8 remains, gated on `[REC-REHOME]`. 5 gates green, suite 6165→**6234**, `prov:sweep` at baseline.

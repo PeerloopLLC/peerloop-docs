@@ -4,6 +4,7 @@
 **Focus:** see what Brian built at that snapshot, extract the *intent* of the changes worth keeping, and selectively reimplement them on `jfg-dev-14` with a consequence audit per adoption. **Nothing is merged as-is — ever** (user directive, Conv 407: *"I know I won't be merging any of his work as is"*). His branch is a **reference exhibit**, not a source.
 **Status:** 🔥 IN PROGRESS (Conv 408) — infrastructure verified + side-by-side environment operational (ours `:4321`, pivot `:4341`; **dev seeds diverge ~52 lines — Conv 408 correction**, NOT identical); **§1 `/course/[slug]` disposition walk COMPLETE (Conv 408)** — all 12 mechanisms decided (9 ADAPT · 3 DROP incl. 2 soft · 0 ADOPT); **§1 Tier A+B BUILT (Conv 409)** — M1/M4/M5 (cosmetic) + M6/M7/M12 (shared-primitive, all opt-in), all 5 gates green + live-verified (see §1 Build log). **§1 Tier C M10 + [RECEIPT] BUILT (Conv 410)** — community logo/affiliation + own durable receipt view; **§1 Tier C M2 `[SESS-TAB]` BUILT (Conv 411)** — merged curriculum-first Modules tab (public + session overlay; `/sessions` 301→`/modules`; Modules now 2nd), all 5 gates green (suite 6542) + live-verified; **§1 Tier C M3 `[SESS-FILES]` BUILT (Conv 412)** — per-module + course-wide file strips folded into the Modules tab (`is_public`-filtered, `display_order`-ordered, wired to `/api/resources/:id/download`; `in_room` + dead-link defects NOT adopted) — plus, on the Resources-tab regression finding, 2 parity gaps closed (descriptions + role-aware visibility) and the empty Resources tab retired (301→`/modules`); all 5 gates green (suite **6550**) + live-verified → **§1 is now 9 of 9 ADAPT built = COMPLETE**. **§1 `[HERO]` hero refinement (Conv 413)** — `CourseHeader` variant-system collapse + compaction (scheduled 360→198px) + first `@container` responsive reflow, 5 gates green (suite 6550), code `387b4a33`. **§1 `[TAB-THEME]` tab colour-theme toggle (Conv 414)** — Matt/Brian tab-state colour toggle revisiting M7's left-behind colours: 3 style-guide tokens + `--Tab-*` switch, `SubNavItem` themed (0 raw colour), `tab_theme` user column + API, `AppLayout` SSR root-attr site-wide, `TabThemeToggle` on /profile; 5 gates green (suite 6552), code `de090a18`. **§1 follow-up UI refinements + dev-tooling (Conv 415)** — `[STEP-LINK]` persistent-underline stepper link affordance + Modules-tab neutral hovers + variant-aware sticky-CTA darker-green hover + Modules-tab layout & per-file Download/Open buttons; plus `[R2-SEED]` dev R2 placeholder-blob seeding (`scripts/seed-r2-dev.mjs` + `db:seed:r2:local`) which surfaced `[MF-SKEW]` (wrangler↔dev-server miniflare version skew — deferred to next conv as #1 focus) + flagged `[DL-FILENAME]`; 5 gates green (suite 6552), code `ed70e19a`. **§1 course-page UI follow-ups (Conv 416)** — Post-button restyle to module-button style, "Ask a Question" (Creator + Peer Teachers) wired to `/messages?to=`, gated `CourseReviewComposer` modal (API-aligned 3-state), plus fixes to the shared messages `?to=` deep-link (by-id preselect + endless-reopen); the deferred `[MF-SKEW]` dev-tooling task also **✅ RESOLVED** this conv (wrangler exact-pin `4.112.0` + workers-types v5 → miniflare deduped, `3de05f0f`); 5 gates green (suite 6552), code `d450ae2c`. **§1 message follow-ups + site-wide bootstrap-race fix (Conv 417)** — the Conv-416 "Ask a Question" anchors replaced by an **in-place composer island** (`MessageUserButton`), a discard guard on unsent drafts, and an opt-in "Open in Messages" escape hatch; a 23-site message-affordance sweep produced 21 MODAL dispositions, deferred into a 6-step **MESSAGES mini-plan M1–M6** on the task board, of which **M1 `[MSGBOOT]` ✅ done** — a pre-existing site-wide current-user bootstrap race fixed by gating both consumers on the existing `useAuthStatus()` three-state; 5 gates green (suite 6568), code `1f7bfd79`. **§1 MESSAGES M2–M4 (Conv 418)** — **M2 `[CANMSG]` ✅** retired the per-row can-message fan-out (**4 requests → 0**, measured) but only after fixing the sources first (the gate was *not* vacuous on 3 of 4 surfaces: `deleted_at IS NULL` added to the `communities`/`teachers`/`creators` loaders), then rewriting `useCanMessage` as a pure `useAuthStatus`+`useCurrentUser` derivation; **M3 `[MSG-ICON]` ✅** added `appearance="bare"` to `MessageUserButton` as a discriminated prop union (icon-only trigger keeping each call site's own styling, deliberately bypassing the `Button` primitive); **M4 `[MSG-ADOPT-A]` ✅** converted all 11 high-consequence affordances across 9 files, with `signedIn` made **optional and self-resolving** from `useAuthStatus()` instead of threaded through 8 viewer-ignorant components (7 of 11 live-verified; 4 unreachable, preconditions named); 5 gates green (suite 6583), code `3b3310cd` / `1d0e740a` / `148ac48d`. **§1 MESSAGES M5–M6 (Conv 419)** — **M5 `[MSG-ADOPT-B]` ✅** converted all 10 remaining list/profile affordances, **10 of 10 live-verified**, after the task's prescribed `appearance="bare"` proved wrong for the 3 profile-header sites (they want the `Button` chrome) → `icon` widened to `string | ReactNode`; **M6 `[MSG-CLEANUP]` ✅** closed the programme with `GET /api/me/can-message/:userId` **deleted** (+7 tests, 6 docs) — so **MESSAGES M1–M6 = COMPLETE**. Two defects M5's verification surfaced were cleared in the same conv: `[COURSETAB-HASH]` (the same `[MSGBOOT]` three-state hydration race in `useRoleTabs`, `ready` gate + 6 tests) and the `[ICON-4PX]` unambiguous half (43 sites/21 files, which grew into the standalone **ICON-SIZING** PLAN block). Suite 6584→6587→6586, 5 gates green. **§2 `/courses` catalog — DISPOSITIONS DONE + ALL 14 BUILDABLE MECHANISMS BUILT (Conv 425)** — 16 mechanisms decided in four batches (**3 ADOPT · 12 ADAPT · 1 DROP**), then built in three tiers: shell (M1 640px left-anchored geometry replacing `ListingShell` · M2 search-first `sr-only h1` · M15 "Enroll Now" · M16 blue panel **kept and extended**, his site-wide deletion not adopted) · toolbar (M5 topic pill row keeping Level/Length + our `availableSoon` `[CAF]` filter · M6 flat tokenised pills · M7 visible compact sort · M8 opt-in `compact`/`dense` props) · card (M9 named `cover-story` variant + tokenised `CourseCoverPanel` · M11 extracted `CommunityAffiliation` · M12 badge + own-progress, `[DIPLOMA]` wording, no invented CTA · M13 persistent-underline link chips · M14 shared `formatPrice` + `formatPriceExact` receipt carve-out). **Findings F1** (pre-existing *site-wide* doubled form chrome — the `[DRV-C]` twin; search 49→34px, default 46px on both primitives) **and F2** (catalog/detail price split) **both CLOSED**. **M10 was unbuildable as dispositioned** → surfaced, re-decided by the user as *price sticker only* (`CoursePriceSticker` extracted, hero unchanged at 198px). Self-audit restored `prov:sweep` 17→11 and removed a stranded `context="catalog"` path; **narrow-width sweep 320→1280** found zero overflow and fixed two mobile defects (clearing 1 of `[MINWIDTH-320]`'s 3 blockers); empty-state copy re-keyed off the `courses.length === 0` invariant. 5 gates green, suite 6131→**6165**; code `f2c4dd80`→`cd0f36e9`. **Only §2 residue = M3 + M4, gated on the new `[ROLE-CRS-LIST]` / `[REC-REHOME]` tasks.** §3–6 dispositions pending.
 **Task-board body:** `CURRENT-TASKS.md § [MERGE-BRIAN-JULY7]` (branch facts, admission-gate history, timecard protection)
+**Client-facing companion:** [NOT-ADOPTED.md](NOT-ADOPTED.md) — the inverse view of the same dispositions (everything of Brian's that is *not* in our app, with reasons), written to be walked through **with him**. Created Conv 426 at the user's request. **Keep it in step with this file** (ground rule 9).
 
 > **Exploration branch — do not review.** `brian-July-20` is where the user moved Brian on 07-20 so he could keep exploring without git skills losing his work. Its commits post-date the pivot ([TAB-FIT], [SNAV-SCROLL], [CRS-MEMBERS], SubNav drag fix, Sidebar tweaks, feed changes) and are **out of scope until the next agreed pivot**. The *local* `brian-July-7` branch copy is also stale (28 behind origin) — `8a1e677f` is the only reference point.
 
@@ -19,6 +20,7 @@
 6. **Evaluate per screen, implement per mechanism.** A change adopted on one screen lands once in the shared mechanism, serving every consumer of it.
 7. **Provenance markers** (§Page Provenance) go on everything we write.
 8. **Scope questions go to the user.** Any judgment call about what is in or out of scope — a branch, a snapshot, a mechanism — is surfaced as a question, not defaulted (Conv 407 lesson; `memory/feedback_assess_ask_before_acting.md`).
+9. **Every disposition is mirrored into [NOT-ADOPTED.md](NOT-ADOPTED.md)** in the same conv it is decided — the client-facing ledger of what of Brian's is *not* in our app. A DROP goes in §1 or §2; an ADAPT contributes its *left-behind* part to §3; a prerequisite-gated item goes in §4; and a completed screen walk is removed from §5. The two files are updated together — this one records what we built, that one records what he'll notice missing. Its purpose is a live conversation with him, so reasons are consequences (or an honest "that's a taste call"), never internal shorthand.
 
 ## Infrastructure (machine-local, MacMiniM4Pro — mirrors [PREFLIP-WT])
 
@@ -40,7 +42,7 @@
 |---|---|---|
 | 1 | `/course/[slug]` detail | ✅ **COMPLETE (Conv 412)** — dispositions DONE (Conv 408, 12 mechanisms: 9 ADAPT · 3 DROP · 0 ADOPT). **All 9 ADAPT built:** Tier A+B (Conv 409, M1/M4/M5 + M6/M7/M12) · Tier C M10/[RECEIPT] (Conv 410) · Tier C M2 `[SESS-TAB]` (Conv 411) · Tier C M3 `[SESS-FILES]` (Conv 412) · hero refinement `[HERO]` (Conv 413) · colour-theme toggle `[TAB-THEME]` (Conv 414) · UI + messages follow-ups (Convs 415–419, incl. the **MESSAGES mini-plan M1–M6, COMPLETE Conv 419** — see build logs). Only the 3 DROPs unbuilt (2 soft/revisitable) |
 | 2 | `/courses` catalog | ✅ **COMPLETE for everything buildable (Conv 425)** — 16 mechanisms: 3 ADOPT · 12 ADAPT · 1 DROP. **All 14 buildable ones built** — M1 M2 M15 M16 (shell) · M5 M6 M7 M8 (toolbar) · M9 M10 M11 M12 M13 M14 (card + hero sticker). **Findings F1** (pre-existing site-wide doubled form chrome, measured and fixed) **and F2** (catalog/detail price split, fixed at the shared helper + a `formatPriceExact` receipt carve-out) **both closed**. M10's disposition proved unbuildable as written and was re-decided by the user as *price sticker only*. Also this conv: a self-audit restoring `prov:sweep` to its 11-issue baseline + removing a stranded `context="catalog"` path, a **narrow-width sweep 320→1280** (zero overflow; two mobile defects fixed; 1 of `[MINWIDTH-320]`'s 3 blockers cleared) and the invariant-keyed empty-state copy fix. 5 gates green (suite 6131 → **6165**, +34 tests / 3 new files), everything live-verified. **Only remaining §2 work:** M3 + M4, gated on `[ROLE-CRS-LIST]` / `[REC-REHOME]` |
-| 3 | `/community/[slug]` + `/communities` (+`[COMM-BRAND]` feature decision) | ⬜ |
+| 3 | `/community/[slug]` + `/communities` (+`[COMM-BRAND]` feature decision) | ✅ **COMPLETE for everything buildable (Conv 426)** — 20 files censused, **16 mechanisms (N1–N16)**: **3 ADOPT · 11 ADAPT · 2 DROP** (both DROPs carried from earlier walks). **All 13 buildable ones BUILT** across three tiers — A: N14 storage route + N5 Join/Leave rebinding · B: N16 aggregates, N11 hero card, N12 marks, N6 640px geometry, N7 search-first, N9 role pills, N10 compact sort, N3 label · C: N1 identity band, N4 shared course card, N13 logo upload + settings UI. **All 3 findings closed:** **F3** (course-thumbnail uploads 404 — pre-existing, no `/api/storage/` route) **FIXED by N14** and live-proved to gate before R2 · **F4** (Join/Leave dead on client-side nav) **CONFIRMED live with a control, then FIXED by N5** · **F5** (224px header square, 320×224 thumb — a Conv-423-preserved `[DEMO-HOME]` 4× artifact) **superseded** by N1 (band now 96px) and N4. **Only remaining §3 work = N8**, gated on `[REC-REHOME]` (widened to both carousels). Divergences pinned by tests: role pills KEEP the Matt palette (N9); no invented journey CTA (N4); SVG rejected (N13); visibility-filtered + weighted aggregates (N16). 5 gates green, suite 6165→**6234** (+69), `prov:sweep` at baseline |
 | 4 | **Site-wide shell track** (`[BACK-X]` back-nav, `SubNav`/`SubNavItem`, `Sidebar`, forms, `AppLayout`) | ⬜ |
 | 5 | Sessions-files feature (`0006` + storage API) — adopt/reject as a feature | ⬜ |
 | 6 | Misc ("Peer Teachers" relabel, `SessionBooking`, workspace touches) | ⬜ |
@@ -689,7 +691,203 @@ his `[SORT-IN-SEARCH]` chevron is **not** adopted (M7) — both are revisitable 
 
 ## 3 · Communities review
 
-_(pending)_
+**Scope (Conv 426).** 20 files at the pivot land on this unit: the detail page
+(`community/[slug]/[...tab].astro`, `_community-tabs.ts`), the catalog
+(`communities.astro`, `CommunitiesCatalog`, `CommunitiesFilters`, `CommunitiesRoleTabs`,
+`CommunityCatalogCard`), two new entity components (`CommunityMiniHeader`, `CommunityBand`),
+the loader (`ssr/loaders/communities.ts`), the branding lib + migration
+(`lib/community-branding.ts`, `0005_community_branding.sql`), four API surfaces
+(`api/me/communities/[slug].ts` PATCH validator, `index.ts`, `[slug]/logo.ts` **new**,
+`api/recommendations/communities.ts`), `RecommendedCommunities`, `CommunityManagement`,
+`CommunitySettings`, and `creating/communities/[slug].astro`.
+
+**Overlap census:** **5 files changed on both branches** — `CommunitiesRoleTabs.tsx`,
+`CommunityManagement.tsx`, `RecommendedCommunities.tsx`, `ssr/loaders/communities.ts`,
+`community/[slug]/[...tab].astro`. Everything else is his-only. Our own changes to those five are
+small and mechanical (Conv-423 spacing migration, `size-icon-*` sweep, a `deleted_at` guard), so
+reimplementation reconciles cleanly.
+
+**Already decided elsewhere — no new disposition needed:**
+- **`CommunityBand.tsx`** (the course-side "Part of X community" strip) → §1 M10, **ADAPT logo +
+  affiliation only**, shipped as `CommunityAffiliation.tsx` (Conv 425). His full-width tinted strip
+  and the 48px medallion were not adopted.
+- **`accent_color` + the 10-swatch palette + the settings picker + the PATCH validator** → §1 M10,
+  **DROP**. Confirmed again here: the picker is commented out in his own `CommunitySettings`, the
+  stripe is `void accentColor` in `CommunityCatalogCard`, and `CommunityBand` hardcodes
+  `const accent = null`. Dead on his branch, at the client's own request.
+- **`BackHeader` on the community page** → §1 `[BACK-X]`, **DROP (soft, revisitable)**.
+
+### Mechanism inventory (dispositions PENDING — Conv 426)
+
+| # | Mechanism | Ripple | Token/colour | Notes |
+|---|---|---|---|---|
+| N1 | `[COMM-HDR]` `CommunityMiniHeader` replaces the `Card` hero: cover art as full background + left-heavy scrim, 56px white-ringed logo mark, byline `by X · Public · N members · N posts`, CTAs (Manage/Leave/Join) move into the band, description dropped (the About tab already shows it verbatim), view-transition freeze + slug-scoped persist | community cluster; new entity component | 🔴 raw hex — scrim `rgba(8,25,40,…)`, fallback gradient `#0e3a5c`/`#0b2740`, byline `#d7e6ef`, on-dark link `#7cc4ec` | direct analog of §1 M1 `[HDR-ABOVE-TABS]` (**ADAPTed**: took the density, left the scrim + raw hex, kept price/art) |
+| N2 | `[COMM-BACK]` `BackHeader` on the community detail route | shared shell | clean | **already DROPped** (§1 `[BACK-X]`, soft) |
+| N3 | `[COMM-FEED-LABEL]` tab label `Course Feed` → `Community Feed` (page + `_community-tabs.ts`) | none | n/a | ours calls the *community* feed tab "Course Feed" — a plain mislabel |
+| N4 | `[COMM-CRS-CARD]` the Courses tab renders the **full `CourseCatalogCard`** instead of the bespoke mini-row, plus a viewer-enrollment query driving CTA + journey mode; community band suppressed (would point at the community you're in); `?via=community-courses` attribution kept via `href` override | 🔴 collides with §2 M9 (we made a **named** `cover-story` variant instead of his `overlay + catalog` overloading) and §2 M12 (**we declined the card CTA change**) | inherits the card's tokens | +1 SSR query per page load; his local `coursePriceLabel` duplicates the `formatPrice` fix already landed in §2 M14 |
+| N5 | `[COMM-JOIN-REBIND]` Join/Leave wiring moved off module top-level into a `wireMembershipButtons()` re-run on `astro:page-load`, `data-wired` double-bind guard, plus a Leave **self-heal** — a `Not a member` 400 lands where success lands instead of alerting | community detail only | n/a | **bug fix — see finding F4** |
+| N6 | `[COMM-LAYOUT]` `/communities` adopts the 640px left-anchored two-column geometry; drops `ListingShell` and the rail/top `navLayout` variance (filters always `orientation="top"`) | `ListingShell` keeps its other consumers | clean | exact twin of §2 M1 (**ADAPTed**) |
+| N7 | `[COMM-SEARCH-FIRST]` visible "Browse Communities" header + description removed (`sr-only h1` kept); toolbar leads; nudge banner moves below it | none | clean | exact twin of §2 M2 (**ADOPTed**) |
+| N8 | `[COMM-REC-OFF]` `RecommendedCommunities` carousel removed from the page | 🔴 `/communities` is its only consumer — same shape as §2 M4 | n/a | twin of §2 M4, which is **gated on `[REC-REHOME]`** |
+| N9 | `[COMM-PILLS]` role tabs move off the shared `RoleTabBar` onto floating pills with count badges | 🔴 **drops the Matt-§5 role palette** (member/teaching → student/teacher blue, created → creator purple, moderating → neutral) — his docstring states this explicitly | 🔴 raw `#2a93d5`, `#dfe6ee`, `rgba(7,119,182,…)`, `rgba(16,42,67,…)` + gradient capsule | twin of §2 M6 (**ADAPTed flat + tokenised**) **plus** a role-colour loss §2 never faced — role theming is a client-flagged watch area (ground rule 3) |
+| N10 | `[COMM-SORT-IN-SEARCH]` sort docked inside the search box as a chevron-only slot over an invisible native `<select>` | none | clean | exact twin of §2 M7 (**not adopted** — sort stays a visible labelled `Select`) |
+| N11 | `[COMM-HERO-CARD]` third `hero` variant on `CommunityCatalogCard`: 180px cover panel left (120px banner below `@xl`), Public/Private badge top-left, 56px white-ringed logo bottom-left, `min-h-190`, 3-line description, "Led by" + aggregate-rating link chips, merged members·posts meta line, and a **courses footer band** ("N courses in this community · taught by N peer teachers") | card is shared with `RecommendedCommunities` (gated by variant) | 🔴 footer band raw `#e3f1fc` / `#d3e7f8`, shadow `rgba` stacks | twin of §2 M9 (**ADAPTed, tokenised, as a named variant**); needs N16's loader aggregates |
+| N12 | `[COMM-LOGO-CARDS]` logo mark rendered in all three card variants (hero 56px ringed, overlay 40px, stacked 20px) | additive | clean | our `logo_url` column exists but **no community-side surface renders it** |
+| N13 | `[COMM-LOGO-UPLOAD]` `POST`/`DELETE /api/me/communities/[slug]/logo` (owner-gated, type + 2MB validated, R2, old-logo cleanup, instant-persist) + the `CommunitySettings` upload/remove UI | new API + settings UI | clean | **the missing half of our own §1 M10 adoption** — we shipped the column with no way to set it |
+| N14 | `[COMM-STORAGE-ROUTE]` `GET /api/storage/[...key]` — public R2 asset server with a **prefix allowlist** (`courses/*/thumbnail/`, `communities/*/logo/`), 404 for everything else so private objects stay behind their auth-gated endpoints | 🔴 site-wide storage surface | n/a | **fixes finding F3 on our branch**; his docstring: *"the upload endpoints have always generated `/api/storage/{key}` URLs, but no route served them until now"* |
+| N15 | `[COMM-ACCENT]` `accent_color` column + `community-branding.ts` palette + picker + PATCH validator | — | — | **already DROPped** (§1 M10) |
+| N16 | `[COMM-LIST-AGG]` loader aggregates per community — `courseCount`, `teacherCount` (distinct active certified teachers), and a **review-count-weighted** average rating + total review count, via two `LEFT JOIN` subqueries; plus `creator` on `CommunityProgressionCourse` | list loader (2 extra subqueries) | n/a | prerequisite for N11's chips + footer band and N4's card |
+
+### Findings surfaced while building the inventory (Conv 426)
+
+- **F3 — course thumbnail uploads produce dead URLs on our branch (CONFIRMED in code, pre-existing,
+  nothing to do with communities).** `api/me/courses/[id]/thumbnail.ts:131` stores
+  `thumbnail_url = /api/storage/${key}`, and **no `/api/storage/` route exists on our branch** (no
+  `src/pages/api/storage/` directory; the only producer of that path is the thumbnail endpoint
+  itself). So a creator who uploads a course thumbnail through Creator Studio (`CourseEditor.tsx`)
+  gets a URL that 404s everywhere a thumbnail renders — catalog cards, hero, recommendations,
+  community Courses tab, admin. **Masked in dev**: the seed uses external `picsum.photos` URLs, so
+  the broken path is never exercised. N14 is the fix. Tracked as `[THUMB-404]`.
+- **F4 — community Join/Leave is probably dead on client-side navigation (plausible from code,
+  needs live verification).** Our page binds both buttons at module top level. `ClientRouter` is
+  active (`AppLayout.astro:169`), and Astro executes a given module script **once per document** —
+  so arriving at a *second* community via a client-side navigation (e.g. from a `/communities`
+  card) leaves the new page's Join/Leave unbound. This is exactly the bug his comment describes
+  (*"clicked Join, feed still said join to participate"*) and N5 fixes. **Verify live before calling
+  it a defect** — same discipline as §2's F1.
+- **F5 — two sizes on the community page render 4× their apparent intent.** The identity square is
+  `min-[480px]:w-224 h-224` (**224px**) beside a `w-[96px]` mobile value, and the Courses-tab
+  thumbnail is `w-320 h-224` (**320×224**) for what reads as a list-row thumb. Both came from the
+  Conv-423 spacing-base fix (`dc1f031e`), which correctly rewrote `w-56`→`w-224` and `w-80 h-56`→
+  `w-320 h-224` to **preserve the rendered size** — pre-fix, `w-56` resolved through Tailwind's stock
+  `0.25rem` base to 14rem = 224px. So the migration is faithful; what it preserved was a pre-existing
+  4× artifact (the `[DEMO-HOME]` class). Brian independently spotted the header one — his
+  `CommunityMiniHeader` docstring calls out *"its w-56 hit the rem fallback and rendered 224px"*.
+  N1 supersedes the header instance; the Courses-tab thumbnail is superseded by N4. If both are
+  declined, these need their own fix.
+
+### Dispositions
+
+🔄 **Walk in progress (Conv 426).** Batch A decided (9 of 16 mechanisms); N2/N15 carry prior decisions;
+N4/N5/N8/N16 pending.
+
+**Batch A — catalog twins, role colours, hero, upload (decided Conv 426):**
+
+| # | Disposition | Build note |
+|---|---|---|
+| N3 `[COMM-FEED-LABEL]` | **ADOPT** | `Course Feed` → `Community Feed` in `_community-tabs.ts` **and** the page's `TAB_LABELS`. A plain mislabel on the community feed tab — his fix is simply right |
+| N6 `[COMM-LAYOUT]` | **ADAPT — per §2 M1** | Take Home's 640px left-anchored two-column geometry; filters always `orientation="top"`, so the page stops varying by `navLayout`. ⚠️ `ListingShell` loses a consumer here — after this it keeps **`index` + `members`** only; leave it in place for them (do not delete) |
+| N7 `[COMM-SEARCH-FIRST]` | **ADOPT — per §2 M2** | Visible "Browse Communities" header + description out, `sr-only h1` in, toolbar first, onboarding nudge below it |
+| N9 `[COMM-PILLS]` | **ADAPT — pill geometry, role colours KEPT** | Take the compact floating-pill treatment with count badges, **flat and tokenised** (his `#2a93d5`/`#dfe6ee`/`rgba` stacks + gradient capsule are not adopted, same call as §2 M6). 🔴 **Diverges from his build on the substance:** he drops the Matt-§5 role palette (member/teaching → student/teacher blue, created → creator purple, moderating → neutral) because "the courses pill row has none". Role-based colour theming is a client-flagged watch area (ground rule 3), so the palette is retained here. Consequence to settle at build time: whether `RoleTabBar` gains a pill variant, or the role colours move into the pill styling directly — the shared primitive has other consumers |
+| N10 `[COMM-SORT-IN-SEARCH]` | **ADAPT — visible compact control, per §2 M7** | Sort stays a labelled compact `Select` in the toolbar. The chevron-in-search slot over an invisible native `<select>` is not adopted — the label disappears, which is a discoverability trade rather than a space saving |
+| N11 `[COMM-HERO-CARD]` | **ADAPT — tokenised, named variant, per §2 M9** | Cover panel left + Public/Private badge + logo mark + `min-h`, 3-line description, "Led by" / aggregate-rating link chips (persistent underline per `[STEP-LINK]`), merged members·posts meta line, and the courses footer band. **Built on palette tokens** — his `#e3f1fc`/`#d3e7f8` band and `rgba` shadow stacks are not adopted. Added as a **named third variant** (as `cover-story` was on `CourseCatalogCard`), not by overloading `stacked`, so `RecommendedCommunities` is untouched. Depends on N16 |
+| N12 `[COMM-LOGO-CARDS]` | **ADAPT** | Render the logo mark across the card variants — closing the gap that our `logo_url` column has **no community-side surface** today. Sizing per variant, using the rounded-mark convention already in `CommunityAffiliation`; his white-ringed medallion treatment stays behind (same call as §1 M10). Exact hero-panel mark size is a build-time call |
+| N1 `[COMM-HDR]` | **ADAPT — per §1 M1** | Take the compaction, the logo mark, and the denser byline (`by X · Public · N members · N posts`); drop the duplicated description (the About tab renders it verbatim). **Leave behind** the raw-hex scrim + fallback gradient, the on-dark `#7cc4ec` link, and any `back-header`/`--pin-top` coupling (`[BACK-X]` is dropped, so this band must stand alone — same knock-on as §1 M1). Supersedes **F5**'s 224px identity square |
+| N13 `[COMM-LOGO-UPLOAD]` | **ADAPT — sequenced after N14** | Owner-gated `POST`/`DELETE` logo endpoint (type + size validated, R2, old-object cleanup, instant-persist rather than tied to Save/Cancel) + the settings upload/remove UI, reimplemented on our conventions and mirroring our existing course-thumbnail endpoint. **This completes our own §1 M10 adoption** — we shipped `communities.logo_url` with no way for a creator to set it |
+| N14 `[COMM-STORAGE-ROUTE]` | **ADAPT — build FIRST** | `GET /api/storage/[...key]`, serving **only** an allowlist of public prefixes (`courses/*/thumbnail/`, `communities/*/logo/`) and 404ing everything else, so private objects (community resources, homework submissions, recordings) stay behind their auth-gated endpoints. **Stands on its own merits — it closes finding F3 / `[THUMB-404]`, a live pre-existing defect unrelated to communities** — so it is built first, ahead of N13 which depends on it |
+
+**Carried from earlier walks (no new decision):** N2 `[COMM-BACK]` → **DROP** (§1 `[BACK-X]`, soft) ·
+N15 `[COMM-ACCENT]` → **DROP** (§1 M10).
+
+**Batch B — Courses tab, bug fix, recommendations, loader (decided Conv 426):**
+
+| # | Disposition | Build note |
+|---|---|---|
+| N4 `[COMM-CRS-CARD]` | **ADAPT — shared card, badge + progress, no CTA change** | Take "one course card everywhere": the Courses tab renders our shared `cover-story` card instead of the bespoke mini-row, keeping the `?via=community-courses` attribution via the `href` override and suppressing the community affiliation (it would point at the community you are already inside). **Keeps §2 M12's call** — enrolled viewers get the ✓ Enrolled / ✓ Completed badge and their own progress; the **CTA is left as the host passes it**. His server-side enrollment query is better data than the catalog's client snapshot, but it still carries only `status` + module counts, so a card CTA derived from it would read "Book next session" while the detail page — resolving an upcoming session through `buildCoursePrimaryCta` — reads "Go to Session N" for the same course. The contradiction §2 declined survives the better data source. **Drop his local `coursePriceLabel`** — `formatPrice` already carries `minimumFractionDigits: 0` since §2 M14. Supersedes **F5**'s 320×224 Courses-tab thumbnail |
+| N5 `[COMM-JOIN-REBIND]` | **ADAPT — both halves, after verifying F4 live** | Move Join/Leave wiring off module top level into a function re-run on `astro:page-load`, with a `data-wired` guard against double-binding on same-slug tab switches (`transition:persist` keeps the element). Take the **Leave self-heal** too: a `Not a member` 400 means the page's membership state has drifted and the user's goal state is already true, so land where success lands rather than alerting. **Verify first** — reproduce the dead-button case by navigating client-side from a `/communities` card to a second community and clicking Join; the defect is plausible from the code but unmeasured (`[PREMISE]` discipline, same as §2's F1) |
+| N8 `[COMM-REC-OFF]` | **ADAPT — hide only after rehoming; `[REC-REHOME]` widened to both surfaces** | Verified premise: `/communities` is the **only** consumer of `RecommendedCommunities`, which is the **only** caller of `/api/recommendations/communities` — the exact shape of §2 M4. Rather than open a second task, **`[REC-REHOME]` now covers both carousels**: they would compete for the same destination, so the rehoming decision should be made once for both. Destination remains undecided (`[FEEDS]` bars re-adding panel surfaces to Home). Gated, not dropped |
+| N16 `[COMM-LIST-AGG]` | **ADAPT — all four aggregates** | `courseCount`, `teacherCount` (distinct active certified teachers), and a **review-count-weighted** average rating + total review count, via two `LEFT JOIN` subqueries on the list query, plus `creator` on `CommunityProgressionCourse` (N4 needs it for the card's creator chip). Weighted (`SUM(rating × rating_count) / SUM(rating_count)`) rather than a flat mean, so a 5.0-from-one-review course cannot outweigh a 4.6-from-fifty. Prerequisite for N11 and N4 — build it first among the catalog work |
+
+### Build log — §3 all three tiers (Conv 426, all 5 gates green + live-verified)
+
+**13 of 13 buildable mechanisms shipped**; N8 stays gated on `[REC-REHOME]`.
+
+**Tier A — the defect + storage foundation.**
+- **N14** `GET /api/storage/[...key]` built with a two-entry prefix allowlist, traversal rejection,
+  ETag/304 revalidation and immutable caching. **Closes `[THUMB-404]` / finding F3.** The security
+  property is verified *live, not just by unit test*: with a real object seeded at
+  `homework/sub-1/secret.pdf`, the route still 404s — so the allowlist gates **before** R2 is
+  consulted and object existence is not observable. An allowlisted key with an object returns 200
+  `image/png`, and `If-None-Match` returns 304.
+- **N5** Join/Leave wiring moved to `astro:page-load` + a `data-wired` guard, with the Leave
+  self-heal. **F4 was confirmed before being fixed**, with a control: as `amanda.lee` on
+  `/community/q-system`, a hard load fired `POST /api/communities/q-system/join` and disabled the
+  button, while the same button reached client-side (`/communities` → automation-majors →
+  `/communities` → q-system) produced **zero requests**. Post-fix the identical route fires the POST;
+  three same-slug tab switches then produce exactly one request, so the guard holds. Membership was
+  never mutated — the POST was intercepted in-page.
+
+**Tier B — the catalog.** N16 loader aggregates (two grouped subqueries) · N11 `hero` card variant ·
+N12 brand marks across all three variants · N6 640px left-anchored geometry · N7 search-first ·
+N9 role pills · N10 compact controls · N3 label fix.
+
+**Tier C — detail page + feature completion.** N1 identity band · N4 shared course card · N13 logo
+upload endpoint + settings UI.
+
+**Divergences from his build that are now pinned by tests** (not just prose):
+- **N9 role palette retained** — `RoleTabBar` gained an opt-in `variant="pill"` rather than a bespoke
+  row, so /courses role tabs and dev/primitives are untouched. Live: selecting *Member* renders
+  `--Student-Primary` on `--Student-Background` with its role dot. His branch dropped the palette.
+- **N4 no invented journey CTA** — live on the Courses tab, the completed course shows **✓ Completed**
+  with **no CTA**, while unenrolled courses show "Enroll Now". "Certificate earned" appears nowhere.
+- **N11/N9 tokenised** — the courses band computes to `rgb(241,249,255)` (`--Primary-Light`) with a
+  `border-default` hairline; zero raw hex and no gradient anywhere in either component.
+- **N13 rejects SVG** (his `ALLOWED_TYPES` accepted it) — an SVG is executable and these are served
+  same-origin by N14. The upload UI's `accept` matches.
+- **N16 visibility filter** — his subqueries filtered only `is_active = 1`; ours matches
+  `fetchCommunityProgressionsData`, so a card cannot advertise courses the Courses tab won't list.
+  Also weighted-by-review-count rather than a flat mean (a test pins 4.61, not 4.80).
+
+**Live verification** (`localhost:4321`, `amanda.lee` then `guy-rymberg`):
+- `/communities`: listing column exactly **640px** anchored left with the panel at x=1035; `h1`
+  present and `sr-only`; search leads at y=80; compact search wrapper 34px; sort **visible and
+  labelled** with 3 options and no invisible-select trick. Three hero cards at 640×190 rendering real
+  aggregates — *"3 courses in this community · taught by 3 peer teachers"*, *"1 course … 2 peer
+  teachers"*, and *"2 courses in this community"* (teacher clause correctly omitted at zero).
+- `/community/ai-for-you`: the identity band measures **96px** — the block it replaced spent 224px on
+  its identity square alone (finding F5) — with the byline reading exactly *"by Guy Rymberg · Public ·
+  156 members · 89 posts"*, and the description now appearing **once** on the page instead of twice.
+  Tab reads **"Community Feed"**.
+- Courses tab: 3 shared `cover-story` cards at 948×190 using the shared `CourseCoverPanel`, community
+  affiliation suppressed (it would point at the community you are inside), and the `?via=` attribution
+  preserved through the new `href` override. The old 320×224 thumbnail is gone (F5's second instance).
+- **N13 + N14 end-to-end**: uploading a PNG as the community's creator returned a
+  `/api/storage/communities/…/logo/{ts}.png` URL that N14 then served (200, `image/png`, 70 bytes);
+  the same upload against a community he does not own returned **403**; the mark rendered at 40×40 on
+  the catalog card (`complete`, no medallion treatment); and the settings editor showed the preview,
+  Replace/Remove, `Square PNG, JPG, WebP or GIF. Max 2MB.`, and **no accent picker**.
+- Local dev state restored afterwards (seeded `logo_url` reinstated, test R2 objects deleted).
+
+**Gates:** tsc ✅ · `astro check` **0 errors** ✅ · lint **0 errors** (162 warnings, all pre-existing —
+`[A11Y]` / `[RHOOKS]`) ✅ · suite **6165 → 6234** (+69 across 4 new files: storage route 18, community
+card 16, RoleTabBar 12, logo endpoint 17, loader aggregates 6) ✅ · build ✅. `prov:sweep` unchanged at
+the `[PROV-SWEEP-DEBT2]` baseline of 11 — the work added variants to already-stamped components rather
+than new ones.
+
+**One environment note worth keeping:** under jsdom, a `File` round-tripped through
+`new Request({ body: formData })` → `.formData()` comes back with its bytes collapsed (`size` reads 9
+regardless of input), which silently neutered the logo size-cap assertion. The handler only consumes
+`request.formData()`, so the test hands it the `FormData` directly.
+
+### §3 walk result (Conv 426)
+
+**16 mechanisms · 3 ADOPT · 11 ADAPT · 2 DROP (both carried from earlier walks).** One ADAPT (N8) is
+**gated** on `[REC-REHOME]`; the other 13 are buildable. Three findings: **F3 confirmed and now owned
+by N14** (`[THUMB-404]`), **F4 to be verified before N5's fix**, **F5 superseded** by N1 (header
+square) and N4 (Courses-tab thumbnail).
+
+Suggested build tiers (mirroring §1/§2 staging):
+
+- **Tier A — the defect + storage foundation:** N14 storage route (closes `[THUMB-404]` on its own
+  merits, independent of everything else) · N5 Join/Leave rebinding, after live verification of F4
+- **Tier B — the community surfaces:** N16 loader aggregates → N11 hero card variant · N12 logo marks
+  · N6 640px geometry · N7 search-first · N9 pills with role colours retained · N10 visible sort · N3
+  label fix
+- **Tier C — detail page + feature completion:** N1 community identity band · N4 shared course card ·
+  N13 logo upload API + settings UI (needs N14)
+
+**Two deliberate divergences from his build to pin in tests**, as §2 did: the role-tab pills **keep**
+the Matt role palette (N9), and the Courses-tab card carries **no invented journey CTA** (N4).
 
 ## 4 · Shell track review
 
