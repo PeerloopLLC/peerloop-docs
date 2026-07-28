@@ -25,7 +25,7 @@
 > orphaned endpoint is deleted. Nothing outstanding — kept here one conv for traceability, then
 > delete this note.
 
-1. [MERGE-BRIAN-JULY7](#merge-brian-july7) — client branch assessment/integration (§4–6 walks remain)
+1. [MERGE-BRIAN-JULY7](#merge-brian-july7) — 🏁 all 6 review units COMPLETE; open only on the external ask to Brian
 2. [CRS-CREATED-CARD](#crs-created-card) — last [CRS-ROLE-DORMANT] orphan; its rehome proved unbuildable
 3. [WS-DATA-MODEL](#ws-data-model) — role workspaces split CurrentUser-first vs API-first; pick one
 4. [REC-MOBILE](#rec-mobile) — no recommendations surface below `lg` after the rail rehome
