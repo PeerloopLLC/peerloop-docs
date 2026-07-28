@@ -1090,7 +1090,15 @@ bare "Teachers".
 5 gates green; suite **6215** (unchanged — the 4 relabel-assertion updates are edits, not additions);
 lint 0 errors (160 pre-existing warnings); `prov:sweep` at its 11-issue baseline.
 
-**§4 result: 1 ADAPT · 1 ADOPT · 2 DROP.** Remaining MERGE-BRIAN work = §5 and §6.
+**§4 result: 1 ADAPT · 1 ADOPT · 2 DROP.**
+
+**Follow-through (later in Conv 428).** `StickyViewTitle` now has **three** hosts, not one:
+§6's census found he mounted `BackHeader` on `/creating/communities/[slug]` and
+`/teaching/courses/[courseId]` too, and both were verified to carry no `SubNav` — so both
+qualify under the rule above. Wired with a view-type title on the community page (its name is
+only known client-side) and the course title on the teaching page. The honest limitation is
+unchanged though: at a 1059px window none of the three scroll (each ~1059px of content); on a
+typical 800px laptop they scroll ~260px, which is where the row earns its 52px.
 
 ## 5 · Sessions-files feature decision
 

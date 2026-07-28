@@ -26,49 +26,46 @@
 > delete this note.
 
 1. [MERGE-BRIAN-JULY7](#merge-brian-july7) — client branch assessment/integration (§4–6 walks remain)
-2. [CRS-ROLE-DORMANT](#crs-role-dormant) — unreachable role branches + 3 orphaned cards after M3: keep or delete
-3. [OVERLAY-ORPHAN](#overlay-orphan) — `overlay` card variant now has zero call sites: keep or delete
-4. [CRS-COMM-TABSYM](#crs-comm-tabsym) — /courses has no role tabs, /communities does: accept or align
-5. [REC-MOBILE](#rec-mobile) — no recommendations surface below `lg` after the rail rehome
-6. [SPACING-4X](#spacing-4x) — sweep for other 4× size artifacts Conv 423 preserved
-7. [TDASH-CERTS-DEAD](#tdash-certs-dead) — `/api/me/teacher-dashboard` `certifications` field now unconsumed
-8. [A11Y](#a11y) — accessibility lint triage
-9. [RHOOKS](#rhooks) — react-hooks lint triage
-10. [KNIP](#knip) — dead-export oracle → gate
-11. [PROV-SWEEP-DEBT2](#prov-sweep-debt2) — `prov:sweep` gate silently red (10 unregistered)
-12. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
-13. [EDITSAFE](#editsafe) — anchored-edit discipline
-14. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
-15. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
-16. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
-17. [HOME-FIXES](#home-fixes) — Home route fix bucket
-18. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
-19. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
-20. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
-21. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
-22. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
-23. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
-24. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
-25. [RSFD](#rsfd) — port `r-start-from-dirty`
-26. [DEPEXP](#depexp) — dependency-probe hygiene
-27. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
-28. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
-29. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
-30. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
-31. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
-32. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
-33. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
-34. [DEVSRV-STALE](#devsrv-stale) — un-parked: stale/bricked astro dev daemon recurred
-35. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
-36. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
-37. [TLFMT](#tlfmt) — r-end ref documents a TIMELINE.md shape the file no longer uses
-38. [OUTLINE-V4B](#outline-v4b) — 3 residual `outline-none` sites the Conv-244 fix missed
-39. [ADMIN-OVFLW](#admin-ovflw) — 3 admin routes overflow horizontally (pre-existing, not Conv-423)
-40. [LH1](#lh1) — 23 typography tokens hardcode `line-height: 1` (TYPO-FDN axis)
-41. [BRIDGE-RESIZE](#bridge-resize) — `resize_window` silently ignores width
-42. [ICON-STATES](#icon-states) — Phase-5 tail: drive hidden/loading states over 528 call sites
-43. [GATEPAR](#gatepar) — `/w-codecheck` vs `npm run verify` diverged on the icon gate
-44. [VPHARNESS](#vpharness) — persist the exact-size iframe harness as a script
+2. [CRS-CREATED-CARD](#crs-created-card) — last [CRS-ROLE-DORMANT] orphan; its rehome proved unbuildable
+3. [REC-MOBILE](#rec-mobile) — no recommendations surface below `lg` after the rail rehome
+4. [SPACING-4X](#spacing-4x) — sweep for other 4× size artifacts Conv 423 preserved
+5. [A11Y](#a11y) — accessibility lint triage
+6. [RHOOKS](#rhooks) — react-hooks lint triage
+7. [KNIP](#knip) — dead-export oracle → gate
+8. [PROV-SWEEP-DEBT2](#prov-sweep-debt2) — `prov:sweep` gate silently red (10 unregistered)
+9. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
+10. [EDITSAFE](#editsafe) — anchored-edit discipline
+11. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
+12. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
+13. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
+14. [HOME-FIXES](#home-fixes) — Home route fix bucket
+15. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
+16. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
+17. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
+18. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
+19. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
+20. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
+21. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
+22. [RSFD](#rsfd) — port `r-start-from-dirty`
+23. [DEPEXP](#depexp) — dependency-probe hygiene
+24. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
+25. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
+26. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
+27. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
+28. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
+29. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
+30. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
+31. [DEVSRV-STALE](#devsrv-stale) — un-parked: stale/bricked astro dev daemon recurred
+32. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
+33. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
+34. [TLFMT](#tlfmt) — r-end ref documents a TIMELINE.md shape the file no longer uses
+35. [OUTLINE-V4B](#outline-v4b) — 3 residual `outline-none` sites the Conv-244 fix missed
+36. [ADMIN-OVFLW](#admin-ovflw) — 3 admin routes overflow horizontally (pre-existing, not Conv-423)
+37. [LH1](#lh1) — 23 typography tokens hardcode `line-height: 1` (TYPO-FDN axis)
+38. [BRIDGE-RESIZE](#bridge-resize) — `resize_window` silently ignores width
+39. [ICON-STATES](#icon-states) — Phase-5 tail: drive hidden/loading states over 528 call sites
+40. [GATEPAR](#gatepar) — `/w-codecheck` vs `npm run verify` diverged on the icon gate
+41. [VPHARNESS](#vpharness) — persist the exact-size iframe harness as a script
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -179,6 +176,14 @@
 - **What:** deferred bucket of per-route fixes captured while sweeping the Courses route(s) — batch later. Sibling of `[HOME-FIXES]`.
 - **Holds (from the Conv-292 sweep):** `[FILTERS-RESPONSIVE]` (⟂ responsive/compact filters — the Conv-425 compact toolbar plausibly overlaps this but it was never verified against the original intent) + `[TYPO-REVIEW]` (⟂ app-wide typography).
 - **Added Conv 425 — role-tab empty states ignore their `sub` filter.** The all-tab empty state was fixed this conv to distinguish an empty catalog from over-narrow filters; the four ROLE tabs have the same defect class via a different trigger. Each branches on `q` only, so a student on `sub=completed` holding only in-progress enrolments reads *"You haven't enrolled in any courses yet."* — denying enrolments that exist. Same for teaching (`active`/`paused`), created (`published`/`draft`/`retired`) and moderating. Left unfixed deliberately: those tabs are dispositioned for retirement once `[ROLE-CRS-LIST]` lands (MERGE-BRIAN §2 M3), so fix them only if that gate slips. `src/components/courses/CoursesCatalog.tsx` ~lines 366/377/389/408.
+
+### [CRS-CREATED-CARD]
+
+- **State:** 📋 queued · your call · surfaced Conv 428
+- **What:** `CourseCreatedCard` (61 lines) is the last orphan from `[CRS-ROLE-DORMANT]`. The Conv-428 disposition was "rehome it into `CreatorStudio`", but that **proved unbuildable as written** — the §2-M10 pattern, surfaced rather than guessed.
+- **Why it doesn't fit:** `CourseCreatedCard` takes `course: UserCreatedCourse` (from `useCurrentUser`); `CreatorStudio`'s own `CourseCard` takes `course: CourseWithStats` (from its API fetch) **plus** an `onEdit` handler. Swapping would drop the **level badge, topic name, module count, price**, and — critically — the **in-place edit modal**: `CourseCreatedCard`'s "Edit" is a *link back to `/creating/studio`*, which from inside the studio is circular. That is a [DISC-DROP]-shaped regression, not a re-skin.
+- **Options:** (a) delete `CourseCreatedCard` (it has zero consumers and zero tests) · (b) merge the two — widen `CourseCreatedCard` to accept `CourseWithStats` + `onEdit` and adopt its Matt styling in the studio, which is a real piece of work, not a swap · (c) leave it parked.
+- **Refs:** `src/components/courses/CourseCreatedCard.tsx`, `src/components/creators/studio/CreatorStudio.tsx` (`CourseCard`, ~line 94).
 
 ### [DEPEXP]
 
@@ -336,6 +341,11 @@
 - **📦 §1 BUILD progress (Conv 409–411):** **Tier A+B BUILT (409)** — Tier A cosmetic: M1 hero-compress (`CourseHeader.tsx`, 360→166px) · M5 band-compact + `actionable` links (`CourseJourneyStepper.astro` + `_course-tabs.ts`) · M4 "Peer Teachers" relabel + count-gated search island (`TeachersTabList.tsx`). Tier B shared-primitive (all **opt-in**): M6 `[TAB-SCROLL]` (`SubNav preserveScroll` + script) · M7 `[TAB-FLOAT/COMPACT]` (`SubNavItem dense` — tokenised, no gradient) · M12 `MattCourseFeed` (compact composer + tokenised skeletons). **Tier C M10 + [RECEIPT] BUILT (410):** M10 `[COMM-BAND]` (`communities.logo_url` + reseed + loader join + `CourseHeader` affiliation line; `accent_color`/palette/picker DROPPED) · `[RECEIPT]` (own durable `/receipt/[id]` view, owner-only + printable; M5 Payment step retargeted off `/success`). All 5 gates green + live-verified; prov:sweep unchanged at `[PROV-SWEEP-DEBT2]` baseline. **Tier C M2 `[SESS-TAB]` BUILT (411):** merged curriculum-first Modules tab — IA user-decided (route `/modules`, label "Modules", 2nd position); `ModulesTab.astro` rewritten with the enrolled session overlay + `MySessionsTab.astro` deleted; new `fetchCourseModulesView` loader (reuses positional SoT `resolveModuleAssignments`); `/sessions` 301→`/modules`; session-family hrefs retargeted; 5 gates green (suite **6542**, +3 durable fixture tests) + live-verified on `:4321` against the david-n8n booked-not-completed fixture; prov:sweep unchanged. Code `5ac9493d`. **Tier C M3 `[SESS-FILES]` BUILT (412):** per-module + course-wide file strips folded into the Modules tab — `session_resources.display_order` column (folded into `0001` + reseed; `in_room` NOT adopted), loader `is_public`-gated + `display_order`-ordered with a non-null `href` guard (dead-link defect avoided), `ModulesTab.astro` strips wired to `/api/resources/:id/download` (uploads) / external URL (links), +3 loader tests. 5 gates green (suite **6550**) + live-verified (anon → public-only; enrolled david → 2 uploads under Module 1 ordered 003→001). Fixed a latent Conv-411 `TS2367` in `courses.test.ts:412` inline. Also, on discovering the **Resources tab was a functional regression** (pre-flip `ResourcesTabContent.tsx` rendered files; Conv-188 Matt flip replaced it with an empty stub — DISC-DROP), the user asked for a parity diff → **2 gaps closed** so M3 is a faithful superset: per-file **descriptions** rendered + **role-aware visibility** (`canViewAllFiles` param: creator/admin/moderator see all files unenrolled). Then **retired the Resources tab** — `/resources` 301→`/modules`, removed from `VALID_TABS`/`buildCourseExploreTabs`, orphaned `ResourcesTab.astro` deleted + registry regenerated. **🔴 Fixed a `gen-registries.ts` scanner false-positive** (regex matched `@matt-source <node>` in Avatar's prose → falsely registered a `@matt-inspired` component; reworded prose, prov:sweep back to baseline). **§1 is now 9 of 9 ADAPT built = COMPLETE.** **Remaining:** §2–6 disposition walks (`/courses`, communities, shell track, sessions-files-feature, misc). Detail: `plan/merge-brian/README.md §1 Build logs + Resources-tab decision`.
 - **📦 §3 `/community/*` + `/communities` — DISPOSITIONS DONE **and all 13 buildable mechanisms BUILT** (Conv 426).** Tier A: **N14** `/api/storage/[...key]` (allowlisted public asset server — closes `[THUMB-404]`; live-proved to gate before R2) + **N5** Join/Leave `astro:page-load` rebinding + Leave self-heal (**F4 confirmed live with a hard-load control before fixing**). Tier B: **N16** loader aggregates (visibility-filtered like the Courses tab; review-count-**weighted** rating) · **N11** named `hero` card variant + courses band (tokenised `--Primary-Light`, zero raw hex) · **N12** brand marks on all 3 variants · **N6** 640px left-anchored geometry (measured 640/left-1035) · **N7** search-first `sr-only h1` · **N9** `RoleTabBar variant="pill"` **retaining the Matt role palette** (his build drops it) · **N10** visible labelled compact sort · **N3** "Community Feed" label fix. Tier C: **N1** identity band (**272px→96px**, byline `by X · Public · N members · N posts`, description de-duplicated) · **N4** shared `cover-story` card with `href` attribution override and **no invented journey CTA** · **N13** logo upload endpoint + settings UI (**SVG rejected**; verified end-to-end upload→serve→403-on-non-owner). Suite 6165→**6234** (+69, 5 new test files), 5 gates green, `prov:sweep` at baseline. Remaining: **N8 only**, gated on `[REC-REHOME]`. Detail: `plan/merge-brian/README.md §3`.
 - **📄 Client-facing ledger (Conv 426):** `plan/merge-brian/NOT-ADOPTED.md` — everything of Brian's that is **not** in our app (❌ declined · 🟡 declined-for-now · 🔵 took-the-idea-left-the-build · ⏸️ prerequisite-gated · ⬜ unreviewed), written for a live walkthrough **with him**. Now covers §1–§3 (42 distinct mechanisms: 6 ADOPT · 32 ADAPT · 4 DROP), including a "where his work fixed real defects on our side" section — the thumbnail 404, the Join/Leave dead-button, the mislabelled feed tab and the 224px square. **Standing obligation — README ground rule 9:** every new disposition updates it in the same conv (DROP → §1/§2 · ADAPT's left-behind part → §3 · gated → §4 · finished walk leaves §5). Reasons stated as consequences, never internal shorthand; the user's own verbatim stance stays out of it.
+- **[CRS-ROLE-DORMANT] + [OVERLAY-ORPHAN]** ✅ Conv 428 — resolved as **rehome 2, delete the rest**, net **−576 lines**. **Rehomed:** `CourseProgressCard` → `/learning`'s `StudentDashboard`, replacing the legacy `EnrollmentCard` it was built to replace back in Conv 222 but had only ever been reachable from the removed role tabs (verified a strict superset first: same status pill, actions and message button, **plus** a progress bar and level/duration/session chips). **Deleted:** `EnrollmentCard` (176), `CourseModerationCard` (62 — moderating is community-scoped, no home exists), `CoursesRoleTabs` (70, zero imports), the four role branches + `SUB_OPTIONS` + `EmptyState` + tab state + hash/`courses:tabchange` wiring in `CoursesCatalog`, the `isAll` collapse branch in `CoursesFilters`, and the `variant="overlay"` blocks on **both** catalog cards (`[OVERLAY-ORPHAN]`, no call site since Conv 427). `useRoleTabs` deliberately kept — `CommunitiesRoleTabs` still imports it. Lint warnings **160→156**; suite 6215→6214.
+- **[CRS-COMM-TABSYM]** ✅ Conv 428 — **accepted the asymmetry, on evidence.** All four `/courses` lenses had other homes (which is why M3 was safe); on `/communities` only "created" does (`/creating` → `CreatorCommunities`), so **member/teaching/moderating have none**. Recorded as a decision so it doesn't later read as drift.
+- **[TDASH-CERTS-DEAD]** ✅ Conv 428 — `certifications` removed from `/api/me/teacher-dashboard` (the `CertificationRow` interface, its query, the `certItems` transform and the returned field). The test that asserted the array now pins its **absence**, so it can't quietly return.
+- **StickyViewTitle extended to 3 hosts** ✅ Conv 428 — added `/creating/communities/[slug]` (view-type title; the community name is only known client-side) and `/teaching/courses/[courseId]` (course title). Both verified to carry no `SubNav`. 🟠 **Honest limitation unchanged:** at a 1059px window none of the three hosts scroll (each ~1059px of content); on a typical 800px laptop they'd scroll ~260px, which is where the bar earns its 52px.
+
 - **🏁 MERGE-BRIAN §6 COMPLETE → ALL SIX UNITS DONE (Conv 428).** 7 mechanisms: **3 ADOPT · 3 DROP · 1 already-adopted**. ADOPT: **M1b a real booking defect** ("Selected at enrollment" rendered under the *wrong* teacher after stepping back — flag computed from `preSelected`, rendered under `selectedTeacher`; walked end-to-end live in both directions) · **M4** local course cover SVGs replacing picsum (also required `migrations-dev/0001_seed_dev.sql`, which my earlier completeness sweep MISSED because the `migrations` exclusion glob swallowed `migrations-dev` — without it M4 was a no-op in dev) · **M6** `Peer Teacher Management` — **a gap §4 S4 left**, its census grepped exact `Teachers` tokens so `Teacher Management` slipped through. DROP: the "Change" button (UI half of declined teacher switching), `/learning`→"My Courses" (other half of §4 S3). 5 gates green, suite 6215. **The MERGE-BRIAN review programme is COMPLETE.**
 - **📦 §5 SESSIONS-FILES COMPLETE (Conv 428).** **The feature question was already answered** — `display_order` ADOPTED (§1 M3), `in_room` DROPPED (§1), `/api/storage/[...key]` ADOPTED (§3 N14), and `api/sessions/index.ts` proved to be **teacher switching mis-filed into this unit**, already declined (verified our 403 still enforced). Real residue = 4 items, 3 of them course-chrome not files: **1 ADAPT · 3 DROP** — demo binaries DROP (repo is client-shared; `[R2-SEED]` covers it) · `CourseMiniHeader` DROP · sticky rail DROP (mutually exclusive with §4's `StickyViewTitle` by §4's own rule) · journey band **below** tabs ADAPT, which fixes our OWN course-vs-session inconsistency rather than adopting him. 5 gates green, suite 6215. **Remaining MERGE-BRIAN work = §6 only.**
 - **📦 §4 SHELL TRACK COMPLETE (Conv 428).** 11 files censused, 7 already dispositioned by §1–§3, 4 live mechanisms decided and built: `[BACK-X]` ADAPT (breadcrumbs kept, back button dropped as a `history.back()` duplicate, sticky title taken as `StickyViewTitle.astro` on `/session/[id]`), `[FEED-WIDTH]` DROP, sidebar "My Courses" DROP, "Peer Teachers" ADOPT across 9 sites. **🟠 Flagged:** the sticky title's one qualifying host barely scrolls (pages long enough to need it already have sticky strips) — built and correct, but thin value; user's call whether to keep or extend. **Remaining MERGE-BRIAN work = §5 + §6 only.**
@@ -421,26 +431,6 @@
 - **What:** tear down the preflip reference worktree (`~/projects/Peerloop-preflip` on :4331, `peerloop-ref` alias). Consequential + machine-local; the PLATO port-audit reason for keeping it has cleared.
 - **Refs:** `memory/project_preflip_worktree_reference`.
 
-### [OVERLAY-ORPHAN]
-
-- **State:** 📋 queued — surfaced by `[REC-REHOME]`, Conv 427
-- **What:** decide keep-or-delete for the `overlay` variant on **both** `CourseCatalogCard` and
-  `CommunityCatalogCard`. `[REC-REHOME]` deleted the two recommendation carousels, which were the
-  variant's **only** production call sites — `git grep 'variant="overlay"' -- src/` now returns zero
-  hits on both cards.
-- **Why it needs a decision rather than a sweep:** the Conv-425 precedent in `CourseCatalogCard`'s own
-  header removed a stranded path (`context`) rather than let it rot ([ORPHAN-DETECT]), which argues
-  delete. But `overlay` is a coherent, named, *tested* variant — unlike `context`, whose branches were
-  unreachable AND undocumented — and it is the obvious answer for any future image-backdrop band. Both
-  files carry a NOTE pointing here, so nothing is silently rotting in the meantime.
-- **Scope if deleted:** the variant branch + its props in 2 components, the `overlay` cases in
-  `CourseCatalogCard.test.tsx` / `CommunityCatalogCard.test.tsx`, and the registry notes that describe it.
-- **Also fold in (r-end docs agent, Conv 427):** `tests/components/communities/CommunityCatalogCard.test.tsx`
-  lines 11 + 159 still cite the **deleted** `RecommendedCommunities` as the reason `variant="overlay"` /
-  `hero` exist. Same decision, same files — fix the comments with whichever way this task resolves rather
-  than as a separate cleanup.
-- **Refs:** `src/components/courses/CourseCatalogCard.tsx`, `src/components/communities/CommunityCatalogCard.tsx`,
-  `scripts/matt-inspired-registry.ts`, `plan/merge-brian/README.md` § Build log — §2 M4 + §3 N8.
 
 ### [PROBESAFE]
 
@@ -500,21 +490,7 @@
 - **Next (opportunistic):** clear residual warnings in files touched for other reasons (`[LE-TRIAGE]`/`[A11Y]` model). No standalone sweep.
 - **Refs:** `../Peerloop/eslint.config.js`, `docs/decisions/06-testing-ci.md §§ RHOOKS/RDOC`, `[A11Y]`, `[LE-TRIAGE]`.
 
-### [CRS-ROLE-DORMANT]
 
-- **State:** 📋 queued · keep-or-delete call (pairs with `[OVERLAY-ORPHAN]`)
-- **What:** with the `/courses` role tabs removed ([M3], Conv 428), the role machinery inside the catalog is **unreachable but still present**: the `student`/`teaching`/`created`/`moderating` branches in `CoursesCatalog.tsx`, the tab-collapse branch in `CoursesFilters.tsx`, the `courses:tabchange` listeners in both (nothing dispatches the event any more), and three now-orphaned cards — `CourseProgressCard`, `CourseCreatedCard`, `CourseModerationCard` (each consumed **only** by `CoursesCatalog`). `CourseTeachingCard` is **not** orphaned — `[ROLE-CRS-LIST]` gave it a second consumer on `/teaching`.
-- **Decide:** keep dormant (cheap, reversible, but `[ORPHAN-DETECT]`/`[KNIP]` debt) vs delete the branches + the 3 cards (matches the Conv-425/427 stranded-path precedent).
-- **Why it's not auto-decided:** this is the same keep-or-delete question as `[OVERLAY-ORPHAN]`, which is still open on this board — deciding the larger version autonomously would pre-empt it. `CoursesRoleTabs.tsx` + `useRoleTabs` themselves must **stay** either way: `CommunitiesRoleTabs` shares the hook, and `/communities` still renders role pills.
-- **Refs:** `src/components/courses/CoursesCatalog.tsx` (`readHashTab`), `src/components/courses/CoursesFilters.tsx`, `[[feedback_orphaned_components_survive_migration]]`. Surfaced Conv 428.
-
-### [CRS-COMM-TABSYM]
-
-- **State:** 📋 queued · product/consistency decision · **your call**
-- **What:** `/courses` no longer has role tabs ([M3], Conv 428) but `/communities` **does** — Conv 426 N9 deliberately ADAPTed Brian's role pills there, retaining the Matt role palette. The two sibling catalogs now diverge on whether a signed-in viewer gets role lenses.
-- **Options:** (a) accept the asymmetry — the communities lenses (member/teaching/created/moderating) have no other home, whereas every course lens now does, so the divergence is *justified* rather than accidental; (b) drop the communities role pills too, for surface consistency; (c) revisit when §4's shell track decides on shared listing chrome.
-- **Note:** (a) is the honest reading of the evidence — the course tabs were retired *because* their lenses were rehomed, and no equivalent rehoming exists for communities. Recorded so the divergence is a decision, not drift.
-- **Refs:** `src/components/communities/CommunitiesRoleTabs.tsx`, `plan/merge-brian/README.md §3 N9`. Surfaced Conv 428.
 
 ### [RSFD]
 
@@ -550,12 +526,6 @@
 - **What:** `docs/as-designed/skills-system.md` (driftCheck) task-lifecycle sections (~311–313 skill-role table, ~503–515 "Task flow" diagram) still describe the **retired TodoWrite/TaskCreate overlay** ("clear TodoWrite", "preserve-then-overlay", "TaskCreate when an item is started") — pre-existing Conv-406 detach drift, surfaced by the r-end docs agent Conv 407. The agent declined a shallow patch (correctly): the fix needs re-grounding against the current r-start/r-commit/r-end SKILL.md bodies + the write-through board model.
 - **Refs:** `docs/as-designed/skills-system.md`, `[TASK-TOOLS-VERIFY]`, `[[feedback_current_tasks_persistence]]`. Surfaced Conv 407.
 
-### [TDASH-CERTS-DEAD]
-
-- **State:** 📋 queued · trivial (dead payload field)
-- **What:** `GET /api/me/teacher-dashboard` still builds and returns a `certifications` array (`certItems`, ~line 331/400) that **no `src/` code consumes** — `TeacherCertifications` now self-sources the richer `UserTeacherCertification` from `useCurrentUser()` ([ROLE-CRS-LIST], Conv 428). Removing it means touching `tests/api/me/teacher-dashboard.test.ts`, so it wasn't folded into that conv's change.
-- **Note:** unlike the Conv-425 stranded `context="catalog"` path, this one is **documented and test-covered**, so it's a deliberate call rather than obvious cleanup.
-- **Refs:** `src/pages/api/me/teacher-dashboard.ts`, `src/components/dashboard/TeacherDashboard.tsx` (the NOTE on `DashboardData`). Surfaced Conv 428.
 
 ### [TASK-TOOLS-VERIFY]
 
