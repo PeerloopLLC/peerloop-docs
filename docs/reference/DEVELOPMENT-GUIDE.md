@@ -653,7 +653,7 @@ interface Props {
 }
 ```
 
-**See:** `src/components/dashboard/CreatorCourseCard.tsx` (`showDiscussionToggle`), `src/components/recommendations/RecommendedCourses.tsx` (`compact`) (Conv 041)
+**See:** `src/components/dashboard/CreatorCourseCard.tsx` (`showDiscussionToggle`), `src/components/communities/CommunityCatalogCard.tsx` (`variant`) (Conv 041; the original `RecommendedCourses` `compact` example went with that component in Conv 427 [REC-REHOME])
 
 ### Breadcrumbs and Navigation Context
 

@@ -365,8 +365,6 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/api/recommendations/courses` | GET | Personalized course recommendations (optional auth, popular fallback) |
-| `/api/recommendations/communities` | GET | Personalized community recommendations (optional auth, popular fallback) |
 
 ### Platform
 

@@ -119,7 +119,7 @@
 - [link](project_module_submodule_model.md) — Session↔Module = 1:1; Matt/Creator nested "N Modules" = Sub-Modules. Don't build session→many-modules. Conv 188 [MOD-SCHEMA].
 - [link](project_timezone_confidence.md) — Recurring `new Date()` issues survive sweeps; user has LOW confidence TZ handling is correct.
 - [link](project_staging_integration_plan.md) — Expand BBB-VERIFY into full staging block (Stream, Resend, Stripe, BBB); plus-addressed email capture.
-- [link](project_feeds_hub.md) — [FEEDS] `/feeds`=Discover destination; `/`=merged SmartFeed (FeedsHub UNMOUNTED Conv 267) — do NOT re-add FeedsHub/ActionCards/TriageStrip to Home.
+- [link](project_feeds_hub.md) — [FEEDS] `/`=merged SmartFeed — bar covers the FEED COLUMN only, not the right rail (now `DiscoveryRails`). **`/feeds` + `FeedsHub` NO LONGER EXIST** (retired Conv 331); `/discover` barred by DISC-DROP. Conv 427.
 - [link](project_obsidian_vault_synced.md) — `~/Obsidian Vaults/main2025/` synced across M4/M4Pro via Obsidian Sync — don't design skills with per-machine bootstrap.
 - [link](project_scratch_obsidian_symlink.md) — scratch = REAL `_scratch/` + `.scratch` compat symlink (peerloop-docs IS an Obsidian vault); don't delete/flip the symlink. Conv 300.
 - [link](project_ephemeral_dismiss_dev_staging.md) — Dismissible nudges reappear every reload in dev+staging BY DESIGN (`ephemeral-dismiss.ts`); "doesn't stick on staging" is EXPECTED. Conv 292.

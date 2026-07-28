@@ -1,24 +1,29 @@
 ---
 name: feeds-hub-block-rationale
-description: "/feeds = Discover-destination role-tab directory. FeedsHub composite was once destined for \"/\" (Conv 224) but Conv 267 (HOME-FEED-MERGE ph5) made / the merged SmartFeed surface and UNMOUNTED FeedsHub — do NOT re-add it to Home"
+description: "[FEEDS] / is the merged SmartFeed surface — do NOT re-add panel surfaces to its FEED COLUMN. Conv 427 correction: /feeds and FeedsHub NO LONGER EXIST (route retired Conv 331), and the bar never covered the right rail, which now carries DiscoveryRails"
 metadata: 
   node_type: memory
   type: project
   originSessionId: e154550c-5f54-406f-b4e4-eca419aa474f
+  modified: 2026-07-28T15:10:35.014Z
 ---
 
 Client directive (Conv 014): Feeds provide ~50% of learning on the platform. Students take courses for focused learning but ask questions in feeds — feeds are where they get answers.
 
-**RESOLVED — Conv 224 (DRV-C, /feeds identity question).** Two distinct feed surfaces exist; do NOT conflate them:
+**⚠️ Conv 427 correction — two things this memory used to assert are GONE. Verified, not inferred:**
 
-1. **`/feeds` = the Discover destination** (DISC-ROLE-VIEWS Phase C port, Option A). Ports `old/discover/feeds.astro` → Matt root `/feeds`: a `DiscoverFeedsGrid` (public feeds to join, CTAs) + the role-aware "Your Feeds" directory (`ExploreFeeds`, which is already an All/Student/Teaching/Created/Moderating role-tab dispatcher). Mirrors the just-shipped `/communities` (Conv 222) + `/members` (Conv 223) siblings. The Discover slide-panel "Feeds" link (`/discover/feeds`) repoints here.
+- **`/feeds` does not exist.** It was built Conv 224 (`39d48647`, the DRV-C Discover-destination port) and **retired Conv 331** (`d47c8612`, "Retire /feed + /feeds routes; close RG-DISCOVER"). There is no `src/pages/feeds.astro` and zero `href="/feeds"` in `src/`. Do not plan work "onto `/feeds`" — that means building a new route.
+- **`FeedsHub.tsx` does not exist either.** It was unmounted from Home by Conv 267 and has since been deleted, so "do NOT re-add FeedsHub to Home" is now a rule about a component that is not there.
+- **A new `/discover` hub is also barred** — `docs/decisions/01-architecture.md` **DISC-DROP** (Conv 204) dropped `/discover` entirely and folded it into `/courses`.
 
-2. **`FeedsHub` composite → was destined for the `/` landing page (Conv 224) — ⚠️ SUPERSEDED Conv 267.** Original plan: FeedsHub (the composite: The Commons pinned + Home-Feed link + Community/Course type-sections + badges + search, in `src/components/feed/FeedsHub.tsx`) would be the `/` landing page, personalized when logged in. **That never happened.** Per the client directive (Conv 258), **HOME-FEED-MERGE phase 5 (Conv 267)** made `/` the *merged SmartFeed surface* + sole public marketing page; of the prior dashboard content **only the nudges remain**. The "Your Feeds" FeedsHub panel, quick-start ActionCards, Recent-Activity empty state, and the Conv-256 cross-role TriageStrip were all **REMOVED from Home**. The `FeedsHub.tsx` component still exists in the codebase but is **unmounted** — do NOT re-add it to Home.
+**What is still true and still load-bearing.** Per the client directive (Conv 258), **HOME-FEED-MERGE phase 5 (Conv 267)** made `/` the *merged SmartFeed surface* + sole public marketing page; of the prior dashboard content **only the nudges remain**. The "Your Feeds" panel, quick-start ActionCards, Recent-Activity empty state, and the Conv-256 cross-role TriageStrip were all **REMOVED from Home**. Home is: breadcrumb + OnboardingNudgeBanner + ProgressionNudge + SmartFeed (member); a visitor swaps nudges for an orienting line.
 
-**Why the composite is OUT of /feeds (still true):** different job (landing vs Discover directory), keeping `/feeds` composite-free makes it a clean sibling of `/communities` + `/members`. See [[feedback_port_functionality_and_styling]].
+**Scope of the bar (clarified Conv 427).** It governs Home's **feed column** — the feed leads, and nothing may be stacked above it competing for that attention. It never governed the **right rail**, which was an explicitly empty `hidden lg:block` "More coming soon" placeholder from Conv 298 ([HOME-RPANEL]) until `[REC-REHOME]` filled it. Reading the bar as "no panel may exist anywhere on `/`" is what stalled `[REC-REHOME]` for two convs.
 
-**Out of scope for /feeds:** `/feed` (SmartFeed aggregated timeline — separate content surface) and `/course/[slug]/feed` (per-course feed).
+**Home also already does entity discovery in-stream:** `SmartFeed` renders rails-backed `suggestion-card`s (`SuggestionCard.tsx` — reason badge new/trending/topic_match/popular, CTA, and a dismiss that POSTs to `/api/feeds/smart/dismiss` and *trains* future feeds). Before proposing any new "recommend courses/communities" surface, check whether this already covers it.
 
-**Home layout note (Conv 298, [[?]] [HOME-RPANEL]):** Home (`src/pages/index.astro`, @matt-inspired) is now: breadcrumb + OnboardingNudgeBanner + ProgressionNudge + SmartFeed (member); visitor swaps nudges for an orienting line + StickySignupBar. Conv 298 added a bespoke right-side light-blue "coming soon" panel (feed fixed-640 anchored left, panel flex-grows right, hidden `<lg`) — Home-only divergence from the CD-039 Q2 left-panel decision.
+**Right rail today (Conv 427, `[REC-REHOME]`):** `/`, `/courses` and `/communities` all mount `DiscoveryRails` in that rail — For You / Trending / New / Popular lanes off the ONE global Discovery Rails blob. The blue placeholder survives as the island's empty-state fallback. The old per-page carousels and both `/api/recommendations/*` endpoints are deleted. See [[project_role_studios_deconstruct_nudges]].
 
-**How to apply:** `/` is the merged SmartFeed surface — do NOT mount FeedsHub (or ActionCards / TriageStrip) on Home. `/feeds` stays the Discover-destination role-tab directory (FeedsHub composite belongs on neither today).
+**Out of scope:** `/course/[slug]/feed` (per-course feed) is a separate content surface and still exists.
+
+**How to apply:** `/` is the merged SmartFeed surface — do NOT stack panel surfaces above/into its feed column. The right rail is fair game and is already occupied by `DiscoveryRails`. Do not route new work to `/feeds` or `/discover`; neither exists.

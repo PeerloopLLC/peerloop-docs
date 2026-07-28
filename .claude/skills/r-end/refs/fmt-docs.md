@@ -93,7 +93,6 @@ Peerloop API docs are split by route prefix. The authoritative mapping is in `~/
 | `/api/stats`, `/api/topics`, `/api/tags`, `/api/health/*` | `API-PLATFORM.md` |
 | `/api/admin/*` | `API-ADMIN.md` |
 | `/api/communities/*`, `/api/me/communities/*`, `/api/feeds/*` | `API-COMMUNITY.md` |
-| `/api/recommendations/*` | `API-RECOMMENDATIONS.md` |
 | Database helpers (`@lib/db`) | `API-DATABASE.md` |
 
 All API docs live in `docs/reference/`. `API-REFERENCE.md` is the index.

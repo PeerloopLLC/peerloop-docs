@@ -19,7 +19,6 @@ Complete documentation for all API endpoints and database access patterns. For C
 | [API-PLATFORM.md](API-PLATFORM.md) | `/api/stats`, `/api/topics`, `/api/tags`, `/api/health/*`, `/api/certificates/*`, `/api/storage/*`, `/api/debug/*` | Platform data, topics, tags, marketing, health checks, certificate verification, public asset delivery, debug |
 | [API-ADMIN.md](API-ADMIN.md) | `/api/admin/*` | Admin CRUD operations (requires admin role) |
 | [API-COMMUNITY.md](API-COMMUNITY.md) | `/api/communities/*`, `/api/me/communities/*`, `/api/feeds/*`, `/api/discovery/*`, `/api/stream/*`, `/api/flags` | Communities, feeds, discovery rails, Stream.io token, content flagging |
-| [API-RECOMMENDATIONS.md](API-RECOMMENDATIONS.md) | `/api/recommendations/*` | Personalized course & community recommendations |
 | [API-DATABASE.md](API-DATABASE.md) | `@lib/db` | D1 query helpers, pagination |
 
 ---
@@ -55,7 +54,6 @@ Complete documentation for all API endpoints and database access patterns. For C
 | Discovery | `/api/discovery/*` | Discovery rails (KV-served, D1 compute fallback) |
 | Platform | `/api/stats`, `/api/topics`, `/api/tags`, `/api/testimonials` | Platform data, topics, tags |
 | Onboarding | `/api/me/onboarding-profile` | Member onboarding profile and topic interests |
-| Recommendations | `/api/recommendations/*` | Personalized course & community recommendations |
 | Certificates | `/api/certificates/[id]/verify` | Public certificate verification |
 | Stories | `/api/stories`, `/api/stories/[id]` | Success stories |
 | Health | `/api/health/*` | System health checks (D1, R2) |

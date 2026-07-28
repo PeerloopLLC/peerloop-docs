@@ -2,7 +2,8 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-07-28 (Conv 426 — MERGE-BRIAN §3 communities: **+5 new test files**. `tests/api/storage/key.test.ts` (18 — the new public R2 asset route: the prefix allowlist must gate *before* R2 is consulted, so a private key and a missing key are indistinguishable; traversal (`..`) rejection; ETag/`If-None-Match` → 304; immutable caching; `contentType` from `httpMetadata` with extension-sniff fallback), `tests/api/me/communities/logo.test.ts` (17 — owner gate, raster-only validation incl. the deliberate SVG rejection, the 2MB cap, and old-object-deleted-only-after-the-row-moves ordering; hands `FormData` **directly** to the handler because under jsdom a `File` round-tripped through `new Request(…).formData()` comes back with `size` 9 regardless of input, which silently neutered the size-cap assertion), `tests/components/communities/CommunityCatalogCard.test.tsx` (16 — the tokenised identity band, the named `hero` variant, brand marks across all three variants and the absent-medallion treatment), `tests/components/RoleTabBar.test.tsx` (12 — the opt-in `variant="pill"` with the Matt role palette **retained**, so a later "just match his version" edit fails rather than silently regressing) and `tests/ssr/communities.test.ts` (6 — per-community aggregates on the browse loader: review-count-weighted rating pinned at 4.61 and explicitly asserted *not* 4.80, the number a flat `AVG(rating)` produces, plus the `is_active=1 AND is_archived=0 AND deleted_at IS NULL` visibility filter so a card cannot advertise courses the Courses tab will not list). API Endpoints 240→242 (new `tests/api/storage/` category; Me 63→64), Components 82→84, SSR 4→5, Vitest Total 398→403, All Test Files 426→431. Per-file component case counts + the category roll-ups are in TEST-COMPONENTS.md, reconciled in lockstep. Sibling `TEST-UNIT.md` still **not** updated — stale since Conv 253, tracked as `[TESTUNITDOC]`.)
+**Last Updated:** 2026-07-28 (Conv 427 — [REC-REHOME] rails-backed recommendations: **−4 test files, +1 new**. Deleted with the code they covered: `tests/api/recommendations/communities.test.ts` (11) and `tests/api/recommendations/courses.test.ts` (13) went with `GET /api/recommendations/{communities,courses}`, and `tests/components/recommendations/RecommendedCommunities.test.tsx` (11) + `RecommendedCourses.test.tsx` (9) went with the two carousels. Both endpoints and both components were retired when the recommendations moved to the right-rail `DiscoveryRails` island, which reads the ONE global Discovery Rails blob instead of a second per-page recommender. **+1 new** `tests/lib/discovery-rails-lanes.test.ts` (20 — the pure lane builder: For You synthesized from the personalization lens and ranked by topic-overlap count, absent for a viewer with no interests *and* for one whose interests overlap nothing, capped like every other lane so it cannot swallow the rail; the single-lane claim, incl. a lane dropped entirely when an earlier one already took all its items, and claims scoped per entity type so a course cannot suppress a same-id community; plus href/meta helpers plural-and-zero). API Endpoints 242→240 (Recommendations category removed), Components 84→82, Lib 33→34, Vitest Total 403→400, All Test Files 431→428. Full suite 6234→6210 (−44 +20). Component detail in TEST-COMPONENTS.md, reconciled in lockstep. Sibling `TEST-UNIT.md` still **not** updated — stale since Conv 253, tracked as `[TESTUNITDOC]`.)
+**Prev:** 2026-07-28 (Conv 426 — MERGE-BRIAN §3 communities: **+5 new test files**. `tests/api/storage/key.test.ts` (18 — the new public R2 asset route: the prefix allowlist must gate *before* R2 is consulted, so a private key and a missing key are indistinguishable; traversal (`..`) rejection; ETag/`If-None-Match` → 304; immutable caching; `contentType` from `httpMetadata` with extension-sniff fallback), `tests/api/me/communities/logo.test.ts` (17 — owner gate, raster-only validation incl. the deliberate SVG rejection, the 2MB cap, and old-object-deleted-only-after-the-row-moves ordering; hands `FormData` **directly** to the handler because under jsdom a `File` round-tripped through `new Request(…).formData()` comes back with `size` 9 regardless of input, which silently neutered the size-cap assertion), `tests/components/communities/CommunityCatalogCard.test.tsx` (16 — the tokenised identity band, the named `hero` variant, brand marks across all three variants and the absent-medallion treatment), `tests/components/RoleTabBar.test.tsx` (12 — the opt-in `variant="pill"` with the Matt role palette **retained**, so a later "just match his version" edit fails rather than silently regressing) and `tests/ssr/communities.test.ts` (6 — per-community aggregates on the browse loader: review-count-weighted rating pinned at 4.61 and explicitly asserted *not* 4.80, the number a flat `AVG(rating)` produces, plus the `is_active=1 AND is_archived=0 AND deleted_at IS NULL` visibility filter so a card cannot advertise courses the Courses tab will not list). API Endpoints 240→242 (new `tests/api/storage/` category; Me 63→64), Components 82→84, SSR 4→5, Vitest Total 398→403, All Test Files 426→431. Per-file component case counts + the category roll-ups are in TEST-COMPONENTS.md, reconciled in lockstep. Sibling `TEST-UNIT.md` still **not** updated — stale since Conv 253, tracked as `[TESTUNITDOC]`.)
 **Prev:** 2026-07-28 (Conv 425 — MERGE-BRIAN §2 `/courses` catalog: **+3 new component test files**, all under `tests/components/courses/`. `CourseCatalogCard.test.tsx` (14 — the new `cover-story` variant: shared cover panel + price sticker, description-over-tagline body with fallback, the sticker proven to be the *shared* `CoursePriceSticker` and kept `pointer-events-none` so it can't eat the stretched card link, the shared `CommunityAffiliation` line and its absent-community null, enrolled journey markers with "Diploma earned" pinned against "Certificate" ([DIPLOMA]) and the CTA left exactly as the host passed it, persistently-underlined link chips, plus two cases pinning the untouched `stacked`/`overlay` variants), `CoursesFilters.test.tsx` (10 — topic pill row incl. the full `FilterState` contract his pivot nulled, Level/Length still reachable behind the Filters toggle, the `hidden sm:flex` pill row + `sm:hidden` collapse select writing the same topic state, visible labelled sort, role-tab collapse-to-search) and `CoursesCatalog.test.tsx` (8 — empty-state copy keyed off the `courses.length === 0` invariant: platform-empty only when the catalog really is, filter-blame for topic/level/length, precise search-only and availableSoon messages, filter message preferred when a query *and* an attribute filter are both set). Components 79→82, Vitest Total 395→398, All Test Files 423→426. `tests/ssr/courses.test.ts` grew **29→31** in place (+2 — the cover-story `description` field and the progression→community affiliation chain on the browse loader); its row here was corrected **20→31**, the 20 being pre-existing drift. Per-file component case counts + the Courses category roll-up are in TEST-COMPONENTS.md, reconciled in lockstep. Sibling `TEST-UNIT.md` still **not** updated — stale since Conv 253, tracked as `[TESTUNITDOC]`.)
 **Prev:** 2026-07-26 (Conv 419b — [MKTDEAD] dead-marketing purge: **−13 test files** deleted with the components they covered — `components/marketing/` ×8 (`AboutPage`, `ContactPage`, `FaqPage`, `ForCreatorsPage`, `HowItWorksPage`, `PricingPage`, `PrivacyPolicyPage`, `TermsOfServicePage`), `components/stories/StoriesBrowse`, `components/testimonials/TestimonialsBrowse`, and `unit/admin-intel/` ×3 (`admin-community-tab`, `admin-course-tab`, `admin-dashboard-card`). Their 56 components were provably dead: the 14 `/old/*` marketing pages have rendered "Coming soon." stubs for a long time, so the bundler had been tree-shaking the components out — confirmed via sourcemap `sources`, not inferred. `BecomeATeacherPage.test.tsx` deliberately KEPT: `/become-a-teacher` is live. Vitest Total 408→395, All Test Files 436→423; Components 89→79, Unit 17→14. Suite 6586→6131. Detail-table follow-up (docs agent, same conv): dropped the 3 stale `tests/unit/admin-intel/` rows and corrected three detail-section headers that the Summary table had already moved past — "Unit Tests (17 files)"→14, "API Tests (241 files)"→240 and "Me (64 files)"→63 (the latter two from the `[MSG-CLEANUP]` can-message deletion above). Component detail lives in TEST-COMPONENTS.md, reconciled in lockstep.)
 **Prev:** 2026-07-26 (Conv 419 — [MSG-ADOPT-B]/[COURSETAB-HASH]/[ICON-4PX]/[MSG-CLEANUP]: +1 **new** component test file `tests/components/useRoleTabs.test.ts` (6 — the `ready` gate: a deep-linked tab survives an unresolved render, still shows once the viewer resolves with the role, still resets once resolved *without* it, `ready` defaults true, the sibling-island event carries the deep-linked tab, and tab-change syncs the hash; 3 of the 6 fail if the gate is reverted). **−1 file:** `tests/api/me/can-message/[userId].test.ts` (7) deleted with its endpoint — `[CANMSG]` had left `GET /api/me/can-message/:userId` with no UI caller, so `[MSG-CLEANUP]` removed both; `canMessage()` in `src/lib/messaging.ts` was always the authoritative gate and is untouched. API Endpoints 241→240, Components 88→89, **Vitest Total 408 unchanged** (+1/−1), All Test Files 436 unchanged. One file extended in place: `tests/components/messages/MessageUserButton.test.tsx` 21→24 (`icon` widened to `string | ReactNode` so the 3 profile-header `Button` sites keep their own 16px glyph). Per-file component case counts are in TEST-COMPONENTS.md. Sibling `TEST-UNIT.md` still **not** updated — stale since Conv 253.)
@@ -54,19 +55,19 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 
 | Category | Files | Test Cases | Location |
 |----------|:-----:|:----------:|----------|
-| API Endpoints | 242 | — | `tests/api/` |
-| Components | 84 | — | `tests/components/` |
+| API Endpoints | 240 | — | `tests/api/` |
+| Components | 82 | — | `tests/components/` |
 | Pages | 9 | — | `tests/pages/` |
-| Lib | 33 | — | `tests/lib/` |
+| Lib | 34 | — | `tests/lib/` |
 | Integration | 10 | — | `tests/integration/` |
 | SSR | 5 | — | `tests/ssr/` |
 | Unit | 14 | — | `tests/unit/` |
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 3 | — | `tests/plato/` |
 | Src (co-located) | 2 | — | `src/__tests__/` |
-| **Vitest Total** | **403** | — | |
+| **Vitest Total** | **400** | — | |
 | E2E (Playwright) | 28 | — | `e2e/` |
-| **All Test Files** | **431** | — | |
+| **All Test Files** | **428** | — | |
 
 ---
 
@@ -99,7 +100,7 @@ Test files use path aliases instead of deep relative imports:
 
 ---
 
-## API Tests — `tests/api/` (242 files)
+## API Tests — `tests/api/` (240 files)
 
 Tests mirror the API route structure with 1:1 file mapping:
 
@@ -423,13 +424,6 @@ tests/api/
 | `tests/api/moderator-invites/[token]/accept.test.ts` | 9 |
 | `tests/api/moderator-invites/[token]/decline.test.ts` | 8 |
 
-### Recommendations — `tests/api/recommendations/` (2 files)
-
-| File | Tests |
-|------|:-----:|
-| `tests/api/recommendations/communities.test.ts` | 11 |
-| `tests/api/recommendations/courses.test.ts` | 13 |
-
 ### Resources — `tests/api/resources/` (1 file)
 
 | File | Tests |
@@ -549,7 +543,7 @@ tests/api/
 
 ---
 
-## Lib Tests — `tests/lib/` recursive (33 files: 32 in `tests/lib/`, 1 in `tests/lib/video/`)
+## Lib Tests — `tests/lib/` recursive (34 files: 33 in `tests/lib/`, 1 in `tests/lib/video/`)
 
 | File | Tests | Coverage |
 |------|:-----:|----------|
@@ -570,6 +564,7 @@ tests/api/
 | `tests/lib/smart-feed-cta.test.ts` | 6 | buildDiscoveryCtaUrl: visitor → `/signup?redirect=<encoded entity>` (course/community, `?via=` preserved inside), authed → direct entity link, fail-safe visitor default (HOME-FEED-MERGE Phase 6) |
 | `tests/lib/discovery-rails.test.ts` | 18 | Discovery rails aggregation: 6-rail compute (trending/popular/new × course/community) from D1, `platform_stats` `discovery_%` dials, JS-computed window cutoffs, refresh writer (DISCOVERY-RAILS Phases 1+3) |
 | `tests/lib/discovery-rails-client.test.ts` | 14 | Discovery rails client: loadDiscoveryRails (localStorage cache + TTL/version freshness + stale-fallback), clearDiscoveryRailsCache, applyPersonalizationLens (boost/filter by topicIds) (DISCOVERY-RAILS Phase 4) |
+| `tests/lib/discovery-rails-lanes.test.ts` | 20 | Discovery rails lane builder: buildDiscoveryLanes (For You synthesized from the lens + ranked by topic-overlap, absent with no interests or no overlap, capped like any lane; single-lane claim across For You/Trending/New/Popular, scoped per entity type; empty lanes dropped), railEntityHref, railEntityMeta ([REC-REHOME] Conv 427) |
 | `tests/lib/promotion.test.ts` | 19 | Promotion module: resolvePromotionTarget (course→community via progression, community→system, null when un-promotable), canPromote role matrix, bcrypt password gate over `platform_stats`, recordPromotion event writer (PROMOTE-PIPELINE) |
 | `tests/lib/promotion-lane.test.ts` | 5 | Promoted-lane read-side: getPromotedActivities (target-feed query, recency order, limit/sinceDays, lineage fields) (PROMOTE-PIPELINE) |
 | `tests/lib/promotion-config.test.ts` | 9 | loadPromotionConfig: `platform_stats` `promo_%` dials (active-duration/retention/`nudge_min_engagement`/`post_min_engagement`), escaped `LIKE 'promo\_%'` won't swallow the gate-password key, defaults when dials absent, `nudgeMinEngagement`/`postMinEngagement` override incl. `0` (FEED-U3a/U3d/U3D-POST) + savePromotionConfig: batched ON-CONFLICT upsert of all four dials, seed-row self-heal (FEED-U3c, Conv 276; U3d dial Conv 278; post-engagement dial Conv 279) |
@@ -808,7 +803,7 @@ See [TEST-E2E.md](TEST-E2E.md) for details.
 
 ---
 
-## Component Tests — `tests/components/` (84 files)
+## Component Tests — `tests/components/` (82 files)
 
 See [TEST-COMPONENTS.md](TEST-COMPONENTS.md) for the full breakdown by category.
 

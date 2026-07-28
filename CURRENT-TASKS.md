@@ -27,7 +27,7 @@
 
 1. [MERGE-BRIAN-JULY7](#merge-brian-july7) — client branch assessment/integration
 2. [ROLE-CRS-LIST](#role-crs-list) — teaching/moderating course lists (blocks §2 M3)
-3. [REC-REHOME](#rec-rehome) — rehome course recommendations (blocks §2 M4)
+3. [OVERLAY-ORPHAN](#overlay-orphan) — `overlay` card variant now has zero call sites: keep or delete
 4. [SPACING-4X](#spacing-4x) — sweep for other 4× size artifacts Conv 423 preserved
 5. [A11Y](#a11y) — accessibility lint triage
 6. [RHOOKS](#rhooks) — react-hooks lint triage
@@ -413,6 +413,23 @@
 - **What:** tear down the preflip reference worktree (`~/projects/Peerloop-preflip` on :4331, `peerloop-ref` alias). Consequential + machine-local; the PLATO port-audit reason for keeping it has cleared.
 - **Refs:** `memory/project_preflip_worktree_reference`.
 
+### [OVERLAY-ORPHAN]
+
+- **State:** 📋 queued — surfaced by `[REC-REHOME]`, Conv 427
+- **What:** decide keep-or-delete for the `overlay` variant on **both** `CourseCatalogCard` and
+  `CommunityCatalogCard`. `[REC-REHOME]` deleted the two recommendation carousels, which were the
+  variant's **only** production call sites — `git grep 'variant="overlay"' -- src/` now returns zero
+  hits on both cards.
+- **Why it needs a decision rather than a sweep:** the Conv-425 precedent in `CourseCatalogCard`'s own
+  header removed a stranded path (`context`) rather than let it rot ([ORPHAN-DETECT]), which argues
+  delete. But `overlay` is a coherent, named, *tested* variant — unlike `context`, whose branches were
+  unreachable AND undocumented — and it is the obvious answer for any future image-backdrop band. Both
+  files carry a NOTE pointing here, so nothing is silently rotting in the meantime.
+- **Scope if deleted:** the variant branch + its props in 2 components, the `overlay` cases in
+  `CourseCatalogCard.test.tsx` / `CommunityCatalogCard.test.tsx`, and the registry notes that describe it.
+- **Refs:** `src/components/courses/CourseCatalogCard.tsx`, `src/components/communities/CommunityCatalogCard.tsx`,
+  `scripts/matt-inspired-registry.ts`, `plan/merge-brian/README.md` § Build log — §2 M4 + §3 N8.
+
 ### [PROBESAFE]
 
 - **State:** 📋 queued · low priority (process) — Conv 419
@@ -433,15 +450,6 @@
 - **Related tooling weakness (Conv 412):** `scripts/gen-registries.ts`'s marker regex `/@matt-source\s+\d+:\d+/` matches the marker-with-node **anywhere in a file, incl. prose** — so a `@matt-inspired` component that *references* another's source node in its docstring gets falsely registered as matt-sourced (hit `messages/matt/Avatar.tsx`, whose prose named the UserIcon node it wraps). Mitigated Conv 412 by rewording Avatar's prose; the durable fix is to require the marker to be a standalone provenance line (align with `prov-sweep.ts`'s accept-rule). Low priority.
 - **Why it matters:** a real gate failing unnoticed → the registry⟺marker⟺stamp conformity from `[PRIM-STAMP]` (Conv 217) isn't holding. Each offender needs a registry entry (with `figmaMatchNames`) **or** its stamp removed if not a vetted primitive — decide per component, don't bulk-register.
 - **Refs:** `../Peerloop/scripts/matt-inspired-registry.ts`, `npm run prov:sweep`, `docs/as-designed/matt-provenance.md §12c`, `plan/prim-registry/README.md`, `[PRIM-STAMP]`, `[PROV-SWEEP-DEBT]`. Surfaced Conv 404.
-
-### [REC-REHOME]
-
-- **State:** 📋 queued · `[Opus]` · gate-prerequisite for MERGE-BRIAN §2 M4 **and** §3 N8
-- **What:** give personalized **course _and_ community recommendations** a home outside `/courses` and `/communities`, so both carousels can leave those pages. **Scope widened Conv 426** (user decision in the §3 walk): the two are solved together because they would compete for the same destination.
-- **Why:** measured, both walks. `/courses` is the **only** consumer of `RecommendedCourses`, and `/communities` is the **only** consumer of `RecommendedCommunities` — each carousel is likewise the only caller of its API (`/api/recommendations/courses`, `/api/recommendations/communities`). Hiding either (his `[CRS-POPULAR-OFF]` / `[COMM-REC-OFF]`) retires that surface site-wide and strands its endpoint.
-- **🔴 Target undecided:** Home is the obvious candidate, but `[FEEDS]` (Conv 267, `memory/project_feeds_hub.md`) explicitly bars re-adding panel surfaces (FeedsHub / ActionCards / TriageStrip) to `/`. Decide the destination — for both surfaces at once — before building.
-- **Blocks:** MERGE-BRIAN §2 **M4 `[CRS-POPULAR-OFF]`** and §3 **N8 `[COMM-REC-OFF]`** — both dispositioned *ADAPT — hide only after rehoming*.
-- **Refs:** `plan/merge-brian/README.md § 2 Dispositions (Batch B)` + `§ 3 Dispositions (Batch B)`, `src/components/recommendations/RecommendedCourses.tsx`, `RecommendedCommunities.tsx`, `src/pages/api/recommendations/{courses,communities}.ts`.
 
 ### [RG-PUBLIC]
 
@@ -620,5 +628,12 @@
 
 ## ✅ Done this conv
 
-- **[THUMB-404]** ✅ — course-thumbnail uploads no longer 404. Built `GET /api/storage/[...key]` (MERGE-BRIAN §3 N14): prefix allowlist (`courses/*/thumbnail/`, `communities/*/logo/`), traversal rejection, ETag/304, immutable caching. **Live-proved the allowlist gates BEFORE R2** — a real object seeded at `homework/sub-1/secret.pdf` still 404s, so private-key existence is unobservable. +18 tests.
-- **[MERGE-BRIAN-JULY7] §3 walk + build** ✅ — 16 mechanisms dispositioned (2 ADOPT · 12 ADAPT · 2 DROP) and **all 13 buildable ones shipped** across 3 tiers. Findings F3 (fixed by N14), F4 (Join/Leave dead on client-side nav — **confirmed live with a control**, then fixed) and F5 (224px / 320×224 4× artifacts — superseded) all closed. Only N8 remains, gated on `[REC-REHOME]`. 5 gates green, suite 6165→**6234**, `prov:sweep` at baseline.
+- **[REC-REHOME]** ✅ — destination decided (user) and built: **rails-backed lanes in the right rail**.
+  New `DiscoveryRails` island + `DiscoveryRailCard` + pure `lib/discovery-rails/lanes.ts`, mounted on
+  `/courses` (course lanes), `/communities` (community lanes) and `/` (both, `maxItems=3`). Both
+  carousels and **both `/api/recommendations/*` endpoints deleted**. First production consumer of the
+  Conv-261 Phase-4 rails client; personalization reads `CurrentUser.interestTopicIds`, so zero extra
+  requests. Discharges **MERGE-BRIAN §2 M4 + §3 N8** — §3 is now complete, §2 has only M3 left. Also
+  the executable cut of `[RECO-UNIFY]` #34 (Promoted / Peerloop Picks lanes still need
+  `[PROMOTE-PIPELINE]` Steps 4–7). 5 gates green, suite 6234→**6210** (−44 +20), `prov:sweep` at
+  baseline, live-verified signed-out and signed-in incl. the For-You ranking and the empty-state path.

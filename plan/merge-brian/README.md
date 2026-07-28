@@ -41,8 +41,8 @@
 | # | Review unit | Status |
 |---|---|---|
 | 1 | `/course/[slug]` detail | ✅ **COMPLETE (Conv 412)** — dispositions DONE (Conv 408, 12 mechanisms: 9 ADAPT · 3 DROP · 0 ADOPT). **All 9 ADAPT built:** Tier A+B (Conv 409, M1/M4/M5 + M6/M7/M12) · Tier C M10/[RECEIPT] (Conv 410) · Tier C M2 `[SESS-TAB]` (Conv 411) · Tier C M3 `[SESS-FILES]` (Conv 412) · hero refinement `[HERO]` (Conv 413) · colour-theme toggle `[TAB-THEME]` (Conv 414) · UI + messages follow-ups (Convs 415–419, incl. the **MESSAGES mini-plan M1–M6, COMPLETE Conv 419** — see build logs). Only the 3 DROPs unbuilt (2 soft/revisitable) |
-| 2 | `/courses` catalog | ✅ **COMPLETE for everything buildable (Conv 425)** — 16 mechanisms: 3 ADOPT · 12 ADAPT · 1 DROP. **All 14 buildable ones built** — M1 M2 M15 M16 (shell) · M5 M6 M7 M8 (toolbar) · M9 M10 M11 M12 M13 M14 (card + hero sticker). **Findings F1** (pre-existing site-wide doubled form chrome, measured and fixed) **and F2** (catalog/detail price split, fixed at the shared helper + a `formatPriceExact` receipt carve-out) **both closed**. M10's disposition proved unbuildable as written and was re-decided by the user as *price sticker only*. Also this conv: a self-audit restoring `prov:sweep` to its 11-issue baseline + removing a stranded `context="catalog"` path, a **narrow-width sweep 320→1280** (zero overflow; two mobile defects fixed; 1 of `[MINWIDTH-320]`'s 3 blockers cleared) and the invariant-keyed empty-state copy fix. 5 gates green (suite 6131 → **6165**, +34 tests / 3 new files), everything live-verified. **Only remaining §2 work:** M3 + M4, gated on `[ROLE-CRS-LIST]` / `[REC-REHOME]` |
-| 3 | `/community/[slug]` + `/communities` (+`[COMM-BRAND]` feature decision) | ✅ **COMPLETE for everything buildable (Conv 426)** — 20 files censused, **16 mechanisms (N1–N16)**: **2 ADOPT · 12 ADAPT · 2 DROP** (both DROPs carried from earlier walks). **All 13 buildable ones BUILT** across three tiers — A: N14 storage route + N5 Join/Leave rebinding · B: N16 aggregates, N11 hero card, N12 marks, N6 640px geometry, N7 search-first, N9 role pills, N10 compact sort, N3 label · C: N1 identity band, N4 shared course card, N13 logo upload + settings UI. **All 3 findings closed:** **F3** (course-thumbnail uploads 404 — pre-existing, no `/api/storage/` route) **FIXED by N14** and live-proved to gate before R2 · **F4** (Join/Leave dead on client-side nav) **CONFIRMED live with a control, then FIXED by N5** · **F5** (224px header square, 320×224 thumb — a Conv-423-preserved `[DEMO-HOME]` 4× artifact) **superseded** by N1 (band now 96px) and N4. **Only remaining §3 work = N8**, gated on `[REC-REHOME]` (widened to both carousels). Divergences pinned by tests: role pills KEEP the Matt palette (N9); no invented journey CTA (N4); SVG rejected (N13); visibility-filtered + weighted aggregates (N16). 5 gates green, suite 6165→**6234** (+69), `prov:sweep` at baseline |
+| 2 | `/courses` catalog | ✅ **COMPLETE for everything buildable (Conv 425)** — 16 mechanisms: 3 ADOPT · 12 ADAPT · 1 DROP. **All 14 buildable ones built** — M1 M2 M15 M16 (shell) · M5 M6 M7 M8 (toolbar) · M9 M10 M11 M12 M13 M14 (card + hero sticker). **Findings F1** (pre-existing site-wide doubled form chrome, measured and fixed) **and F2** (catalog/detail price split, fixed at the shared helper + a `formatPriceExact` receipt carve-out) **both closed**. M10's disposition proved unbuildable as written and was re-decided by the user as *price sticker only*. Also this conv: a self-audit restoring `prov:sweep` to its 11-issue baseline + removing a stranded `context="catalog"` path, a **narrow-width sweep 320→1280** (zero overflow; two mobile defects fixed; 1 of `[MINWIDTH-320]`'s 3 blockers cleared) and the invariant-keyed empty-state copy fix. 5 gates green (suite 6131 → **6165**, +34 tests / 3 new files), everything live-verified. **§2 is now COMPLETE except M3** — M4 shipped in Conv 427 when `[REC-REHOME]` was decided and built (rails-backed right-rail lanes; `/api/recommendations/courses` deleted). M3 stays gated on `[ROLE-CRS-LIST]` |
+| 3 | `/community/[slug]` + `/communities` (+`[COMM-BRAND]` feature decision) | ✅ **COMPLETE for everything buildable (Conv 426)** — 20 files censused, **16 mechanisms (N1–N16)**: **2 ADOPT · 12 ADAPT · 2 DROP** (both DROPs carried from earlier walks). **All 13 buildable ones BUILT** across three tiers — A: N14 storage route + N5 Join/Leave rebinding · B: N16 aggregates, N11 hero card, N12 marks, N6 640px geometry, N7 search-first, N9 role pills, N10 compact sort, N3 label · C: N1 identity band, N4 shared course card, N13 logo upload + settings UI. **All 3 findings closed:** **F3** (course-thumbnail uploads 404 — pre-existing, no `/api/storage/` route) **FIXED by N14** and live-proved to gate before R2 · **F4** (Join/Leave dead on client-side nav) **CONFIRMED live with a control, then FIXED by N5** · **F5** (224px header square, 320×224 thumb — a Conv-423-preserved `[DEMO-HOME]` 4× artifact) **superseded** by N1 (band now 96px) and N4. **§3 is now COMPLETE** — N8 shipped in Conv 427 with §2 M4, both discharged by the one `[REC-REHOME]` decision. Divergences pinned by tests: role pills KEEP the Matt palette (N9); no invented journey CTA (N4); SVG rejected (N13); visibility-filtered + weighted aggregates (N16). 5 gates green, suite 6165→**6234** (+69), `prov:sweep` at baseline |
 | 4 | **Site-wide shell track** (`[BACK-X]` back-nav, `SubNav`/`SubNavItem`, `Sidebar`, forms, `AppLayout`) | ⬜ |
 | 5 | Sessions-files feature (`0006` + storage API) — adopt/reject as a feature | ⬜ |
 | 6 | Misc ("Peer Teachers" relabel, `SessionBooking`, workspace touches) | ⬜ |
@@ -441,7 +441,7 @@ undecided — nothing here has been silently absorbed by §1's work.
 
 | # | Disposition | Build note |
 |---|---|---|
-| M4 `[CRS-POPULAR-OFF]` | **ADAPT — hide only after rehoming** | 🔴 **Blocked on a prerequisite:** `/courses` is the **only** consumer of `RecommendedCourses`, so hiding it retires personalized course recommendations site-wide and leaves `/api/recommendations/courses` with no caller. Rehome the surface first. **Target is undecided** — Home is the obvious candidate but `[FEEDS]` (Conv 267) bars re-adding panel surfaces to `/`. Tracked as `[REC-REHOME]` |
+| M4 `[CRS-POPULAR-OFF]` | **ADAPT — hide after rehoming ✅ BUILT (Conv 427)** | The prerequisite is discharged. `/courses` was the **only** consumer of `RecommendedCourses`, so `[REC-REHOME]` rehomed the surface before hiding it: the carousel is gone from the listing column (his intent) and the recommendations now render as rails-backed lanes in the page's right rail. `/api/recommendations/courses` was **deleted**, not stranded — the lanes read the global Discovery Rails blob. The undecided target resolved *against* Home-the-feed-column: `[FEEDS]`'s bar names FeedsHub/ActionCards/TriageStrip in the feed column, while the Conv-298 right rail was an explicitly empty placeholder |
 | M5 `[TOPIC-PILLS]` | **ADAPT — pill row, keep Level + Length** | Take the single-line scrolling **topic** pill row (sticky "All", drag-scroll, flanking arrows); Level and Length stay reachable rather than being dropped to `null`. Keeps `FilterState` fully exercised |
 | M6 `[PILL-FLOAT]` | **ADAPT — tokenised, flat** | Compact geometry + clear selected state; **no raw hexes, no gradient** — same call as §1 `[TAB-FLOAT]`. The `#2a93d5` / `#dfe6ee` / 8 `rgba` shadow stacks are not adopted |
 | M7 `[SORT-IN-SEARCH]` | **ADAPT — visible compact control** | Sort stays a labelled compact `Select` in the toolbar: matches `TeachersTabList` (Conv 409) and keeps sorting discoverable. The chevron-in-search trick (invisible native `<select>`) is not adopted |
@@ -609,7 +609,7 @@ Still outstanding on `/courses`, all pre-existing or gated:
 
 | Item | Status |
 |---|---|
-| M3 role tabs · M4 carousel | gated on `[ROLE-CRS-LIST]` / `[REC-REHOME]` (the latter's destination still undecided — `[FEEDS]` bars Home) |
+| M3 role tabs | gated on `[ROLE-CRS-LIST]` (M4 ✅ BUILT Conv 427 — `[REC-REHOME]` discharged) |
 | `[COURSES-FIXES]` | holds the Conv-292 sweep deferrals `[FILTERS-RESPONSIVE]` + `[TYPO-REVIEW]`. This conv's compact toolbar plausibly overlaps the first; **not verified, so not claimed** |
 | `[TSLASH]` | names `/courses/` as a duplicate-content risk (site-wide task) |
 | Narrow widths | ✅ **DONE (Conv 425)** — swept 320/375/640/768/1024/1280 via the iframe harness; two defects found and fixed. See below |
@@ -678,7 +678,8 @@ in. Tracked in `[COURSES-FIXES]`.
 ### §2 walk result (Conv 425)
 
 **16 mechanisms · 3 ADOPT · 12 ADAPT · 1 DROP.** Two ADAPTs are **gated on prerequisites** and are not
-buildable yet: M3 (`[ROLE-CRS-LIST]`) and M4 (`[REC-REHOME]`). The other **14 are buildable now**.
+buildable yet: M3 (`[ROLE-CRS-LIST]`) and M4 (`[REC-REHOME]`). The other **14 are buildable now**. (M4 was
+subsequently built in Conv 427 once `[REC-REHOME]` resolved; only M3 remains.)
 
 Build tiers (mirrors §1's A/B/C staging) — **all three shipped the same conv**; see the two build logs above:
 
@@ -795,12 +796,12 @@ N15 `[COMM-ACCENT]` → **DROP** (§1 M10).
 |---|---|---|
 | N4 `[COMM-CRS-CARD]` | **ADAPT — shared card, badge + progress, no CTA change** | Take "one course card everywhere": the Courses tab renders our shared `cover-story` card instead of the bespoke mini-row, keeping the `?via=community-courses` attribution via the `href` override and suppressing the community affiliation (it would point at the community you are already inside). **Keeps §2 M12's call** — enrolled viewers get the ✓ Enrolled / ✓ Completed badge and their own progress; the **CTA is left as the host passes it**. His server-side enrollment query is better data than the catalog's client snapshot, but it still carries only `status` + module counts, so a card CTA derived from it would read "Book next session" while the detail page — resolving an upcoming session through `buildCoursePrimaryCta` — reads "Go to Session N" for the same course. The contradiction §2 declined survives the better data source. **Drop his local `coursePriceLabel`** — `formatPrice` already carries `minimumFractionDigits: 0` since §2 M14. Supersedes **F5**'s 320×224 Courses-tab thumbnail |
 | N5 `[COMM-JOIN-REBIND]` | **ADAPT — both halves, after verifying F4 live** | Move Join/Leave wiring off module top level into a function re-run on `astro:page-load`, with a `data-wired` guard against double-binding on same-slug tab switches (`transition:persist` keeps the element). Take the **Leave self-heal** too: a `Not a member` 400 means the page's membership state has drifted and the user's goal state is already true, so land where success lands rather than alerting. **Verify first** — reproduce the dead-button case by navigating client-side from a `/communities` card to a second community and clicking Join; the defect is plausible from the code but unmeasured (`[PREMISE]` discipline, same as §2's F1) |
-| N8 `[COMM-REC-OFF]` | **ADAPT — hide only after rehoming; `[REC-REHOME]` widened to both surfaces** | Verified premise: `/communities` is the **only** consumer of `RecommendedCommunities`, which is the **only** caller of `/api/recommendations/communities` — the exact shape of §2 M4. Rather than open a second task, **`[REC-REHOME]` now covers both carousels**: they would compete for the same destination, so the rehoming decision should be made once for both. Destination remains undecided (`[FEEDS]` bars re-adding panel surfaces to Home). Gated, not dropped |
+| N8 `[COMM-REC-OFF]` | **ADAPT — hide after rehoming ✅ BUILT (Conv 427)** | Discharged together with §2 M4, exactly as the widened `[REC-REHOME]` intended: one destination decided once for both carousels. `RecommendedCommunities` and `/api/recommendations/communities` are **deleted**; `/communities` keeps a recommendations surface as community lanes in its right rail, off the same global Discovery Rails blob |
 | N16 `[COMM-LIST-AGG]` | **ADAPT — all four aggregates** | `courseCount`, `teacherCount` (distinct active certified teachers), and a **review-count-weighted** average rating + total review count, via two `LEFT JOIN` subqueries on the list query, plus `creator` on `CommunityProgressionCourse` (N4 needs it for the card's creator chip). Weighted (`SUM(rating × rating_count) / SUM(rating_count)`) rather than a flat mean, so a 5.0-from-one-review course cannot outweigh a 4.6-from-fifty. Prerequisite for N11 and N4 — build it first among the catalog work |
 
 ### Build log — §3 all three tiers (Conv 426, all 5 gates green + live-verified)
 
-**13 of 13 buildable mechanisms shipped**; N8 stays gated on `[REC-REHOME]`.
+**13 of 13 buildable mechanisms shipped**; N8 was gated on `[REC-REHOME]` and shipped in Conv 427 → **14 of 14**.
 
 **Tier A — the defect + storage foundation.**
 - **N14** `GET /api/storage/[...key]` built with a two-entry prefix allowlist, traversal rejection,
@@ -872,7 +873,8 @@ regardless of input), which silently neutered the logo size-cap assertion. The h
 ### §3 walk result (Conv 426)
 
 **16 mechanisms · 2 ADOPT (N3, N7) · 12 ADAPT · 2 DROP (both carried from earlier walks).** One ADAPT
-(N8) is **gated** on `[REC-REHOME]`; the other 13 are buildable — **all 13 shipped this conv**. Three
+(N8) was **gated** on `[REC-REHOME]`; the other 13 were buildable — **all 13 shipped this conv**, and N8
+followed in Conv 427 → **14 of 14**. Three
 findings, all closed: **F3 confirmed and fixed by N14** (`[THUMB-404]`), **F4 confirmed live with a
 hard-load control, then fixed by N5**, **F5 superseded** by N1 (header square, band now 96px) and N4
 (Courses-tab thumbnail).
@@ -889,6 +891,76 @@ Build tiers (mirroring §1/§2 staging) — **all three shipped the same conv**;
 
 **Two deliberate divergences from his build to pin in tests**, as §2 did: the role-tab pills **keep**
 the Matt role palette (N9), and the Courses-tab card carries **no invented journey CTA** (N4).
+
+### Build log — §2 M4 + §3 N8 `[REC-REHOME]` (Conv 427, all 5 gates green + live-verified)
+
+The two gated carousel mechanisms, discharged together by one destination decision. Both were
+dispositioned *ADAPT — hide only after rehoming*, because `/courses` was the sole consumer of
+`RecommendedCourses` and `/communities` the sole consumer of `RecommendedCommunities`, each carousel
+the sole caller of its `/api/recommendations/*` endpoint. Hiding either would have retired a surface
+site-wide and stranded an endpoint.
+
+**Four findings reframed the decision before any code was written:**
+
+1. **`/feeds` does not exist.** `memory/project_feeds_hub.md` called it "the Discover destination", but
+   there is no `src/pages/feeds.astro` and zero `href="/feeds"` in `src/`. Memory corrected.
+2. **A new `/discover` hub would contradict DISC-DROP** (Conv 204) — `/discover` was dropped entirely and
+   folded into `/courses`.
+3. **Home already does this job, and better.** `SmartFeed` renders rails-backed `suggestion-card`s
+   (reason badge, CTA, and a dismiss that *trains* future feeds). Home was never "barred" by `[FEEDS]`
+   so much as already occupied — and `[FEEDS]`'s bar names FeedsHub / ActionCards / TriageStrip in the
+   **feed column**, which says nothing about the Conv-298 right rail.
+4. **The work already had an owner.** `src/lib/discovery-rails/types.ts` names the reco bands as its
+   intended consumer, and `plan/home-feed-merge/README.md` **#34 `[RECO-UNIFY]`** scopes exactly this
+   refactor. `[REC-REHOME]` was written in the §2/§3 walks without noticing it.
+
+**User decision:** rails-backed lanes in the existing right rail — the executable cut of `[RECO-UNIFY]`
+#34 minus the Promoted / Peerloop Picks lanes (those need `[PROMOTE-PIPELINE]` Steps 4–7).
+
+**Built:** `DiscoveryRails` (island) + `DiscoveryRailCard` (compact row) + `lib/discovery-rails/lanes.ts`
+(pure builder), mounted in the right rail of `/courses` (course lanes), `/communities` (community lanes)
+and `/` (both, `maxItems=3`). **Deleted:** both carousels, both `/api/recommendations/*` endpoints, and
+their 4 test files.
+
+**Decisions worth keeping:**
+
+- **Not a fourth `CourseCatalogCard` variant.** `RailEntity` carries no price, rating, level or creator,
+  so a `variant="rail"` would have meant making four required props optional and threading an "absent"
+  state through three existing variants — the exact stranding pattern that card's own header documents
+  from Conv 425. One card, one data shape, serving both entity types because the payload does.
+- **Personalization costs zero requests.** `CurrentUser` already carries `interestTopicIds` (from
+  `/api/me/full`), so the lens needs no fetch. The island gates on the `useAuthStatus()` three-state, not
+  `useCurrentUser()` truthiness — treating the pre-hydration moment as "visitor" is the same bootstrap
+  race as M1 `[MSGBOOT]` and `[COURSETAB-HASH]`, and here it would cost a member their For You lane on
+  every cold load.
+- **An entity appears in at most one lane.** Claimed in order (For You → Trending → New → Popular). In a
+  284px rail the same course repeating down the column reads as a bug. For You is capped like every other
+  lane so it cannot swallow the set. Pinned by tests and verified live.
+- **The blue placeholder survives as the island's empty-state fallback**, passed as Astro island children.
+  His pivot deleted the panel site-wide (§2 M16) and that removal is still not adopted; the honest-orphan
+  blue now appears exactly when there is genuinely nothing to recommend.
+- **Sticky-height cap added** (`max-h-[calc(100vh-48px)] overflow-y-auto`): lane height is data-driven, and
+  a sticky rail taller than the viewport puts its lower lanes permanently out of reach.
+
+**Live verification** (dev `:4321`, DOM reads not screenshots): rails endpoint returns 15 items across 6
+rails (`x-discovery-source: compute`). Anonymous `/courses` → Trending/New/Popular, 6 items, **zero
+duplicates** with `intro-to-n8n` present in two server rails but rendered once. Signed in as
+`marcus.t@example.com` (topics `top-001`, `top-014`) → **For You leads with `intro-to-n8n`** (the only
+2-topic match) ahead of five 1-topic matches, and Trending collapses because its only item was claimed —
+matching the prediction computed from the blob beforehand. `/communities` and `/` verified likewise; Home
+renders 4 lanes at 284×686 with all images loading. Empty path forced by poisoning the cache with an
+empty blob → rail absent, blue placeholder at 284×200. Below `lg` (1019px iframe) the aside is
+`display:none` with no horizontal overflow.
+
+**Accepted caveat:** the rail is `hidden lg:block`, so there is no recommendations surface below `lg`.
+The lane components are host-independent, so a later mobile placement is a mount change, not a rewrite.
+
+**Deliberate drop:** each carousel had a localStorage dismiss. The rail occupies what was empty
+placeholder space, and the dismiss that actually trains recommendations is the feed's
+(`/api/feeds/smart/dismiss`). Flagged to the user rather than lost quietly.
+
+5 gates green; suite 6234→**6210** (−44 deleted, +20 new); `prov:sweep` at its 11-issue baseline with both
+new components stamped and registered.
 
 ## 4 · Shell track review
 

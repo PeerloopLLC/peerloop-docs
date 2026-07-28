@@ -9,7 +9,11 @@ through with him directly.
   he and the user agreed to review from. His later `brian-July-20` exploration is out of scope.
 - **Decided so far:** 42 distinct mechanisms across 3 of 6 screens — **5 taken as-is · 33 taken in
   part · 4 declined**. Screens 4–6 are not reviewed yet, so nothing on them is decided either way.
-- **As of:** Conv 426 (2026-07-28). **Living document — updated as each screen walk completes.**
+- **As of:** Conv 427 (2026-07-28). **Living document — updated as each screen walk completes.**
+- **Since Conv 426:** the two deferred recommendation-carousel items moved out of "blocked" — the
+  recommendations were rehomed and both carousels are now gone from the listing columns, so his goal
+  there is met (see §3, *Recommendations on `/courses` and `/communities`*). The counts above are
+  unchanged: no new mechanism of his was decided, an existing agreement was simply unblocked.
 
 ## How to read it
 
@@ -182,13 +186,29 @@ colour. That is probably the most useful thing to show him.
 | **Enrolled journey on the card** | The **CTA change**. His card CTA is derived from a client-side snapshot, while ours resolves an upcoming session first — so the same course would read "Book next session" on the catalog and "Go to Session 3" on the detail one click later. We took the ✓ Enrolled / ✓ Completed badge and the progress line; the CTA is untouched. His completed-state CTA ("Teach this course") is also not adopted |
 | **Link-style chips** | Hover-only underline — we use a persistent underline, matching the affordance standard set on the journey stepper |
 
+### Recommendations on `/courses` and `/communities` — now done, differently
+
+He hid both recommendation carousels. We agreed with the goal — neither listing column should be
+interrupted between the search box and the results — but not with hiding them where they stood, since
+each page was the only place its recommendations existed anywhere in the product.
+
+So they moved rather than disappeared. Both pages, and Home, now carry recommendations in the
+right-hand panel that had been an empty "more coming soon" placeholder, and they are fed by the single
+daily discovery dataset the home feed already uses instead of two separate per-page recommenders. A
+signed-in member gets a "for you" lane ranked by how well something matches the interests they picked
+during onboarding; everyone gets trending, new and popular.
+
+**What we left behind:** his outright removal, and the per-page recommendation endpoints, which are
+deleted. **One thing to flag:** the panel only appears on wider screens, so on a phone there is
+currently no recommendations surface at all. That is a known gap, not an oversight.
+
 ### Communities (`/communities`, `/community/[slug]`)
 
 | His mechanism | What we left behind |
 |---|---|
 | **Community identity band** replacing the Card hero | The dark scrim and its hard-coded colours (the same set as the course header), and the dependency on the back-nav shell. We took the compaction, the logo mark, the denser byline, and his call to drop the duplicated description — the About tab already shows it verbatim |
 | **Role tabs as floating pills** | The **removal of the role colours**. His version drops the member/teaching blue, created purple and moderating neutral because "the courses pill row has none". Role-based colour theming is one of the three areas flagged at the start of this review, so we took the pill shape and kept the palette. The gradient capsule and raw colour are left behind as everywhere else |
-| **Community catalog hero card** | The hard-coded footer-band blues and shadow stacks, retokenised as on the course card. Added as its own named variant rather than replacing the existing `stacked` one, so the recommendations carousel is untouched |
+| **Community catalog hero card** | The hard-coded footer-band blues and shadow stacks, retokenised as on the course card. Added as its own named variant rather than replacing the existing `stacked` one, so no other card surface changed meaning underneath it |
 | **Logo marks on the cards** | The white-ringed medallion treatment (the seal that rises above the band edge) — same call as on the course-side band. The logo itself now renders on community surfaces, which it did not before |
 | **Course cards in the community Courses tab** | The **enrolled-CTA / journey mode** again, for the same reason as on the catalog: his card CTA is derived from status + module counts, so it would read "Book next session" while the course page reads "Go to Session 3" for the same course. His server-side enrollment query is better data than the catalog version, but it still lacks the upcoming session, so the contradiction survives. Badge and progress shipped; CTA untouched |
 | **Sort docked in the search box** | Not adopted here either — same call as on `/courses` |
@@ -229,8 +249,9 @@ Neither of these is a judgment on the design — the code was dead at the pivot:
 
 ## 4 · ⏸️ Deferred — agreed, but blocked on our own work
 
-Both of these are changes we **want** to make and have not made yet, because making them now would
-strand a surface with nowhere else to live.
+This is a change we **want** to make and have not made yet, because making it now would strand a
+surface with nowhere else to live. (The recommendation carousels were the other entry here; they have
+since been done — see below.)
 
 ### Hiding the As-Student / Teaching / Moderating role tabs on `/courses`
 
@@ -239,15 +260,6 @@ says so, and the teacher dashboard groups students by course but never lists the
 So `/courses#teaching` is currently the only list of a teacher's courses, and the same is true for
 moderating. (`/learning` already covers the student lens.) Those two lists get built first, then the
 tabs come out.
-
-### Hiding the recommendation carousels on `/courses` **and** `/communities`
-
-Agreed in principle, on both pages. Blocked for the same measured reason in each case: **that page is
-the only consumer of its carousel**, and its carousel is the only caller of its recommendations API.
-Hiding them retires personalized course *and* community recommendations across the whole product and
-leaves two APIs with no callers. They need a new home first, and **that destination is still
-undecided** — Home is the obvious candidate, but a previous decision bars re-adding panel surfaces
-there. Both are now tracked under one task, since they would compete for the same destination.
 
 ---
 
