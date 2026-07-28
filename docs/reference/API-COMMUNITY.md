@@ -868,6 +868,10 @@ Surfaces active public feeds worth joining. Visitor-accessible (no auth required
 
 Serves the global **Discovery Rails** blob — up to 6 rails, `{trending, popular, new} × {course, community}` (DISCOVERY-RAILS block, Conv 261). The payload is **un-personalized** (identical for every viewer); clients apply a personalization lens via each entity's `topicIds`. Drives the visitor / cold-start marketing surface.
 
+**Consumers:**
+- `/api/feeds/smart` suggestion-cards, server-side via the shared `loadDiscoveryRailsBlob` reader (HOME-FEED-MERGE).
+- The **`DiscoveryRails` right-rail island** (`src/components/discovery/DiscoveryRails.tsx`), mounted on `/` (both entity types), `/courses` (courses) and `/communities` (communities) — [REC-REHOME], Conv 427. It reads the blob through the browser client (`src/lib/discovery-rails/client.ts`: localStorage cache + TTL/version freshness + `applyPersonalizationLens`) and turns it into lanes via `src/lib/discovery-rails/lanes.ts` — **For You · Trending · New · Popular**. "For You" is *synthesized client-side* from the lens (entities whose `topicIds` overlap the viewer's interests, ranked by overlap count); it is **not** a rail in this payload, and the response contract is unchanged by it. This island replaced the former `GET /api/recommendations/{courses,communities}` endpoints, which were **deleted** in Conv 427 (and with them `API-RECOMMENDATIONS.md`) — the rails blob is now the single recommender.
+
 **Auth:** None (public).
 
 **Serving strategy (two-tier):**

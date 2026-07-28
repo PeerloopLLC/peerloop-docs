@@ -10,7 +10,7 @@
 ## Quick Stats
 
 - **Pages scanned:** 67
-- **API endpoints found in UI:** 220
+- **API endpoints found in UI:** 218
 - **Routes reachable from navbar:** 54
 - **Unreachable routes:** 35
 
@@ -347,7 +347,6 @@ Which API calls does each page make?
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
 | GET | `/api/admin/intel/communities` | src/components/communities/CommunitiesCatalog.tsx |
-| GET | `/api/recommendations/communities` | src/components/recommendations/RecommendedCommunities.tsx |
 
 **`/dev/primitives`** — *no API calls detected*
 
@@ -500,7 +499,6 @@ Which API calls does each page make?
 |--------|-------------|-----------|
 | GET | `/api/admin/intel/courses` | src/components/courses/CoursesCatalog.tsx |
 | POST | `/api/courses/availability-batch` | src/components/courses/CoursesCatalog.tsx |
-| GET | `/api/recommendations/courses` | src/components/recommendations/RecommendedCourses.tsx |
 
 ### Teaching
 
@@ -654,8 +652,6 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/me/teacher-students` | `/teaching/[...tab]` |
 | `GET /api/members` | `/members` |
 | `GET /api/moderator-invites/[param]` | `/invite/mod/[token]` |
-| `GET /api/recommendations/communities` | `/communities` |
-| `GET /api/recommendations/courses` | `/courses` |
 | `GET /api/session-invites` | `/teaching/[...tab]` |
 | `GET /api/sessions` | `/learning/[...tab]` |
 | `GET /api/sessions/[param]` | `/session/[id]` |

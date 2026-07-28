@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-07-28 Conv 426 (client-facing `NOT-ADOPTED.md` companion ledger for a review block + cross-conv maintenance obligations become plan-doc ground rules, not board tasks — §5)
+**Last Updated:** 2026-07-28 Conv 427 (a `driftCheck` doc whose endpoints were deleted is deleted too, not rewritten onto the replacement — follow the concern to its existing doc — §5)
 
 ---
 
@@ -1974,6 +1974,17 @@ Personal Obsidian vault (synced via Obsidian Sync) remains separate from peerloo
 ---
 
 ## 5. Documentation Conventions
+
+### A `driftCheck` Doc Whose Subject Is Deleted Is Deleted Too, Not Rewritten Onto the Replacement (Conv 427)
+**Date:** 2026-07-28 (Conv 427)
+
+`docs/reference/API-RECOMMENDATIONS.md` (144 lines) documented `/api/recommendations/{courses,communities}`, both deleted this conv. It was **deleted** rather than rewritten to cover the rails-backed replacement, with its index rows removed from `API-REFERENCE.md`, `CLI-QUICKREF.md` and the `r-end` `fmt-docs.md` mapping. Rejected: rewriting it as the Discovery-Rails doc.
+
+**Rationale:** `/api/discovery/*` is already documented in `API-COMMUNITY.md`, so a rewrite would create a **second home for one concern** — the failure mode a reference set can't recover from by drift-checking. The general rule: when an endpoint moves, follow the concern to its existing doc; only keep a doc alive if it still owns something. Category was resolved via `node .claude/scripts/docs-registry.mjs doc-category <relpath>` **first** (`driftCheck`, so in scope); the `manual`/`archival` docs mentioning the same endpoint names were correctly left untouched, per the maintenance-tier rule.
+
+**Consequences:** No dangling endpoint references anywhere in the doc set. Test-doc totals in `TEST-COVERAGE.md`/`TEST-COMPONENTS.md` were re-verified against on-disk reality (240/82/34/28 → vitest 400, all 428) rather than carried forward from the changelog.
+
+**See:** `docs/reference/API-COMMUNITY.md`; `.claude/skills/r-end/refs/fmt-docs.md`; `docs/sessions/2026-07/20260728_1119 Decisions.md` §5.
 
 ### A Review Block Whose Output Is Discussed With the Client Gets a Second, Client-Facing Document (NOT-ADOPTED Ledger, Conv 426)
 **Date:** 2026-07-28 (Conv 426)

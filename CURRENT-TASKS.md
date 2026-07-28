@@ -28,44 +28,45 @@
 1. [MERGE-BRIAN-JULY7](#merge-brian-july7) — client branch assessment/integration
 2. [ROLE-CRS-LIST](#role-crs-list) — teaching/moderating course lists (blocks §2 M3)
 3. [OVERLAY-ORPHAN](#overlay-orphan) — `overlay` card variant now has zero call sites: keep or delete
-4. [SPACING-4X](#spacing-4x) — sweep for other 4× size artifacts Conv 423 preserved
-5. [A11Y](#a11y) — accessibility lint triage
-6. [RHOOKS](#rhooks) — react-hooks lint triage
-7. [KNIP](#knip) — dead-export oracle → gate
-8. [PROV-SWEEP-DEBT2](#prov-sweep-debt2) — `prov:sweep` gate silently red (10 unregistered)
-9. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
-10. [EDITSAFE](#editsafe) — anchored-edit discipline
-11. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
-12. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
-13. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
-14. [HOME-FIXES](#home-fixes) — Home route fix bucket
-15. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
-16. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
-17. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
-18. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
-19. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
-20. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
-21. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
-22. [RSFD](#rsfd) — port `r-start-from-dirty`
-23. [DEPEXP](#depexp) — dependency-probe hygiene
-24. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
-25. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
-26. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
-27. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
-28. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
-29. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
-30. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
-31. [DEVSRV-STALE](#devsrv-stale) — un-parked: stale/bricked astro dev daemon recurred
-32. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
-33. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
-34. [TLFMT](#tlfmt) — r-end ref documents a TIMELINE.md shape the file no longer uses
-35. [OUTLINE-V4B](#outline-v4b) — 3 residual `outline-none` sites the Conv-244 fix missed
-36. [ADMIN-OVFLW](#admin-ovflw) — 3 admin routes overflow horizontally (pre-existing, not Conv-423)
-37. [LH1](#lh1) — 23 typography tokens hardcode `line-height: 1` (TYPO-FDN axis)
-38. [BRIDGE-RESIZE](#bridge-resize) — `resize_window` silently ignores width
-39. [ICON-STATES](#icon-states) — Phase-5 tail: drive hidden/loading states over 528 call sites
-40. [GATEPAR](#gatepar) — `/w-codecheck` vs `npm run verify` diverged on the icon gate
-41. [VPHARNESS](#vpharness) — persist the exact-size iframe harness as a script
+4. [REC-MOBILE](#rec-mobile) — no recommendations surface below `lg` after the rail rehome
+5. [SPACING-4X](#spacing-4x) — sweep for other 4× size artifacts Conv 423 preserved
+6. [A11Y](#a11y) — accessibility lint triage
+7. [RHOOKS](#rhooks) — react-hooks lint triage
+8. [KNIP](#knip) — dead-export oracle → gate
+9. [PROV-SWEEP-DEBT2](#prov-sweep-debt2) — `prov:sweep` gate silently red (10 unregistered)
+10. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
+11. [EDITSAFE](#editsafe) — anchored-edit discipline
+12. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
+13. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
+14. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
+15. [HOME-FIXES](#home-fixes) — Home route fix bucket
+16. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
+17. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
+18. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
+19. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
+20. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
+21. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
+22. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
+23. [RSFD](#rsfd) — port `r-start-from-dirty`
+24. [DEPEXP](#depexp) — dependency-probe hygiene
+25. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
+26. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
+27. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
+28. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
+29. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
+30. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
+31. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
+32. [DEVSRV-STALE](#devsrv-stale) — un-parked: stale/bricked astro dev daemon recurred
+33. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
+34. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
+35. [TLFMT](#tlfmt) — r-end ref documents a TIMELINE.md shape the file no longer uses
+36. [OUTLINE-V4B](#outline-v4b) — 3 residual `outline-none` sites the Conv-244 fix missed
+37. [ADMIN-OVFLW](#admin-ovflw) — 3 admin routes overflow horizontally (pre-existing, not Conv-423)
+38. [LH1](#lh1) — 23 typography tokens hardcode `line-height: 1` (TYPO-FDN axis)
+39. [BRIDGE-RESIZE](#bridge-resize) — `resize_window` silently ignores width
+40. [ICON-STATES](#icon-states) — Phase-5 tail: drive hidden/loading states over 528 call sites
+41. [GATEPAR](#gatepar) — `/w-codecheck` vs `npm run verify` diverged on the icon gate
+42. [VPHARNESS](#vpharness) — persist the exact-size iframe harness as a script
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -427,6 +428,10 @@
   files carry a NOTE pointing here, so nothing is silently rotting in the meantime.
 - **Scope if deleted:** the variant branch + its props in 2 components, the `overlay` cases in
   `CourseCatalogCard.test.tsx` / `CommunityCatalogCard.test.tsx`, and the registry notes that describe it.
+- **Also fold in (r-end docs agent, Conv 427):** `tests/components/communities/CommunityCatalogCard.test.tsx`
+  lines 11 + 159 still cite the **deleted** `RecommendedCommunities` as the reason `variant="overlay"` /
+  `hero` exist. Same decision, same files — fix the comments with whichever way this task resolves rather
+  than as a separate cleanup.
 - **Refs:** `src/components/courses/CourseCatalogCard.tsx`, `src/components/communities/CommunityCatalogCard.tsx`,
   `scripts/matt-inspired-registry.ts`, `plan/merge-brian/README.md` § Build log — §2 M4 + §3 N8.
 
@@ -457,6 +462,25 @@
 - **Icon dependency REMOVED (Conv 424):** `[ICON-TOK]`/`[ICON-4PX]` no longer wait on this gate — `BecomeATeacherPage` was fixed on the icon axis directly. This task is now only the *route-group sweep*.
 - **What:** public/marketing route-group sweep (the only un-swept RG-* group; RTMIG-4 closed Conv 340 with it deferred). The 14 marketing pages live only in `/old/*`; root paths 404 by design. Revisit if/when the redesign is scheduled. Also gates `[ORPHAN-BACKLOG]` Cat-B.
 - **Refs:** `plan/route-migration/README.md § RG-PUBLIC disposition`.
+
+### [REC-MOBILE]
+
+- **State:** 📋 queued — surfaced by `[REC-REHOME]`, Conv 427; accepted caveat at decision time
+- **What:** give narrow screens a recommendations surface again. `[REC-REHOME]` put the rails-backed
+  lanes in the right rail, which is `hidden lg:block` on all three hosts (`/`, `/courses`,
+  `/communities`) — so **below `lg` there is currently no recommendations surface at all**, where the
+  old carousels did render.
+- **Why it is a mount change, not a rewrite:** `DiscoveryRails` is deliberately host-independent — it
+  renders lanes and nothing else (no panel chrome, no width). The likely shape is one `For You` lane
+  (or `maxItems={2}`) mounted inline below the sticky toolbar and above the catalog, shown only under
+  `lg` so wide screens don't get it twice.
+- **Open sub-decisions:** which lane(s) to show on mobile (For You only, or first-available); whether
+  Home gets one too, given its feed already carries `suggestion-card`s in-stream; and where exactly it
+  sits relative to `OnboardingNudgeBanner`.
+- **Verify at:** 375px and 320px via the `[VPHARNESS]` iframe harness (media queries key off the
+  iframe, not the viewport), and re-check the Conv-425 sticky-toolbar height budget isn't blown.
+- **Refs:** `src/components/discovery/DiscoveryRails.tsx`, `src/pages/{index,courses,communities}.astro`,
+  `plan/merge-brian/README.md` § Build log — §2 M4 + §3 N8, `memory/reference_responsive_iframe_harness`.
 
 ### [RHOOKS]
 

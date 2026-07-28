@@ -3,6 +3,30 @@
 
 ## 5. UI/UX & Components
 
+### [REC-REHOME] Resolved — Course + Community Recommendations Become Discovery-Rails Lanes in the Right Rail (MERGE-BRIAN §2 M4 + §3 N8, Conv 427)
+**Date:** 2026-07-28 (Conv 427)
+
+Course and community recommendations are rebuilt as **vertical lanes (For You · Trending · New · Popular) in the existing right-hand `<aside>`** on `/courses`, `/communities` and `/`, backed by the single global **Discovery Rails** blob (`lib/discovery-rails/client.ts`, shipped Conv 261 with tests only — this is its first production consumer). `RecommendedCourses`, `RecommendedCommunities` and **both `/api/recommendations/*` endpoints are deleted**. New `src/lib/discovery-rails/lanes.ts` (pure lane builder, type-only import from `./types` so the D1-importing server modules stay out of the client bundle), `DiscoveryRails.tsx` (island, `useAuthStatus()` three-state gate) and `DiscoveryRailCard.tsx`. Personalization reads `useCurrentUser()?.getInterestTopicIds()` — **zero extra requests**. Rejected: moving the carousels as-is into the rail; retiring recommendations entirely into SmartFeed's `suggestion-card`; the full `[RECO-UNIFY]` #34 including Peerloop Picks + Promoted lanes (gated on `[PROMOTE-PIPELINE]` Steps 4–7, so multi-conv).
+
+This is the executable half of `plan/home-feed-merge/README.md` **#34 `[RECO-UNIFY]`**, which had already scoped exactly this refactor — `src/lib/discovery-rails/types.ts` names the reco bands as its intended consumer in a header comment. It supersedes the `[REC-REHOME]`-destination half of the Conv-425 entry below (the `[ROLE-CRS-LIST]`/M3 half remains open).
+
+**Rationale:** Retires the duplicate recommender `[RECO-UNIFY]` exists to remove, using machinery already shipped; fills a designed-but-empty slot (the Conv-298 `[HOME-RPANEL]` aside, kept against the client's site-wide deletion in §2 M16) rather than adding a new surface; and unblocks both gated mechanisms in one move. The old blocker — "`[FEEDS]` bars panel surfaces on Home" — was re-tested and did not hold: `[FEEDS]` names three composites in the **feed column** (FeedsHub / ActionCards / TriageStrip), never the right rail, and the memory's suggested destination `/feeds` had been retired in Conv 331.
+
+**Consequences:** −44 tests deleted with the endpoints, +20 added for the lane builder; §3 complete, §2 down to M3. Empty state passes the client's blue "coming soon" placeholder through as Astro island **children**, so the host markup survives byte-for-byte and the component stays host-independent. All three hosts carry `max-h-[calc(100vh-48px)] overflow-y-auto` — a `sticky` rail taller than the viewport can never scroll to reveal its bottom. Accepted caveat: the rail is `hidden lg:block`, so **no recommendations surface below `lg`** — a mobile placement is a mount change, not a rewrite, but is undecided. `docs/reference/API-RECOMMENDATIONS.md` deleted rather than rewritten.
+
+**See:** `src/lib/discovery-rails/lanes.ts`; `src/components/discovery/`; `plan/home-feed-merge/README.md` #34; `docs/sessions/2026-07/20260728_1119 Decisions.md` §§1,3,5, Learnings §§1-3,5-7; Conv 427.
+
+### A Separate `DiscoveryRailCard`, Not a Fourth `CourseCatalogCard` Variant (Conv 427)
+**Date:** 2026-07-28 (Conv 427)
+
+The rail gets **one new compact card serving both entity types**, not a `variant="rail"` on `CourseCatalogCard` + `CommunityCatalogCard` — even though §2 M9 and §3 N11 had just established variant-addition as the local pattern.
+
+**Rationale:** `RailEntity` carries no price, rating, level or creator, so a `rail` variant would mean making four currently-required props optional and threading an "absent" state through three existing variants — the exact stranding pattern `CourseCatalogCard`'s own header documents from Conv 425, when the `context` prop's branches went unreachable while tsc, lint and the whole suite stayed green (`[ORPHAN-DETECT]`). The rails payload is uniform across entity types, so one card serves both honestly. Existing primitives were scanned first: `CourseAnchor`/`CommunityAnchor` are feed-width rows, `SuggestionCard` is feed-shaped with its own dismiss, and `ClickableRow`'s header explicitly forbids widening it — only its focus-ring convention was adopted, on a native `<a>`.
+
+**Consequences:** Both catalog cards untouched except doc comments. Deleting the carousels left `variant="overlay"` with **zero** production call sites on both cards; logged as `[OVERLAY-ORPHAN]` with a pointer NOTE in both component headers rather than deleted unilaterally — unlike Conv 425's `context`, `overlay` is coherent, named and tested, so the keep-or-delete blast radius is the user's to size.
+
+**See:** `src/components/discovery/DiscoveryRailCard.tsx`; `docs/sessions/2026-07/20260728_1119 Decisions.md` §§2,4; Conv 427.
+
 ### RoleTabBar Gains an Opt-In Pill Variant — the Role Palette Is Retained in Both Treatments (MERGE-BRIAN §3 N9, Conv 426)
 **Date:** 2026-07-28 (Conv 426)
 
@@ -32,7 +56,7 @@ The client branch hides the `/courses` role tabs (M3) and the "Popular Courses" 
 
 **Rationale:** Verified rather than assumed, and both checks changed the answer. `/teaching` has **no courses-list page** (its own route comment says so; `TeacherDashboard` groups students by course but never lists courses), so `/courses#teaching` is the only list of a teacher's courses. And `/courses` is the **only** consumer of `RecommendedCourses`, so hiding the carousel retires course recommendations site-wide and strands `/api/recommendations/courses`. Each removal would have been a silent functional loss.
 
-**Consequences:** Two new queued tasks; `[REC-REHOME]`'s destination is still open because `[FEEDS]` (Conv 267) bars re-adding panel surfaces to Home.
+**Consequences:** Two new queued tasks; `[REC-REHOME]`'s destination is still open because `[FEEDS]` (Conv 267) bars re-adding panel surfaces to Home. *(Superseded in part, Conv 427: the `[FEEDS]` blocker did not survive re-testing — M4 shipped as right-rail Discovery-Rails lanes; see the Conv-427 entry at the top of this chunk. `[ROLE-CRS-LIST]`/M3 remains open.)*
 
 **See:** `plan/merge-brian/README.md` §2 (M3, M4), `CURRENT-TASKS.md`; `docs/sessions/2026-07/20260728_0449 Decisions.md` §2; Conv 425.
 

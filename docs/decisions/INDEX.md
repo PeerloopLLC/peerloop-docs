@@ -259,6 +259,8 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [[REC-REHOME] Resolved — Course + Community Recommendations Become Discovery-Rails Lanes in the Right Rail (MERGE-BRIAN §2 M4 + §3 N8, Conv 427)](05-ui-ux-components.md#rec-rehome-resolved--course--community-recommendations-become-discovery-rails-lanes-in-the-right-rail-merge-brian-2-m4--3-n8-conv-427)
+- [A Separate `DiscoveryRailCard`, Not a Fourth `CourseCatalogCard` Variant (Conv 427)](05-ui-ux-components.md#a-separate-discoveryrailcard-not-a-fourth-coursecatalogcard-variant-conv-427)
 - [RoleTabBar Gains an Opt-In Pill Variant — the Role Palette Is Retained in Both Treatments (MERGE-BRIAN §3 N9, Conv 426)](05-ui-ux-components.md#roletabbar-gains-an-opt-in-pill-variant--the-role-palette-is-retained-in-both-treatments-merge-brian-3-n9-conv-426)
 - [MERGE-BRIAN §2 — /courses Client-Branch Dispositions: 3 ADOPT, 12 ADAPT, 1 DROP (Conv 425)](05-ui-ux-components.md#merge-brian-2--courses-client-branch-dispositions-3-adopt-12-adapt-1-drop-conv-425)
 - [[ROLE-CRS-LIST] and [REC-REHOME] — Brian's /courses Removals Are Gated on Rehoming, Not Adopted (MERGE-BRIAN §2 M3/M4, Conv 425)](05-ui-ux-components.md#role-crs-list-and-rec-rehome--brians-courses-removals-are-gated-on-rehoming-not-adopted-merge-brian-2-m3m4-conv-425)

@@ -2233,3 +2233,25 @@ The client branch forked `CommunitiesRoleTabs` off the shared `RoleTabBar` into 
 **Consequences:** `/courses` role tabs and `dev/primitives` unchanged; 12 tests pin the palette in both treatments.
 
 **See:** `docs/decisions/05-ui-ux-components.md` entry; `src/components/RoleTabBar.tsx`; `docs/sessions/2026-07/20260728_0834 Decisions.md` §3, Learnings §5; Conv 426.
+
+### [REC-REHOME] Resolved — Course + Community Recommendations Become Discovery-Rails Lanes in the Right Rail (MERGE-BRIAN §2 M4 + §3 N8, Conv 427)
+**Date:** 2026-07-28 (Conv 427)
+
+Recommendations rebuild as vertical lanes (For You · Trending · New · Popular) in the existing right-hand `<aside>` on `/courses`, `/communities` and `/`, off the single global Discovery Rails blob — the first production consumer of the Conv-261 `lib/discovery-rails/client.ts`. `RecommendedCourses`, `RecommendedCommunities` and both `/api/recommendations/*` endpoints deleted. New `lanes.ts` + `DiscoveryRails` island (three-state `useAuthStatus()` gate) + `DiscoveryRailCard`; personalization from `getInterestTopicIds()` at zero extra requests. Rejected: moving the carousels as-is; retiring into SmartFeed; the full `[RECO-UNIFY]` #34 with Promotion lanes (multi-conv). Supersedes the `[REC-REHOME]`-destination half of the Conv-425 M3/M4 entry.
+
+**Rationale:** Retires the duplicate recommender `[RECO-UNIFY]` was written to remove, using machinery already shipped, and fills a designed-but-empty slot instead of adding a surface. The standing blocker — "`[FEEDS]` bars panel surfaces on Home" — did not survive re-testing: `[FEEDS]` names three composites in the feed column, not the right rail, and the suggested destination `/feeds` had been retired in Conv 331.
+
+**Consequences:** −44 tests with the endpoints, +20 for the lane builder; §3 complete, §2 down to M3; `[RECO-UNIFY]` #34 half-shipped. Empty state passes the client's blue placeholder through as Astro island children. All three hosts capped with `max-h-[calc(100vh-48px)] overflow-y-auto`. Accepted caveat: `hidden lg:block`, so no recommendations below `lg`.
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `src/lib/discovery-rails/lanes.ts`; `docs/sessions/2026-07/20260728_1119 Decisions.md` §1, Learnings §§1-3,5-7; Conv 427.
+
+### A Separate `DiscoveryRailCard`, Not a Fourth `CourseCatalogCard` Variant (Conv 427)
+**Date:** 2026-07-28 (Conv 427)
+
+One new compact card serves both entity types in the rail, rather than adding `variant="rail"` to `CourseCatalogCard` + `CommunityCatalogCard` — despite §2 M9 and §3 N11 having just established variant-addition as the local pattern.
+
+**Rationale:** `RailEntity` carries no price, rating, level or creator, so a variant would make four required props optional and thread an "absent" state through three existing variants — the stranding pattern Conv 425 documented in that same file when `context`'s branches went unreachable while every gate stayed green (`[ORPHAN-DETECT]`).
+
+**Consequences:** Catalog cards untouched except doc comments. `variant="overlay"` now has zero production call sites on both cards → `[OVERLAY-ORPHAN]` task + NOTE in both headers, rather than a unilateral deletion.
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `src/components/discovery/DiscoveryRailCard.tsx`; `docs/sessions/2026-07/20260728_1119 Decisions.md` §§2,4; Conv 427.

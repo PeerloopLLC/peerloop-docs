@@ -316,14 +316,13 @@ The other 8 files here were deleted in Conv 419 ([MKTDEAD]) along with the `src/
 | Moderation | 1 | 59 |
 | Onboarding | 2 | 42 |
 | Progression | 1 | 15 |
-| Recommendations | 2 | 20 |
 | Settings | 4 | 126 |
 | Teachers | 1 | 4 |
 | Teaching | 4 | 146 |
 | UI | 2 | 10 |
 | Shared hooks | 1 | 6 |
 | Shared primitives | 1 | 12 |
-| **Total** | **84** | **1,890** |
+| **Total** | **82** | **1,870** |
 
 ---
 

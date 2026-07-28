@@ -361,11 +361,6 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `/api/stripe/connect-status` | GET | Check connected account status |
 | `/api/stripe/verify-checkout` | POST | Self-heal enrollment from missed webhook |
 
-### Recommendations
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-
 ### Platform
 
 | Endpoint | Method | Description |

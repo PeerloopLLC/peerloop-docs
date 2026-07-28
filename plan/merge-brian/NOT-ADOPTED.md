@@ -181,7 +181,7 @@ colour. That is probably the most useful thing to show him.
 |---|---|
 | **Topic pill row** replacing the filter dropdowns | The **removal of the Level and Length filters**. His version leaves them permanently `null` in the filter state — the code stays, the UI to reach them does not. We took the scrolling pill row and kept both filters reachable, along with our "available soon" filter |
 | **Toolbar slimming** | The site-wide part. The `compact` field props are additive and shipped; the toolbar riser trim is behind an opt-in prop so `/communities` and `/members` are byte-identical to before (verified) |
-| **Cover-story card** | The gradient (above), and the way it was gated — his overloads the existing `overlay` variant with a `catalog` context; ours is a third **named** variant, so the recommendations carousel and community course tabs keep exactly what `overlay` has always meant |
+| **Cover-story card** | The gradient (above), and the way it was gated — his overloads the existing `overlay` variant with a `catalog` context; ours is a third **named** variant, so no existing host of that card changed appearance as a side effect of the new one |
 | **Detail hero mirrors the catalog card** — *"make the detail page card look exactly like the summary listing"* | Most of it. Literally shared, the hero becomes the card — which is the option the review had already declined, since our hero is a full-bleed backdrop with white text over a scrim and has no cover panel to share. Narrowed by the user to **the price sticker only**: the same component renders at the same offsets on both surfaces, and the hero keeps its own slim band |
 | **Enrolled journey on the card** | The **CTA change**. His card CTA is derived from a client-side snapshot, while ours resolves an upcoming session first — so the same course would read "Book next session" on the catalog and "Go to Session 3" on the detail one click later. We took the ✓ Enrolled / ✓ Completed badge and the progress line; the CTA is untouched. His completed-state CTA ("Teach this course") is also not adopted |
 | **Link-style chips** | Hover-only underline — we use a persistent underline, matching the affordance standard set on the journey stepper |
@@ -251,7 +251,7 @@ Neither of these is a judgment on the design — the code was dead at the pivot:
 
 This is a change we **want** to make and have not made yet, because making it now would strand a
 surface with nowhere else to live. (The recommendation carousels were the other entry here; they have
-since been done — see below.)
+since been done — see §3, *Recommendations on `/courses` and `/communities`*.)
 
 ### Hiding the As-Student / Teaching / Moderating role tabs on `/courses`
 

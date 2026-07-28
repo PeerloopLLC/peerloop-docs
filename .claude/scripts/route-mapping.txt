@@ -29,7 +29,6 @@ community-resources|API-COMMUNITY.md
 feeds|API-COMMUNITY.md
 discovery|API-COMMUNITY.md
 announcements|API-COMMUNITY.md
-recommendations|API-RECOMMENDATIONS.md
 conversations|API-MESSAGES.md
 contact|API-PLATFORM.md
 faq|API-PLATFORM.md
