@@ -27,45 +27,46 @@
 
 1. [MERGE-BRIAN-JULY7](#merge-brian-july7) — client branch assessment/integration (§4–6 walks remain)
 2. [CRS-CREATED-CARD](#crs-created-card) — last [CRS-ROLE-DORMANT] orphan; its rehome proved unbuildable
-3. [REC-MOBILE](#rec-mobile) — no recommendations surface below `lg` after the rail rehome
-4. [SPACING-4X](#spacing-4x) — sweep for other 4× size artifacts Conv 423 preserved
-5. [A11Y](#a11y) — accessibility lint triage
-6. [RHOOKS](#rhooks) — react-hooks lint triage
-7. [KNIP](#knip) — dead-export oracle → gate
-8. [PROV-SWEEP-DEBT2](#prov-sweep-debt2) — `prov:sweep` gate silently red (10 unregistered)
-9. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
-10. [EDITSAFE](#editsafe) — anchored-edit discipline
-11. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
-12. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
-13. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
-14. [HOME-FIXES](#home-fixes) — Home route fix bucket
-15. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
-16. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
-17. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
-18. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
-19. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
-20. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
-21. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
-22. [RSFD](#rsfd) — port `r-start-from-dirty`
-23. [DEPEXP](#depexp) — dependency-probe hygiene
-24. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
-25. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
-26. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
-27. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
-28. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
-29. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
-30. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
-31. [DEVSRV-STALE](#devsrv-stale) — un-parked: stale/bricked astro dev daemon recurred
-32. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
-33. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
-34. [TLFMT](#tlfmt) — r-end ref documents a TIMELINE.md shape the file no longer uses
-35. [OUTLINE-V4B](#outline-v4b) — 3 residual `outline-none` sites the Conv-244 fix missed
-36. [ADMIN-OVFLW](#admin-ovflw) — 3 admin routes overflow horizontally (pre-existing, not Conv-423)
-37. [LH1](#lh1) — 23 typography tokens hardcode `line-height: 1` (TYPO-FDN axis)
-38. [BRIDGE-RESIZE](#bridge-resize) — `resize_window` silently ignores width
-39. [ICON-STATES](#icon-states) — Phase-5 tail: drive hidden/loading states over 528 call sites
-40. [GATEPAR](#gatepar) — `/w-codecheck` vs `npm run verify` diverged on the icon gate
-41. [VPHARNESS](#vpharness) — persist the exact-size iframe harness as a script
+3. [WS-DATA-MODEL](#ws-data-model) — role workspaces split CurrentUser-first vs API-first; pick one
+4. [REC-MOBILE](#rec-mobile) — no recommendations surface below `lg` after the rail rehome
+5. [SPACING-4X](#spacing-4x) — sweep for other 4× size artifacts Conv 423 preserved
+6. [A11Y](#a11y) — accessibility lint triage
+7. [RHOOKS](#rhooks) — react-hooks lint triage
+8. [KNIP](#knip) — dead-export oracle → gate
+9. [PROV-SWEEP-DEBT2](#prov-sweep-debt2) — `prov:sweep` gate silently red (10 unregistered)
+10. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
+11. [EDITSAFE](#editsafe) — anchored-edit discipline
+12. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
+13. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
+14. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
+15. [HOME-FIXES](#home-fixes) — Home route fix bucket
+16. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
+17. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
+18. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
+19. [DEVSRV-KILL](#devsrv-kill) — scope dev-server teardown to PID
+20. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
+21. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
+22. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
+23. [RSFD](#rsfd) — port `r-start-from-dirty`
+24. [DEPEXP](#depexp) — dependency-probe hygiene
+25. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
+26. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
+27. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
+28. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
+29. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
+30. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
+31. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
+32. [DEVSRV-STALE](#devsrv-stale) — un-parked: stale/bricked astro dev daemon recurred
+33. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
+34. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
+35. [TLFMT](#tlfmt) — r-end ref documents a TIMELINE.md shape the file no longer uses
+36. [OUTLINE-V4B](#outline-v4b) — 3 residual `outline-none` sites the Conv-244 fix missed
+37. [ADMIN-OVFLW](#admin-ovflw) — 3 admin routes overflow horizontally (pre-existing, not Conv-423)
+38. [LH1](#lh1) — 23 typography tokens hardcode `line-height: 1` (TYPO-FDN axis)
+39. [BRIDGE-RESIZE](#bridge-resize) — `resize_window` silently ignores width
+40. [ICON-STATES](#icon-states) — Phase-5 tail: drive hidden/loading states over 528 call sites
+41. [GATEPAR](#gatepar) — `/w-codecheck` vs `npm run verify` diverged on the icon gate
+42. [VPHARNESS](#vpharness) — persist the exact-size iframe harness as a script
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -341,6 +342,7 @@
 - **📦 §1 BUILD progress (Conv 409–411):** **Tier A+B BUILT (409)** — Tier A cosmetic: M1 hero-compress (`CourseHeader.tsx`, 360→166px) · M5 band-compact + `actionable` links (`CourseJourneyStepper.astro` + `_course-tabs.ts`) · M4 "Peer Teachers" relabel + count-gated search island (`TeachersTabList.tsx`). Tier B shared-primitive (all **opt-in**): M6 `[TAB-SCROLL]` (`SubNav preserveScroll` + script) · M7 `[TAB-FLOAT/COMPACT]` (`SubNavItem dense` — tokenised, no gradient) · M12 `MattCourseFeed` (compact composer + tokenised skeletons). **Tier C M10 + [RECEIPT] BUILT (410):** M10 `[COMM-BAND]` (`communities.logo_url` + reseed + loader join + `CourseHeader` affiliation line; `accent_color`/palette/picker DROPPED) · `[RECEIPT]` (own durable `/receipt/[id]` view, owner-only + printable; M5 Payment step retargeted off `/success`). All 5 gates green + live-verified; prov:sweep unchanged at `[PROV-SWEEP-DEBT2]` baseline. **Tier C M2 `[SESS-TAB]` BUILT (411):** merged curriculum-first Modules tab — IA user-decided (route `/modules`, label "Modules", 2nd position); `ModulesTab.astro` rewritten with the enrolled session overlay + `MySessionsTab.astro` deleted; new `fetchCourseModulesView` loader (reuses positional SoT `resolveModuleAssignments`); `/sessions` 301→`/modules`; session-family hrefs retargeted; 5 gates green (suite **6542**, +3 durable fixture tests) + live-verified on `:4321` against the david-n8n booked-not-completed fixture; prov:sweep unchanged. Code `5ac9493d`. **Tier C M3 `[SESS-FILES]` BUILT (412):** per-module + course-wide file strips folded into the Modules tab — `session_resources.display_order` column (folded into `0001` + reseed; `in_room` NOT adopted), loader `is_public`-gated + `display_order`-ordered with a non-null `href` guard (dead-link defect avoided), `ModulesTab.astro` strips wired to `/api/resources/:id/download` (uploads) / external URL (links), +3 loader tests. 5 gates green (suite **6550**) + live-verified (anon → public-only; enrolled david → 2 uploads under Module 1 ordered 003→001). Fixed a latent Conv-411 `TS2367` in `courses.test.ts:412` inline. Also, on discovering the **Resources tab was a functional regression** (pre-flip `ResourcesTabContent.tsx` rendered files; Conv-188 Matt flip replaced it with an empty stub — DISC-DROP), the user asked for a parity diff → **2 gaps closed** so M3 is a faithful superset: per-file **descriptions** rendered + **role-aware visibility** (`canViewAllFiles` param: creator/admin/moderator see all files unenrolled). Then **retired the Resources tab** — `/resources` 301→`/modules`, removed from `VALID_TABS`/`buildCourseExploreTabs`, orphaned `ResourcesTab.astro` deleted + registry regenerated. **🔴 Fixed a `gen-registries.ts` scanner false-positive** (regex matched `@matt-source <node>` in Avatar's prose → falsely registered a `@matt-inspired` component; reworded prose, prov:sweep back to baseline). **§1 is now 9 of 9 ADAPT built = COMPLETE.** **Remaining:** §2–6 disposition walks (`/courses`, communities, shell track, sessions-files-feature, misc). Detail: `plan/merge-brian/README.md §1 Build logs + Resources-tab decision`.
 - **📦 §3 `/community/*` + `/communities` — DISPOSITIONS DONE **and all 13 buildable mechanisms BUILT** (Conv 426).** Tier A: **N14** `/api/storage/[...key]` (allowlisted public asset server — closes `[THUMB-404]`; live-proved to gate before R2) + **N5** Join/Leave `astro:page-load` rebinding + Leave self-heal (**F4 confirmed live with a hard-load control before fixing**). Tier B: **N16** loader aggregates (visibility-filtered like the Courses tab; review-count-**weighted** rating) · **N11** named `hero` card variant + courses band (tokenised `--Primary-Light`, zero raw hex) · **N12** brand marks on all 3 variants · **N6** 640px left-anchored geometry (measured 640/left-1035) · **N7** search-first `sr-only h1` · **N9** `RoleTabBar variant="pill"` **retaining the Matt role palette** (his build drops it) · **N10** visible labelled compact sort · **N3** "Community Feed" label fix. Tier C: **N1** identity band (**272px→96px**, byline `by X · Public · N members · N posts`, description de-duplicated) · **N4** shared `cover-story` card with `href` attribution override and **no invented journey CTA** · **N13** logo upload endpoint + settings UI (**SVG rejected**; verified end-to-end upload→serve→403-on-non-owner). Suite 6165→**6234** (+69, 5 new test files), 5 gates green, `prov:sweep` at baseline. Remaining: **N8 only**, gated on `[REC-REHOME]`. Detail: `plan/merge-brian/README.md §3`.
 - **📄 Client-facing ledger (Conv 426):** `plan/merge-brian/NOT-ADOPTED.md` — everything of Brian's that is **not** in our app (❌ declined · 🟡 declined-for-now · 🔵 took-the-idea-left-the-build · ⏸️ prerequisite-gated · ⬜ unreviewed), written for a live walkthrough **with him**. Now covers §1–§3 (42 distinct mechanisms: 6 ADOPT · 32 ADAPT · 4 DROP), including a "where his work fixed real defects on our side" section — the thumbnail 404, the Join/Leave dead-button, the mislabelled feed tab and the 224px square. **Standing obligation — README ground rule 9:** every new disposition updates it in the same conv (DROP → §1/§2 · ADAPT's left-behind part → §3 · gated → §4 · finished walk leaves §5). Reasons stated as consequences, never internal shorthand; the user's own verbatim stance stays out of it.
+- **Role-workspace consistency pass** ✅ Conv 428 — assessment of `/creating` vs `/learning` vs `/teaching` (see conv-turns Turn 15 for the full findings table). **Confirmed nothing was lost.** **🔴 One active defect found and fixed, verified live both before and after:** `useCreatorGate` guarded all 5 creator islands but `/teaching` + `/learning` had **no equivalent**, so a signed-in non-teacher hit the dashboard's fetch-error branch — a red *"Teacher access required"* box and a **Retry that can never succeed** — where `/creating` showed a graceful gate. Fixed by generalising to **`useRoleGate(role)`** (creator/teacher/student; ROLE-SEMANTICS Decision A and the stale-cache refresh preserved) + a shared **`RoleGatePanel`** replacing 5 duplicated panels, applied to **all 6 teaching + 2 learning islands** so every URL-reachable tab is gated. `useCreatorGate` kept as a thin wrapper so the 5 incumbent call sites didn't change. Also: shared **`WorkspaceTabNavItem`** (3 identical interfaces → 1), **icon vocabulary fixed** (Sessions was `calendar` on /learning but `videocam` on /teaching where `calendar` meant Availability), and **`/learning` now hosts the S→T progression nudge**, mirroring how /teaching hosts T→C. Finding 3 (three-state gate on all 3 dashboards) turned out to be **satisfied by this work**, not a separate change. 5 gates green, suite 6214→**6217**; lint 0 errors, warnings 156→164 (one per gated island, all the pre-existing `[RHOOKS]` `set-state-in-effect` class).
 - **[CRS-ROLE-DORMANT] + [OVERLAY-ORPHAN]** ✅ Conv 428 — resolved as **rehome 2, delete the rest**, net **−576 lines**. **Rehomed:** `CourseProgressCard` → `/learning`'s `StudentDashboard`, replacing the legacy `EnrollmentCard` it was built to replace back in Conv 222 but had only ever been reachable from the removed role tabs (verified a strict superset first: same status pill, actions and message button, **plus** a progress bar and level/duration/session chips). **Deleted:** `EnrollmentCard` (176), `CourseModerationCard` (62 — moderating is community-scoped, no home exists), `CoursesRoleTabs` (70, zero imports), the four role branches + `SUB_OPTIONS` + `EmptyState` + tab state + hash/`courses:tabchange` wiring in `CoursesCatalog`, the `isAll` collapse branch in `CoursesFilters`, and the `variant="overlay"` blocks on **both** catalog cards (`[OVERLAY-ORPHAN]`, no call site since Conv 427). `useRoleTabs` deliberately kept — `CommunitiesRoleTabs` still imports it. Lint warnings **160→156**; suite 6215→6214.
 - **[CRS-COMM-TABSYM]** ✅ Conv 428 — **accepted the asymmetry, on evidence.** All four `/courses` lenses had other homes (which is why M3 was safe); on `/communities` only "created" does (`/creating` → `CreatorCommunities`), so **member/teaching/moderating have none**. Recorded as a decision so it doesn't later read as drift.
 - **[TDASH-CERTS-DEAD]** ✅ Conv 428 — `certifications` removed from `/api/me/teacher-dashboard` (the `CertificationRow` interface, its query, the `certItems` transform and the returned field). The test that asserted the array now pins its **absence**, so it can't quietly return.
@@ -526,6 +528,15 @@
 - **What:** `docs/as-designed/skills-system.md` (driftCheck) task-lifecycle sections (~311–313 skill-role table, ~503–515 "Task flow" diagram) still describe the **retired TodoWrite/TaskCreate overlay** ("clear TodoWrite", "preserve-then-overlay", "TaskCreate when an item is started") — pre-existing Conv-406 detach drift, surfaced by the r-end docs agent Conv 407. The agent declined a shallow patch (correctly): the fix needs re-grounding against the current r-start/r-commit/r-end SKILL.md bodies + the write-through board model.
 - **Refs:** `docs/as-designed/skills-system.md`, `[TASK-TOOLS-VERIFY]`, `[[feedback_current_tasks_persistence]]`. Surfaced Conv 407.
 
+
+### [WS-DATA-MODEL]
+
+- **State:** 📋 queued · `[Opus]` · architectural decision, deliberately deferred from Conv 428
+- **What:** the three role workspaces source data two different ways. **`/learning`** is **CurrentUser-first** (`StudentDashboard` reads `getEnrollments()` and fetches only upcoming sessions). **`/teaching`** and **`/creating`** are **API-first**, each with one aggregate endpoint (`/api/me/teacher-dashboard`, `/api/me/creator-dashboard`).
+- **Why it needs deciding:** Conv 428's `[ROLE-CRS-LIST]` made `TeacherCertifications` self-source from `useCurrentUser()` *inside* the API-first `TeacherDashboard`, so `/teaching` is now **mixed** — and `[TDASH-CERTS-DEAD]` then deleted the endpoint field it displaced. That direction of travel (also `[REC-REHOME]`: personalization needed no new endpoint) points at CurrentUser-first, but it has never been decided.
+- **Options:** (a) **CurrentUser-first everywhere** — read what `CurrentUser` already carries, fetch only genuine gaps; `/teaching` and `/creating` shed aggregate endpoints · (b) **API-first everywhere** — one endpoint per dashboard, heavy aggregates stay server-side; `/learning` gains an endpoint · (c) codify the mixed model explicitly (identity/collections from CurrentUser, aggregates from an endpoint).
+- **Scope warning:** touches 3 dashboards + 2 endpoints + their tests. Not a consistency-pass item — give it its own conv.
+- **Refs:** `src/components/dashboard/{Student,Teacher,Creator}Dashboard.tsx`, `src/pages/api/me/{teacher,creator}-dashboard.ts`. Surfaced Conv 428.
 
 ### [TASK-TOOLS-VERIFY]
 
