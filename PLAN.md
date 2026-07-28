@@ -120,7 +120,7 @@ Watch-type tasks that span multiple convs without a clear block home. Each lists
 
 - [ ] **[BR-ZERO-REPRO]** Reproduce the 0-min empty-but-published recording state — external-blocked (needs fresh BBB test session). Prereq for [BR-STATUS] enum design (we need to know which post-session states are reachable in practice before fixing the column shape).
 
-- [ ] **[VITE-DEPS-WATCH]** Watch for recurring Vite missing-chunk warnings during `npm run dev` / `npm run dev:staging` — watch-only; act if the warning recurs (i.e., trips dev server hot-reload or build). Carried from Conv 168 RESUME-STATE.
+- [x] **[VITE-DEPS-WATCH]** ✅ **CLOSED Conv 429 — gate fired, cause found, fix known.** Watch for recurring Vite missing-chunk warnings during `npm run dev` / `npm run dev:staging`; act if the warning recurs. It recurred **twice** (Conv 418 `react-chartjs-2`, Conv 420 `astro_compiler-runtime` — the latter taking out `/` itself), and both are the same root cause, now identified as the **stale Vite dep-optimizer cache** variant of `[DEVSRV-STALE]`: a long-running `astro dev` 500s on any route importing a pre-optimized dep after new imports are added across files. **Signature:** the server answers (not `000`) but the route 500s with `The file does not exist at ".../node_modules/.vite/deps_ssr/<dep>.js?v=<hash>"`, while `npm run build` is clean — so it is never a code defect. **Fix:** `npx astro dev stop` → `rm -rf node_modules/.vite` → restart. Documented with the other two brick variants in `memory/reference_devserver_stale_daemon.md`; no standing watch needed. (Carried from Conv 168 RESUME-STATE.)
 
 ---
 
