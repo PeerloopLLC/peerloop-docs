@@ -365,7 +365,7 @@
 ### [MINWIDTH-320]
 
 - **State:** ⏸️ parked · **gate: user say-so** (on hold Conv 369)
-- **What:** lower supported min screen width 375px → 320px (iPhone-SE class). 3 scoped overflow sites: `MembersFilters.tsx` + `CoursesFilters.tsx` filter rows (`min-w-0` or wrap) + Home legacy feed-card action button (`min-w-0`/`flex-wrap`); re-verify at 320px via iframe harness. Optional.
+- **What:** lower supported min screen width 375px → 320px (iPhone-SE class). 3 scoped overflow sites: ~~`CoursesFilters.tsx` filter rows~~ **(✅ cleared Conv 425** — the [MERGE-BRIAN §2 · M5] rewrite's `flex-wrap` + `min-w-[160px] flex-1` search and `overflow-x-auto` pill row measure **0px overflow at 320** in the iframe harness**)** · `MembersFilters.tsx` filter rows (`min-w-0` or wrap) · Home legacy feed-card action button (`min-w-0`/`flex-wrap`). **2 of 3 remain**, both unverified; re-verify at 320px via iframe harness. Optional.
 - **Refs:** `docs/decisions/05-ui-ux-components.md` [MINWIDTH], `memory/reference_responsive_iframe_harness`.
 
 ### [ORPHAN-BACKLOG]
@@ -614,6 +614,13 @@
   `availableSoon` · M6 tokenised flat pills · M7 visible compact sort · M8 opt-in `compact`/`dense`).
   5 gates green, suite **6131 → 6139** (new `CoursesFilters.test.tsx`, 8 tests), live-verified signed
   in and signed out.
+- **Narrow-width sweep of /courses — DONE, 2 defects fixed.** Swept 320/375/640/768/1024/1280 in the
+  `[VPHARNESS]` iframe harness: **zero overflow at every width**, cover reflow and `lg`-gated panel both
+  correct. Fixed (a) the card title cramped at 375 — 128px over 2 lines beside the CTA → CTA stacks below
+  `@xl`, title now 174px on one line, desktop untouched; (b) the sticky toolbar eating **36% of a 375×760
+  phone** (174px + 48 header + 48 bottom nav) → topic pills hidden below `sm` with a Topic select added to
+  the Filters collapse so filtering moves rather than strands; toolbar **174→138px**, chrome 31%. +2 tests
+  pin the responsive intent. Suite **6157**. Also cleared one of `[MINWIDTH-320]`'s three blockers.
 - **§2 self-audit cleanup — both items I introduced, cleared.** (1) The 3 new stamped components
   (`CourseCoverPanel`, `CoursePriceSticker`, `CommunityAffiliation`) were registered in
   `matt-inspired-registry.ts`, taking `prov:sweep` from the 17 issues my work had pushed it to back to

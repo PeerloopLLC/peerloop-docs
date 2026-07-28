@@ -599,9 +599,46 @@ Still outstanding on `/courses`, all pre-existing or gated:
 | M3 role tabs · M4 carousel | gated on `[ROLE-CRS-LIST]` / `[REC-REHOME]` (the latter's destination still undecided — `[FEEDS]` bars Home) |
 | `[COURSES-FIXES]` | holds the Conv-292 sweep deferrals `[FILTERS-RESPONSIVE]` + `[TYPO-REVIEW]`. This conv's compact toolbar plausibly overlaps the first; **not verified, so not claimed** |
 | `[TSLASH]` | names `/courses/` as a duplicate-content risk (site-wide task) |
-| Narrow widths | the cover panel's sub-`@xl` stacked-banner reflow and the wrapped toolbar are **unverified** — everything this conv was measured at 1454px. `[VPHARNESS]` exists for exactly this |
+| Narrow widths | ✅ **DONE (Conv 425)** — swept 320/375/640/768/1024/1280 via the iframe harness; two defects found and fixed. See below |
 
 `/courses` itself remains ☑ Swept (Conv 292) in the route-migration ledger; F1 and F2 are both closed.
+
+### Narrow-width sweep (Conv 425) — `[VPHARNESS]` iframe harness
+
+Swept **320 / 375 / 640 / 768 / 1024 / 1280** in an exact-size same-origin iframe (media queries key off
+the iframe, not the window — `resize_window` cannot set width, `[BRIDGE-RESIZE]`).
+
+**Clean:** zero horizontal overflow at every width including 320 (`scrollWidth === innerWidth`, no
+offenders). The cover reflows correctly — 341×120 stacked banner at 375, 180px side panel once the card
+clears `@xl`. The blue panel is properly `lg`-gated (`display:none` at 1024, 284px at 1280), confirming
+`lg` > 1024 as `StickyListingToolbar`'s own comment states.
+
+**Two defects found and FIXED:**
+
+- 🔴 **Card title cramped at 375.** One-row title+icon+CTA left the title **128px over 2 lines** beside
+  a 125px button. Fixed by stacking below `@xl` — **explicitly** (`flex-col … @xl:flex-row`), not via
+  `flex-wrap`, because flex items shrink before they wrap so the h3 would still have been squeezed.
+  After: title **174px on 1 line**, CTA on its own row. Card grows 333→365px at 375; desktop untouched
+  (193px, single row, verified at 640 + 1280). The client branch reached the same conclusion for its own
+  narrow column ("CourseMiniHeader: CTA wraps to its own row in the narrow feed column").
+- 🟠 **Sticky toolbar ate 36% of a phone.** At 375×760 it pinned **174px**; with the 48px header + 48px
+  bottom nav that was **270px of chrome**, permanently over the catalog. Fixed by hiding the topic pill
+  row below `sm` (it was 28px of the 174) and putting a **Topic select inside the Filters collapse**
+  for phones, so topic filtering is moved rather than stranded — both controls write the same `topic`
+  state. After: toolbar **138px**, chrome 234px (**31%**), catalog 526px. Live-verified at 375 that the
+  select is visible (pill row `display:none`), publishes a real topic id, and that "Clear filters"
+  restores all 6 courses. +2 tests pin the responsive intent so neither half can be deleted alone.
+
+**Bonus — a `[MINWIDTH-320]` blocker appears cleared.** That parked task lists three 320px overflow
+sites, one being `CoursesFilters.tsx` filter rows. At 320 the rewritten bar overflows by **0px** (the
+`flex-wrap` + `min-w-[160px] flex-1` search and `overflow-x-auto` pill row). `MembersFilters` and the
+Home feed-card button are untouched and unverified, so the task stays parked at 2 of 3.
+
+**🟠 Pre-existing copy defect noticed, NOT fixed** (surfaced for a decision): the "all"-tab empty state
+branches on `q` and `availableSoon` only, so narrowing by **topic / level / length** to zero results
+tells the user *"No courses available right now."* — reading as "the platform is empty" rather than
+"your filters matched nothing". Verified pre-existing: the block is at the merge-base `c50afd82` with
+only the `q` branch. The topic pill row makes it easier to reach, which is an argument for fixing it.
 
 ### §2 walk result (Conv 425)
 
