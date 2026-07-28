@@ -2,7 +2,8 @@
 
 React component tests using Vitest and React Testing Library.
 
-**Last Updated:** 2026-07-26 (Conv 419b — [MKTDEAD] dead-marketing purge: **−10 files** deleted with the 56 provably-dead components they covered. Marketing 9→1 files / 389→49 cases (−`AboutPage` 31, `ContactPage` 57, `FaqPage` 40, `ForCreatorsPage` 42, `HowItWorksPage` 34, `PricingPage` 38, `PrivacyPolicyPage` 51, `TermsOfServicePage` 47; **`BecomeATeacherPage` 49 deliberately KEPT** — `/become-a-teacher` is live). Stories 1→0 / 43→0 and Testimonials 1→0 / 53→0, both categories removed. The 14 `/old/*` marketing pages have rendered "Coming soon." stubs for a long time, so the bundler had been tree-shaking these components out — confirmed via sourcemap `sources`, not inferred. Grand total files **89→79**, cases **2,266→1,830**. Also corrected the `**Total:**` line, which had lagged at 88 since the previous Conv-419 entry.)
+**Last Updated:** 2026-07-28 (Conv 425 — MERGE-BRIAN §2 `/courses` catalog: **+3 new files**, all in the Courses category. `courses/CourseCatalogCard.test.tsx` (14 — the new **`cover-story`** variant, named rather than overloading `overlay + context`: shared cover panel + price sticker, description-preferred body with tagline fallback, the sticker proven to be the shared `CoursePriceSticker` and kept `pointer-events-none` so it can't eat the stretched card link, the shared `CommunityAffiliation` line + its no-community null, enrolled journey markers with "Diploma earned" pinned against "Certificate" ([DIPLOMA]) and the CTA left exactly as the host passed it, persistently-underlined link chips, and two cases pinning `stacked`/`overlay` as untouched), `courses/CoursesFilters.test.tsx` (10 — topic pill row incl. the full `FilterState` contract his pivot nulled, Level/Length still reachable behind the Filters toggle, the `hidden sm:flex` pill row and `sm:hidden` collapse select writing the same topic state so neither half can be deleted alone, visible labelled sort, role-tab collapse-to-search) and `courses/CoursesCatalog.test.tsx` (8 — empty-state copy keyed off the `courses.length === 0` invariant so no future filter can re-open the "platform is empty" bug: filter-blame for topic/level/length, precise search-only + availableSoon messages, filter message preferred when a query *and* an attribute filter are both set). Courses 2→5 files / 23→55 cases. Grand total files **79→82**, cases **1,830→1,862**.)
+**Prev:** 2026-07-26 (Conv 419b — [MKTDEAD] dead-marketing purge: **−10 files** deleted with the 56 provably-dead components they covered. Marketing 9→1 files / 389→49 cases (−`AboutPage` 31, `ContactPage` 57, `FaqPage` 40, `ForCreatorsPage` 42, `HowItWorksPage` 34, `PricingPage` 38, `PrivacyPolicyPage` 51, `TermsOfServicePage` 47; **`BecomeATeacherPage` 49 deliberately KEPT** — `/become-a-teacher` is live). Stories 1→0 / 43→0 and Testimonials 1→0 / 53→0, both categories removed. The 14 `/old/*` marketing pages have rendered "Coming soon." stubs for a long time, so the bundler had been tree-shaking these components out — confirmed via sourcemap `sources`, not inferred. Grand total files **89→79**, cases **2,266→1,830**. Also corrected the `**Total:**` line, which had lagged at 88 since the previous Conv-419 entry.)
 **Prev:** 2026-07-26 (Conv 419 — [MSG-ADOPT-B]/[COURSETAB-HASH]: `messages/MessageUserButton.test.tsx` grew **21→24** in place (+3 for `icon` widening to `string | ReactNode` — a node renders verbatim with no MattIcon substituted, a string still resolves to a MattIcon, and the node carries onto the signed-out anchor; needed because the 3 profile-header `Button` sites sit in a row of siblings carrying 16px `ui/icons` glyphs). +1 **new** file `useRoleTabs.test.ts` (6 — the `ready` gate that fixed the `/courses#student` deep link, the same three-state bootstrap race as [MSGBOOT]; 3 of the 6 fail if the gate is reverted). Messages 25→28 cases; new root-level entry. Grand total files **88→89**, cases **2,257→2,266**.)
 **Prev:** 2026-07-26 (Conv 418 — [MSG-ICON]/[MSG-ADOPT-A]: `messages/MessageUserButton.test.tsx` grew **11→21** in place (+5 for the `appearance="bare"` icon trigger — a bare `<button>` rendering the call site's own icon as children with `className` passed through and a required `title`, deliberately not the `Button` primitive; +5 for `signedIn` becoming optional and resolving from `useAuthStatus()` when omitted, with an explicit prop still winning). Messages 15→25 cases, files unchanged (2). Grand total files **88** (unchanged), cases **2,247→2,257**. No new component test files.)
 **Prev:** 2026-07-26 (Conv 417 — [MSG-INPLACE]/[MSG-EXIT]: +1 **new** file `messages/MessageUserButton.test.tsx` (11 — the in-place composer island: button-not-link when signed in, `/messages?to=` anchor fallback when signed out, recipient preselected on open, POST → close → toast with no navigation, the discard guard's cancel/confirm/nothing-typed paths, the opt-in "Open in Messages" exit + its typed-draft guard, error toast on a failed POST, and one case pinning the exit as opt-**out** on the `/messages` mount) → Messages 1→2 files / 4→15. Grand total files **87→88**, cases **2,236→2,247**.)
@@ -18,7 +19,7 @@ React component tests using Vitest and React Testing Library.
 **Prev:** 2026-06-26 (Conv 339 — [SESSHIST]/[OLD-PORTED-CLEANUP] retired `teaching/SessionHistory.test.tsx` (42) and added `teaching/TeacherSessionsList.test.tsx` (32); Teaching cases 154→144, file count unchanged (4).)
 **Prev:** 2026-06-15 (Conv 286 — two changes: [TESTCOMP-DRIFT] reconciled the doc against on-disk via a verified `vitest run` (removed stale `booking/SessionJoinableView.test.tsx`; corrected 5 drifted per-file counts: SessionBooking 32→31, EnrollButton 13→17, CreatorTeacherList 21→18, Messages 19→17, ModeratorQueue 61→59), then [NUDGE-TC-V2] added a new Progression category `progression/ProgressionNudge.test.tsx` (15). Net: 93→95 files / 2,262→2,498 cases.)
 
-**Total:** 79 test files
+**Total:** 82 test files
 
 ---
 
@@ -127,10 +128,13 @@ All components use mocked API responses via `vi.mock()`.
 
 ---
 
-## Course Components (2 files)
+## Course Components (5 files)
 
 | Component | Test File | Tests |
 |-----------|-----------|:-----:|
+| CourseCatalogCard | `tests/components/courses/CourseCatalogCard.test.tsx` | 14 |
+| CoursesCatalog | `tests/components/courses/CoursesCatalog.test.tsx` | 8 |
+| CoursesFilters | `tests/components/courses/CoursesFilters.test.tsx` | 10 |
 | EnrollButton | `tests/components/courses/EnrollButton.test.tsx` | 17 |
 | MilestoneComposer | `tests/components/course/MilestoneComposer.test.tsx` | 6 |
 
@@ -293,7 +297,7 @@ The other 8 files here were deleted in Conv 419 ([MKTDEAD]) along with the `src/
 | Auth | 1 | 11 |
 | Booking | 4 | 108 |
 | Community | 8 | 102 |
-| Courses | 2 | 23 |
+| Courses | 5 | 55 |
 | Creator | 2 | 56 |
 | Entity | 1 | 5 |
 | Explore | 1 | 37 |
@@ -312,7 +316,7 @@ The other 8 files here were deleted in Conv 419 ([MKTDEAD]) along with the `src/
 | Teaching | 4 | 146 |
 | UI | 2 | 10 |
 | Shared hooks | 1 | 6 |
-| **Total** | **79** | **1,830** |
+| **Total** | **82** | **1,862** |
 
 ---
 

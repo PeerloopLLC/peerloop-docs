@@ -27,13 +27,16 @@ Neither page is "wrong" in isolation; there is simply nothing reconciling them. 
 | Surface | Container | Content width | Outer gutter | Utility column | Source |
 |---|---|---|---|---|---|
 | **AppLayout** (`<main>`) | flex, no inner cap | `flex-1` → **fluid / full-bleed** | `px-16` (16px), `pt-[88px] pb-[96px]` | — | `src/layouts/AppLayout.astro` |
-| **Listing pages** (`/courses`, `/communities`, `/members`) | `ListingShell` | **640px** centered column | inherits AppLayout 16px | **per-user mode (Conv 357):** side-rail → **left** 320px sticky panel, `#eff6ff` bg; top-bar (default) → **none** — filters inline, pinned via `StickyListingToolbar` | `src/components/layout/ListingShell.astro` (CD-039 / LIST-1COL, Conv 284; Phase D, Conv 357) |
+| **Listing pages** (`/communities`, `/members` — **not `/courses`, see the Conv-425 note**) | `ListingShell` | **640px** centered column | inherits AppLayout 16px | **per-user mode (Conv 357):** side-rail → **left** 320px sticky panel, `#eff6ff` bg; top-bar (default) → **none** — filters inline, pinned via `StickyListingToolbar` | `src/components/layout/ListingShell.astro` (CD-039 / LIST-1COL, Conv 284; Phase D, Conv 357) |
+| **`/courses`** (Conv 425) | bespoke, mirrors `index.astro` | **640px** column anchored **LEFT** (not centered) | inherits AppLayout 16px | `#eff6ff` panel `flex-1` on the **RIGHT** at ≥lg; filters inline, pinned via `StickyListingToolbar dense` | `src/pages/courses.astro` ([MERGE-BRIAN §2 · M1/M16]) |
 | **Detail pages** (`/course/[slug]`, `/community/[slug]`, `/profile`) | raw AppLayout slot | **fluid** (~1230px) | inherits AppLayout 16px | **per-user mode:** side-rail → **left** 196px `SubNav` rail; top-bar (default) → horizontal `SubNav` tab strip (opt-in `sticky`, optional merged `action` CTA) | page in `src/pages/course/[slug]`, … |
 | **~80 other non-listing pages** | raw AppLayout slot | **fluid** (no cap) | inherits AppLayout 16px | varies / none | various |
 
 **Key observation:** only *listing* pages have a disciplined container. Everything else inherits AppLayout's uncapped `flex-1`. `ListingShell`'s 640px is a **local CD-039 decision with no Matt basis** — it was invented to stop cards stretching, not extracted from a spec.
 
 > **Drift note (Conv 357).** Earlier revisions of this table showed the listing utility column as a **right** 320px rail. The filters moved **left** in Conv 289 (§8.5.3), and Conv 357 made the rail the **side-rail mode only** — the per-user default (top-bar) has no rail at all (single column, filters inline). The rows above now reflect both; the mode detail is in §8.5.3 and §8.6.
+>
+> **Drift note (Conv 425) — `/courses` left the `ListingShell` family.** `[MERGE-BRIAN §2 · M1]` replaced its centered `ListingShell` column with Home's bespoke geometry: a 640px column anchored **LEFT** with the `#eff6ff` panel flex-growing to fill the space on its **right** (the mirror image of `ListingShell`'s fixed-panel + growing-list model, and the same inversion `index.astro` has used since Conv 298). The motivation was the dead left gutter the centered column left at wide viewports. Two consequences for this guide: `/courses` no longer branches on `Astro.locals.navLayout` at all (the rail mode and its duplicate filter island are gone from that page — §8.5.3 and §8.6 still hold for `/communities` and `/members`), and the panel is a **kept** surface, since `[MERGE-BRIAN §2 · M16]` explicitly declined the client branch's site-wide deletion of it. `ListingShell` itself is unchanged and still serves `/communities`, `/members` and `index`.
 
 ---
 
@@ -243,6 +246,8 @@ The **entity hero is full-bleed** — it spans the full content-area width, brea
 #### 8.5.7 The H1/H2 consistency fix (independent, do anytime)
 
 Promote `/courses` "Browse Courses" from `H2` → `H1` (detail pages already use `H1` in the hero). Closes the semantics inconsistency and the `E2E-MIG` browse-heading flag. Not container-dependent.
+
+**Update (Conv 425).** The `H1` survives but is no longer *visible*: `[MERGE-BRIAN §2 · M2]` made `/courses` search-first, so the "Browse Courses" heading and its description came out and the page keeps an `<h1 class="sr-only">Courses</h1>` (mirroring `index.astro`, which has done the same since Conv 298). The semantics this section fixed are therefore intact — one `H1` per page, matching the detail hero — but do not expect to see it rendered.
 
 ---
 

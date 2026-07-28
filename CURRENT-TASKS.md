@@ -433,7 +433,7 @@
 
 ### [REC-REHOME]
 
-- **State:** 📋 queued · gate-prerequisite for MERGE-BRIAN §2 M4
+- **State:** 📋 queued · `[Opus]` · gate-prerequisite for MERGE-BRIAN §2 M4
 - **What:** give personalized **course recommendations** a home outside `/courses`, so the "Popular Courses" carousel can leave that page.
 - **Why:** Conv 425 §2 disposition walk found `/courses` is the **only** consumer of `RecommendedCourses` — hiding it there (his `[CRS-POPULAR-OFF]`) retires the surface site-wide and strands `/api/recommendations/courses` with no caller.
 - **🔴 Target undecided:** Home is the obvious candidate, but `[FEEDS]` (Conv 267, `memory/project_feeds_hub.md`) explicitly bars re-adding panel surfaces (FeedsHub / ActionCards / TriageStrip) to `/`. Decide the destination before building. `RecommendedCommunities` has the same shape on `/communities` — check whether §3 wants the two solved together.
@@ -460,7 +460,7 @@
 
 ### [ROLE-CRS-LIST]
 
-- **State:** 📋 queued · gate-prerequisite for MERGE-BRIAN §2 M3
+- **State:** 📋 queued · `[Opus]` · gate-prerequisite for MERGE-BRIAN §2 M3
 - **What:** give the **teaching** and **moderating** role lenses their own course lists, so `/courses` role tabs can be retired.
 - **Why:** Conv 425 §2 disposition walk found `/courses#teaching` is today the **only** list of the courses a teacher teaches — `/teaching/[...tab].astro`'s own route comment states "There is no courses LIST page, so bare `/teaching/courses` is an unknown tab → redirects to `/teaching`", and `TeacherDashboard` groups *students* by course without ever listing courses. Same shape for `#moderating`. `/learning` already covers the student lens.
 - **Blocks:** MERGE-BRIAN §2 **M3 `[CRS-ROLE-TABS-OFF]`** — dispositioned *ADAPT — hide only after rehoming*.

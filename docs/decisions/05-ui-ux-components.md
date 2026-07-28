@@ -3,6 +3,94 @@
 
 ## 5. UI/UX & Components
 
+### MERGE-BRIAN §2 — /courses Client-Branch Dispositions: 3 ADOPT, 12 ADAPT, 1 DROP (Conv 425)
+**Date:** 2026-07-28 (Conv 425)
+
+All 16 mechanisms on the client branch's `/courses` pivot were inventoried and dispositioned individually — in four batches of four — **before** any build, following the Conv-408 §1 working order. Outcome **3 ADOPT · 12 ADAPT · 1 DROP**: no mechanism adopted with raw hexes, and his site-wide deletion of the "More coming soon" panel explicitly not adopted (kept, and extended to `/courses`). Rejected: adopting his `/courses` work broadly then trimming; deferring §2. Ours was verified **byte-identical to the merge-base** on all four core files first, so nothing had been silently absorbed.
+
+**Rationale:** Dispositioning before building is what stops a cosmetic pivot quietly dragging schema or shell changes along. The adapt-heavy split reflects real divergences rather than reluctance — our tokens, our `[DIPLOMA]` vocabulary, our `availableSoon` `[CAF]` filter, our Conv-413 hero.
+
+**Consequences:** 14 mechanisms buildable and all built this conv (Tiers A/B/C + the narrowed M10); M3 and M4 gated on new prerequisite tasks rather than dropped. Two inventory premises were caught wrong mid-build and corrected before they propagated (M11's "reuse `CommunityBand`" — no such component; M14's "11 call sites" — 4 real consumers).
+
+**See:** `plan/merge-brian/README.md` §2; `docs/sessions/2026-07/20260728_0449 Decisions.md` §1, Learnings §§2, 3; Conv 425.
+
+### [ROLE-CRS-LIST] and [REC-REHOME] — Brian's /courses Removals Are Gated on Rehoming, Not Adopted (MERGE-BRIAN §2 M3/M4, Conv 425)
+**Date:** 2026-07-28 (Conv 425)
+
+The client branch hides the `/courses` role tabs (M3) and the "Popular Courses" carousel (M4). Both dispositioned **"ADAPT — hide only after rehoming"**, with `[ROLE-CRS-LIST]` and `[REC-REHOME]` created as explicit prerequisite tasks. Rejected: hiding both now as he did; keeping both indefinitely.
+
+**Rationale:** Verified rather than assumed, and both checks changed the answer. `/teaching` has **no courses-list page** (its own route comment says so; `TeacherDashboard` groups students by course but never lists courses), so `/courses#teaching` is the only list of a teacher's courses. And `/courses` is the **only** consumer of `RecommendedCourses`, so hiding the carousel retires course recommendations site-wide and strands `/api/recommendations/courses`. Each removal would have been a silent functional loss.
+
+**Consequences:** Two new queued tasks; `[REC-REHOME]`'s destination is still open because `[FEEDS]` (Conv 267) bars re-adding panel surfaces to Home.
+
+**See:** `plan/merge-brian/README.md` §2 (M3, M4), `CURRENT-TASKS.md`; `docs/sessions/2026-07/20260728_0449 Decisions.md` §2; Conv 425.
+
+### M10 Narrowed to a Shared `CoursePriceSticker` — the Cover Panel Cannot Be Shared With the Dark Hero (MERGE-BRIAN §2, Conv 425)
+**Date:** 2026-07-28 (Conv 425)
+
+The disposition "ADAPT — share the cover panel, keep our hero" proved **unbuildable as written** and was re-asked rather than guessed. Narrowed to: extract `CoursePriceSticker` from `CourseCoverPanel`, have the hero render it at the same `top:12/right:12` offsets (gated on `!isEnrolled`), and drop the now-duplicated price from the hero CTA. Rejected: the full share (hero becomes cover-left, retiring the dark Matt hero and reworking Conv-413 `[HERO]`); dropping M10 entirely.
+
+**Rationale:** Our hero renders course art as a full-bleed dark backdrop with white text over a scrim — there is no cover panel to share, and adding one removes the dark ground its text depends on, turning the hero into the card, which is the option the walk had already declined. Extracting rather than duplicating makes "the two surfaces show the same sticker" true by construction.
+
+**Consequences:** Hero unchanged at 198px; `$249` appears exactly once. Establishes the conv's **extract-to-share, not copy-to-match** pattern, also applied to `CommunityAffiliation`.
+
+**See:** `src/components/courses/CoursePriceSticker.tsx`, `CourseCoverPanel.tsx`, `src/components/entity/CourseHeader.tsx`; `docs/sessions/2026-07/20260728_0449 Decisions.md` §3, Learnings §5; Conv 425.
+
+### The Catalog Card Ships Journey **Markers**, Not a Journey CTA — a Client-Side Snapshot Cannot See Sessions (MERGE-BRIAN §2 M12, Conv 425)
+**Date:** 2026-07-28 (Conv 425)
+
+His enrolled-viewer card recomputes a next-step CTA from the client-side enrollment snapshot. Adopted as **badge + own-progress meta only**; the CTA is left exactly as the host passes it. Rejected: full journey mode including the CTA (would need per-course journey state in the catalog loader — N-per-course SSR); no journey mode at all.
+
+**Rationale:** `buildCoursePrimaryCta` resolves an upcoming session to "Go to Session N" *before* offering booking, and the client snapshot cannot see sessions — so his version would read "Book next session" on the catalog and "Go to Session 3" on the detail page for the same course. His "Certificate earned" string also violates `[DIPLOMA]` (a completion is a **Diploma**, never a certificate).
+
+**Consequences:** Card and detail page can never disagree; progress reads "Diploma earned"; three tests pin the divergences from his branch.
+
+**See:** `src/components/courses/CourseCatalogCard.tsx`, `tests/components/courses/CourseCatalogCard.test.tsx`; `docs/sessions/2026-07/20260728_0449 Decisions.md` §4; Conv 425.
+
+### [FORMS-CHROME] `Input` Joins `Select` in Stripping the `@tailwindcss/forms` Chrome — Fixed Site-Wide, Not Scoped to `compact` (Conv 425)
+**Date:** 2026-07-28 (Conv 425)
+
+`@tailwindcss/forms` is active; `Select` stripped its chrome in Conv 223 `[DRV-C]` but `Input` never got the twin, so the wrapper's border + `px-16 py-12` sat **outside** an inner `<input>` carrying its own 1px border and 8px/12px padding — a visible box-in-a-box on every form. Fixed in both primitives properly. Rejected: scoping the strip to the new `compact` variant only (leaves the defect at default size); shipping `compact` at 49px.
+
+**Rationale:** It follows an established codebase pattern rather than being a novel call, and the alternatives left a latent site-wide defect in place while making a new prop unable to do what it says — `compact` measured 49px where ~34px was intended, blocked by an unrelated defect.
+
+**Consequences:** Compact controls **34px**; default **46px** and consistent across both primitives for the first time (previously 59 vs 56). Search 49→34px, sort 44→34px, the `/courses` toolbar 94→79px. `/login` and `/communities` re-verified untouched.
+
+**See:** `src/components/form/Input.tsx`, `src/components/form/Select.tsx`; `docs/sessions/2026-07/20260728_0449 Decisions.md` §5, Learnings §11; Conv 425.
+
+### `formatPrice` Drops Forced Decimals for All Consumers; `formatPriceExact` Carved Out for Financial Documents (Conv 425)
+**Date:** 2026-07-28 (Conv 425)
+
+The catalog rendered `$249.00` while the detail hero one click away rendered `$249`. Fixed at the shared helper — `minimumFractionDigits: 0` on `formatPrice` in `src/lib/db/types.ts` — plus a new **`formatPriceExact`** used by `/receipt/[id]`. Rejected: a local override in the catalog only (3 other consumers stay inconsistent); leaving the split.
+
+**Rationale:** Consumer analysis (not the grep count) showed **4 real consumers**, three of them browse/CTA surfaces where matching the hero is the point, and one a financial document stating an amount actually charged — where dropping cents reads as sloppy. The grep said 11 files; 6 of them define their own local `formatPrice` and never import the shared one, which is why an admin test asserting `$199.00` kept passing.
+
+**Consequences:** Catalog and hero agree; receipts keep their cents; the carve-out is deliberate and narrow. Method note: for "who consumes X?", check for shadowed local definitions — a filename grep counts *mentions*, not consumers.
+
+**See:** `src/lib/db/types.ts`, `src/pages/receipt/[id].astro`; `docs/sessions/2026-07/20260728_0449 Decisions.md` §6, Learnings §2; Conv 425.
+
+### Topic Pills Hide Below `sm` and Return as a `Select` in the Filters Collapse — Move the Control, Never Strand It (Conv 425)
+**Date:** 2026-07-28 (Conv 425)
+
+The `/courses` sticky toolbar measured 174px at 375×760 — **36% of the viewport** once the 48px header and 48px bottom nav are counted. The topic pill row becomes `hidden sm:flex`, and a Topic `Select` appears inside the Filters collapse as `sm:hidden`; both write the same state. Rejected: unpinning the pill row below `lg`; leaving it and logging a follow-up; trimming the whole toolbar.
+
+**Rationale:** Recovers the full row height without stranding topic filtering on phones — the exact failure mode this conv rejected twice already (M3, M4). Two tests pin the responsive intent so neither half can be deleted alone.
+
+**Consequences:** Toolbar 174→138px, chrome 31%, catalog 526px; topic filtering verified working via the select at 375. Companion fix from the same 320→1280 sweep: the card title row stacks its CTA below `@xl` (`flex-col … @xl:flex-row` — `flex-wrap` cannot do this, since flex items shrink before they wrap). **Zero horizontal overflow at every swept width including 320**, clearing one of `[MINWIDTH-320]`'s three blockers.
+
+**See:** `src/components/courses/CoursesFilters.tsx`, `src/components/courses/CourseCatalogCard.tsx`; `docs/sessions/2026-07/20260728_0449 Decisions.md` §7, Learnings §6; Conv 425.
+
+### Empty-State Copy Keys Off the `courses.length === 0` Invariant, Not a List of Filter Flags (Conv 425)
+**Date:** 2026-07-28 (Conv 425)
+
+`/courses` announced "No courses available right now." — claiming an empty platform — whenever topic/level/length narrowed to zero, because the condition enumerated only `q` and `availableSoon`. Rewritten against the invariant: with no filters applied `allVisible` is just `courses` re-sorted, so **`courses.length === 0` is the only genuine nothing-published case**. Filter-empty now reads "No courses match your filters — try removing one."; search-only and the `availableSoon` sentence stay precise; a query **plus** an attribute filter yields the filter message, because the search-only copy would mislead. Rejected: fixing the four role tabs too; adding a "Clear filters" button.
+
+**Rationale:** Enumerating filter flags means every new filter silently re-opens the bug; keying off the invariant makes the platform-empty message unreachable by any filter, present or future. The role tabs are dispositioned for retirement once `[ROLE-CRS-LIST]` lands (so fixing them may be wasted), and a "Clear filters" control already sits on screen in every filtered-empty case — the copy can point at it without duplicating it.
+
+**Consequences:** New `tests/components/courses/CoursesCatalog.test.tsx` (8 tests). The role-tab `sub`-filter variant — a stronger false claim ("You haven't enrolled in any courses yet" while enrolments exist, 4 sites) — is logged to `[COURSES-FIXES]` with file/line refs rather than left as folklore.
+
+**See:** `src/components/courses/CoursesCatalog.tsx`, `tests/components/courses/CoursesCatalog.test.tsx`; `docs/sessions/2026-07/20260728_0449 Decisions.md` §8, Learnings §10; Conv 425.
+
 ### [ICON-TOK] The 98 `ui/icons.tsx` Size Defaults Are **Kept** as the Fallback but **Excluded From the Residue Denominator** — 0 of 395 Resolved Usages Rely on One (Conv 424)
 **Date:** 2026-07-27 (Conv 424)
 
