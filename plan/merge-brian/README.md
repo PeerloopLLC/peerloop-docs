@@ -44,7 +44,7 @@
 | 2 | `/courses` catalog | ✅ **COMPLETE — all 16 of 16 built (M3 closed Conv 428)** — 16 mechanisms: 3 ADOPT · 12 ADAPT · 1 DROP. **All 14 buildable ones built** — M1 M2 M15 M16 (shell) · M5 M6 M7 M8 (toolbar) · M9 M10 M11 M12 M13 M14 (card + hero sticker). **Findings F1** (pre-existing site-wide doubled form chrome, measured and fixed) **and F2** (catalog/detail price split, fixed at the shared helper + a `formatPriceExact` receipt carve-out) **both closed**. M10's disposition proved unbuildable as written and was re-decided by the user as *price sticker only*. Also this conv: a self-audit restoring `prov:sweep` to its 11-issue baseline + removing a stranded `context="catalog"` path, a **narrow-width sweep 320→1280** (zero overflow; two mobile defects fixed; 1 of `[MINWIDTH-320]`'s 3 blockers cleared) and the invariant-keyed empty-state copy fix. 5 gates green (suite 6131 → **6165**, +34 tests / 3 new files), everything live-verified. **§2 is now COMPLETE except M3** — M4 shipped in Conv 427 when `[REC-REHOME]` was decided and built (rails-backed right-rail lanes; `/api/recommendations/courses` deleted). M3 stays gated on `[ROLE-CRS-LIST]` |
 | 3 | `/community/[slug]` + `/communities` (+`[COMM-BRAND]` feature decision) | ✅ **COMPLETE for everything buildable (Conv 426)** — 20 files censused, **16 mechanisms (N1–N16)**: **2 ADOPT · 12 ADAPT · 2 DROP** (both DROPs carried from earlier walks). **All 13 buildable ones BUILT** across three tiers — A: N14 storage route + N5 Join/Leave rebinding · B: N16 aggregates, N11 hero card, N12 marks, N6 640px geometry, N7 search-first, N9 role pills, N10 compact sort, N3 label · C: N1 identity band, N4 shared course card, N13 logo upload + settings UI. **All 3 findings closed:** **F3** (course-thumbnail uploads 404 — pre-existing, no `/api/storage/` route) **FIXED by N14** and live-proved to gate before R2 · **F4** (Join/Leave dead on client-side nav) **CONFIRMED live with a control, then FIXED by N5** · **F5** (224px header square, 320×224 thumb — a Conv-423-preserved `[DEMO-HOME]` 4× artifact) **superseded** by N1 (band now 96px) and N4. **§3 is now COMPLETE** — N8 shipped in Conv 427 with §2 M4, both discharged by the one `[REC-REHOME]` decision. Divergences pinned by tests: role pills KEEP the Matt palette (N9); no invented journey CTA (N4); SVG rejected (N13); visibility-filtered + weighted aggregates (N16). 5 gates green, suite 6165→**6234** (+69), `prov:sweep` at baseline |
 | 4 | **Site-wide shell track** (`[BACK-X]` back-nav, `SubNav`/`SubNavItem`, `Sidebar`, forms, `AppLayout`) | ✅ **COMPLETE (Conv 428)** — 11 files censused, **7 already dispositioned by §1–§3**, leaving 4 live mechanisms: **1 ADAPT · 1 ADOPT · 2 DROP**. `[BACK-X]` → keep breadcrumbs, drop the back button (its handler is literally `history.back()`, desktop-only where browser Back is always visible), keep the sticky title as new `StickyViewTitle.astro` on `/session/[id]`. `[FEED-WIDTH]` → DROP re-affirmed (geometry + rails stand or fall together; rails on a course workspace cut against the ≥75% completion metric). Sidebar "My Courses" → DROP (collides with `/courses`). "Peer Teachers" → ADOPT, finishing the half-applied relabel across 9 sites. See the §4 build log |
-| 5 | Sessions-files feature (`0006` + storage API) — adopt/reject as a feature | ⬜ — **smaller than this row implies:** `session_resources` + `display_order` already landed in `0001` (§1 M3, Conv 412) and `/api/storage/[...key].ts` already exists (§3 N14, Conv 426), both files this unit was scoped to cover. Residue = the session-room slice (`session/[id].astro` in-room files, `in_room` explicitly not adopted Conv 412), the `api/sessions/index.ts` edits, and his demo content |
+| 5 | Sessions-files feature (`0006` + storage API) — adopt/reject as a feature | ✅ **COMPLETE (Conv 428)** — **the feature question was already answered**: `display_order` ADOPTED (§1 M3), `in_room` DROPPED (§1), `/api/storage/[...key]` ADOPTED (§3 N14), and `api/sessions/index.ts` turned out to be **teacher switching mis-filed here**, already declined (our 403 verified still enforced). Real residue = 4 items, 3 of them course-chrome not files: **1 ADAPT · 3 DROP** — demo binaries DROP (repo is client-shared; `[R2-SEED]` covers it), `CourseMiniHeader` DROP, sticky rail DROP (mutually exclusive with §4's title bar), journey band **below** tabs ADAPT (fixes our own course-vs-session inconsistency). See the §5 build log |
 | 6 | Misc ("Peer Teachers" relabel, `SessionBooking`, workspace touches) | ⬜ — **the relabel is half-applied:** landed on the 5 course surfaces (§1 M4) but `AdminDashboard.tsx:74`/`:423` + `api/admin/analytics/users.ts:242` still read bare `Teachers`. Finish-or-reject is this unit's call (leaving it may be defensible under `[ADMIN-CONF-POLICY]`) |
 
 **Disposition vocabulary:** **ADOPT** (reimplement the intent as-is) · **ADAPT** (take the idea, different mechanism) · **DROP** (with one-line reason; called REJECT before Conv 408 — the user's term is DROP) — recorded per change in each screen section, then implemented cosmetic-first; internal deps (schema/API) surface via the screens that need them.
@@ -1094,7 +1094,41 @@ lint 0 errors (160 pre-existing warnings); `prov:sweep` at its 11-issue baseline
 
 ## 5 · Sessions-files feature decision
 
-_(pending)_
+✅ **Walk COMPLETE + BUILT (Conv 428).** **The feature question was already answered** — every component
+of "sessions files" had been dispositioned in an earlier walk, and one file the route-impact map filed
+here isn't a files change at all. Verified against our tree, not inferred:
+
+| Component | Status | Verified how |
+|---|---|---|
+| `0006` → `display_order` | **ADOPTED** (§1 M3, Conv 412) | present in `migrations/0001_schema.sql`'s `session_resources`, with an inline note recording the `in_room` decision |
+| `0006` → `in_room` | **DROPPED** (§1; ledger §1) | appears in our tree only inside two comments — never as a column or field |
+| `api/storage/[...key].ts` | **ADOPTED** (§3 N14, Conv 426) | route exists |
+| `api/sessions/index.ts` | **DROPPED — and mis-filed.** Not a files change: it removes the "teacher does not match your enrollment" 403 and re-assigns `enrollments.assigned_teacher_id` on every booking. That is the **teacher-switching** mechanism, already declined | our 403 is still enforced at `src/pages/api/sessions/index.ts` |
+| `public/docs/vibe-coding-101/*` | **P1 below** | 6 binaries on his side; we have no `public/docs` |
+| `session/[id].astro` | **P2–P4 below** — course-chrome parity, not files | — |
+
+### Dispositions
+
+| # | Mechanism | Disposition | Reasoning |
+|---|---|---|---|
+| P1 | 6 committed demo documents (`.pptx` `.pdf` `.docx` `.gif` `.jpg`) under `public/docs/` | **DROP** | No binaries in git — the code repo is **shared with the client**, and Conv 415 `[R2-SEED]` deliberately built type-appropriate placeholder-blob seeding to avoid exactly this. Real demo content can be pushed to local/staging R2 without committing it |
+| P2 | `CourseMiniHeader` identity box on the session page | **DROP** | The session page's job is the video room. `StickyViewTitle` (§4 S1, same conv) already names the course in **52px**; a ~198px identity header would push the room down for chrome we just solved more cheaply. We also have no `CourseMiniHeader` — it would be a net-new component |
+| P3 | `sticky` on the session page's `CourseRail` | **DROP** | Mutually exclusive with §4's `StickyViewTitle` by the rule §4 set (use the title row only on deep pages with **no** sticky strip). Adopting P3 would strip the title bar of its one host; stacking both costs ~120px of pinned chrome, which is what the Conv-359 note warns against. Rail stays `static` |
+| P4 | Journey band **below** the tab strip (`[HDR-ABOVE-TABS]`) | **ADAPT** | Not really an adoption — a fix to our own inconsistency. Our `/course/[slug]` already renders the stepper in the **default** slot, which `AppLayout` places after `sub-nav`, so the course page reads tabs-then-band. The session page put it in `entity-header` (above), making it the odd one out. His change fixes the same divergence |
+
+### Build log — §5 (Conv 428, all 5 gates green + live-verified)
+
+Only P4 required code: `CourseJourneyStepper` moved out of `slot="entity-header"` into the default
+slot on `src/pages/session/[id].astro`, with `class="mb-16"` matching the course page's spacing.
+
+**Live-verified** on `/session/ses-sarah-ai-1` — document order is now sticky title (y=16) → tab rail
+(y=112) → journey band (y=181), i.e. band **below** tabs; `CourseRail` computed `position: static`
+(P3 DROP honoured); no `CourseMiniHeader` in the DOM (P2 DROP honoured).
+
+5 gates green; suite **6215** unchanged; lint 0 errors; `prov:sweep` at baseline.
+
+**§5 result: 1 ADAPT · 3 DROP**, plus four components confirmed already-decided. Remaining
+MERGE-BRIAN work = **§6 only**.
 
 ## 6 · Misc review
 

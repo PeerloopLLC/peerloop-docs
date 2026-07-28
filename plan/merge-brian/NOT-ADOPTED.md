@@ -7,13 +7,15 @@ through with him directly.
 
 - **Review target:** pivot snapshot `8a1e677f` (tip of `origin/brian-July-7`, 07-20 11:29) — the point
   he and the user agreed to review from. His later `brian-July-20` exploration is out of scope.
-- **Decided so far:** 42 distinct mechanisms across 3 of 6 screens — **5 taken as-is · 33 taken in
-  part · 4 declined**. Screens 4–6 are not reviewed yet, so nothing on them is decided either way.
-- **As of:** Conv 427 (2026-07-28). **Living document — updated as each screen walk completes.**
-- **Since Conv 426:** the two deferred recommendation-carousel items moved out of "blocked" — the
-  recommendations were rehomed and both carousels are now gone from the listing columns, so his goal
-  there is met (see §3, *Recommendations on `/courses` and `/communities`*). The counts above are
-  unchanged: no new mechanism of his was decided, an existing agreement was simply unblocked.
+- **Decided so far:** **5 of the 6 review areas are complete** — the course page, the courses
+  catalogue, communities, the site-wide shell and the sessions-files feature. Only the "misc" area is
+  still unreviewed. This document now holds **19 entries**: 4 declined outright, 7 declined for now
+  (open to his case), and 8 where we took the idea but not the whole build.
+- **As of:** Conv 428 (2026-07-28). **Living document — updated as each screen walk completes.**
+- **Since Conv 427:** the shell and sessions-files areas were both reviewed. Two things worth saying
+  plainly to him: several of his changes we had recorded as "not yet decided" turned out to have been
+  settled already during the earlier screen reviews, and one change filed under sessions-files was
+  actually the booking-rules change, which had already been declined. Nothing was decided twice.
 
 ## How to read it
 
@@ -86,9 +88,9 @@ also functional where his is a stub.
 
 ## 2 · 🟡 Declined for now — open to his case
 
-These four were declined by the user's own read, not by a consequence audit. The analysis is kept
-intact so the conversation can be reopened. On the back-nav work the user's words were: *"I do not
-like the breadcrumb changes, as is, but I can be convinced by him at a later date."*
+These were declined on the user's own read, not by a consequence audit — the analysis is kept intact
+so the conversation can be reopened. On the back-nav work the user's words were: *"I do not like the
+breadcrumb changes, as is, but I can be convinced by him at a later date."*
 
 ### Removing the breadcrumb row site-wide, and the back button that replaced it
 
@@ -130,6 +132,34 @@ works against course completion, which is one of the project's headline goals. W
 narrower column just leaves empty space, and course detail is the densest page in the product — module
 lists, files, teachers and reviews all need the width. Listing pages and detail pages are allowed to
 differ.
+
+### The demo course documents committed to the repository
+
+**Reviewed and declined (sessions-files).** Your branch adds six real sample documents — a slide deck,
+some PDFs, a Word file and two images — checked into the codebase so the Vibe Coding course has
+openable files.
+
+We have not taken the files themselves, only because of where they live. The code repository is shared,
+and binary files added to it stay in its history permanently and are downloaded by everyone who ever
+clones it. Earlier this year we built a small script that fills the local and staging file storage with
+stand-in documents instead, which keeps the repository light. If the demo needs genuinely realistic
+documents — and for showing the product, it may well — we can load the real ones into staging storage
+through that route without committing them.
+
+### Course identity header and pinned tabs on the session page
+
+**Reviewed and declined (sessions-files).** Your branch gives the session page the same course identity
+box as the rest of the course screens, and pins its tab strip while you scroll.
+
+The session page is the one screen whose entire purpose is the video room, so anything added above it
+pushes the room itself further down. We have instead given that page a single slim line at the top that
+names the course and stays visible as you scroll — the same need, at about a quarter of the height. For
+the same reason we left the tab strip unpinned: pinning it as well would mean roughly a third of a
+laptop screen permanently occupied by navigation on a page you visit to attend a lesson.
+
+**What we did take from this screen:** the ordering. Your branch moves the green progress band below
+the tabs, and you were right that it belongs there — our own course page already did it that way, so
+the session page had been the inconsistent one.
 
 ### Renaming the sidebar's "Learning" to "My Courses"
 
@@ -304,20 +334,18 @@ Neither of these is a judgment on the design — the code was dead at the pivot:
 
 ## 5 · ⬜ Not yet reviewed
 
-Two of the six review units still have no dispositions. Nothing in them is declined; nothing is agreed.
-(The site-wide shell was reviewed and is now fully decided — see the breadcrumb, content-width and
-sidebar-label entries above, and the "Peer Teachers" note below.)
+**One of the six review units is left.** Everything else has been walked and decided.
 
 | Screen / area | His work there |
 |---|---|
-| **Sessions files feature** | The migration, session API edits, session page, demo course documents — an adopt/reject decision on the feature as a whole |
 | **Misc** | Session booking, workspace page touches, story browsing |
 
-Both overlap work already done: the per-module file strips shipped as part of the course-detail
-review, and the public asset route that the sessions-files feature needs was adopted in the
-communities review — so the sessions-files unit is smaller than it looks. The **"Peer Teachers"
-renaming has now been adopted in full**: it had already reached the course pages, and the admin,
-analytics and course-editor screens have been brought in line, so the whole product uses one term.
+The sessions-files feature turned out to need no decision at all: its file-ordering column and its
+public asset route had already been adopted during the course-detail and communities reviews, its
+"preloaded into the room" flag was already declined, and the one remaining file in it was a change to
+booking rules rather than to files. The **"Peer Teachers" renaming has now been adopted in full** — it
+had already reached the course pages, and the admin, analytics and course-editor screens have been
+brought in line, so the whole product uses one term.
 
 ---
 
