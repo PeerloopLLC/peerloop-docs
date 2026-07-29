@@ -3,6 +3,28 @@
 
 ## 3. API & Data Fetching (Medium-High Impact)
 
+### [WS-DATA-MODEL] The Workspace Data Boundary Is a **Freshness Contract** — "Consume What's Loaded" Scoped, Not Rewritten (Conv 430)
+**Date:** 2026-07-29 (Conv 430)
+
+The three role workspaces (`/learning`, `/teaching`, `/creating`) adopt **no new sourcing model**: the rule already existed as `state-management.md` § "Principle: Consume What's Loaded" (decided Conv 014) and was given the scope it had always lacked. The principle governs **whole-endpoint redundancy and wrong-source reads** — NOT trimming individually-derivable fields out of endpoints that must exist anyway. Identity, roles and own-course relationships come from `CurrentUser`; money, queues, and other users' rows come from endpoints. Rejected: *CurrentUser-first everywhere* (**not implementable** — the aggregate endpoints are overwhelmingly other people's rows plus `payment_splits` earnings that `CurrentUser` structurally cannot carry, `current-user.ts:89`); *API-first everywhere* (a new `/api/me/student-dashboard` re-serving enrollment data `CurrentUser` already renders correctly); *fix the defects and leave the model undecided*.
+
+**Rationale:** The boundary is a **freshness contract**, not a stylistic preference — `CurrentUser` is localStorage-cached and 30s-version-polled, which is exactly the staleness tolerance of identity and own-course relationships, and exactly not that of money, queues, or other people's state. The split had already been written twice in near-identical words in the endpoints' own comments (`creator-dashboard.ts:257`, `teacher-dashboard.ts:344`); what was missing was scope, not a rule. The framing in the task was also wrong on its axis: on *sourcing* all three workspaces were already consistent; what actually varied was **round-trip count** (`/learning` 4, `/teaching` 3, `/creating` 2), with the CurrentUser-first workspace making the most.
+
+**Consequences:** `teaching_courses[]` and `students_helped_total` stay on their endpoints. Across all 18 `/api/me/*` the audit found exactly one whole-endpoint redundancy — `/api/me/diplomas`, retired (see next entry); `/api/me/certificates` checked and kept. Conv 428's `TeacherCertifications` change is reclassified as the principle being *followed*, not the drift it was logged as. `state-management.md` gained the scope statement, a two-column source table, a Conv 430 eliminations entry, and two correctness preconditions.
+
+**See:** `docs/as-designed/state-management.md` § Principle: Consume What's Loaded; `docs/sessions/2026-07/20260729_0843 Decisions.md` §1; Conv 430.
+
+### `/api/me/diplomas` Retired — a Diploma **Is** the Completed Enrollment; `/api/me/certificates` Kept (Conv 430)
+**Date:** 2026-07-29 (Conv 430)
+
+`/api/me/diplomas` and its test are **deleted**; `DiplomasSection` now reads `useCurrentUser().getDiplomas()`. `/api/me/full` selects two extra columns (`e.id AS enrollment_id`, `e.diploma_awarded_at`), `UserEnrollment` gains `enrollmentId` + `diplomaAwardedAt`, and `CurrentUser` gains a `getDiplomas()` getter. `/api/me/certificates` is **kept**.
+
+**Rationale:** A Diploma has no table — it *is* the completed enrollment (`[DIPLOMA]`), so the endpoint re-selected rows `CurrentUser` had already loaded, needing only 2 more columns from a row `/api/me/full` already reads: the textbook whole-endpoint redundancy the scoped principle targets. `certificates` is a genuinely separate table (schema `:679`, distinct from `teacher_certifications` `:658`) with its own id/type/status/issued_at/certificate_url, so it is not redundant. Pre-Conv-430 cached enrollments lacking `enrollmentId` are tolerated **inside the getter** (rows filtered out) rather than by extending `isValidCachedData` — `state-management.md:428-430` deliberately does not check array-element shapes ("corrected by the API refresh") and `:447` rejects full schema validation, so both alternatives would have contradicted recorded decisions.
+
+**Consequences:** `/learning` drops from 4 requests to 3. Made `[CMPL-NOBUMP]` a **hard prerequisite** — without the `data_version` bump moving into `onEnrollmentCompleted`, diplomas would have moved from fetch-fresh into the 30s-stale set. Route map regenerated in both repos.
+
+**See:** `docs/sessions/2026-07/20260729_0843 Decisions.md` §§2-3; Conv 430.
+
 ### [MSG-CLEANUP] `GET /api/me/can-message/:userId` Deleted — an Endpoint With No Caller Is Removed, Not Kept as a "Valid Surface" (Conv 419)
 **Date:** 2026-07-26 (Conv 419)
 

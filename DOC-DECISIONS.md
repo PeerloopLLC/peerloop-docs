@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-07-29 Conv 429 (`lsof` + `kill` escalates to an interactive ask in `guard-dangerous-bash.sh` — documentation alone had already failed, with the dangerous form actively prescribed by a memory file — §3)
+**Last Updated:** 2026-07-29 Conv 430 (`[PRUNESAFE]` — the `/r-end` Extract prune becomes a deterministic script computing §Learnings/§Decisions spans from the file, so no self-reported manifest line can reach another section — §3)
 
 ---
 
@@ -550,6 +550,19 @@ The 4572-line `docs/DECISIONS.md` was split into a `docs/decisions/` folder: ele
 ---
 
 ## 3. Claude Code Workflow
+
+### [PRUNESAFE] The `/r-end` Extract Prune Becomes a Deterministic Script — Section Spans Computed from the File, Not Trusted from the Agent (Conv 430)
+**Date:** 2026-07-29 (Conv 430)
+
+`/r-end` Step 4b no longer deletes lines directly from the learn-decide agent's self-reported manifest. A new `.claude/scripts/extract-prune.mjs` (+ `extract-prune.test.sh`, 19 assertions) derives the **§Learnings / §Decisions body spans** from the Extract's own heading positions and **intersects** the manifest with them; every other section is unreachable by construction. Exit codes 0/2/3, with a second belt refusing any prune above 50% of the file. Step 4b becomes "run the script"; the agent-side manifest instruction is kept but annotated. Rejected: strengthening the agent's manifest instruction; adding prose to Step 4b describing the intersection.
+
+**Rationale:** Conv 429's prune honoured a 140-line manifest with no section scoping and cut §Completed from 8 items to 1. The safeguard and the failure were **the same mechanism** — agent judgment about its own behaviour — so a firmer instruction is that mechanism a second time. Computing the eligible spans from the file's structure removes the judgment from the loop entirely. Same shape as Conv 273 (AskUserQuestion replacing the QLINT Stop-hook): when a guard has failed once, ask whether it *detects* misbehaviour or *prevents* it. Follows the established `.claude/scripts/*.mjs` + `*.test.sh` convention.
+
+**Consequences:** The specified calibration — replaying Conv 429's manifest against its pre-prune Extract — proved **impossible** (Step 4b `rm`s the manifest, and the Extract was only ever committed post-prune, `19dc595`), so the case was reconstructed from the real Extract's committed heading layout and the limitation recorded in the test file header rather than glossed. The suite asserts both directions: the filtered prune preserves §Prompts/§Completed/§Open Questions **and** the unfiltered prune on the same manifest still destroys them — without the reverse assertion the fixture would also pass against a pruner that deletes nothing. First exercised by this conv's own `/r-end`.
+
+**See:** `.claude/scripts/extract-prune.mjs` + `extract-prune.test.sh`; `.claude/skills/r-end/SKILL.md` Step 4b; `docs/sessions/2026-07/20260729_0843 Decisions.md` §4, Learnings §§5,6,7,9; Conv 430.
+
+---
 
 ### `lsof` + `kill` Escalates to an Interactive `ask` in `guard-dangerous-bash.sh` — Documentation Alone Had Already Failed (Conv 429)
 **Date:** 2026-07-29 (Conv 429)

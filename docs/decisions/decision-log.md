@@ -2332,3 +2332,25 @@ Teardown is `npx astro dev stop` (astro 7's `astro dev` daemonizes itself, write
 **Consequences:** Calibrated per `[CMH]` (injected → exit 1, removed → exit 0, 4b still fires). The first diagnosis — "the sweep is one-directional" — was wrong; the real defect was asymmetry between two interchangeable-looking arrays, distinguished only by reading the script.
 
 **See:** `docs/decisions/06-testing-ci.md` entry; `scripts/prov-sweep.ts`; `docs/sessions/2026-07/20260729_0649 Decisions.md` §6, Learnings §§4,5; Conv 429.
+
+### [WS-DATA-MODEL] The Workspace Data Boundary Is a **Freshness Contract** — "Consume What's Loaded" Scoped, Not Rewritten (Conv 430)
+**Date:** 2026-07-29 (Conv 430)
+
+The three role workspaces adopt **no new sourcing model**: the rule already existed as `state-management.md` § "Principle: Consume What's Loaded" (decided Conv 014) and was given the scope it had always lacked — it governs **whole-endpoint redundancy and wrong-source reads**, NOT trimming individually-derivable fields out of endpoints that must exist anyway. Identity, roles and own-course relationships come from `CurrentUser`; money, queues, and other users' rows come from endpoints. Rejected: *CurrentUser-first everywhere* (**not implementable** — the aggregate endpoints are overwhelmingly other people's rows plus `payment_splits` earnings `CurrentUser` structurally cannot carry, `current-user.ts:89`); *API-first everywhere* (a new `/api/me/student-dashboard` re-serving enrollment data `CurrentUser` already renders correctly); *fix the defects, leave the model undecided*.
+
+**Rationale:** The boundary is a **freshness contract**, not a stylistic preference — `CurrentUser` is localStorage-cached and 30s-version-polled, exactly the staleness tolerance of identity and own-course relationships and exactly not that of money, queues, or other people's state. The split had already been written twice in near-identical words in the endpoints' own comments (`creator-dashboard.ts:257`, `teacher-dashboard.ts:344`); what was missing was scope, not a rule. The task's framing was also wrong on its axis: on *sourcing* all three workspaces were already consistent; what varied was **round-trip count** (`/learning` 4, `/teaching` 3, `/creating` 2), with the CurrentUser-first workspace making the most.
+
+**Consequences:** `teaching_courses[]` and `students_helped_total` stay on their endpoints. Across all 18 `/api/me/*` exactly one whole-endpoint redundancy was found — `/api/me/diplomas`, retired; `/api/me/certificates` checked and kept. Conv 428's `TeacherCertifications` change is reclassified as the principle being *followed*, not the drift it was logged as. `state-management.md` gained the scope statement, a two-column source table, a Conv 430 eliminations entry, and two correctness preconditions.
+
+**See:** `docs/decisions/03-api-data-fetching.md` entry; `docs/as-designed/state-management.md`; `docs/sessions/2026-07/20260729_0843 Decisions.md` §1, Learnings §§1,2,3; Conv 430.
+
+### `/api/me/diplomas` Retired — a Diploma **Is** the Completed Enrollment; `/api/me/certificates` Kept (Conv 430)
+**Date:** 2026-07-29 (Conv 430)
+
+`/api/me/diplomas` and its test are **deleted**; `DiplomasSection` reads `useCurrentUser().getDiplomas()`. `/api/me/full` selects `e.id AS enrollment_id` + `e.diploma_awarded_at`, `UserEnrollment` gains `enrollmentId` + `diplomaAwardedAt`, `CurrentUser` gains `getDiplomas()`. `/api/me/certificates` is **kept**.
+
+**Rationale:** A Diploma has no table — it *is* the completed enrollment (`[DIPLOMA]`), so the endpoint re-selected rows `CurrentUser` had already loaded, needing only 2 more columns from a row `/api/me/full` already reads. `certificates` is a genuinely separate table (schema `:679`, distinct from `teacher_certifications` `:658`) with its own id/type/status/issued_at/certificate_url. Pre-Conv-430 cached enrollments lacking `enrollmentId` are tolerated **inside the getter** rather than by extending `isValidCachedData` — `state-management.md:428-430` deliberately does not check array-element shapes ("corrected by the API refresh") and `:447` rejects full schema validation, so both alternatives would have contradicted recorded decisions.
+
+**Consequences:** `/learning` drops from 4 requests to 3. Made `[CMPL-NOBUMP]` a **hard prerequisite** — without the `data_version` bump moving inside `onEnrollmentCompleted`, diplomas would have moved from fetch-fresh into the 30s-stale set. Route map regenerated in both repos.
+
+**See:** `docs/decisions/03-api-data-fetching.md` entry; `docs/sessions/2026-07/20260729_0843 Decisions.md` §§2,3, Learnings §§4,8; Conv 430.

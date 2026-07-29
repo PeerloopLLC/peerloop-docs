@@ -184,6 +184,8 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [3. API & Data Fetching (Medium-High Impact)](03-api-data-fetching.md)
 
+- [[WS-DATA-MODEL] The Workspace Data Boundary Is a **Freshness Contract** — "Consume What's Loaded" Scoped, Not Rewritten (Conv 430)](03-api-data-fetching.md#ws-data-model-the-workspace-data-boundary-is-a-freshness-contract--consume-whats-loaded-scoped-not-rewritten-conv-430)
+- [`/api/me/diplomas` Retired — a Diploma **Is** the Completed Enrollment; `/api/me/certificates` Kept (Conv 430)](03-api-data-fetching.md#apimediplomas-retired--a-diploma-is-the-completed-enrollment-apimecertificates-kept-conv-430)
 - [[MSG-CLEANUP] `GET /api/me/can-message/:userId` Deleted — an Endpoint With No Caller Is Removed, Not Kept as a "Valid Surface" (Conv 419)](03-api-data-fetching.md#msg-cleanup-get-apimecan-messageuserid-deleted--an-endpoint-with-no-caller-is-removed-not-kept-as-a-valid-surface-conv-419)
 - [[CANMSG] Fix the Data Sources, Then Delete the Guard — Every User-Listing Loader Filters `deleted_at IS NULL`; `useCanMessage` Is a Pure Client Derivation (Conv 418)](03-api-data-fetching.md#canmsg-fix-the-data-sources-then-delete-the-guard--every-user-listing-loader-filters-deleted_at-is-null-usecanmessage-is-a-pure-client-derivation-conv-418)
 - [Shared Admin Response Types Co-Locate in One Route File, Imported Cross-Route (CERT-ROWSHAPE, Conv 391)](03-api-data-fetching.md#shared-admin-response-types-co-locate-in-one-route-file-imported-cross-route-cert-rowshape-conv-391)

@@ -2,7 +2,8 @@
 
 Index of all test files organized by category. For testing commands, see [CLI-TESTING.md](CLI-TESTING.md).
 
-**Last Updated:** 2026-07-29 (Conv 429 — **no test files added or deleted**, so every file-count roll-up is unchanged (Vitest Total 400, All Test Files 428). `CourseCreatedCard.tsx` was deleted this conv but it genuinely had no test file, so nothing dropped. Two API test files gained one `[CRS-RETIRED-BADGE]` regression guard each, both calibrated to fail with `expected undefined` when the fix is reverted; rows reconciled against a real `vitest run` of the two (42 cases): `tests/api/me/communities/[slug]/progressions.test.ts` **23→24** and `tests/api/me/creator-dashboard.test.ts` **13→18**, the latter carrying 4 of pre-existing drift on top of this conv's +1. Sibling `TEST-UNIT.md` still **not** updated — stale since Conv 253, tracked as `[TESTUNITDOC]`.)
+**Last Updated:** 2026-07-29 (Conv 430 — [WS-DATA-MODEL]/[MEFULL-SOFTDEL]/[CMPL-NOBUMP]: **+2 new test files, −1 deleted**. New: `tests/lib/completion.test.ts` (5 — `onEnrollmentCompleted` now owns the `bumpUserDataVersion()` side-effect, so all three completion paths bump, including `lib/booking.ts → triggerPostSessionActions`, the BBB-webhook/cleanup-cron path that previously did not; the assigned teacher is bumped too) and `tests/components/dashboard/DiplomasSection.test.tsx` (8 — the section re-sourced from `useCurrentUser().getDiplomas()`; builds a **real** `CurrentUser` from a `MeFullResponse` fixture rather than a partial duck-type, so it can't rot as the class grows). Deleted: `tests/api/me/diplomas.test.ts` (2) with its endpoint — `GET /api/me/diplomas` was retired as whole-endpoint redundancy against `/api/me/full`. `tests/api/me/full.test.ts` grew **25→30** in place (the three `deleted_at IS NULL` filters + the two new enrollment columns; reverting the filters turns exactly 3 red, removing the bump exactly 2, calibrated both directions per `[CMH]`). API Endpoints 240→239 (Me 64→63), Components 82→83, Lib 34→35, Vitest Total 400→401, All Test Files 428→429 — all five reconciled against an on-disk file count. Component detail in TEST-COMPONENTS.md, reconciled in lockstep. Sibling `TEST-UNIT.md` still **not** updated — stale since Conv 253, tracked as `[TESTUNITDOC]`.)
+**Prev:** 2026-07-29 (Conv 429 — **no test files added or deleted**, so every file-count roll-up is unchanged (Vitest Total 400, All Test Files 428). `CourseCreatedCard.tsx` was deleted this conv but it genuinely had no test file, so nothing dropped. Two API test files gained one `[CRS-RETIRED-BADGE]` regression guard each, both calibrated to fail with `expected undefined` when the fix is reverted; rows reconciled against a real `vitest run` of the two (42 cases): `tests/api/me/communities/[slug]/progressions.test.ts` **23→24** and `tests/api/me/creator-dashboard.test.ts` **13→18**, the latter carrying 4 of pre-existing drift on top of this conv's +1. Sibling `TEST-UNIT.md` still **not** updated — stale since Conv 253, tracked as `[TESTUNITDOC]`.)
 **Prev:** 2026-07-28 (Conv 428 — **no test files added or deleted**, so every file-count roll-up is unchanged (Vitest Total 400, All Test Files 428). Four files changed in place; their rows were reconciled against a real `vitest run` of the four (98 cases): `tests/pages/dashboard/TeacherDashboard.test.tsx` **48→53** ([ROLE-CRS-LIST] — the All/Active/Paused sub-filter, count-gated search and search empty state that `TeacherCertifications` absorbed from the retired `/courses` teaching role tab) and `tests/api/me/teacher-dashboard.test.ts` **12→15**, the 12 being pre-existing drift — this conv only renamed one case there (`returns certifications array` → `does not return a certifications payload`, the endpoint having dropped the `certifications` payload). The other two are component tests carried in TEST-COMPONENTS.md: `components/dashboard/TeacherDashboard` 14→17 (role gate) and `courses/CourseCatalogCard` 14→13 (the `overlay` variant guard, deleted with the variant). Sibling `TEST-UNIT.md` still **not** updated — stale since Conv 253, tracked as `[TESTUNITDOC]`.)
 **Prev:** 2026-07-28 (Conv 427 — [REC-REHOME] rails-backed recommendations: **−4 test files, +1 new**. Deleted with the code they covered: `tests/api/recommendations/communities.test.ts` (11) and `tests/api/recommendations/courses.test.ts` (13) went with `GET /api/recommendations/{communities,courses}`, and `tests/components/recommendations/RecommendedCommunities.test.tsx` (11) + `RecommendedCourses.test.tsx` (9) went with the two carousels. Both endpoints and both components were retired when the recommendations moved to the right-rail `DiscoveryRails` island, which reads the ONE global Discovery Rails blob instead of a second per-page recommender. **+1 new** `tests/lib/discovery-rails-lanes.test.ts` (20 — the pure lane builder: For You synthesized from the personalization lens and ranked by topic-overlap count, absent for a viewer with no interests *and* for one whose interests overlap nothing, capped like every other lane so it cannot swallow the rail; the single-lane claim, incl. a lane dropped entirely when an earlier one already took all its items, and claims scoped per entity type so a course cannot suppress a same-id community; plus href/meta helpers plural-and-zero). API Endpoints 242→240 (Recommendations category removed), Components 84→82, Lib 33→34, Vitest Total 403→400, All Test Files 431→428. Full suite 6234→6210 (−44 +20). Component detail in TEST-COMPONENTS.md, reconciled in lockstep. Sibling `TEST-UNIT.md` still **not** updated — stale since Conv 253, tracked as `[TESTUNITDOC]`.)
 **Prev:** 2026-07-28 (Conv 426 — MERGE-BRIAN §3 communities: **+5 new test files**. `tests/api/storage/key.test.ts` (18 — the new public R2 asset route: the prefix allowlist must gate *before* R2 is consulted, so a private key and a missing key are indistinguishable; traversal (`..`) rejection; ETag/`If-None-Match` → 304; immutable caching; `contentType` from `httpMetadata` with extension-sniff fallback), `tests/api/me/communities/logo.test.ts` (17 — owner gate, raster-only validation incl. the deliberate SVG rejection, the 2MB cap, and old-object-deleted-only-after-the-row-moves ordering; hands `FormData` **directly** to the handler because under jsdom a `File` round-tripped through `new Request(…).formData()` comes back with `size` 9 regardless of input, which silently neutered the size-cap assertion), `tests/components/communities/CommunityCatalogCard.test.tsx` (16 — the tokenised identity band, the named `hero` variant, brand marks across all three variants and the absent-medallion treatment), `tests/components/RoleTabBar.test.tsx` (12 — the opt-in `variant="pill"` with the Matt role palette **retained**, so a later "just match his version" edit fails rather than silently regressing) and `tests/ssr/communities.test.ts` (6 — per-community aggregates on the browse loader: review-count-weighted rating pinned at 4.61 and explicitly asserted *not* 4.80, the number a flat `AVG(rating)` produces, plus the `is_active=1 AND is_archived=0 AND deleted_at IS NULL` visibility filter so a card cannot advertise courses the Courses tab will not list). API Endpoints 240→242 (new `tests/api/storage/` category; Me 63→64), Components 82→84, SSR 4→5, Vitest Total 398→403, All Test Files 426→431. Per-file component case counts + the category roll-ups are in TEST-COMPONENTS.md, reconciled in lockstep. Sibling `TEST-UNIT.md` still **not** updated — stale since Conv 253, tracked as `[TESTUNITDOC]`.)
@@ -57,19 +58,19 @@ Index of all test files organized by category. For testing commands, see [CLI-TE
 
 | Category | Files | Test Cases | Location |
 |----------|:-----:|:----------:|----------|
-| API Endpoints | 240 | — | `tests/api/` |
-| Components | 82 | — | `tests/components/` |
+| API Endpoints | 239 | — | `tests/api/` |
+| Components | 83 | — | `tests/components/` |
 | Pages | 9 | — | `tests/pages/` |
-| Lib | 34 | — | `tests/lib/` |
+| Lib | 35 | — | `tests/lib/` |
 | Integration | 10 | — | `tests/integration/` |
 | SSR | 5 | — | `tests/ssr/` |
 | Unit | 14 | — | `tests/unit/` |
 | Middleware | 1 | — | `tests/` (root) |
 | PLATO | 3 | — | `tests/plato/` |
 | Src (co-located) | 2 | — | `src/__tests__/` |
-| **Vitest Total** | **400** | — | |
+| **Vitest Total** | **401** | — | |
 | E2E (Playwright) | 28 | — | `e2e/` |
-| **All Test Files** | **428** | — | |
+| **All Test Files** | **429** | — | |
 
 ---
 
@@ -102,7 +103,7 @@ Test files use path aliases instead of deep relative imports:
 
 ---
 
-## API Tests — `tests/api/` (240 files)
+## API Tests — `tests/api/` (239 files)
 
 Tests mirror the API route structure with 1:1 file mapping:
 
@@ -334,13 +335,13 @@ tests/api/
 | `tests/api/homework/[id]/submissions/[subId].test.ts` | 13 |
 | `tests/api/homework/submissions/[id]/download.test.ts` | 13 |
 
-### Me — `tests/api/me/` (64 files)
+### Me — `tests/api/me/` (63 files)
 
 | Area | File | Tests |
 |------|------|:-----:|
 | **Profile/Account** | | |
 | | `tests/api/me/account.test.ts` | 12 |
-| | `tests/api/me/full.test.ts` | 25 |
+| | `tests/api/me/full.test.ts` | 30 |
 | | `tests/api/me/version.test.ts` | 7 |
 | | `tests/api/me/feed-badges.test.ts` | 7 |
 | | `tests/api/me/onboarding-profile.test.ts` | 9 |
@@ -349,7 +350,6 @@ tests/api/
 | **Enrollments/Certificates** | | |
 | | `tests/api/me/certificates.test.ts` | 7 |
 | | `tests/api/me/certificates/recommend.test.ts` | 13 |
-| | `tests/api/me/diplomas.test.ts` | 2 |
 | **Teacher** | | |
 | | `tests/api/me/availability.test.ts` | 22 |
 | | `tests/api/me/availability/overrides.test.ts` | 16 |
@@ -545,13 +545,14 @@ tests/api/
 
 ---
 
-## Lib Tests — `tests/lib/` recursive (34 files: 33 in `tests/lib/`, 1 in `tests/lib/video/`)
+## Lib Tests — `tests/lib/` recursive (35 files: 34 in `tests/lib/`, 1 in `tests/lib/video/`)
 
 | File | Tests | Coverage |
 |------|:-----:|----------|
 | `tests/lib/auth-modal.test.ts` | 32 | Auth modal state management, initialEmail threading for session expiry |
 | `tests/lib/availability-config.test.ts` | 6 | `loadAvailabilityWindowDays` (default 14, clamps bad/absent values, `[1, MAX]`) + `saveAvailabilityWindowDays` (ON-CONFLICT upsert of the `availability_window_days` `platform_stats` dial, seed-row self-heal) — shared window loader for the /courses "Available soon" filter + course-detail preview (CAF, Conv 387) |
 | `tests/lib/booking.test.ts` | 31 | Booking: positional assignment, reflow, eligibility, backfill, enrollment completion, post-session actions, detectOrphanedParticipants |
+| `tests/lib/completion.test.ts` | 5 | `onEnrollmentCompleted` side-effects — pins the `bumpUserDataVersion()` call **inside** the shared helper (Conv 430, `[CMPL-NOBUMP]`), so all three callers inherit it incl. `lib/booking.ts → triggerPostSessionActions`, the BBB-webhook/cleanup-cron path that previously bumped nothing: bumps the student, bumps the assigned teacher whose `students_taught` just changed, idempotent on a repeat call, no bump for a non-completed enrollment, and stamps `diploma_awarded_at` (the field `CurrentUser` now carries) |
 | `tests/lib/current-user-cache.test.ts` | 27 | Cache structural guard, stale-while-revalidate, lifecycle, expired identity storage |
 | `tests/lib/current-user-community-feeds.test.ts` | 14 | Community memberships (getCommunityMemberships, isMemberOf, getSystemFeed), feed index (getFeeds) |
 | `tests/lib/current-user-listeners.test.ts` | 15 | Change listeners (subscribe/unsubscribe/notify), useCurrentUser hook, unread counts, setCurrentUser dedup (id+dataVersion guard) |
@@ -805,7 +806,7 @@ See [TEST-E2E.md](TEST-E2E.md) for details.
 
 ---
 
-## Component Tests — `tests/components/` (82 files)
+## Component Tests — `tests/components/` (83 files)
 
 See [TEST-COMPONENTS.md](TEST-COMPONENTS.md) for the full breakdown by category.
 

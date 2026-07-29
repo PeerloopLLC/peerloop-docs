@@ -148,40 +148,22 @@ Get current user's certificates with course info.
 ```
 
 **Notes:**
-- `type`: `teaching` only. Certificates are now the teach-readiness credential exclusively — the `completion` and `mastery` types were retired Conv 389 (the `certificates.type` CHECK is now `('teaching')`). Course completion is a separate **Diploma** (see `GET /api/me/diplomas`).
+- `type`: `teaching` only. Certificates are now the teach-readiness credential exclusively — the `completion` and `mastery` types were retired Conv 389 (the `certificates.type` CHECK is now `('teaching')`). Course completion is a separate **Diploma**, which has **no endpoint of its own** — it is derived client-side from the completed enrollments already served by `GET /api/me/full` (see `CurrentUser.getDiplomas()`; `GET /api/me/diplomas` was retired Conv 430).
 - `status`: `pending`, `issued`, or `revoked`
 - Ordered by `issued_at` DESC
 
 ---
 
-### GET /api/me/diplomas
+### Diplomas — no endpoint (retired Conv 430)
 
-Get the current user's Diplomas — one per completed course. A **Diploma** is the course-completion credential (distinct from a teach-readiness certificate). It has no table of its own — each item is derived from a completed enrollment (`enrollments.status='completed'`) and rendered at `/diploma/[enrollment_id]`.
+A **Diploma** is the course-completion credential (distinct from a teach-readiness certificate). It has no table *and no endpoint* of its own — each item is a completed enrollment (`enrollments.status='completed'`), rendered at `/diploma/[enrollment_id]`.
 
-**Authentication:** Required
+`GET /api/me/diplomas` was **deleted in Conv 430** as whole-endpoint redundancy: it re-selected rows `GET /api/me/full` had already loaded. Clients read `useCurrentUser().getDiplomas()` instead, which filters and sorts the `enrollments[]` array already in `CurrentUser`:
 
-**Response (200):**
-```json
-{
-  "diplomas": [
-    {
-      "enrollment_id": "enr-001",
-      "course_id": "crs-ai-tools-overview",
-      "course_title": "AI Tools Overview",
-      "course_slug": "ai-tools-overview",
-      "course_thumbnail": null,
-      "creator_name": "Guy Rymberg",
-      "completed_at": "2026-07-01T00:00:00Z",
-      "diploma_awarded_at": "2026-07-01T00:00:00Z"
-    }
-  ]
-}
-```
-
-**Notes:**
-- Returns only the caller's own completed enrollments (`student_id = session user`).
+- `enrollmentId` and `diplomaAwardedAt` were added to `UserEnrollment` so the client can address `/diploma/{enrollmentId}` and sort without a fetch.
 - `diploma_awarded_at` — set once by the `onEnrollmentCompleted` hook (`src/lib/completion.ts`); a never-cleared idempotency/provenance marker.
-- Ordered by `COALESCE(diploma_awarded_at, completed_at)` DESC.
+- Ordered by `COALESCE(diplomaAwardedAt, completedAt)` DESC, matching the retired endpoint.
+- **Precondition:** `onEnrollmentCompleted` bumps `data_version` (Conv 430, `[CMPL-NOBUMP]`) so the 30s version poll picks up a newly-awarded Diploma. See `docs/as-designed/state-management.md`.
 
 ---
 

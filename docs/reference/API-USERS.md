@@ -617,6 +617,8 @@ Get comprehensive user state for CurrentUser initialization. Returns all data ne
 - `unreadNotificationCount` and `unreadMessageCount` are included to eliminate separate badge-count API calls (added Session 385)
 - `dataVersion` is the user's monotonic version counter for client-side polling (added Conv 013, CURRENTUSER-OPTIMIZE)
 - Enrollments include enrichment fields: `hasReview`, `courseDuration`, `courseSessionCount` (Conv 014, Phase 2)
+- Enrollments also carry `enrollmentId` (the enrollment row's own id, addresses `/diploma/{enrollmentId}`) and `diplomaAwardedAt`. These make this endpoint the sole source for Diplomas — `GET /api/me/diplomas` was retired Conv 430 and `CurrentUser.getDiplomas()` derives the list client-side (see API-ENROLLMENTS.md)
+- Soft-deleted rows are excluded from `enrollments`, `createdCourses` and `teacherCertifications` (`e.deleted_at IS NULL` / `c.deleted_at IS NULL` / `p.deleted_at IS NULL`), matching `/api/me/creator-dashboard`. Before Conv 430 this endpoint ignored `deleted_at`, so a creator whose only course was soft-deleted still read `isCreator === true` (Conv 430, `[MEFULL-SOFTDEL]`)
 - All course relationship types include `discussionFeedEnabled` (Conv 014, Phase 4)
 - Teacher certifications include course-level stats: `courseRating`, `courseRatingCount`, `teacherCount`, `nextSessionAt` (Conv 041, EXPLORE-COURSES)
 - `communityMemberships` lists all communities the user belongs to, including `isSystem` flag for the System community (formerly The Commons) (Conv 014, Phase 4)

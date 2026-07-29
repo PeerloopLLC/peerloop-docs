@@ -3,6 +3,7 @@ name: Match response length to question length — conversational, not auto-expa
 description: Short, conversational questions get short, succinct answers. "Need to dig deeper first" is an acceptable reply. Don't reflexively expand into impact assessment + multiple handling options unless the user invites depth. And when the user steers with specifics, execute — don't bounce it back as a multiple-choice question ([MCFRAME]).
 type: feedback
 originSessionId: ff0c04a6-29c3-4424-abbe-fac8b0bddf83
+modified: 2026-07-29T12:53:04.799Z
 ---
 When the user asks a short, conversational question, give a short, succinct answer. One sentence is often enough. "I need to dig deeper to answer this" is fine as a reply — the user will follow up if depth is warranted. When a discussion is wanted, the user will explicitly say so ("let's discuss", "tell me more", "what would happen if…").
 
@@ -14,5 +15,6 @@ When the user asks a short, conversational question, give a short, succinct answ
 - "Let me check / I need to look at X first" is a fine reply when uncertain. Don't speculate at length to fill silence.
 - Wait for the user to invite depth before expanding. Cues: "let's discuss", "go deeper", "tell me more", "what would happen if…", or any follow-up question.
 - **Applies to WORK-PROGRESS output too, not just short Q&A (Conv 306).** During multi-step work (browser-verify, sweeps, investigations) the running narration must not be a wall that scrolls off the prompt buffer. Surface only what the user needs to follow + decide: the finding, the disposition, the next step. Cut per-tool-call play-by-play, repeated context, and exhaustive evidence dumps — keep the forensics in tool calls / scratch, report the conclusion. User Conv 306: *"The huge wall of output is utterly unable to be scanned (goes right off the prompt buffer)... So much in the output is not needed by me and clutters what I do need to see."*
+- **Applies to COMPLETION summaries too (Conv 430).** After finishing a task, a long accurate summary can still leave the user unable to locate themselves: *"I am unsure where this leaves us. WHat is nexxt?"* — asked immediately after a dense, correct wrap-up of `[WS-DATA-MODEL]`. The reply that landed was three short beats: **where we are** (clean / nothing mid-flight) · **the one time-sensitive thing** · **what's next**. Lead a completion summary with status and the next decision; put the detail *below* that, or in the commit body where it belongs anyway. Length wasn't the only problem — the summary opened with *what changed* rather than *where that leaves you*.
 - **Override:** when the user has explicitly invoked a plan, audit, or comprehensive-review skill (`/r-coherence-check`, `/w-codecheck`, "audit X", "plan Y"), full structured output is correct — that's the asked-for shape.
 - Originated in the spt/spt-docs sibling project; landed in Peerloop memory Conv 150.
