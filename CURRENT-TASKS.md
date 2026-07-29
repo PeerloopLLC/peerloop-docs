@@ -65,7 +65,6 @@
 38. [GATEPAR](#gatepar) — `/w-codecheck` vs `npm run verify` diverged on the icon gate
 39. [VPHARNESS](#vpharness) — persist the exact-size iframe harness as a script
 40. [RATING-COUNT-DEAD](#rating-count-dead) — dead `rating_count` + "Active" vs "Published" split
-41. [PROV-DANGLE](#prov-dangle) — `prov:sweep` is one-directional; 8 registry entries point at deleted files
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -374,16 +373,6 @@
 - **What:** public/marketing route-group sweep (the only un-swept RG-* group; RTMIG-4 closed Conv 340 with it deferred). The 14 marketing pages live only in `/old/*`; root paths 404 by design. Revisit if/when the redesign is scheduled. Also gates `[ORPHAN-BACKLOG]` Cat-B.
 - **Refs:** `plan/route-migration/README.md § RG-PUBLIC disposition`.
 
-### [PROV-DANGLE]
-
-- **State:** 📋 queued · surfaced Conv 429 while deleting `CourseCreatedCard`
-- **What:** `npm run prov:sweep` is **one-directional**. It detects components that stamp `data-prov-name` without a registry entry, but never the reverse — a registry entry whose file has been deleted. **8 entries currently point at files that do not exist**, and the sweep still reports *"Provenance bookkeeping is consistent."*
-- **The 8:** `ui/ActionCard.astro`, `marketing/StickySignupBar.astro`, `courses/CourseModerationCard.tsx` (deleted Conv 428), and five from the Conv-331 feeds/discovery retirement — `feed/FeedsHubPanel.tsx`, `feed/DiscoveryCard.tsx`, `feed/directory/{FeedDirectoryCard,FeedsDirectory,FeedsDiscoveryGrid}.tsx`.
-- **Why it matters:** this is Conv 428's lesson in the other direction. That conv established *"a red gate cannot detect a new offender"*; this is a **green** gate concealing 8 stale rows, which is worse in one respect — nothing prompts anyone to look. The registry is the input to the Figma-matching step, so dangling rows silently inflate what it claims to cover.
-- **Fix:** add a reverse check to `scripts/prov-sweep.ts` (every registry `path` must resolve to an existing file) and clear the 8. Calibrate per `[CMH]` first — inject a deleted-file entry, confirm the sweep goes red, confirm a clean registry stays green. Deleting a stamped component should fail the gate until its entry goes too, which is exactly what would have caught these at the time.
-- **Note:** Conv 429's own deletion removed its registry entry in the same commit, so it never became a 9th.
-- **Refs:** `../Peerloop/scripts/{prov-sweep.ts,matt-inspired-registry.ts}`, `plan/prim-registry/README.md`, `[PROV-SWEEP-DEBT2]` (Conv 428), `memory/project_feeds_hub`.
-
 ### [RATING-COUNT-DEAD]
 
 - **State:** 📋 queued · small · surfaced by the Conv-429 `[CRS-CREATED-CARD]` trace
@@ -602,4 +591,5 @@
 - **🟠 `[RATING-COUNT-DEAD]` logged** — `rating_count` is SELECTed by `/api/me/creator-dashboard`, declared in the card's interface, and rendered nowhere; the orphan renders it. Also logged the "Active" vs "Published" vocabulary split between `/creating` and `/creating/studio` for the same state.
 - **[CRS-CREATED-CARD]** ✅ Conv 429 — **closed by deletion, but only after the trace that made deletion safe.** The static comparison said "dead code, zero consumers, zero tests, delete it" — and that was the recommendation until the user pushed back and asked where the three cards came from. Tracing found the orphan was the **only** place a correct three-state course status existed, which turned a cleanup question into `[CRS-RETIRED-BADGE]`, a live defect fixed on two surfaces. With its model shipped (`50baeff2`), what remained was Matt styling (recoverable from git) and a rendered `rating_count` (now `[RATING-COUNT-DEAD]`), so the component and its registry entry were removed together (`c086fefd`). 5 gates green, suite unchanged at **6219** — it genuinely had no tests — `prov:sweep` green. **Transferable:** dead code can be the last holder of a correct model; check what it *knows* before deleting it, not just who calls it.
 - **🟠 `[PROV-DANGLE]` logged** — while removing the registry entry, found the sweep is **one-directional**: it detects stamped-but-unregistered components, never registered-but-deleted ones. **8 entries point at files that no longer exist** (the Conv-331 feeds/discovery retirement, `[MKTDEAD]`, and Conv 428's `CourseModerationCard`) and `prov:sweep` still reports *"consistent"*. A green gate concealing 8 stale rows is the same failure Conv 428 named for red ones.
+- **[PROV-DANGLE]** ✅ Conv 429 — **fixed, calibrated, 8 stale rows cleared** (`5ded9f68`). 🟠 **My first diagnosis was wrong and the correction is the useful part:** I logged this as *"`prov:sweep` is one-directional — it never checks registered-but-deleted"*. It does. Section 4b existence-checks `COMPONENT_CANDIDATES`, and that array was clean (0 of 22). The real gap was **asymmetry between the two component arrays**: `PHASE6_EXTRAPOLATION_CANDIDATES` (46 entries) was only ever read for its *paths* — 4c's untracked-notes set and `expectedByPath` — and never validated, so **all 8 dangling entries were in that one array**. Reading the script beat reasoning from the symptom. **The 8 were confirmed genuine deletions, not renames**, before removal, and had accumulated across **six convs — 273, 331, 340, 363, 392, 428** — roughly two months. That span is the finding: nothing prompts a look at a gate reporting green, so they were never going to surface on their own. New section **4b-ii** existence-checks every Phase-6 entry; **calibrated per `[CMH]`** — injected dangling entry → exit 1, removed → exit 0, and the pre-existing 4b check still fires (no shadowing). Cleared: `ActionCard`, `StickySignupBar`, `CourseModerationCard`, and five from the Conv-331 feeds/discovery retirement. 5 gates green, suite 6219, `prov:sweep` green **and now earned**.
 
