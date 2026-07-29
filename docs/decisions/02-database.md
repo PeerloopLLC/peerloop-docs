@@ -3,6 +3,19 @@
 
 ## 2. Database & Data Model (High Impact)
 
+### [COMM-TOPICS] Creators Are the **Primary but Not the Sole** Source of Community Tags — Capped, Unioned With the Derived Roll-Up, Moderator-Editable (Conv 431)
+**Date:** 2026-07-29 (Conv 431)
+
+Communities get a `community_tags` join table — the **third instance** of the existing `course_tags` / `user_tags` pattern, so storage is precedent and only assignment policy was open. Policy: **owner-assigned**, pre-seeded from the creator's `user_tags`, **capped in tag count**, **unioned** with today's derived roll-up (which is materialized as the backfill), editable by moderators, overridable by admins. The cap is **retrofitted onto courses** in the same phase. Rejected: creators as sole source with no cap (today's course behaviour); derivation-only. Not to be confused with `plan/comm-tag-filter/` — a different axis (channels for feed-post organisation; Conv 238 explicitly rejected reusing the topic taxonomy there).
+
+**Rationale:** The Discovery Rails changed what a tag is worth — from a filing system the *user* pulls to a **distribution channel the platform pushes** — and `lanes.ts:124` ranks by overlap count, so claiming more topics ranks you higher. Courses are already creator-sole-source (`/api/me/courses/[id]/index.ts:295` 403s unless `creator_id === userId`) with **no cap** (`:434-450` is an unbounded `for` over `body.tags`), so claiming all 55 tags is one API call and the hole pre-dates this work. Beyond the exploit: tags drift with no correction path, ownership outlives attention, there is no feedback loop, and creators are not fluent in the taxonomy. The cap is calibrated from real usage rather than guessed — 55 tags exist; courses average **2.5**, max **3**. `tags.topic_id NOT NULL` rolls tags up to topics for free, so tag-level storage costs nothing at topic granularity.
+
+**Consequences:** Phase 4 (`[COMM-TOPICS]`) carries the cap as its non-negotiable item, and the courses retrofit rides with it. One decision remains open: **tag-level vs topic-level** for community tags — consistency argues tags (free roll-up; `scoring.ts:176` scores the smart feed at tag granularity), but a community is a much coarser object than a course; leaning tags, recorded in the plan. Today's derivation (`compute.ts:107-111`, progressions→courses→tags) stays as the union input; measured, 3 of 4 seeded communities already resolve derived topics, so the real gap the rails expose is a **cold-start hole** (`lanes.ts:119` only scores `overlap > 0`), not an absence of interest-awareness.
+
+**See:** `plan/discovery-aside/README.md` Phase 4; `src/lib/discovery-rails/compute.ts`; `migrations/0001_schema.sql` (`course_tags`, `user_tags`); `docs/sessions/2026-07/20260729_1331 Decisions.md` §9; Conv 431.
+
+---
+
 ### M3 `session_resources.display_order` Folded Into 0001; Brian's `in_room` NOT Adopted (MERGE-BRIAN M3, Conv 412)
 **Date:** 2026-07-24 (Conv 412)
 

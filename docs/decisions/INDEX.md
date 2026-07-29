@@ -27,6 +27,8 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [1. Architecture & Design (Highest Impact)](01-architecture.md)
 
+- [[REC-RECENT] Visit History Is a Client-Side **Denormalized Snapshot** in localStorage, Keyed by Slug — No Endpoint, No Table (Conv 431)](01-architecture.md#rec-recent-visit-history-is-a-client-side-denormalized-snapshot-in-localstorage-keyed-by-slug--no-endpoint-no-table-conv-431)
+- [A Client Store Backing More Than One Island Exposes `subscribe*()` + a Named `window` `CustomEvent`; the `storage` Event Covers **Only** the Cross-Tab Case (Conv 431)](01-architecture.md#a-client-store-backing-more-than-one-island-exposes-subscribe--a-named-window-customevent-the-storage-event-covers-only-the-cross-tab-case-conv-431)
 - [[MKTDEAD] Dead Code Is Deleted, Not Parked — the 56 Orphaned Marketing/Admin-Intel Components Removed (Conv 419)](01-architecture.md#mktdead-dead-code-is-deleted-not-parked--the-56-orphaned-marketingadmin-intel-components-removed-conv-419)
 - [[RECEIPT] Owns a Durable `/receipt/[id]` View Rendered from the `transactions` Row, Not Stripe's Hosted `receipt_url` (Conv 410)](01-architecture.md#receipt-owns-a-durable-receiptid-view-rendered-from-the-transactions-row-not-stripes-hosted-receipt_url-conv-410)
 - [[ASTRO7] Astro 6.3.7→7.1.3 Promoted to jfg-dev-14 — vite 8, adapter 14, compressHTML Pinned (Conv 402)](01-architecture.md#astro7-astro-637713-promoted-to-jfg-dev-14--vite-8-adapter-14-compresshtml-pinned-conv-402)
@@ -129,6 +131,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [2. Database & Data Model (High Impact)](02-database.md)
 
+- [[COMM-TOPICS] Creators Are the **Primary but Not the Sole** Source of Community Tags — Capped, Unioned With the Derived Roll-Up, Moderator-Editable (Conv 431)](02-database.md#comm-topics-creators-are-the-primary-but-not-the-sole-source-of-community-tags--capped-unioned-with-the-derived-roll-up-moderator-editable-conv-431)
 - [M3 `session_resources.display_order` Folded Into 0001; Brian's `in_room` NOT Adopted (MERGE-BRIAN M3, Conv 412)](02-database.md#m3-session_resourcesdisplay_order-folded-into-0001-brians-in_room-not-adopted-merge-brian-m3-conv-412)
 - [A New Notification Type Costs a Full SQLite Table Rebuild — Feedback-Reminder Nudge Went Email-Only (FEEDBACK-NUDGE, Conv 394)](02-database.md#a-new-notification-type-costs-a-full-sqlite-table-rebuild--feedback-reminder-nudge-went-email-only-feedback-nudge-conv-394)
 - [Course Completion Is a "Diploma" (Derived From the Enrollment, No Table); Certificates Are Teach-Readiness Only (DIPLOMA, Conv 389)](02-database.md#course-completion-is-a-diploma-derived-from-the-enrollment-no-table-certificates-are-teach-readiness-only-diploma-conv-389)
@@ -263,6 +266,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [[REC-MOBILE] Discovery Rails Get a Narrow-Screen Mount on `/courses` + `/communities` — `maxLanes` Is a **Count**, Not a Lane-Kind Filter (Conv 431)](05-ui-ux-components.md#rec-mobile-discovery-rails-get-a-narrow-screen-mount-on-courses--communities--maxlanes-is-a-count-not-a-lane-kind-filter-conv-431)
 - [Course Status Renders as **Three** States on Creator Surfaces (Retired / Active / Draft) — `is_active` and `is_retired` Are Independent; `CourseCreatedCard` Deleted Once Its Model Shipped (Conv 429)](05-ui-ux-components.md#course-status-renders-as-three-states-on-creator-surfaces-retired--active--draft--is_active-and-is_retired-are-independent-coursecreatedcard-deleted-once-its-model-shipped-conv-429)
 - [[ROLE-CRS-LIST] Resolved by Upgrading `/teaching`'s Existing List — the `/courses` Role Tabs Are Retired (MERGE-BRIAN §2 M3, Conv 428)](05-ui-ux-components.md#role-crs-list-resolved-by-upgrading-teachings-existing-list--the-courses-role-tabs-are-retired-merge-brian-2-m3-conv-428)
 - [[BACK-X] Resolved — Breadcrumbs Kept, the Back Button Dropped, the Sticky Title Taken as `StickyViewTitle` (MERGE-BRIAN §4, Conv 428)](05-ui-ux-components.md#back-x-resolved--breadcrumbs-kept-the-back-button-dropped-the-sticky-title-taken-as-stickyviewtitle-merge-brian-4-conv-428)

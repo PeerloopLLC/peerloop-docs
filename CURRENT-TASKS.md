@@ -65,6 +65,7 @@
 38. [VPHARNESS](#vpharness) — persist the exact-size iframe harness as a script
 39. [RATING-COUNT-DEAD](#rating-count-dead) — dead `rating_count` + "Active" vs "Published" split
 40. [PROVDOC](#provdoc) — `matt-provenance.md` §6a says "9 unmarked components"; registry has 22 + 38
+41. [PRUNEPTR](#pruneptr) — `/r-end` prune leaves no forwarding pointer when a `---` survives the span
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -168,7 +169,7 @@
 
 ### [COMM-TOPICS]
 
-- **State:** 📋 queued — `DISCOVERY-ASIDE` Phase 4; design agreed Conv 431
+- **State:** 📋 queued — `DISCOVERY-ASIDE` Phase 4; design agreed Conv 431 · [Opus]
 - **What:** give communities first-class interest tags. `community_tags (community_id, tag_id)` is the
   **third instance** of the `user_tags` / `course_tags` pattern (both are the same two-column join onto
   `tags`; `tags.topic_id NOT NULL` rolls topics up for free), so the table shape is precedent, not a
@@ -405,6 +406,22 @@
 - **Icon dependency REMOVED (Conv 424):** `[ICON-TOK]`/`[ICON-4PX]` no longer wait on this gate — `BecomeATeacherPage` was fixed on the icon axis directly. This task is now only the *route-group sweep*.
 - **What:** public/marketing route-group sweep (the only un-swept RG-* group; RTMIG-4 closed Conv 340 with it deferred). The 14 marketing pages live only in `/old/*`; root paths 404 by design. Revisit if/when the redesign is scheduled. Also gates `[ORPHAN-BACKLOG]` Cat-B.
 - **Refs:** `plan/route-migration/README.md § RG-PUBLIC disposition`.
+
+### [PRUNEPTR]
+
+- **State:** 📋 queued — surfaced at Conv 431 `/r-end`
+- **What:** `extract-prune.mjs` empties the §Learnings / §Decisions bodies correctly but reports
+  `pointers inserted: 0` and leaves no `→ See … Learnings.md` forwarding pointer, because a `---`
+  section separator survives inside the span and the body therefore doesn't test as empty.
+- **Why it matters:** the pointer is the only thing telling a reader of the Extract where the pruned
+  content went. Without it the Extract has two bare headings — the "where did it go" problem the
+  pointer exists to prevent. Conv 431's Extract needed the pointers added by hand.
+- **Fix:** treat a body as empty when the surviving lines are only blanks and/or a `---` rule; add a
+  fixture to `extract-prune.test.sh` covering a `---`-separated Extract (the current fixture has no
+  separators, which is why 19 assertions all pass while this slips through). Calibrate per `[CMH]` —
+  assert the pointer IS inserted for a separator-bearing fixture and still inserted for a bare one.
+- **Refs:** `.claude/scripts/extract-prune.mjs`, `.claude/scripts/extract-prune.test.sh`,
+  `[PRUNESAFE]` (Conv 430, which built the span-restriction this rides on).
 
 ### [PROVDOC]
 

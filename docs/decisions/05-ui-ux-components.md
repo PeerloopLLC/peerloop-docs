@@ -3,6 +3,19 @@
 
 ## 5. UI/UX & Components
 
+### [REC-MOBILE] Discovery Rails Get a Narrow-Screen Mount on `/courses` + `/communities` — `maxLanes` Is a **Count**, Not a Lane-Kind Filter (Conv 431)
+**Date:** 2026-07-29 (Conv 431)
+
+`DiscoveryRails` gains a `maxLanes` prop and is mounted a second time, `lg:hidden`, at `maxLanes={1}` on `/courses` and `/communities` **with no fallback children**. `maxLanes` caps the built lane list **by count in builder order** — it is not a "For You only" kind filter. `/home` is deliberately **excluded**. Rejected: mounting on all three hosts; a `'foryou'`-kind filter; courses-only.
+
+**Rationale:** Conv 427 (`9b0c5dff`) replaced two ungated `overflow-x-auto` carousels with the right-rail `<aside>`, which is gated at `lg` — **1025px** in this project, not the stock 1024 (`tokens-tailwind-bridge.css:319`, Conv 175). Below that a signed-in member with declared interests saw `/courses` identical to an anonymous visitor. A kind-filter would have been worse than the defect it fixed: `lanes.ts:108` skips the For You lane entirely when the viewer has no interests, and signed-out visitors never have any — so every visitor would get an **empty** panel. First-available-by-count gives members For You and everyone else Trending. Home is excluded because `SmartFeed` already renders interest-matched `SuggestionCard`s from the *same* rails blob with no breakpoint gating, so a second mount would duplicate it in one scroll.
+
+**Consequences:** Verified live at 375/320 via the responsive iframe harness, count-not-filter proven in both directions. Two islands per host now hydrate at every viewport, which forced in-flight de-duplication into `loadDiscoveryRails` (both missed a cold cache in the same tick). `DiscoveryRails`' doc comment, which falsely claimed "no panel chrome", was corrected. Nothing in the five gates can detect a surface vanishing behind a media query — the third instance of the `[MINWIDTH]`/`[SIDEBAR-COLLIDE]` blind spot.
+
+**See:** `src/components/discovery/DiscoveryRails.tsx`; `src/lib/discovery-rails/client.ts`; `plan/discovery-aside/README.md`; `docs/sessions/2026-07/20260729_1331 Decisions.md` §§1,2, Learnings §§4,8; Conv 431.
+
+---
+
 ### Course Status Renders as **Three** States on Creator Surfaces (Retired / Active / Draft) — `is_active` and `is_retired` Are Independent; `CourseCreatedCard` Deleted Once Its Model Shipped (Conv 429)
 **Date:** 2026-07-29 (Conv 429)
 

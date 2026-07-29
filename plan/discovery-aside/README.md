@@ -121,6 +121,7 @@ Gates: 5 green — `tsc` clean · `astro check` 0 errors · lint 0 errors (164 p
 - [x] Identity is **slug**, not id: it's in the URL on both entity pages, unique per entity type, and what the rendered links already use. The course page's parent community (`courses.ts:122-127`) carries no `id`, so slug avoided changing a shared loader.
 - [x] `RecordVisit.tsx` — headless `client:load` island on both entity pages. Chosen over an inline `<script define:vars>` because **`define:vars` has zero uses in this codebase**, while every other client-side effect on those pages is already an island.
 - [x] `src/lib/discovery-rails/recent-lane.ts` — pure splice, kept out of `lanes.ts` (that module is pure over the *blob*; recency is per-device client state with a different lifetime)
+- [x] Type contract: `RailEntity.reason` widened to `RailKind | 'recent'`, and `'recent'` added to `LaneKind` but **deliberately absent from `LANE_ORDER`** — the recency lane is *spliced*, never emitted by the builder. Widening `reason` immediately broke a test helper that assigned `items[0].reason` into a blob rail's `kind`; that break was correct (a *blob* rail genuinely cannot be `'recent'`) and was fixed by narrowing the helper rather than casting. Anything touching `lanes.ts` in Phase 4 must preserve both halves.
 - [x] Per-item remove control, **lane-scoped and time-based**: a removal stamps a time; an entry is hidden while `removedAt >= visitedAt`, so **re-visiting resurrects it**. Never suppresses the entity from For You / Trending — those are a different claim.
 - [x] Deliberately **not** built on `ephemeral-dismiss.ts`. That module disables persistence in dev/staging so QA sees all dismissible chrome; removing a row here is a **list edit**, not chrome dismissal, so it persists everywhere. *(This supersedes the 🟠 caveat recorded earlier in this file's Cross-references — it does not apply.)*
 
@@ -156,6 +157,8 @@ The direct tick-bump in `handleRemove` was **removed**, leaving one path: mutate
 | after resizing past `lg` | — | no stale row |
 
 Cross-tab confirmed with two real tabs: Tab B's list went from two rows to one after Tab A removed an entry, with no navigation in Tab B.
+
+⚠️ **The dev seed masks this lane, the same way it masks `maxItems={3}`.** With 6 courses and 4 communities, For You claims nearly everything, so the recency lane rarely surfaces at all — the systematic starvation is a *consequence* of the after-For-You placement, visible immediately at seed scale and much less likely at production scale. Both behaviours are pinned by unit test; neither is provable live at this data volume. Worth re-measuring against a larger dataset before either is next changed.
 
 Suite **6284 → 6289** (+5: 4 store-subscription, 1 two-island component test that reproduces the defect as it actually occurred).
 

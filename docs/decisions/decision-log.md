@@ -2354,3 +2354,47 @@ The three role workspaces adopt **no new sourcing model**: the rule already exis
 **Consequences:** `/learning` drops from 4 requests to 3. Made `[CMPL-NOBUMP]` a **hard prerequisite** — without the `data_version` bump moving inside `onEnrollmentCompleted`, diplomas would have moved from fetch-fresh into the 30s-stale set. Route map regenerated in both repos.
 
 **See:** `docs/decisions/03-api-data-fetching.md` entry; `docs/sessions/2026-07/20260729_0843 Decisions.md` §§2,3, Learnings §§4,8; Conv 430.
+
+### [REC-MOBILE] Discovery Rails Get a Narrow-Screen Mount on `/courses` + `/communities` — `maxLanes` Is a **Count**, Not a Lane-Kind Filter (Conv 431)
+**Date:** 2026-07-29 (Conv 431)
+
+`DiscoveryRails` gains a `maxLanes` prop and is mounted a second time, `lg:hidden`, at `maxLanes={1}` on `/courses` and `/communities` **with no fallback children**. `maxLanes` caps the built lane list **by count in builder order** — it is not a "For You only" kind filter. `/home` is deliberately **excluded**. Rejected: mounting on all three hosts; a `'foryou'`-kind filter; courses-only.
+
+**Rationale:** Conv 427 (`9b0c5dff`) replaced two ungated `overflow-x-auto` carousels with the right-rail `<aside>`, which is gated at `lg` — **1025px** in this project, not the stock 1024 (`tokens-tailwind-bridge.css:319`, Conv 175). Below that a signed-in member with declared interests saw `/courses` identical to an anonymous visitor. A kind-filter would have been worse than the defect it fixed: `lanes.ts:108` skips the For You lane entirely when the viewer has no interests, and signed-out visitors never have any — so every visitor would get an **empty** panel. Home is excluded because `SmartFeed` already renders interest-matched `SuggestionCard`s from the *same* rails blob with no breakpoint gating.
+
+**Consequences:** Verified live at 375/320 via the responsive iframe harness. Two islands per host now hydrate at every viewport, which forced in-flight de-duplication into `loadDiscoveryRails`. `DiscoveryRails`' doc comment, which falsely claimed "no panel chrome", was corrected. Nothing in the five gates can detect a surface vanishing behind a media query — the third instance of the `[MINWIDTH]`/`[SIDEBAR-COLLIDE]` blind spot.
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `src/components/discovery/DiscoveryRails.tsx`; `plan/discovery-aside/README.md`; `docs/sessions/2026-07/20260729_1331 Decisions.md` §§1,2, Learnings §§4,8; Conv 431.
+
+### [REC-RECENT] Visit History Is a Client-Side **Denormalized Snapshot** in localStorage, Keyed by Slug — No Endpoint, No Table (Conv 431)
+**Date:** 2026-07-29 (Conv 431)
+
+Recently-visited courses and communities are stored by `src/lib/recent-visits.ts` in **localStorage**, as a capped (20) newest-first list of **display fields captured at visit time**, keyed by `visitKey(entityType, slug)` — not `id`. Recording is a headless `client:load` island (`RecordVisit.tsx`); the lane is spliced in after **For You** by `recent-lane.ts`. `/communities` gets a **recency bridge** — parent communities of recently-visited courses — rather than a generic course lane. Removal stamps a time (`removedAt >= visitedAt`), so **re-visiting resurrects** the entry. Rejected: a D1 table + resolve endpoint; a localStorage↔D1 mirror; reusing `feed_visits`; `define:vars`; adding `id` to the shared course loader; a generic course lane on `/communities`.
+
+**Rationale:** Every rail is built `LIMIT topN`, so the blob **cannot** render an arbitrary recently-visited entity — the snapshot removes the need for any lookup, settling storage before durability was weighed. A server-only store would serve *fewer* people than the client one, since signed-out visitors browse the catalogs and would get nothing — structurally the same defect `[REC-MOBILE]` had just fixed. `feed_visits` is a trap: it records the Feed **tab** (both entity pages default to `tab='about'`) and its `last_visited_at` is load-bearing for unread-post badges.
+
+**Consequences:** No new endpoint, no request, no schema; cross-device continuity is the cost, addable later as a mirror. Recency after For You is systematically starved when For You claims the same entity. The remove control is deliberately **not** built on `ephemeral-dismiss` — removing a row is a **list edit**, not hidden chrome — so removal persists in every environment. `RailEntity.reason` widened to `RailKind | 'recent'`; `'recent'` added to `LaneKind` but absent from `LANE_ORDER`.
+
+**See:** `docs/decisions/01-architecture.md` entry; `src/lib/recent-visits.ts`; `plan/discovery-aside/README.md`; `docs/sessions/2026-07/20260729_1331 Decisions.md` §§3,4,5,6,7,8, Learnings §§5,7; Conv 431.
+
+### A Client Store Backing More Than One Island Exposes `subscribe*()` + a Named `window` `CustomEvent`; the `storage` Event Covers **Only** the Cross-Tab Case (Conv 431)
+**Date:** 2026-07-29 (Conv 431)
+
+Any client-side store module read by more than one island exposes a `subscribe*()` function and dispatches a named `window` `CustomEvent` from **every** mutator; consumers subscribe in an effect and bump a tick. The **same** subscribe function also registers a `storage` listener filtered to the store's keys, for the cross-tab case. `subscribeRecentVisits()` + `notifyChange()` implement this; the direct tick-bump in the remove handler was removed, leaving one update path. Rejected: `storage` alone; carrying the stale-sibling limitation as a known issue.
+
+**Rationale:** The `storage` event is fired by spec **only in other documents**, never in the one that made the write — so it structurally cannot synchronise two islands in the same page, which is the common case here. The codebase already had the in-document half (`courses:filterchange`, `communities:filterchange`, `lib/auth-modal.ts`'s `notifyChange`), so this codifies an existing pattern rather than introducing one. The single-path shape also moves the `setState` into a subscription **callback**, which `set-state-in-effect` explicitly permits, so lint held at its 164 baseline.
+
+**Consequences:** Verified live in both dimensions, including two real browser tabs. Cross-tab sync was delivered beyond the reported issue and flagged as an addition rather than folded in silently.
+
+**See:** `docs/decisions/01-architecture.md` entry; `src/lib/recent-visits.ts`; `docs/sessions/2026-07/20260729_1331 Decisions.md` §10, Learnings §3; Conv 431.
+
+### [COMM-TOPICS] Creators Are the **Primary but Not the Sole** Source of Community Tags — Capped, Unioned With the Derived Roll-Up, Moderator-Editable (Conv 431)
+**Date:** 2026-07-29 (Conv 431)
+
+Communities get a `community_tags` join table — the **third instance** of the existing `course_tags` / `user_tags` pattern, so storage is precedent and only assignment policy was open. Policy: **owner-assigned**, pre-seeded from the creator's `user_tags`, **capped in tag count**, **unioned** with today's derived roll-up (materialized as the backfill), moderator-editable, admin-overridable. The cap is **retrofitted onto courses** in the same phase. Rejected: creators as sole source with no cap (today's course behaviour); derivation-only.
+
+**Rationale:** The Discovery Rails changed what a tag is worth — from a filing system the *user* pulls to a **distribution channel the platform pushes** — and `lanes.ts:124` ranks by overlap count, so claiming more topics ranks you higher. Courses are already creator-sole-source (`/api/me/courses/[id]/index.ts:295`) with **no cap** (`:434-450` is an unbounded `for` over `body.tags`), so claiming all 55 tags is one API call and the hole pre-dates this work. Plus drift with no correction path, ownership outliving attention, no feedback loop, and taxonomy unfamiliarity. The cap is calibrated from real usage — 55 tags exist; courses average **2.5**, max **3**.
+
+**Consequences:** Phase 4 (`[COMM-TOPICS]`) carries the cap as its non-negotiable item, with the courses retrofit riding along. One decision stays open: **tag-level vs topic-level** (leaning tags — `tags.topic_id NOT NULL` rolls up for free and `scoring.ts:176` scores at tag granularity). Measured, 3 of 4 seeded communities already resolve derived topics, so the gap the rails expose is a **cold-start hole** (`lanes.ts:119` only scores `overlap > 0`), not an absence of interest-awareness.
+
+**See:** `docs/decisions/02-database.md` entry; `src/lib/discovery-rails/compute.ts`; `plan/discovery-aside/README.md` Phase 4; `docs/sessions/2026-07/20260729_1331 Decisions.md` §9; Conv 431.

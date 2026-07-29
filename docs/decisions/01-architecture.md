@@ -3,6 +3,32 @@
 
 ## 1. Architecture & Design (Highest Impact)
 
+### [REC-RECENT] Visit History Is a Client-Side **Denormalized Snapshot** in localStorage, Keyed by Slug — No Endpoint, No Table (Conv 431)
+**Date:** 2026-07-29 (Conv 431)
+
+Recently-visited courses and communities are stored by `src/lib/recent-visits.ts` in **localStorage**, as a capped (20) newest-first list of **display fields captured at visit time** — not ids resolved later. Entities are keyed by `visitKey(entityType, slug)`, **not** `id`. Recording is a headless `client:load` island (`RecordVisit.tsx`) on both entity pages; the lane is spliced in after **For You** by `recent-lane.ts`, preserving the one-lane-per-entity claim invariant. `/communities` gets a **recency bridge** — parent communities of recently-visited courses — rather than a generic course lane. Removal stamps a time (`removedAt >= visitedAt`), so **re-visiting resurrects** the entry, and it never suppresses the entity from For You / Trending. Rejected: a D1 table + resolve endpoint; a localStorage↔D1 mirror; reusing `feed_visits`; `define:vars` for the page payload; adding `id` to the shared course loader; a generic course lane on `/communities`.
+
+**Rationale:** Every rail is built `LIMIT topN`, so the blob **cannot** render an arbitrary recently-visited entity — the snapshot removes the need for any lookup, which settled storage before durability was even weighed. A server-only store would also serve *fewer* people than the client one, since signed-out visitors browse the catalogs and would get nothing — structurally the same defect `[REC-MOBILE]` had just fixed. `feed_visits` is a trap: it records the Feed **tab** (both entity pages default to `tab='about'`) and its `last_visited_at` is load-bearing for unread-post badges, so writing to it would silently clear them. Slug is in the URL on both pages, unique per entity type, and already what the rendered links use. The aside is a narrow column where each lane pushes the next below the fold, and Home already exists as the both-types surface, so the bridge is the coherent version of "add courses to `/communities`".
+
+**Consequences:** No new endpoint, no request, no schema; cross-device continuity is the cost, addable later as a mirror without redesign. With `maxLanes={1}` shipped, recency **after** For You means recency is systematically starved when For You claims the same entity — visible in the small dev seed, less likely at production scale. The remove control is deliberately **not** built on `ephemeral-dismiss` (which suppresses persistence in dev/staging so QA sees all dismissible *chrome*): removing a row is a **list edit** — an absent row is data, not hidden furniture — so removal persists in every environment and the plan's recorded caveat was struck through. `RailEntity.reason` widened to `RailKind | 'recent'`; `'recent'` added to `LaneKind` but deliberately absent from `LANE_ORDER`. The remove `<button>` renders as a **sibling** of the anchor (a button inside an `<a>` is invalid HTML).
+
+**See:** `src/lib/recent-visits.ts`; `src/lib/discovery-rails/recent-lane.ts`; `src/components/discovery/RecordVisit.tsx`; `plan/discovery-aside/README.md`; `docs/sessions/2026-07/20260729_1331 Decisions.md` §§3,4,5,6,7,8, Learnings §§5,7; Conv 431.
+
+---
+
+### A Client Store Backing More Than One Island Exposes `subscribe*()` + a Named `window` `CustomEvent`; the `storage` Event Covers **Only** the Cross-Tab Case (Conv 431)
+**Date:** 2026-07-29 (Conv 431)
+
+Any client-side store module read by more than one island exposes a `subscribe*()` function and dispatches a named `window` `CustomEvent` from **every** mutator; consumers subscribe in an effect and bump a tick. The **same** subscribe function also registers a `storage` listener filtered to the store's keys, for the cross-tab case. `subscribeRecentVisits()` + `notifyChange()` implement this for `recent-visits.ts`; the direct tick-bump in the remove handler was **removed**, leaving one update path. Rejected: `storage` alone; carrying the stale-sibling limitation as a known issue.
+
+**Rationale:** The `storage` event is fired by spec **only in other documents**, never in the one that made the write — so it structurally cannot synchronise two islands in the same page, which is the common case here (each host mounts `DiscoveryRails` twice, `lg:hidden` + `<aside>`). Same-document sync needs an in-document channel; the two are different mechanisms and both are needed for full coverage. The codebase already had the in-document half — `courses:filterchange`, `communities:filterchange`, `lib/auth-modal.ts`'s `notifyChange` — so this codifies an existing pattern rather than introducing one. The single-path shape also moves the `setState` into a subscription **callback**, which the `set-state-in-effect` lint rule explicitly permits, so lint held at its 164 baseline.
+
+**Consequences:** Verified live in both dimensions, including two real browser tabs. Cross-tab sync was delivered beyond the reported issue and flagged to the user as an addition rather than folded in silently.
+
+**See:** `src/lib/recent-visits.ts`; `src/lib/auth-modal.ts`; `docs/sessions/2026-07/20260729_1331 Decisions.md` §10, Learnings §3; Conv 431.
+
+---
+
 ### [MKTDEAD] Dead Code Is Deleted, Not Parked — the 56 Orphaned Marketing/Admin-Intel Components Removed (Conv 419)
 **Date:** 2026-07-26 (Conv 419)
 
