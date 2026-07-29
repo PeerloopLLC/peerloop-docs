@@ -10,7 +10,7 @@
 ## Quick Stats
 
 - **Pages scanned:** 67
-- **API endpoints found in UI:** 218
+- **API endpoints found in UI:** 217
 - **Routes reachable from navbar:** 53
 - **Unreachable routes:** 35
 
@@ -369,7 +369,6 @@ Which API calls does each page make?
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
 | GET | `/api/me/certificates` | src/components/dashboard/CertificatesSection.tsx |
-| GET | `/api/me/diplomas` | src/components/dashboard/DiplomasSection.tsx |
 | GET | `/api/me/feed-badges` | src/components/dashboard/MyFeeds.tsx |
 | GET | `/api/sessions` | src/components/dashboard/StudentDashboard.tsx |
 
@@ -636,7 +635,6 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/me/creator-analytics/teacher-performance` | `/creating/[...tab]` |
 | `GET /api/me/creator-dashboard` | `/creating/[...tab]` |
 | `GET /api/me/creator-earnings` | `/creating/[...tab]` |
-| `GET /api/me/diplomas` | `/learning/[...tab]` |
 | `GET /api/me/feed-badges` | `/creating/[...tab]`, `/learning/[...tab]`, `/teaching/[...tab]` |
 | `GET /api/me/notifications` | `/notifications` |
 | `GET /api/me/onboarding-profile` | `/onboarding`, `/profile/[...tab]` |

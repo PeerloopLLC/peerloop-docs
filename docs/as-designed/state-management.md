@@ -300,6 +300,30 @@ This supersedes the earlier "summary vs. detail" rule which was: *"If data answe
 - `MyCourses` migrated from `fetch('/api/me/enrollments')` to `useCurrentUser().getEnrollments()`; `/api/me/enrollments` endpoint + tests deleted (zero src callers).
 - `UserProfile.tsx` deleted as dead code (zero callers across `src/` and `.astro`). Its phantom call to `/api/me/stats` (endpoint never existed — silently swallowed by `.catch(() => null)`) removed with it.
 
+**Redundancy eliminations (Conv 430, `[WS-DATA-MODEL]`):**
+- `DiplomasSection` migrated from `fetch('/api/me/diplomas')` to `useCurrentUser().getDiplomas()`; endpoint + tests deleted. A Diploma has no table — it **is** the completed enrollment, so the endpoint was selecting the same rows from the same join CurrentUser had already loaded. `UserEnrollment` gained `enrollmentId` (to address `/diploma/{id}`) and `diplomaAwardedAt`, both from the enrollment row `/api/me/full` already reads.
+- Audited against this principle: **1 hit across all 18 `/api/me/*` endpoints.** `/api/me/certificates` was checked and **kept** — `certificates` is a genuinely separate table from `teacher_certifications`, with its own id/type/status/issued_at/certificate_url that no CurrentUser field mirrors.
+
+#### Scope of this principle (decided Conv 430)
+
+The principle governs **whole-endpoint redundancy and wrong-source reads**. It does **not** require trimming individually-derivable fields out of an endpoint that has to exist anyway.
+
+So `teaching_courses[]` and `stats.students_helped_total` stay on `/api/me/creator-dashboard` and `/api/me/teacher-dashboard` even though both are derivable from CurrentUser's certification map: those endpoints must exist regardless (for other users' rows and money), and moving a *counter* onto CurrentUser trades fetch-fresh for up-to-30s-stale, which is the wrong direction for a number the user reads as current.
+
+**Where the line actually falls — the freshness contract.** CurrentUser is localStorage-cached and revalidated by the 30s version poll, so everything it carries may be up to 30s stale (§ Staleness Contract). That is exactly the tolerance profile of *identity* and *the viewer's own course relationships*, and exactly not the profile of *money, review queues, session schedules, and other people's state*. The split isn't a compromise between two styles — it is that contract:
+
+| Datum | Source | Why |
+|---|---|---|
+| Identity, capabilities, own enrollments / certifications / created courses, feed index | **CurrentUser** | Already loaded for permission checks; tolerates the 30s window |
+| Other users' rows (students, teachers), earnings, session schedules, pending-action counts, credential records | **Endpoint** | Must be current; not carried by CurrentUser and shouldn't be |
+
+Read this together with **What does NOT bump `data_version`** above — the two lists are the same boundary seen from either side.
+
+**Two correctness preconditions** (both were violated and fixed in Conv 430):
+
+1. **`/api/me/full`'s queries must filter soft-deletes.** They didn't, while `/api/me/creator-dashboard` did — so the two sources disagreed about soft-deleted rows, and a creator whose only course was soft-deleted still read `isCreator === true` (Sidebar offered the creator workspace; `useRoleGate` reported `hasEntities: true`) for a workspace that then rendered empty. `fetchEnrollments`, `fetchTeacherCertifications` and `fetchCreatedCourses` now all filter `deleted_at IS NULL`, guarded in `tests/api/me/full.test.ts`.
+2. **Every mutation path must bump `data_version`, not just the API endpoints.** `onEnrollmentCompleted` is reached from three paths and only two of them bumped; the third (`lib/booking.ts → triggerPostSessionActions`) is the one the BBB webhook and the cleanup cron take — i.e. the real end-of-session path. A student who finished their last session kept `status: 'in_progress'` in their cached CurrentUser until a full page load, so `/learning` showed "Continue Learning" for a completed course and polling could not see it. The bump now lives **inside** `onEnrollmentCompleted`, guarded in `tests/lib/completion.test.ts`. When a mutation helper is shared across paths, bump in the helper, not the callers.
+
 ### All Refresh Triggers
 
 | Trigger | Implemented | Location |
