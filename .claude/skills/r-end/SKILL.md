@@ -290,6 +290,10 @@ PRUNE MANIFEST: After writing your output files, record which Extract lines you 
 You can batch this: echo -e "79\n80\n81\n82" >> ~/projects/peerloop-docs/.extract-manifest.txt
 Only record lines whose content you actually copied — not lines you merely read for context.
 NOTE: Do NOT write to `/tmp` — the subagent sandbox blocks it. The manifest path above is the only supported location.
+NOTE: Only line numbers inside the §Learnings and §Decisions BODIES are eligible; the pruner
+ignores anything outside them ([PRUNESAFE], Conv 430). So a stray line number cannot damage the
+Extract — but recording lines you did not copy still costs those learnings their place in the
+Extract, so the instruction above stands.
 
 When done, respond with EXACTLY this format:
 LEARN-DECIDE COMPLETE
@@ -428,25 +432,25 @@ If §Uncategorized is "None", display nothing.
 
 Agent 1 (learn-decide) appended consumed line numbers to `~/projects/peerloop-docs/.extract-manifest.txt` during its work. Now use this manifest to prune the Extract of duplicated §Learnings and §Decisions content. All other sections (including §Changes, §Prompts & Actions, §Conv Prompts) remain in the Extract — there is no Dev.md to duplicate them.
 
-**How to prune:**
+**How to prune — run the script, do not hand-prune:**
 
-1. Read `~/projects/peerloop-docs/.extract-manifest.txt`. It contains one line number per line (integers). If empty or missing, skip pruning (agent may have found nothing to consume).
+```bash
+node ~/projects/peerloop-docs/.claude/scripts/extract-prune.mjs \
+  "{EXTRACT_PATH}" ~/projects/peerloop-docs/.extract-manifest.txt
+rm -f ~/projects/peerloop-docs/.extract-manifest.txt
+```
 
-2. Read the Extract file to get its current content.
+The script computes the `## Learnings` and `## Decisions` body spans from the Extract's own heading positions, **intersects the manifest with those spans**, deletes only what survives (descending, so line numbers stay valid), and inserts a `→ See \`{FILENAME} Learnings.md\`` / `Decisions.md` pointer wherever a body is left empty. Report its output in Step 4's summary — in particular the `IGNORED (out-of-span)` count.
 
-3. Sort the manifest line numbers in **descending order** (highest first).
+**Exit codes:** `0` pruned (or nothing to do — empty/missing manifest is normal) · `2` Extract unreadable or no prunable headings found · `3` refused, safety belt tripped (>50% of the file), Extract untouched. On `2` or `3`, leave the Extract as-is and surface a 🔴 alert rather than hand-pruning.
 
-4. Remove each listed line from the Extract, working top-down through the sorted list. Descending order ensures earlier line numbers remain valid as later lines are deleted.
+**Why a script and not instructions ([PRUNESAFE], Conv 430).** This step used to be prose telling Claude to delete every line the manifest listed. The manifest is written by the learn-decide subagent under the instruction *"only record lines whose content you actually copied — not lines you merely read for context"* — a self-report about its own copying, which is exactly the kind of judgment that drifts. In Conv 429 it recorded **140** lines, many merely referenced, and the prune honoured all of them: §Prompts & Actions lost narrative, **§Completed went from 8 items to 1**, and §Open Questions and §New Patterns were emptied. Since the Extract is the primary conv record (there is no Dev.md), that is content loss, not deduplication — it had to be rebuilt by hand.
 
-5. Where a removed section leaves an orphaned `## Heading` with no content before the next heading, insert a pointer line:
-   - Under `## Learnings`: `→ See \`{FILENAME} Learnings.md\``
-   - Under `## Decisions`: `→ See \`{FILENAME} Decisions.md\``
+Adding a sterner instruction would have been the same mechanism again. Restricting eligibility to the two section bodies makes every other section **unreachable by construction**, whatever the agent reports. The agent can still be wrong about which *learnings* it copied; it can no longer touch anything else.
 
-6. Clean up the manifest: `rm ~/projects/peerloop-docs/.extract-manifest.txt`
+**Calibration:** `.claude/scripts/extract-prune.test.sh` (19 assertions) reconstructs the Conv-429 case and asserts both directions — the filtered prune leaves every other section intact, and the *unfiltered* prune still destroys them, so the fixture is genuinely exercising the bug. Run it after any edit to the pruner.
 
-**Why this works:** The Extract is immutable after Step 2 — no agent writes to it, so line numbers recorded during agent execution remain valid. Descending-order deletion prevents line-number cascade.
-
-**If manifest is empty:** No pruning needed — agent consumed nothing (unusual but safe). The Extract stays as-is.
+**Note on the Extract's immutability:** it is unchanged after Step 2 — no agent writes to it — so the line numbers recorded during agent execution stay valid.
 
 ### Step 4c: REASSESS OPUS TAGS
 

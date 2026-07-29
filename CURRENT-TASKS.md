@@ -65,7 +65,6 @@
 38. [VPHARNESS](#vpharness) — persist the exact-size iframe harness as a script
 39. [RATING-COUNT-DEAD](#rating-count-dead) — dead `rating_count` + "Active" vs "Published" split
 40. [PROVDOC](#provdoc) — `matt-provenance.md` §6a says "9 unmarked components"; registry has 22 + 38
-41. [PRUNESAFE](#prunesafe) — r-end Step 4b prune over-reached; constrain manifest to Learnings/Decisions spans
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -374,15 +373,6 @@
 - **What:** public/marketing route-group sweep (the only un-swept RG-* group; RTMIG-4 closed Conv 340 with it deferred). The 14 marketing pages live only in `/old/*`; root paths 404 by design. Revisit if/when the redesign is scheduled. Also gates `[ORPHAN-BACKLOG]` Cat-B.
 - **Refs:** `plan/route-migration/README.md § RG-PUBLIC disposition`.
 
-### [PRUNESAFE]
-
-- **State:** 📋 queued · surfaced by `/r-end` itself, Conv 429
-- **What:** `/r-end` Step 4b prunes the Extract using a manifest the learn-decide agent appends to. Its instruction is *"only record lines whose content you actually copied — not lines you merely read for context."* In Conv 429 the agent recorded **140** lines, many of which it had only referenced, so the prune stripped narrative out of **§Prompts & Actions**, cut **§Completed from 8 items to 1**, and emptied **§Open Questions** and **§New Patterns**. The Extract is the primary conv record ("No Dev.md — the Extract replaces it"), so this is content loss, not deduplication. Caught and reverted the same conv by rewriting the Extract by hand.
-- **Why it recurs:** the safeguard is *agent judgment about its own copying*, which is exactly the kind of self-report that drifts. Nothing structurally prevents a manifest line outside §Learnings/§Decisions from being honoured.
-- **Fix (durable):** constrain the prune to the §Learnings and §Decisions **line ranges** — compute those spans in the main context after writing the Extract, and intersect the manifest with them before deleting. A manifest line outside those spans is then ignored by construction, no matter what the agent reports. Optionally also refuse to prune if the manifest would remove more than ~N% of the file, as a second belt.
-- **Calibrate per `[CMH]`:** replay Conv 429's manifest against Conv 429's pre-prune Extract — the intersected prune must leave §Prompts & Actions, §Progress, §Changes and §Uncategorized byte-identical while still collapsing §Learnings/§Decisions to their pointers.
-- **Refs:** `.claude/skills/r-end/SKILL.md` Step 4b + the Agent-1 prompt's PRUNE MANIFEST block, `docs/sessions/2026-07/20260729_0649 Extract.md` (the affected record, restored).
-
 ### [PROVDOC]
 
 - **State:** 📋 queued · surfaced by the `/r-end` docs agent, Conv 429
@@ -592,6 +582,7 @@
 
 ## ✅ Done this conv
 
+- **[PRUNESAFE]** — the `/r-end` Step-4b prune is now a **script**, not an instruction. It computed nothing: it deleted every line the learn-decide agent's self-reported manifest listed, and in Conv 429 that manifest held 140 lines the agent had merely *read* — §Completed went 8 items → 1. `extract-prune.mjs` derives the §Learnings/§Decisions body spans from the Extract's own headings and **intersects the manifest with them**, so every other section is unreachable by construction, plus a >50% refusal belt. Calibrated both ways in `extract-prune.test.sh` (**19 assertions**): the filtered prune leaves the other sections intact *and* the unfiltered one still destroys them, so the fixture provably exercises the bug. ⚠️ The literal replay the task specified is **impossible** — Step 4b `rm`s the manifest and the Extract was only committed post-prune — so the canonical case is reconstructed from the real Extract's heading layout, not the original bytes.
 - **[WS-DATA-MODEL]** — settled: the workspace data model is the **already-documented** "Principle: Consume What's Loaded" (`state-management.md`, Conv 014), not a new rule. Option (a) was falsifiable — both aggregate endpoints are mostly other people's rows + money, which `CurrentUser` structurally cannot carry. Codified the scope the principle left open (whole-endpoint redundancy, **not** field-trimming), documented the freshness contract that is the real boundary, and closed the two divergences it exposed. Audited all 18 `/api/me/*`: **1 redundancy** → `/api/me/diplomas` retired (a Diploma has no table — it *is* the completed enrollment); `/api/me/certificates` checked and kept. Fixed two live defects found on the way (below). 5 gates green, suite 6219 → **6235**.
 - **[MEFULL-SOFTDEL]** (found by the audit) — `/api/me/full` never filtered `deleted_at` while `/api/me/creator-dashboard` did, so the two sources disagreed: a creator whose only course was soft-deleted still read `isCreator === true`, so the Sidebar offered a workspace that rendered empty. All three relationship queries now filter; 3 calibrated guards.
 - **[CMPL-NOBUMP]** (found by the audit) — `onEnrollmentCompleted` is reached from 3 paths and only 2 bumped `data_version`; the third is `lib/booking.ts`, i.e. the path the **BBB webhook and cleanup cron** take. A student finishing their last session saw **"Continue Learning" for a completed course** until a hard reload, invisible to the 30s poll. Bump moved into the shared helper; 5 guards in a new `tests/lib/completion.test.ts`.
