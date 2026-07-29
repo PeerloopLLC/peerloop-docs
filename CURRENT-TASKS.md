@@ -26,46 +26,46 @@
 > delete this note.
 
 1. [BRIAN-ARTIFACTS](#brian-artifacts) — 👀 external: the rationale artifacts his commits cite (MERGE-BRIAN itself is CLOSED)
-2. [CRS-CREATED-CARD](#crs-created-card) — last [CRS-ROLE-DORMANT] orphan; its rehome proved unbuildable
-3. [WS-DATA-MODEL](#ws-data-model) — role workspaces split CurrentUser-first vs API-first; pick one
-4. [REC-MOBILE](#rec-mobile) — no recommendations surface below `lg` after the rail rehome
-5. [SPACING-4X](#spacing-4x) — sweep for other 4× size artifacts Conv 423 preserved
-6. [A11Y](#a11y) — accessibility lint triage
-7. [RHOOKS](#rhooks) — react-hooks lint triage
-8. [KNIP](#knip) — dead-export oracle → gate
-9. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
-10. [EDITSAFE](#editsafe) — anchored-edit discipline
-11. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
-12. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
-13. [ROUTESTORIES-DRIFT](#routestories-drift) — route-stories.md §3 still documents dissolved /discover routes
-14. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
-15. [HOME-FIXES](#home-fixes) — Home route fix bucket
-16. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
-17. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
-18. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
-19. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
-20. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
-21. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
-22. [RSFD](#rsfd) — port `r-start-from-dirty`
-23. [DEPEXP](#depexp) — dependency-probe hygiene
-24. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
-25. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
-26. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
-27. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
-28. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
-29. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
-30. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
-31. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
-32. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
-33. [TLFMT](#tlfmt) — r-end ref documents a TIMELINE.md shape the file no longer uses
-34. [OUTLINE-V4B](#outline-v4b) — 3 residual `outline-none` sites the Conv-244 fix missed
-35. [ADMIN-OVFLW](#admin-ovflw) — 3 admin routes overflow horizontally (pre-existing, not Conv-423)
-36. [LH1](#lh1) — 23 typography tokens hardcode `line-height: 1` (TYPO-FDN axis)
-37. [BRIDGE-RESIZE](#bridge-resize) — `resize_window` silently ignores width
-38. [ICON-STATES](#icon-states) — Phase-5 tail: drive hidden/loading states over 528 call sites
-39. [GATEPAR](#gatepar) — `/w-codecheck` vs `npm run verify` diverged on the icon gate
-40. [VPHARNESS](#vpharness) — persist the exact-size iframe harness as a script
-41. [RATING-COUNT-DEAD](#rating-count-dead) — dead `rating_count` + "Active" vs "Published" split
+2. [WS-DATA-MODEL](#ws-data-model) — role workspaces split CurrentUser-first vs API-first; pick one
+3. [REC-MOBILE](#rec-mobile) — no recommendations surface below `lg` after the rail rehome
+4. [SPACING-4X](#spacing-4x) — sweep for other 4× size artifacts Conv 423 preserved
+5. [A11Y](#a11y) — accessibility lint triage
+6. [RHOOKS](#rhooks) — react-hooks lint triage
+7. [KNIP](#knip) — dead-export oracle → gate
+8. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
+9. [EDITSAFE](#editsafe) — anchored-edit discipline
+10. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
+11. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
+12. [ROUTESTORIES-DRIFT](#routestories-drift) — route-stories.md §3 still documents dissolved /discover routes
+13. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
+14. [HOME-FIXES](#home-fixes) — Home route fix bucket
+15. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
+16. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
+17. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
+18. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
+19. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
+20. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
+21. [RSFD](#rsfd) — port `r-start-from-dirty`
+22. [DEPEXP](#depexp) — dependency-probe hygiene
+23. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
+24. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
+25. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
+26. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
+27. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
+28. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
+29. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
+30. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
+31. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
+32. [TLFMT](#tlfmt) — r-end ref documents a TIMELINE.md shape the file no longer uses
+33. [OUTLINE-V4B](#outline-v4b) — 3 residual `outline-none` sites the Conv-244 fix missed
+34. [ADMIN-OVFLW](#admin-ovflw) — 3 admin routes overflow horizontally (pre-existing, not Conv-423)
+35. [LH1](#lh1) — 23 typography tokens hardcode `line-height: 1` (TYPO-FDN axis)
+36. [BRIDGE-RESIZE](#bridge-resize) — `resize_window` silently ignores width
+37. [ICON-STATES](#icon-states) — Phase-5 tail: drive hidden/loading states over 528 call sites
+38. [GATEPAR](#gatepar) — `/w-codecheck` vs `npm run verify` diverged on the icon gate
+39. [VPHARNESS](#vpharness) — persist the exact-size iframe harness as a script
+40. [RATING-COUNT-DEAD](#rating-count-dead) — dead `rating_count` + "Active" vs "Published" split
+41. [PROV-DANGLE](#prov-dangle) — `prov:sweep` is one-directional; 8 registry entries point at deleted files
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -183,16 +183,6 @@
 - **What:** deferred bucket of per-route fixes captured while sweeping the Courses route(s) — batch later. Sibling of `[HOME-FIXES]`.
 - **Holds (from the Conv-292 sweep):** `[FILTERS-RESPONSIVE]` (⟂ responsive/compact filters — the Conv-425 compact toolbar plausibly overlaps this but it was never verified against the original intent) + `[TYPO-REVIEW]` (⟂ app-wide typography).
 - **Added Conv 425 — role-tab empty states ignore their `sub` filter.** The all-tab empty state was fixed this conv to distinguish an empty catalog from over-narrow filters; the four ROLE tabs have the same defect class via a different trigger. Each branches on `q` only, so a student on `sub=completed` holding only in-progress enrolments reads *"You haven't enrolled in any courses yet."* — denying enrolments that exist. Same for teaching (`active`/`paused`), created (`published`/`draft`/`retired`) and moderating. Left unfixed deliberately: those tabs are dispositioned for retirement once `[ROLE-CRS-LIST]` lands (MERGE-BRIAN §2 M3), so fix them only if that gate slips. `src/components/courses/CoursesCatalog.tsx` ~lines 366/377/389/408.
-
-### [CRS-CREATED-CARD]
-
-- **State:** 📋 queued · your call · **premise re-traced Conv 429 — the recorded options are now stale**
-- **What:** `CourseCreatedCard` (61 lines) is the last orphan from `[CRS-ROLE-DORMANT]`. Zero consumers, zero tests.
-- **Origin traced (Conv 429):** Conv 222 created **four** sibling role cards for the `/courses` role tabs. Three were resolved in Conv 428 — `CourseProgressCard` → `/learning`, `CourseTeachingCard` → `/teaching`, `CourseModerationCard` deleted. This is the only one never homed, and the symmetric home (`/creating`) is exactly what its own docstring names: *"Matt-inspired re-build of the legacy dashboard `CreatorCourseCard` usage."* The Conv-428 disposition targeted `CreatorStudio`, which was never its stated target.
-- **🔴 The trace found a live defect, since FIXED (Conv 429, `50baeff2`).** The orphan implemented a correct **three-state** status (Retired/Published/Draft) that **both** live creator surfaces lacked — they rendered two states and never selected `is_retired`, so a retired course showed as "Active"/"Published" while `publish`/`unpublish` both reject it. Fixed on `/creating` and `/creating/communities/[slug]`, verified live, two calibrated regression guards added. **The dead component was encoding the correct model — deleting it before tracing would have thrown that away.**
-- **What it still uniquely offers, post-fix:** only its Matt styling and a rendered `ratingCount`. Everything else is now matched or bettered by `CreatorCourseCard` (which also has the discussion-feed toggle and the same View / Peer Teachers / Edit actions).
-- **Options:** (a) **delete** — its correctness lesson has been harvested into shipped code; git retains the styling · (b) rehome onto `/creating` replacing `CreatorCourseCard` — needs the discussion toggle ported **and** forces the `[WS-DATA-MODEL]` call (dashboard is API-first/snake_case, the orphan wants `UserCreatedCourse`/camelCase) · (c) leave parked behind `[WS-DATA-MODEL]`.
-- **Refs:** `src/components/courses/CourseCreatedCard.tsx`, `src/components/dashboard/CreatorCourseCard.tsx`, `src/components/creators/studio/CreatorStudio.tsx` (`CourseCard`), `[WS-DATA-MODEL]`, `[RATING-COUNT-DEAD]`.
 
 ### [DEPEXP]
 
@@ -383,6 +373,16 @@
 - **Icon dependency REMOVED (Conv 424):** `[ICON-TOK]`/`[ICON-4PX]` no longer wait on this gate — `BecomeATeacherPage` was fixed on the icon axis directly. This task is now only the *route-group sweep*.
 - **What:** public/marketing route-group sweep (the only un-swept RG-* group; RTMIG-4 closed Conv 340 with it deferred). The 14 marketing pages live only in `/old/*`; root paths 404 by design. Revisit if/when the redesign is scheduled. Also gates `[ORPHAN-BACKLOG]` Cat-B.
 - **Refs:** `plan/route-migration/README.md § RG-PUBLIC disposition`.
+
+### [PROV-DANGLE]
+
+- **State:** 📋 queued · surfaced Conv 429 while deleting `CourseCreatedCard`
+- **What:** `npm run prov:sweep` is **one-directional**. It detects components that stamp `data-prov-name` without a registry entry, but never the reverse — a registry entry whose file has been deleted. **8 entries currently point at files that do not exist**, and the sweep still reports *"Provenance bookkeeping is consistent."*
+- **The 8:** `ui/ActionCard.astro`, `marketing/StickySignupBar.astro`, `courses/CourseModerationCard.tsx` (deleted Conv 428), and five from the Conv-331 feeds/discovery retirement — `feed/FeedsHubPanel.tsx`, `feed/DiscoveryCard.tsx`, `feed/directory/{FeedDirectoryCard,FeedsDirectory,FeedsDiscoveryGrid}.tsx`.
+- **Why it matters:** this is Conv 428's lesson in the other direction. That conv established *"a red gate cannot detect a new offender"*; this is a **green** gate concealing 8 stale rows, which is worse in one respect — nothing prompts anyone to look. The registry is the input to the Figma-matching step, so dangling rows silently inflate what it claims to cover.
+- **Fix:** add a reverse check to `scripts/prov-sweep.ts` (every registry `path` must resolve to an existing file) and clear the 8. Calibrate per `[CMH]` first — inject a deleted-file entry, confirm the sweep goes red, confirm a clean registry stays green. Deleting a stamped component should fail the gate until its entry goes too, which is exactly what would have caught these at the time.
+- **Note:** Conv 429's own deletion removed its registry entry in the same commit, so it never became a 9th.
+- **Refs:** `../Peerloop/scripts/{prov-sweep.ts,matt-inspired-registry.ts}`, `plan/prim-registry/README.md`, `[PROV-SWEEP-DEBT2]` (Conv 428), `memory/project_feeds_hub`.
 
 ### [RATING-COUNT-DEAD]
 
@@ -600,4 +600,6 @@
 - **Port-kill spinoff sweep (S1–S5)** ✅ Conv 429 — the guarded pattern turned out to survive in **four** other places; swept all of them after the guard landed. **S1 `feedback_persistent_dev_server_4321.md` was a live self-contradiction** — it prescribed teardown as `lsof -ti :<port> | xargs kill`, i.e. a memory instructing the exact command the new hook escalates; rewritten to `npx astro dev stop`, plus the previously-unrecorded fact that **`npm run dev` daemonizes and returns exit 0**, which is *why* teardown must be explicit. **S2 `scripts/plato-restore-snapshot.js` carried a live conditional bug** (code repo): its D1-corruption guard used `lsof -ti:4321`, which matches processes holding a *connection*, so with a browser socket open and **no server running** it aborted a legitimate restore with *"Dev server is running on port 4321"* — during exactly the PLATO browser work the guard serves. Reproduced deliberately (a held client socket made the old logic abort citing Chrome's pids 79550/79551 while `curl` returned `000`), fixed to `lsof -iTCP:4321 -sTCP:LISTEN -t`, and verified **both directions**: proceeds with only a client socket, still aborts with a real server up. **S3 `scripts/dev-webhooks.sh`** same detection, warn-only — same one-line fix (live check now reports *"free"* correctly). **S4 `docs/decisions/06-testing-ci.md`** recorded the dangerous form as an adopted convention (category `manual`, so editable) — corrected. **S5 `[VITE-DEPS-WATCH]`** closed in PLAN.md: its "act if it recurs" gate had fired **twice** (Convs 418/420) and this conv identified both as the stale dep-optimizer variant with a known fix.
 - **🔴 [CRS-RETIRED-BADGE]** ✅ Conv 429 — **live defect found by tracing, fixed on two surfaces, proven live.** `courses.is_active` and `courses.is_retired` are **independent** columns (the admin PATCH sets `is_retired` without touching `is_active`), and the canonical three-state taxonomy lives in `api/admin/courses/index.ts:76-80`. Neither `/api/me/creator-dashboard` nor `/api/me/communities/[slug]/progressions` **selected `is_retired` at all**, and both cards rendered a two-state badge — so **a retired course displayed as "Active"/"Published" to its own creator**, while `publish.ts` and `unpublish.ts` both reject retired courses (*"Cannot publish a retired course. Unretire it first."*). The creator saw an active-looking course, acted, and got an error with nothing on screen explaining it. **Verified live, not by inspection:** set `is_retired=1` while leaving `is_active=1` — the exact broken combination — on a local seed course and read the rendered DOM at `/creating`; it now shows **"Retired"** in neutral grey beside three green "Active" siblings, where before it was indistinguishable. Seed restored. Draft moved to the warning ramp so it is distinct from Retired's neutral, matching `CreatorStudio`'s existing `getStatusBadge`. **Sweep confirmed complete:** all four surfaces that render a course Draft/Published badge are now retired-aware. tsc surfaced **three** duplicated local `Course` interfaces as the required field propagated. Two regression guards added and **calibrated per `[CMH]`** — each fails with `expected undefined` when the fix is reverted. 5 gates green, suite 6217 → **6219**; `prov:sweep` still green.
 - **🟠 `[RATING-COUNT-DEAD]` logged** — `rating_count` is SELECTed by `/api/me/creator-dashboard`, declared in the card's interface, and rendered nowhere; the orphan renders it. Also logged the "Active" vs "Published" vocabulary split between `/creating` and `/creating/studio` for the same state.
+- **[CRS-CREATED-CARD]** ✅ Conv 429 — **closed by deletion, but only after the trace that made deletion safe.** The static comparison said "dead code, zero consumers, zero tests, delete it" — and that was the recommendation until the user pushed back and asked where the three cards came from. Tracing found the orphan was the **only** place a correct three-state course status existed, which turned a cleanup question into `[CRS-RETIRED-BADGE]`, a live defect fixed on two surfaces. With its model shipped (`50baeff2`), what remained was Matt styling (recoverable from git) and a rendered `rating_count` (now `[RATING-COUNT-DEAD]`), so the component and its registry entry were removed together (`c086fefd`). 5 gates green, suite unchanged at **6219** — it genuinely had no tests — `prov:sweep` green. **Transferable:** dead code can be the last holder of a correct model; check what it *knows* before deleting it, not just who calls it.
+- **🟠 `[PROV-DANGLE]` logged** — while removing the registry entry, found the sweep is **one-directional**: it detects stamped-but-unregistered components, never registered-but-deleted ones. **8 entries point at files that no longer exist** (the Conv-331 feeds/discovery retirement, `[MKTDEAD]`, and Conv 428's `CourseModerationCard`) and `prov:sweep` still reports *"consistent"*. A green gate concealing 8 stale rows is the same failure Conv 428 named for red ones.
 
