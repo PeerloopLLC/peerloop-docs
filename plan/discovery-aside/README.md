@@ -137,9 +137,27 @@ Signed out, `/communities` led with **"Recently visited communities" → `/commu
 
 Home's aside gets recency for both types and shows **literal** history, not the bridge — on Home a course is a legitimate row.
 
-### Known limitation
+### Cross-island sync ✅ CLOSED (Conv 431, same conv)
 
-The two islands per host hold **independent** React state, so a removal on one doesn't propagate to the other. Not user-visible — only one renders per viewport — but resizing across `lg` after a removal shows the stale list until reload. Left as-is rather than adding cross-island sync for an edge case.
+Initially shipped as a known limitation — the two islands per host held **independent** React state, so a removal on one left the other stale and resizing across `lg` brought the removed row back until reload. Closed on the user's call rather than carried.
+
+`subscribeRecentVisits()` in the store, with `notifyChange()` fired by all three mutators (`recordVisit` / `removeRecentVisit` / `clearRecentVisits`). A window `CustomEvent`, matching how this codebase already does cross-island messaging (`courses:filterchange`, `communities:filterchange`, `lib/auth-modal.ts`'s own `notifyChange`).
+
+**The `storage` event cannot solve the same-document case** — the spec fires it only in *other* documents, never the one that made the write. It is subscribed to as well, which closes the same defect one level out (cross-tab). That was an addition beyond the reported issue, made because it is the same subscription function and the identical defect class.
+
+The direct tick-bump in `handleRemove` was **removed**, leaving one path: mutate the store, everybody re-reads — including the island that made the change, since `dispatchEvent` also runs listeners on the dispatching window. The `setState` now lives in a subscription *callback*, which is the case the `set-state-in-effect` rule explicitly permits, so lint stayed at its 164 baseline.
+
+**Verified live, both dimensions:**
+
+| | before | after remove on ONE island |
+|---|---|---|
+| narrow mount (clicked) | `vibe-coding-101`, `ai-tools-overview` | `ai-tools-overview` |
+| aside (not clicked) | `vibe-coding-101`, `ai-tools-overview` | **`ai-tools-overview`** |
+| after resizing past `lg` | — | no stale row |
+
+Cross-tab confirmed with two real tabs: Tab B's list went from two rows to one after Tab A removed an entry, with no navigation in Tab B.
+
+Suite **6284 → 6289** (+5: 4 store-subscription, 1 two-island component test that reproduces the defect as it actually occurred).
 
 Gates: 5 green — suite **6247 → 6284** (+37: 20 store, 12 lane-splice, 5 component); lint back at the 164 baseline (the first version added a `set-state-in-effect` warning; replaced with a memo, since the component provably only reaches that code post-mount).
 
