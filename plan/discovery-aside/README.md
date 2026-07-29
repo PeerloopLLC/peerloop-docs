@@ -1,8 +1,8 @@
 # DISCOVERY-ASIDE — the recommendations aside: narrow screens, recency, and community interests
 
 **Focus:** Restore a recommendations surface below `lg`, add a Recently Visited section, and give communities first-class interest tags
-**Status:** 📋 DESIGN AGREED (Conv 431) — Phase 1 build-ready; Phases 2–4 need the open decisions below
-**Tasks:** `[REC-MOBILE]` (Phase 1) · Phases 2–4 unallocated
+**Status:** 🔥 IN PROGRESS — **Phases 1–3 COMPLETE (Conv 431)**; Phase 4 (`[COMM-TOPICS]`) designed and queued
+**Tasks:** `[REC-MOBILE]` (Ph1 ✅) · `[REC-RECENT]` (Ph2–3 ✅) · `[COMM-TOPICS]` (Ph4, queued)
 **Origin:** `[REC-REHOME]` (Conv 427) rehomed the two recommendation carousels into the right rail and accepted, explicitly, that narrow screens would lose the surface entirely. Conv 431 examined the consequence and the discussion expanded into recency + community taxonomy.
 
 ---
@@ -113,19 +113,35 @@ Gates: 5 green — `tsc` clean · `astro check` 0 errors · lint 0 errors (164 p
 
 ---
 
-## Phase 2 — visit tracking
+## Phases 2–3 — visit tracking + the Recently Visited lane ✅ COMPLETE (Conv 431)
 
-- [ ] New store (**not** `feed_visits` — see Finding 2), capped list
-- [ ] Record on the course/community page load (the entity visit, not the feed tab)
-- [ ] Parent-community resolution for courses, null-safe (Finding 3)
+**Storage: localStorage + denormalized snapshot** (user decision). The decisive constraint was one the plan hadn't named: every rail is built `LIMIT topN` (12 items), so **the blob cannot render an arbitrary recently-visited entity** — most visits aren't in it. Storing the display fields at visit time (the entity page has already rendered them) means the lane needs no lookup, no endpoint and no request, and it covers signed-out visitors. A server-only store would have served *fewer* people than the client one, repeating the defect Phase 1 just fixed.
 
----
+- [x] `src/lib/recent-visits.ts` — capped at 20, newest-first, de-duped per entity, injectable storage/clock
+- [x] Identity is **slug**, not id: it's in the URL on both entity pages, unique per entity type, and what the rendered links already use. The course page's parent community (`courses.ts:122-127`) carries no `id`, so slug avoided changing a shared loader.
+- [x] `RecordVisit.tsx` — headless `client:load` island on both entity pages. Chosen over an inline `<script define:vars>` because **`define:vars` has zero uses in this codebase**, while every other client-side effect on those pages is already an island.
+- [x] `src/lib/discovery-rails/recent-lane.ts` — pure splice, kept out of `lanes.ts` (that module is pure over the *blob*; recency is per-device client state with a different lifetime)
+- [x] Per-item remove control, **lane-scoped and time-based**: a removal stamps a time; an entry is hidden while `removedAt >= visitedAt`, so **re-visiting resurrects it**. Never suppresses the entity from For You / Trending — those are a different claim.
+- [x] Deliberately **not** built on `ephemeral-dismiss.ts`. That module disables persistence in dev/staging so QA sees all dismissible chrome; removing a row here is a **list edit**, not chrome dismissal, so it persists everywhere. *(This supersedes the 🟠 caveat recorded earlier in this file's Cross-references — it does not apply.)*
 
-## Phase 3 — Recently Visited lane + remove control
+### Placement and claim order — verified live, both directions
 
-- [ ] New lane kind, rendered as its own section of the aside
-- [ ] Per-page composition: `/communities` → visited communities **+ parent communities of visited courses**; `/courses` → visited courses; Home → both
-- [ ] Per-item remove control — **lane-scoped**: removes it from Recently Visited only; it may still appear in For You / Trending (user-specified: *"from being shown again just because of the recency"*)
+Recency lands **after For You** (user decision), so the narrow `maxLanes={1}` mount still leads with personalization. Claim order — `lanes.ts`'s "an entity appears in at most ONE lane" — is preserved through the splice:
+
+- Visiting `ai-tools-overview` produced **no** recency lane, because For You had already claimed it. Correct, and initially mistaken for a bug.
+- Visiting `vibe-coding-101` (which sat alone in *Popular*) put it in recency **and removed the Popular lane entirely** — emptied by the claim, so dropped rather than left as a bare heading.
+
+### The `/communities` bridge — verified
+
+Signed out, `/communities` led with **"Recently visited communities" → `/community/ai-for-you`**, derived purely from two visited **courses**, with no course anywhere on the page. That is the user's own design: import the course signal while keeping the page's entity type pure.
+
+Home's aside gets recency for both types and shows **literal** history, not the bridge — on Home a course is a legitimate row.
+
+### Known limitation
+
+The two islands per host hold **independent** React state, so a removal on one doesn't propagate to the other. Not user-visible — only one renders per viewport — but resizing across `lg` after a removal shows the stale list until reload. Left as-is rather than adding cross-island sync for an edge case.
+
+Gates: 5 green — suite **6247 → 6284** (+37: 20 store, 12 lane-splice, 5 component); lint back at the 164 baseline (the first version added a `set-state-in-effect` warning; replaced with a memo, since the component provably only reaches that code post-mount).
 
 **No generic course lane on `/communities`** (user decision, Conv 431). The aside is a narrow vertical column and every lane pushes the next below the fold; spending that budget on the entity type the user didn't come for is a poor trade, and Home already exists as the both-types surface. The recency bridge — *parent communities of recently visited courses* — imports the course signal while keeping the page's entity type pure, which is the more coherent version of the same impulse. If courses are ever wanted here for conversion reasons, make it contextual ("Courses in your communities") and place it last.
 
@@ -162,12 +178,12 @@ Other reasons sole-source is weak, recorded for future reference: **drift with n
 
 ## Open decisions
 
-1. **Where visit history lives.** localStorage covers signed-out visitors uniformly and needs no schema; a D1 table gives cross-device continuity but only for signed-in users. **Server-only would repeat the exact mistake this block fixes** — leaving one population with nothing.
-2. **Lane order — collides with Phase 1.** If Recently Visited leads and the narrow mount shows one lane, mobile *never* shows For You. These two cannot be decided independently.
-3. **Recency vs the single-claim rule.** `lanes.ts:130-138` claims each entity for one lane only, so a recently-visited entity would be claimed by that lane and vanish from For You. Probably right (no repeats), but it means recency cannibalises personalization.
-4. **Does re-visiting resurrect a removed item?** Remove semantics are lane-scoped (settled); persistence across a fresh visit is not.
+1. ✅ **SETTLED (Conv 431) — localStorage + snapshot.** localStorage covers signed-out visitors uniformly and needs no schema; a D1 table gives cross-device continuity but only for signed-in users. **Server-only would repeat the exact mistake this block fixes** — leaving one population with nothing.
+2. ✅ **SETTLED (Conv 431) — after For You.** If Recently Visited leads and the narrow mount shows one lane, mobile *never* shows For You. These two cannot be decided independently.
+3. ✅ **SETTLED (Conv 431) — recency respects claim order** (verified live both ways). `lanes.ts:130-138` claims each entity for one lane only, so a recently-visited entity would be claimed by that lane and vanish from For You. Probably right (no repeats), but it means recency cannibalises personalization.
+4. ✅ **SETTLED (Conv 431) — yes, re-visiting resurrects.** Remove semantics are lane-scoped (settled); persistence across a fresh visit is not.
 5. **Tag-level or topic-level for communities?** Consistency says tags — free roll-up, and `scoring.ts:176` scores the smart feed at *tag* granularity. But a community is a much coarser object than a course, and tag-level precision on a broad container may produce noise. Leaning tags; the first call in this design not settled by precedent.
-6. **Does Home get the narrow-screen mount?** Its feed already carries ungated interest-matched suggestion-cards, so a second surface duplicates. User said "each page"; recommendation is to skip Home for Phase 1 and give it recency in Phase 3.
+6. ✅ **SETTLED (Conv 431) — no.** Its feed already carries ungated interest-matched suggestion-cards, so a second surface duplicates. User said "each page"; recommendation is to skip Home for Phase 1 and give it recency in Phase 3.
 
 ---
 
@@ -177,4 +193,4 @@ Other reasons sole-source is weak, recorded for future reference: **drift with n
 - `[REC-REHOME]` origin + build log → `plan/merge-brian/README.md` § Build log §2 M4 + §3 N8
 - `[RECO-UNIFY]` #34 → `plan/home-feed-merge/` (Promoted / Peerloop Picks lanes still gated on `[PROMOTE-PIPELINE]` Steps 4-7)
 - Responsive verification → `memory/reference_responsive_iframe_harness` (`[VPHARNESS]` / `[MINWIDTH]`)
-- Dismiss persistence is disabled in dev + staging by design (`ephemeral-dismiss.ts`) — the remove control will not appear to stick there; expected, not a bug (`memory/project_ephemeral_dismiss_dev_staging`)
+- ~~Dismiss persistence is disabled in dev + staging (`ephemeral-dismiss.ts`)~~ — **superseded Conv 431**: the remove control is deliberately NOT built on that module (a list edit, not chrome dismissal), so it persists in dev and staging too. Verified live.
