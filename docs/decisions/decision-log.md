@@ -2299,3 +2299,36 @@ Breadcrumbs stay, the client branch's `←` back button is not built, and his st
 **Consequences:** +8 `[RHOOKS]`-class warnings; the CurrentUser-first vs API-first data-model split across the three workspaces deliberately deferred as `[WS-DATA-MODEL]`.
 
 **See:** `docs/decisions/04-auth.md` entry; `src/components/auth/useRoleGate.ts`; `docs/sessions/2026-07/20260728_1745 Decisions.md` §4, Learnings §6; Conv 428.
+
+### Dev-Server Teardown Is `npx astro dev stop`; Port-Liveness Checks Are LISTEN-Scoped — `lsof -ti:PORT` Is Banned Project-Wide (Conv 429)
+**Date:** 2026-07-29 (Conv 429)
+
+Teardown is `npx astro dev stop` (astro 7's `astro dev` daemonizes itself, writes `.astro/dev.json` with `{pid, port, url, background, startedAt}`, returns exit 0; `stop` kills exactly that pid) — `[DEVSRV-KILL]`'s requested PID-capturing wrapper is **not built**. Port liveness is `lsof -iTCP:PORT -sTCP:LISTEN -t`; bare `lsof -ti:PORT` is guarded by a docs-repo PreToolUse hook rule. Applied to `scripts/plato-restore-snapshot.js` and `scripts/dev-webhooks.sh`; supersedes the `lsof -ti:<port> | xargs kill` form previously recorded in `06-testing-ci.md` and `memory/feedback_persistent_dev_server_4321.md`.
+
+**Rationale:** `lsof -ti:PORT` lists every process holding a *connection*, not the listener — measured returning Chrome's NetworkService pid, so `kill $(lsof -ti:4321)` kills the browser used for live verification. `astro dev stop` was proven against the literal Conv-393 failure (squatted :4321 → fallback to :4322 → `stop` took ours, spared the squatter).
+
+**Consequences:** Fixed a live conditional bug in the PLATO restore guard (aborted a legitimate restore with "Dev server is running on port 4321" when only a browser connection was held). `[DEVSRV-STALE]` closed with all three brick variants root-caused, including the preflip-worktree trap: it runs astro 6.3.7, which has no `stop` subcommand, so `npx astro dev stop` there **starts** a pre-flip server on :4321. `[VITE-DEPS-WATCH]` closed on the same finding.
+
+**See:** `docs/decisions/06-testing-ci.md` entry; `scripts/plato-restore-snapshot.js`; `memory/reference_devserver_stale_daemon.md`; `docs/sessions/2026-07/20260729_0649 Decisions.md` §1, Learnings §§1,2,7; Conv 429.
+
+### Course Status Renders as **Three** States on Creator Surfaces (Retired / Active / Draft) — `CourseCreatedCard` Deleted Once Its Model Shipped (Conv 429)
+**Date:** 2026-07-29 (Conv 429)
+
+`is_active` and `is_retired` are independent columns, so `CreatorCourseCard` and `ProgressionCard` now render the canonical three-state taxonomy with `is_retired` checked first, and `is_retired` was added to the interface, SELECT and mapping of `/api/me/creator-dashboard` and `/api/me/communities/[slug]/progressions` (absent from both SELECTs). The orphan `CourseCreatedCard` — the only place the correct model existed — is deleted with its registry entry. Rejected: deleting the orphan on the static comparison; rehoming it (forces `[WS-DATA-MODEL]`); unifying the "Active"/"Published" wording inside the defect fix (logged as `[RATING-COUNT-DEAD]`). Closes `[CRS-CREATED-CARD]` and `[CRS-RETIRED-BADGE]`.
+
+**Rationale:** The two-state badges showed a retired course as "Active"/"Published" to its own creator, while `publish.ts:88` and `unpublish.ts:73` both reject retired courses — the creator acted on an active-looking course and got an unexplained error. The orphan's docstring named `CreatorCourseCard`, not `CreatorStudio`, as its intended replacement target, which is why Conv 428's rehome disposition proved unbuildable.
+
+**Consequences:** Verified live by driving `is_retired=1` with `is_active=1` (the exact broken combination) and reading the DOM at `/creating`. A defect-class sweep found the second instance (`ProgressionCard`); tsc surfaced three duplicated local `Course` interfaces; two calibrated regression guards added; suite unchanged at 6219.
+
+**See:** `docs/decisions/05-ui-ux-components.md` entry; `src/components/dashboard/CreatorCourseCard.tsx`; `docs/sessions/2026-07/20260729_0649 Decisions.md` §§3,4,5, Learnings §§3,6; Conv 429.
+
+### `prov:sweep` Existence-Checks **Both** Component Arrays — New Section 4b-ii Closes the Half-Bijection (Conv 429)
+**Date:** 2026-07-29 (Conv 429)
+
+`scripts/prov-sweep.ts` gains section 4b-ii, existence-checking `PHASE6_EXTRAPOLATION_CANDIDATES` (46 entries) the way 4b already checked `COMPONENT_CANDIDATES`. The 8 dangling rows it found — accumulated across six convs over ~two months, all confirmed genuine deletions — were cleared in the same commit. Rejected: clearing the 8 only; logging for later.
+
+**Rationale:** Clearing without the check re-runs the same accumulation, which reached 8 invisibly because the gate reported "consistent" throughout. A green gate conceals drift as effectively as a red one, and unlike a red gate nothing prompts a look.
+
+**Consequences:** Calibrated per `[CMH]` (injected → exit 1, removed → exit 0, 4b still fires). The first diagnosis — "the sweep is one-directional" — was wrong; the real defect was asymmetry between two interchangeable-looking arrays, distinguished only by reading the script.
+
+**See:** `docs/decisions/06-testing-ci.md` entry; `scripts/prov-sweep.ts`; `docs/sessions/2026-07/20260729_0649 Decisions.md` §6, Learnings §§4,5; Conv 429.

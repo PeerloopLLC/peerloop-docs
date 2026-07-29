@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-07-28 Conv 428 (MERGE-BRIAN closed — the client-branch review programme completes at all six units; the one external loose end becomes a watch, not an open block — §1)
+**Last Updated:** 2026-07-29 Conv 429 (`lsof` + `kill` escalates to an interactive ask in `guard-dangerous-bash.sh` — documentation alone had already failed, with the dangerous form actively prescribed by a memory file — §3)
 
 ---
 
@@ -550,6 +550,19 @@ The 4572-line `docs/DECISIONS.md` was split into a `docs/decisions/` folder: ele
 ---
 
 ## 3. Claude Code Workflow
+
+### `lsof` + `kill` Escalates to an Interactive `ask` in `guard-dangerous-bash.sh` — Documentation Alone Had Already Failed (Conv 429)
+**Date:** 2026-07-29 (Conv 429)
+
+A new PreToolUse rule in `.claude/hooks/guard-dangerous-bash.sh` escalates a bash command combining `lsof` with `kill` to an interactive **ask**, following the existing `has PATTERN → reason` chain. Rejected: documenting the hazard in memory only; denying outright. `ask` rather than `deny` because inspection-only `lsof` is legitimate and the guard's design is escalation, not prohibition — bare `lsof` and `npx astro dev stop` pass untouched.
+
+**Rationale:** `lsof -ti:PORT` returns every process holding a *connection* on the port, not the listener — measured returning Google Chrome's NetworkService pid alongside the dev server, so `kill $(lsof -ti:4321)` kills the browser used for live verification. Documentation had already failed at preventing this: `memory/feedback_persistent_dev_server_4321.md` was *actively prescribing* the dangerous form, and Conv 393's recorded `lsof -ti :4321 | grep 'astro dev'` cannot work at all (`lsof -ti` emits bare pids, so the grep matches nothing).
+
+**Consequences:** Calibrated per `[CMH]` before commit — 3 dangerous forms ask, 6 benign forms pass, both pre-existing rules still fire; false positives cost one confirmation. Adding the guard immediately created a contradiction the guard itself exposed: the pattern survived in four other places (a memory file instructing it, two code-repo scripts embodying it, and `docs/decisions/06-testing-ci.md` recording it as an adopted convention), all swept the same conv. **Standing lesson:** after adding a guard, grep the whole dual-repo for the guarded pattern — a guard that contradicts standing guidance produces friction, not safety.
+
+**See:** `.claude/hooks/guard-dangerous-bash.sh`; `memory/feedback_persistent_dev_server_4321.md`; `docs/decisions/06-testing-ci.md`; `docs/sessions/2026-07/20260729_0649 Decisions.md` §2, Learnings §§2,7; Conv 429.
+
+---
 
 ### Timecard Billing Protected by an Author Allowlist at the Commit-Extraction Choke Point (Conv 407)
 **Date:** 2026-07-22 (Conv 407)

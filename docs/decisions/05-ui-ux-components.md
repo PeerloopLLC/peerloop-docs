@@ -3,6 +3,19 @@
 
 ## 5. UI/UX & Components
 
+### Course Status Renders as **Three** States on Creator Surfaces (Retired / Active / Draft) — `is_active` and `is_retired` Are Independent; `CourseCreatedCard` Deleted Once Its Model Shipped (Conv 429)
+**Date:** 2026-07-29 (Conv 429)
+
+Creator-facing course badges render the canonical three-state taxonomy from `api/admin/courses/index.ts:76-80`, with `is_retired` checked **first**: `CreatorCourseCard` (Retired / Active / Draft) and `ProgressionCard` (Retired / Published / Draft). `is_retired` was added to the `CourseRow` interface, the SELECT, and the mapping in both `/api/me/creator-dashboard` and `/api/me/communities/[slug]/progressions` — it had been absent from both SELECTs entirely. Draft moves to the warning ramp so it is visually distinct from Retired's neutral grey. The orphan `CourseCreatedCard` — the only place the correct model existed — is **deleted** (61 lines, zero consumers, zero tests) together with its `matt-inspired-registry.ts` entry. Rejected: deleting the orphan on the static comparison alone; rehoming it onto `/creating` (forces the deferred `[WS-DATA-MODEL]`); parking it. Also rejected: unifying `/creating`'s "Active" with `/creating/studio`'s "Published" wording inside the defect fix — logged separately as `[RATING-COUNT-DEAD]`. Closes `[CRS-CREATED-CARD]` (the one MERGE-BRIAN disposition that "proved unbuildable") and `[CRS-RETIRED-BADGE]`.
+
+**Rationale:** The two columns are independent, so the two-state badges showed **a retired course as "Active"/"Published" to its own creator** — while `publish.ts:88` and `unpublish.ts:73` both reject retired courses, so the creator saw an active-looking course, acted, and got an error with nothing on screen explaining it. The orphan's docstring named `/creating`'s `CreatorCourseCard` as the surface it was built to replace, so Conv 428's "rehome into `CreatorStudio`" had targeted a surface that was never its stated target — which is *why* it proved unbuildable. Fixing the live cards harvests the correct model without prejudging `[WS-DATA-MODEL]`; renaming a live user-visible label is a separate decision, not something to smuggle into a defect fix.
+
+**Consequences:** Verified live rather than by inspection — `is_retired=1` set while deliberately **leaving `is_active=1`** (the exact previously-broken combination) on a local seed course, read from the rendered DOM at `/creating` as its creator: the retired course rendered "Retired" in neutral grey while its three siblings rendered "Active" in green; seed row restored. A defect-class sweep across all Draft-rendering surfaces found the **second** instance (`ProgressionCard`) — its sibling entity has `is_active`/`is_archived` and no `is_retired`, but the badge was keyed on a *course*, so the defect genuinely applied. `tsc` surfaced **three** duplicated local `Course` interfaces as the required field propagated (`CreatorDashboard.tsx`, `CommunityManagement.tsx`). Two regression guards added and calibrated — each fails with `expected undefined` when the fix is reverted; suite unchanged at 6219. Deregistering the card in the same commit prevented a 9th dangling registry row.
+
+**See:** `src/components/dashboard/CreatorCourseCard.tsx`, `src/components/creators/communities/ProgressionCard.tsx`, `src/pages/api/me/creator-dashboard.ts`, `src/pages/api/me/communities/[slug]/progressions/index.ts`; `docs/sessions/2026-07/20260729_0649 Decisions.md` §§3,4,5, Learnings §§3,6; Conv 429.
+
+---
+
 ### [ROLE-CRS-LIST] Resolved by Upgrading `/teaching`'s Existing List — the `/courses` Role Tabs Are Retired (MERGE-BRIAN §2 M3, Conv 428)
 **Date:** 2026-07-28 (Conv 428)
 

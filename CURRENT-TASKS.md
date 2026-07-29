@@ -65,6 +65,8 @@
 38. [GATEPAR](#gatepar) — `/w-codecheck` vs `npm run verify` diverged on the icon gate
 39. [VPHARNESS](#vpharness) — persist the exact-size iframe harness as a script
 40. [RATING-COUNT-DEAD](#rating-count-dead) — dead `rating_count` + "Active" vs "Published" split
+41. [PROVDOC](#provdoc) — `matt-provenance.md` §6a says "9 unmarked components"; registry has 22 + 38
+42. [PRUNESAFE](#prunesafe) — r-end Step 4b prune over-reached; constrain manifest to Learnings/Decisions spans
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -372,6 +374,23 @@
 - **Icon dependency REMOVED (Conv 424):** `[ICON-TOK]`/`[ICON-4PX]` no longer wait on this gate — `BecomeATeacherPage` was fixed on the icon axis directly. This task is now only the *route-group sweep*.
 - **What:** public/marketing route-group sweep (the only un-swept RG-* group; RTMIG-4 closed Conv 340 with it deferred). The 14 marketing pages live only in `/old/*`; root paths 404 by design. Revisit if/when the redesign is scheduled. Also gates `[ORPHAN-BACKLOG]` Cat-B.
 - **Refs:** `plan/route-migration/README.md § RG-PUBLIC disposition`.
+
+### [PRUNESAFE]
+
+- **State:** 📋 queued · surfaced by `/r-end` itself, Conv 429
+- **What:** `/r-end` Step 4b prunes the Extract using a manifest the learn-decide agent appends to. Its instruction is *"only record lines whose content you actually copied — not lines you merely read for context."* In Conv 429 the agent recorded **140** lines, many of which it had only referenced, so the prune stripped narrative out of **§Prompts & Actions**, cut **§Completed from 8 items to 1**, and emptied **§Open Questions** and **§New Patterns**. The Extract is the primary conv record ("No Dev.md — the Extract replaces it"), so this is content loss, not deduplication. Caught and reverted the same conv by rewriting the Extract by hand.
+- **Why it recurs:** the safeguard is *agent judgment about its own copying*, which is exactly the kind of self-report that drifts. Nothing structurally prevents a manifest line outside §Learnings/§Decisions from being honoured.
+- **Fix (durable):** constrain the prune to the §Learnings and §Decisions **line ranges** — compute those spans in the main context after writing the Extract, and intersect the manifest with them before deleting. A manifest line outside those spans is then ignored by construction, no matter what the agent reports. Optionally also refuse to prune if the manifest would remove more than ~N% of the file, as a second belt.
+- **Calibrate per `[CMH]`:** replay Conv 429's manifest against Conv 429's pre-prune Extract — the intersected prune must leave §Prompts & Actions, §Progress, §Changes and §Uncategorized byte-identical while still collapsing §Learnings/§Decisions to their pointers.
+- **Refs:** `.claude/skills/r-end/SKILL.md` Step 4b + the Agent-1 prompt's PRUNE MANIFEST block, `docs/sessions/2026-07/20260729_0649 Extract.md` (the affected record, restored).
+
+### [PROVDOC]
+
+- **State:** 📋 queued · surfaced by the `/r-end` docs agent, Conv 429
+- **What:** `docs/as-designed/matt-provenance.md` §6a (line ~119) enumerates *"the 9 unmarked components"*. The registry now holds **22** `COMPONENT_CANDIDATES` plus a separate **38**-entry `PHASE6_EXTRAPOLATION_CANDIDATES` array that §6a does not mention at all. The same lines still name `scripts/prov-candidates.ts`, which since Conv 216 is only a back-compat re-export of `matt-inspired-registry.ts` — so the paths still *resolve*, but the naming is stale (§12a line ~338 already documents the move correctly, so the doc contradicts itself).
+- **Pre-existing** — not created by Conv 429; the count has drifted over many convs. Conv 429 touched the second array (added its existence check, cleared 8 rows), which is what surfaced the omission.
+- **Why it matters:** `matt-provenance.md` is the reference a future conv reads to understand which components are candidates and where they live; a count off by 51 and a superseded path name both mislead.
+- **Refs:** `docs/as-designed/matt-provenance.md` §6a + §12a, `../Peerloop/scripts/matt-inspired-registry.ts`, `[PROV-DANGLE]` (Conv 429).
 
 ### [RATING-COUNT-DEAD]
 

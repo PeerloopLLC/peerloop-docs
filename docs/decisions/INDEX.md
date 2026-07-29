@@ -261,6 +261,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [Course Status Renders as **Three** States on Creator Surfaces (Retired / Active / Draft) — `is_active` and `is_retired` Are Independent; `CourseCreatedCard` Deleted Once Its Model Shipped (Conv 429)](05-ui-ux-components.md#course-status-renders-as-three-states-on-creator-surfaces-retired--active--draft--is_active-and-is_retired-are-independent-coursecreatedcard-deleted-once-its-model-shipped-conv-429)
 - [[ROLE-CRS-LIST] Resolved by Upgrading `/teaching`'s Existing List — the `/courses` Role Tabs Are Retired (MERGE-BRIAN §2 M3, Conv 428)](05-ui-ux-components.md#role-crs-list-resolved-by-upgrading-teachings-existing-list--the-courses-role-tabs-are-retired-merge-brian-2-m3-conv-428)
 - [[BACK-X] Resolved — Breadcrumbs Kept, the Back Button Dropped, the Sticky Title Taken as `StickyViewTitle` (MERGE-BRIAN §4, Conv 428)](05-ui-ux-components.md#back-x-resolved--breadcrumbs-kept-the-back-button-dropped-the-sticky-title-taken-as-stickyviewtitle-merge-brian-4-conv-428)
 - [[FEED-WIDTH] Dropped — Entity Pages Stay Full-Width; Geometry and Rails Stand or Fall Together (MERGE-BRIAN §4, Conv 428)](05-ui-ux-components.md#feed-width-dropped--entity-pages-stay-full-width-geometry-and-rails-stand-or-fall-together-merge-brian-4-conv-428)
@@ -440,6 +441,8 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [6. Testing & CI/CD](06-testing-ci.md)
 
+- [Dev-Server Teardown Is `npx astro dev stop`; Port-Liveness Checks Are LISTEN-Scoped — `lsof -ti:PORT` Is Banned Project-Wide (Conv 429)](06-testing-ci.md#dev-server-teardown-is-npx-astro-dev-stop-port-liveness-checks-are-listen-scoped--lsof--tiport-is-banned-project-wide-conv-429)
+- [`prov:sweep` Existence-Checks **Both** Component Arrays — New Section 4b-ii Closes the Half-Bijection (Conv 429)](06-testing-ci.md#provsweep-existence-checks-both-component-arrays--new-section-4b-ii-closes-the-half-bijection-conv-429)
 - [[ICON-TOK] Phase 6 Ships an **Absolute** Icon Gate Wired Into `npm run verify` — and `--update-baseline` Refuses to Launder a Non-Zero Governed Baseline (Conv 424)](06-testing-ci.md#icon-tok-phase-6-ships-an-absolute-icon-gate-wired-into-npm-run-verify--and---update-baseline-refuses-to-launder-a-non-zero-governed-baseline-conv-424)
 - [[ICON-TOK] The `.astro` Attribution Blind Spot Is **Accepted and Documented Permanently** — the Gap Is Completeness *Reporting*, Not Correctness (Conv 424)](06-testing-ci.md#icon-tok-the-astro-attribution-blind-spot-is-accepted-and-documented-permanently--the-gap-is-completeness-reporting-not-correctness-conv-424)
 - [[ICON-TOK] The `dimension-bare-numeric` Informational Tier Is **Retired Outright** and Phase 6's Bare-Number Lint Rule Is **Cancelled** — the Root Fix Removed What They Measured (Conv 423)](06-testing-ci.md#icon-tok-the-dimension-bare-numeric-informational-tier-is-retired-outright-and-phase-6s-bare-number-lint-rule-is-cancelled--the-root-fix-removed-what-they-measured-conv-423)

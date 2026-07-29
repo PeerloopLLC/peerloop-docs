@@ -451,6 +451,7 @@ Get aggregated dashboard data for the authenticated creator.
       "slug": "vibe-coding-101",
       "thumbnail_url": null,
       "is_active": true,
+      "is_retired": false,
       "student_count": 15,
       "rating": 4.9,
       "rating_count": 12,
@@ -487,6 +488,7 @@ Get aggregated dashboard data for the authenticated creator.
 - `earnings` values are in cents
 - `pending_counts` will show items when Block 6 (Certifications) and Block 7 (TeacherManagement) are implemented
 - Courses are ordered by creation date (newest first)
+- `is_retired` is **independent** of `is_active` — an admin PATCH sets it without touching `is_active`, so a retired course may still be `is_active: true`. Consumers must check `is_retired` first when deriving a status badge (canonical three-state taxonomy: `api/admin/courses/index.ts`). Added Conv 429; before that the field was not selected and retired courses rendered as Active.
 - `teaching_courses` lists courses where the creator is also an active Teacher (empty array if not teaching)
 - `teachers` lists active certified teachers for the creator's courses (excludes the creator themselves); limited to 20
 - `past_teachers` lists inactive certified teachers (same shape as `teachers`); limited to 20

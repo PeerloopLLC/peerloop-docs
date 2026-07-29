@@ -647,12 +647,15 @@ List progressions with nested courses. Creator view includes archived progressio
       "display_order": 0,
       "is_archived": false,
       "courses": [
-        { "id": "crs-xxx", "title": "Intro to JS", "is_active": true, "progression_position": 1 }
+        { "id": "crs-xxx", "title": "Intro to JS", "slug": "intro-to-js", "level": "beginner", "price_cents": 9900, "is_active": true, "is_retired": false, "progression_position": 1 }
       ]
     }
   ]
 }
 ```
+
+**Notes:**
+- `is_retired` is **independent** of `is_active` — a retired course may still be `is_active: true`. Consumers deriving a status badge must check `is_retired` first (canonical three-state taxonomy: `api/admin/courses/index.ts`). Added Conv 429; before that the field was not selected and retired courses rendered as Published.
 
 ### POST /api/me/communities/[slug]/progressions
 

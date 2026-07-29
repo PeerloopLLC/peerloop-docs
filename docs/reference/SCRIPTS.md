@@ -446,6 +446,7 @@ npm run prov:sweep
 - Emits a collision-candidate manifest for the Figma-matching agent step (`matt-provenance.md §10`)
 - Marker accept-rule requires a node-shaped ref (`/@matt-source\s+(\S*\d+:\d+\S*)/`) so prose mentions of the token don't false-positive
 - **Pages section (Conv 208 [PROV-SWEEP-MI]):** walks `src/pages/` (skipping `old|dev|api/`) and classifies each page into `@matt-source` / `@matt-inspired` / `@stand-in` / unmarked using line-anchored regexes (`^[\s/*]*@marker\b`) so prose references to child-component markers don't pollute the page classification (§9 grep-pollution gotcha generalized to pages). Emits a "Pages (3-marker convention)" report with counts + a stand-in backlog listing; unmarked non-legacy pages are flagged as drift. Codified in `matt-provenance.md §11`.
+- **Registry↔filesystem existence, both component arrays (Conv 429 [PROV-DANGLE], §4b + §4b-ii):** every `COMPONENT_CANDIDATES` *and* `PHASE6_EXTRAPOLATION_CANDIDATES` entry must point at a file that still exists. §4b had always checked the first array; the second was only ever read for its *paths* (§4c's untracked-notes set, `expectedByPath`) and never validated, so 8 deleted components kept their registrations across six convs while the sweep reported "consistent". **Deleting a registered component now fails the gate until its registry row goes too.**
 - **`data-prov` stamp conformity (Conv 217 [PRIM-STAMP], `matt-provenance.md §12c`):** imports `MATT_SOURCED_PRIMITIVES` and asserts the three source-level encodings agree — every registry entry's file carries `data-prov`/`data-prov-name` (+`data-prov-node` for matt-sourced) on a root element, and every vetted-class stamp has a matching registry entry. Flags `UNSTAMPED` / `UNTRACKED` / `NODE-MISMATCH` / `BAD-CLASS`; `data-prov="legacy"` stamps are registry-less by design and exempt from `UNTRACKED`. Reads stamps from SOURCE — composed children only appear at runtime, which is the page-conformity report's job (see `prov-page-report.ts` below).
 
 **Why "derive what's marked, declare what isn't":** Post route-flip (Conv 197) the `src/components/matt/` namespace dissolved into `src/components/*`, removing the folder-structure signal that separated design-system primitives from legacy app components. The unmarked-candidate set can no longer be inferred from directory walk — it must be the explicit, hand-maintained `matt-inspired-registry.ts` registry.
@@ -741,7 +742,7 @@ npm run plato:snapshot:restore -- flywheel-to-enrollment
 ```
 
 **What it does:**
-- Checks port 4321 is free (aborts if dev server is running — prevents SQLITE_CORRUPT)
+- Checks no process is **LISTENing** on port 4321 (aborts if a dev server is running — prevents SQLITE_CORRUPT). `lsof -iTCP:4321 -sTCP:LISTEN -t`, not `lsof -ti:4321` — the latter also matches processes merely holding a *connection* (a browser tab), which aborted legitimate restores during PLATO browser work (Conv 429). Remediation printed on abort is `npx astro dev stop`.
 - Reads snapshot from `tests/plato/snapshots/<name>.db`
 - Copies it into `.wrangler/state/v3/d1/` as the local D1 SQLite file
 - Dev server immediately serves the snapshot state

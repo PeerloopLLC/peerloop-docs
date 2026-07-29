@@ -3,6 +3,32 @@
 
 ## 6. Testing & CI/CD
 
+### Dev-Server Teardown Is `npx astro dev stop`; Port-Liveness Checks Are LISTEN-Scoped — `lsof -ti:PORT` Is Banned Project-Wide (Conv 429)
+**Date:** 2026-07-29 (Conv 429)
+
+Two paired conventions, replacing the `lsof -ti:<port> | xargs kill` form previously recorded here and in `memory/feedback_persistent_dev_server_4321.md`. **(1) Teardown** is `npx astro dev stop` — astro 7's `astro dev` daemonizes itself (prints its pid, writes `.astro/dev.json` recording `{pid, port, url, background, startedAt}`, returns exit 0), and `stop` kills exactly that lock's pid. `[DEVSRV-KILL]`'s requested PID-capturing wrapper script is therefore **not built** — rejected as duplicating first-class tooling. **(2) Port liveness** is `lsof -iTCP:PORT -sTCP:LISTEN -t`; bare `lsof -ti:PORT` is guarded in the docs repo by a PreToolUse hook rule. Applied to `scripts/plato-restore-snapshot.js` and `scripts/dev-webhooks.sh`.
+
+**Rationale:** `lsof -ti:PORT` lists every process holding a *connection* on the port, not the listener — measured returning **Google Chrome's NetworkService pid** beside the server, so `kill $(lsof -ti:4321)` kills the browser used for live verification, and connections linger in CLOSE_WAIT after the server dies. `astro dev stop` was proven against the literal Conv-393 failure: with :4321 squatted by a foreign listener, `npm run dev` fell back to :4322 with the lock recording 4322, and `stop` killed our 4322 pid while sparing the squatter.
+
+**Consequences:** Fixed a live conditional bug — `plato-restore-snapshot.js`'s D1-corruption guard aborted a legitimate restore with *"Dev server is running on port 4321"* whenever a browser connection was held and **no server was running**, i.e. during exactly the PLATO browser work the guard serves (reproduced: old logic cited Chrome pids 79550/79551 while `curl` returned `000`). Also closed `[DEVSRV-STALE]`, root-causing all three brick variants — cross-conv daemon persistence is the astro-7 default, not an anomaly; the stale-content variant is the **preflip worktree**, which runs astro **6.3.7 with no `stop`/`status`/`--background`, so `npx astro dev stop` there silently ignores the argument and STARTS a pre-flip server on :4321**; and locks are per-directory *and* per-major-version, so the main repo's `astro dev status` reports "No dev server is running" while :4321 serves pre-flip code (fingerprint: `/matt` 200, `/discover` 200, `/old/dashboard` 404). `[VITE-DEPS-WATCH]` closed on the same finding.
+
+**See:** `scripts/plato-restore-snapshot.js`, `scripts/dev-webhooks.sh`; `memory/reference_devserver_stale_daemon.md`, `memory/feedback_persistent_dev_server_4321.md`; `docs/sessions/2026-07/20260729_0649 Decisions.md` §1, Learnings §§1,2,7; Conv 429.
+
+---
+
+### `prov:sweep` Existence-Checks **Both** Component Arrays — New Section 4b-ii Closes the Half-Bijection (Conv 429)
+**Date:** 2026-07-29 (Conv 429)
+
+`scripts/prov-sweep.ts` gains section **4b-ii**, existence-checking `PHASE6_EXTRAPOLATION_CANDIDATES` (46 entries) the way 4b already checked `COMPONENT_CANDIDATES`. The 8 dangling rows it immediately found — registry entries pointing at files deleted across six convs over ~two months, all confirmed genuine deletions rather than renames — were cleared in the same commit. Rejected: clearing the 8 without adding the check; logging it for later.
+
+**Rationale:** Clearing without the check re-runs the same accumulation, which reached 8 invisibly because the gate reported **"consistent"** the whole time — a green gate conceals drift as effectively as a red one, and unlike a red gate nothing prompts a look. The rows were found only by tripping over them while deregistering an unrelated deleted component. Deleting a registered component must now fail the gate until its row goes too.
+
+**Consequences:** Calibrated per `[CMH]` — injected entry → exit 1, removed → exit 0, the pre-existing 4b check still fires. `prov:sweep` is green and now earned. Note the first diagnosis (`[PROV-DANGLE]` logged as "the sweep is one-directional") was **wrong**: the sweep does existence-check one array, and that array was clean at 0 of 22; the real defect was asymmetry between two arrays that look interchangeable, with the second read only for its *paths* (4c's untracked-notes set and `expectedByPath`) and never validated. Reading `prov-sweep.ts` — not reasoning from the symptom — distinguished the two explanations and made the fix smaller.
+
+**See:** `scripts/prov-sweep.ts` §4b-ii, `scripts/matt-inspired-registry.ts`, `plan/prim-registry/README.md`; `docs/sessions/2026-07/20260729_0649 Decisions.md` §6, Learnings §§4,5; Conv 429.
+
+---
+
 ### [ICON-TOK] Phase 6 Ships an **Absolute** Icon Gate Wired Into `npm run verify` — and `--update-baseline` Refuses to Launder a Non-Zero Governed Baseline (Conv 424)
 **Date:** 2026-07-27 (Conv 424)
 
