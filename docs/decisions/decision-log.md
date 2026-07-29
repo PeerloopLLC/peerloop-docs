@@ -5,6 +5,21 @@
 
 For historical decisions and the full rationale behind each choice, see the session files in `docs/sessions/YYYY-MM/`.
 
+### Communities Get First-Class Tags; courses.primary_topic_id Removed Again (COMM-TOPICS)
+**Date:** 2026-07-29 (Conv 432)
+
+Two halves of one decision about what a topic filter reads.
+
+**`community_tags (community_id, tag_id)`** added — the third instance of the `user_tags` / `course_tags` pattern, so the table shape is precedent rather than design. Community topics are now the **UNION** of these explicit rows and the pre-existing roll-up derived through progressions → courses → `course_tags`, not a replacement for it. Union because a community genuinely does relate to its courses' topics and the derived half self-corrects when explicit tags rot; explicit because the derivation had a **cold-start hole** — no progressions or no tagged courses ⇒ 0 topics ⇒ `discovery-rails/lanes.ts` never scores it ⇒ it can never enter a For You lane. The communities most needing discovery were the ones structurally denied it. New communities are pre-seeded from the creator's own `user_tags`; moderators and admins may edit tags (a community has no single accountable author, unlike a course), though the rest of the community settings stay creator-only.
+
+**`courses.primary_topic_id` REMOVED**, reversing the Conv 108 entry below. It was re-added to hold a "denormalized Creator choice", but that choice was never wired up: the only writer anywhere in the repo was the dev seed. No create endpoint set it (`api/me/courses/index.ts`, `api/admin/courses/index.ts` both omit it from their column lists) and no PATCH accepted it — so every course created through the product had it NULL while `/courses` filtered on it, making in-product courses **permanently unfilterable by topic**. Both catalogs now filter on the `course_tags` → `tags` → `topics` roll-up, the same signal the discovery rails rank on, and match **any** claimed topic rather than one primary.
+
+**Tag claim caps** (`MAX_ENTITY_TAGS = 5`, `MAX_ENTITY_TOPICS = 3`) added to both `course_tags` and `community_tags` writes. Two caps, not one, because over-claiming has two independent payoffs at different granularities: `lanes.ts` ranks by *distinct topic* overlap, while `smart-feed/scoring.ts` scores at *tag* granularity. `user_tags` is deliberately left uncapped — interests only change what that user sees, so they are self-limiting.
+
+**Rationale:** The rails changed what a tag is worth — from a filing system the user pulls to a distribution channel the platform pushes, where claiming more topics ranks you higher, unprompted. Creator-sole-source with no cap was fine for filing and hazardous for distribution; the exploit was one API call. Caps calibrated from real usage (55 tags / 15 topics exist; courses average 2.5 tags and 1.67 topics, max 3 and 2), so both sit clear of anything real. Also unblocks the `/communities` topic filter — that page had no topical facet at all, and the discovery aside was the derived signal's only consumer, so hiding the aside below `lg` made a computed signal unreachable product-wide.
+
+**See:** `src/lib/entity-tags.ts`, `src/lib/discovery-rails/compute.ts`, `migrations/0001_schema.sql`, `plan/discovery-aside/README.md` § Phase 4
+
 ### Identity vs Commerce: /@handle Is Identity; /creator + /teacher Are Commercial Entry Surfaces (SPOKE-COMMERCE)
 **Date:** 2026-06-29 (Conv 349)
 
@@ -173,11 +188,13 @@ When a visitor hits a protected route, they are redirected to `/signup`, not `/l
 **Rationale:** Growth funnel optimization — new visitors are more valuable as signups. Existing users can switch to login. Unauthenticated users are Schrödinger's cat: both visitors and logged-out members.
 
 ### courses.primary_topic_id Restored to Schema
-**Date:** 2026-04-12 (Conv 108)
+**Date:** 2026-04-12 (Conv 108) · ⛔ **SUPERSEDED Conv 432 — see COMM-TOPICS at the top of this log**
 
 `primary_topic_id TEXT REFERENCES topics(id) ON DELETE SET NULL` added back to the `courses` table after the package-upgrade branch dropped it, causing an E2E regression.
 
 **Rationale:** Column is used by the discover/courses page for topic filtering. All seed courses assigned a topic ID. Schema, types, and seed data updated.
+
+**Why it was reversed:** the rationale held only for *seed* courses. "All seed courses assigned a topic ID" was the whole population that ever had one — no application code path ever wrote the column, so every course created through the product was invisible to the filter that read it. The catalogs now read the `course_tags` → topics roll-up instead.
 
 **See:** `migrations/0001_schema.sql`, `src/lib/db/types.ts`
 

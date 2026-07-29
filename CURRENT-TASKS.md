@@ -26,46 +26,45 @@
 > delete this note.
 
 1. [BRIAN-ARTIFACTS](#brian-artifacts) — 👀 external: the rationale artifacts his commits cite (MERGE-BRIAN itself is CLOSED)
-2. [COMM-TOPICS](#comm-topics) — `DISCOVERY-ASIDE` Ph4 — community interest tags + the missing tag cap
-3. [SPACING-4X](#spacing-4x) — sweep for other 4× size artifacts Conv 423 preserved
-4. [A11Y](#a11y) — accessibility lint triage
-5. [RHOOKS](#rhooks) — react-hooks lint triage
-6. [KNIP](#knip) — dead-export oracle → gate
-7. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
-8. [EDITSAFE](#editsafe) — anchored-edit discipline
-9. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
-10. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
-11. [ROUTESTORIES-DRIFT](#routestories-drift) — route-stories.md §3 still documents dissolved /discover routes
-12. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
-13. [HOME-FIXES](#home-fixes) — Home route fix bucket
-14. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
-15. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
-16. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
-17. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
-18. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
-19. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
-20. [RSFD](#rsfd) — port `r-start-from-dirty`
-21. [DEPEXP](#depexp) — dependency-probe hygiene
-22. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
-23. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
-24. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
-25. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
-26. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
-27. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
-28. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
-29. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
-30. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
-31. [TLFMT](#tlfmt) — r-end ref documents a TIMELINE.md shape the file no longer uses
-32. [OUTLINE-V4B](#outline-v4b) — 3 residual `outline-none` sites the Conv-244 fix missed
-33. [ADMIN-OVFLW](#admin-ovflw) — 3 admin routes overflow horizontally (pre-existing, not Conv-423)
-34. [LH1](#lh1) — 23 typography tokens hardcode `line-height: 1` (TYPO-FDN axis)
-35. [BRIDGE-RESIZE](#bridge-resize) — `resize_window` silently ignores width
-36. [ICON-STATES](#icon-states) — Phase-5 tail: drive hidden/loading states over 528 call sites
-37. [GATEPAR](#gatepar) — `/w-codecheck` vs `npm run verify` diverged on the icon gate
-38. [VPHARNESS](#vpharness) — persist the exact-size iframe harness as a script
-39. [RATING-COUNT-DEAD](#rating-count-dead) — dead `rating_count` + "Active" vs "Published" split
-40. [PROVDOC](#provdoc) — `matt-provenance.md` §6a says "9 unmarked components"; registry has 22 + 38
-41. [PRUNEPTR](#pruneptr) — `/r-end` prune leaves no forwarding pointer when a `---` survives the span
+2. [SPACING-4X](#spacing-4x) — sweep for other 4× size artifacts Conv 423 preserved
+3. [A11Y](#a11y) — accessibility lint triage
+4. [RHOOKS](#rhooks) — react-hooks lint triage
+5. [KNIP](#knip) — dead-export oracle → gate
+6. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
+7. [EDITSAFE](#editsafe) — anchored-edit discipline
+8. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
+9. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
+10. [ROUTESTORIES-DRIFT](#routestories-drift) — route-stories.md §3 still documents dissolved /discover routes
+11. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
+12. [HOME-FIXES](#home-fixes) — Home route fix bucket
+13. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
+14. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
+15. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
+16. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
+17. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
+18. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
+19. [RSFD](#rsfd) — port `r-start-from-dirty`
+20. [DEPEXP](#depexp) — dependency-probe hygiene
+21. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
+22. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
+23. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
+24. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
+25. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
+26. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
+27. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
+28. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
+29. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
+30. [TLFMT](#tlfmt) — r-end ref documents a TIMELINE.md shape the file no longer uses
+31. [OUTLINE-V4B](#outline-v4b) — 3 residual `outline-none` sites the Conv-244 fix missed
+32. [ADMIN-OVFLW](#admin-ovflw) — 3 admin routes overflow horizontally (pre-existing, not Conv-423)
+33. [LH1](#lh1) — 23 typography tokens hardcode `line-height: 1` (TYPO-FDN axis)
+34. [BRIDGE-RESIZE](#bridge-resize) — `resize_window` silently ignores width
+35. [ICON-STATES](#icon-states) — Phase-5 tail: drive hidden/loading states over 528 call sites
+36. [GATEPAR](#gatepar) — `/w-codecheck` vs `npm run verify` diverged on the icon gate
+37. [VPHARNESS](#vpharness) — persist the exact-size iframe harness as a script
+38. [RATING-COUNT-DEAD](#rating-count-dead) — dead `rating_count` + "Active" vs "Published" split
+39. [PROVDOC](#provdoc) — `matt-provenance.md` §6a says "9 unmarked components"; registry has 22 + 38
+40. [PRUNEPTR](#pruneptr) — `/r-end` prune leaves no forwarding pointer when a `---` survives the span
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -166,39 +165,6 @@
 - **What:** Course-hero (`CourseHeader`) metadata chips truncate at true-mobile (<~450px) via the chips-single-row `flex-nowrap overflow-hidden` (Conv 413 [HERO]). Cosmetic clip, not a break; cleanly cut at the card edge.
 - **Optional fix:** allow the chip row to wrap onto 2 rows on mobile ONLY (e.g. drop `flex-nowrap`/`overflow-hidden` under a low container breakpoint) so full metadata shows on phones.
 - **Gate:** user say-so — the desktop/tablet compaction is the priority and is DONE. Surfaced Conv 413.
-
-### [COMM-TOPICS]
-
-- **State:** 📋 queued — `DISCOVERY-ASIDE` Phase 4; design agreed Conv 431 · [Opus]
-- **What:** give communities first-class interest tags. `community_tags (community_id, tag_id)` is the
-  **third instance** of the `user_tags` / `course_tags` pattern (both are the same two-column join onto
-  `tags`; `tags.topic_id NOT NULL` rolls topics up for free), so the table shape is precedent, not a
-  new design. Pre-launch ⇒ lands directly in `migrations/0001_schema.sql`.
-- **Why it outgrew "optional polish":** communities currently have **no topics of their own**
-  (`CommunitiesFilters.tsx:5`); the rails layer manufactures them via progressions→courses→tags
-  (`compute.ts:107-111`). That derivation works (3 of 4 seeded communities resolve topics) but has a
-  **cold-start hole** — no progressions or no tagged courses ⇒ 0 topics ⇒ `lanes.ts:119` never scores
-  it ⇒ it can never enter For You. New communities are exactly the ones needing discovery. Fixing it
-  also **unblocks a topic filter on the `/communities` catalog**, the missing affordance that makes
-  that page the worst-hit by `[REC-MOBILE]`.
-- **Agreed shape:** backfill by **materializing today's derivation** (nothing regresses; today's
-  implicit value becomes tomorrow's editable default) · pre-seed the picker at creation from the
-  creator's own `user_tags` · **union** explicit with derived at query time, so the derived half
-  self-corrects when explicit tags rot.
-- **🔴 Cap the tag count — the non-negotiable item.** Courses are already creator-sole-source with
-  **no cap** (`/api/me/courses/[id]/index.ts:295` 403s unless `creator_id === userId`; `:434-450` is an
-  unbounded `for` over `body.tags`). **The rails changed what a tag is worth** — from a filing system
-  the *user* pulls to a distribution channel the *platform* pushes, and `lanes.ts:124` ranks by overlap
-  count, so claiming more topics ranks you higher. One API call claims all 55. Cap calibrated from real
-  usage: 55 tags exist, courses average **2.5**, max **3** ⇒ ~5 is generous. **Retrofit the same cap
-  onto courses** — the hole is already open there.
-- **Also agreed:** moderators may edit (communities are collectively run, unlike a course's single
-  accountable author); admin override (admins already govern the taxonomy via `/api/admin/topics/[id].ts`).
-- **Open:** tag-level or topic-level? Consistency says tags (free roll-up; `scoring.ts:176` scores the
-  smart feed at tag granularity), but a community is a much coarser object than a course. Leaning tags.
-- **NOT `[COMM-TAG-FILTER]`** — that is *channels* for feed-post organisation, and Conv 238 explicitly
-  rejected reusing the topic taxonomy there. Different axis; no collision.
-- **Refs:** `plan/discovery-aside/README.md` § Phase 4.
 
 ### [COMPDOC]
 
@@ -613,6 +579,16 @@
 
 ## ✅ Done this conv
 
-- **[REC-RECENT]** ✅ `DISCOVERY-ASIDE` Phases 2–3 — Recently Visited lane with a per-item remove, on `/courses`, `/communities` and Home's aside. **Storage decided by a constraint the plan hadn't named:** every rail is built `LIMIT topN`, so the blob *cannot* render an arbitrary visited entity — hence a denormalized snapshot in localStorage, which also covers signed-out visitors (a server store would have served FEWER people, repeating the Phase-1 defect). Keyed by **slug**, not id, so the shared course loader didn't have to change. Recording is a headless island, not `<script define:vars>` — that has **zero uses** in this codebase. Removal is lane-scoped and time-based, so **re-visiting resurrects**; deliberately NOT on `ephemeral-dismiss` (a list edit, not chrome dismissal) so it persists in dev/staging too. **Verified live, both directions of claim order:** visiting a course already in For You produced no recency lane (correct), while visiting one that sat alone in Popular moved it to recency and **deleted the emptied Popular lane**. The `/communities` bridge works — signed out, the lane showed `ai-for-you` derived purely from two visited *courses*, with no course on the page. Remove verified by real click: gone in <150ms and still gone after reload. 5 gates green; suite 6247 → **6284**.
-  ✅ **That limitation was then closed the same conv** (your call): `subscribeRecentVisits()` + a `notifyChange()` window `CustomEvent` fired by all three mutators — the codebase's existing cross-island mechanism (`courses:filterchange`, `auth-modal.ts`). The `storage` event **cannot** serve the same-document case (spec: it fires only in OTHER documents), so it is subscribed to as well, closing the cross-tab variant too. The direct tick-bump was removed, leaving one path — mutate, everybody re-reads. Verified live: removing on the narrow island updated the **aside** and no stale row survived a resize past `lg`; cross-tab confirmed with two real tabs. Suite 6284 → **6289**; lint held at 164 (setState now sits in a subscription callback, which the set-state-in-effect rule permits).
-- **[REC-MOBILE]** ✅ `DISCOVERY-ASIDE` Phase 1 — narrow-screen recommendations restored on `/courses` + `/communities` via a new `maxLanes` prop (Home skipped: its feed already carries ungated interest-matched suggestion-cards). Verified live at 375px **and** 320px in the `[VPHARNESS]` iframe harness: exactly one mount visible at every width, desktop unchanged, zero horizontal overflow. The count-not-filter decision proven **both ways** — visitor gets Trending, member gets For You; a "For You only" filter would have rendered nothing for every signed-out viewer. Forced a real fix in the shared client: two islands per host both hydrate at every viewport (the hidden one is `display:none`, not un-rendered) and `loadDiscoveryRails` had **no in-flight de-dupe**, so a cold cache fired two identical requests — now shared, cleared on settle either way. Also corrected the component's own doc comment, which claimed "no panel chrome" while `:146` rendered a bordered white panel. 5 gates green; suite 6235 → **6247**.
+- **[COMM-TOPICS]** — `DISCOVERY-ASIDE` Phase 4, closing the block. `community_tags` added (third instance of
+  the `user_tags`/`course_tags` pattern), UNIONed with the derived progressions→courses→tags roll-up so the
+  cold-start hole closes without losing the self-correcting half; `/communities` gained the topic filter it
+  never had. **Two Conv-431 premises were false and both changed the build:** the cap was aimed at tag count
+  while `lanes.ts` ranks by *distinct topic* overlap (shipped as two caps — `MAX_ENTITY_TAGS=5`,
+  `MAX_ENTITY_TOPICS=3` — because `smart-feed/scoring.ts` scores at tag granularity and the rails at topic
+  granularity; re-measured usage: 2.5 tags / **1.67 topics** avg), and `/courses` did NOT "read the same
+  data" — it filtered on `courses.primary_topic_id`, whose **only writer in the repo was the dev seed**, so
+  every in-product course was permanently unfilterable by topic. That column is removed (reversing Conv 108),
+  both catalogs now read the `course_tags` roll-up and match *any* claimed topic. Cap retrofitted onto courses;
+  tag resolution moved before the settings UPDATE (no partial write on a 400); backfill truncates round-robin
+  across topics; moderators + admins may edit tags. Cold-start closure proven live (zero-progression community
+  reachable by topic filter). 5 gates green, suite **6289 → 6335**, lint **164 → 163**, `prov:sweep` consistent.

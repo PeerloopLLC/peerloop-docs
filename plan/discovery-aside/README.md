@@ -1,8 +1,8 @@
 # DISCOVERY-ASIDE — the recommendations aside: narrow screens, recency, and community interests
 
 **Focus:** Restore a recommendations surface below `lg`, add a Recently Visited section, and give communities first-class interest tags
-**Status:** 🔥 IN PROGRESS — **Phases 1–3 COMPLETE (Conv 431)**; Phase 4 (`[COMM-TOPICS]`) designed and queued
-**Tasks:** `[REC-MOBILE]` (Ph1 ✅) · `[REC-RECENT]` (Ph2–3 ✅) · `[COMM-TOPICS]` (Ph4, queued)
+**Status:** ✅ **COMPLETE — all four phases shipped** (Phases 1–3 Conv 431, Phase 4 Conv 432)
+**Tasks:** `[REC-MOBILE]` (Ph1 ✅) · `[REC-RECENT]` (Ph2–3 ✅) · `[COMM-TOPICS]` (Ph4 ✅)
 **Origin:** `[REC-REHOME]` (Conv 427) rehomed the two recommendation carousels into the right rail and accepted, explicitly, that narrow screens would lose the surface entirely. Conv 431 examined the consequence and the discussion expanded into recency + community taxonomy.
 
 ---
@@ -172,11 +172,11 @@ Gates: 5 green — suite **6247 → 6284** (+37: 20 store, 12 lane-splice, 5 com
 
 Reframed in Conv 431 from optional polish to **the piece that retires the underlying weakness**: it closes the cold-start hole, gives narrow-screen users a manual fallback on the worst-hit page, and makes community topics readable by something other than the rails blob.
 
-- [ ] `community_tags (community_id, tag_id)` — third instance of the `user_tags` / `course_tags` pattern. Pre-launch, so it lands directly in `migrations/0001_schema.sql`
-- [ ] **Backfill by materializing today's derivation** — run the existing progressions→courses→tags query once as seed. Every existing community starts exactly where it is now; nothing regresses, and today's implicit value becomes tomorrow's editable default
-- [ ] Pre-seed the picker at creation from the creator's own `user_tags` (`communities.creator_id` exists; creators already carry tags) — the blank optional field is why taxonomy fields get skipped
-- [ ] **Union** explicit tags with the derived roll-up at query time rather than overriding — a community genuinely does relate to its courses' topics, and the derived half self-corrects when explicit tags rot
-- [ ] Unblocks a **topic filter on the `/communities` catalog** — the missing affordance that makes `/communities` the worst-hit page
+- [x] `community_tags (community_id, tag_id)` — third instance of the `user_tags` / `course_tags` pattern. Pre-launch, so it lands directly in `migrations/0001_schema.sql`
+- [x] **Backfill by materializing today's derivation** — run the existing progressions→courses→tags query once as seed. Every existing community starts exactly where it is now; nothing regresses, and today's implicit value becomes tomorrow's editable default
+- [x] Pre-seed the picker at creation from the creator's own `user_tags` (`communities.creator_id` exists; creators already carry tags) — the blank optional field is why taxonomy fields get skipped
+- [x] **Union** explicit tags with the derived roll-up at query time rather than overriding — a community genuinely does relate to its courses' topics, and the derived half self-corrects when explicit tags rot
+- [x] Unblocks a **topic filter on the `/communities` catalog** — the missing affordance that makes `/communities` the worst-hit page
 
 ### Creators are the primary source, but not the sole one
 
@@ -188,12 +188,33 @@ This risk **pre-dates this work** and already applies to courses. What is new is
 
 Agreed mitigations (Conv 431):
 
-- [ ] **Cap the tag count** — and retrofit the same cap onto courses, where the hole is already open. Calibrated from real usage: 55 tags exist, courses average **2.5** and max **3**, so ~5 is generous while blocking claim-all-55. *This is the non-negotiable one — a live incentive problem with a one-line exploit.*
-- [ ] **Union with derivation** (above), so the signal self-corrects when explicit tags drift
-- [ ] **Let moderators edit, not only the creator** — communities are collectively run; a course has one accountable author, a community does not, and a creator who drifts away shouldn't freeze a wrong tag
-- [ ] **Admin override** — admins already govern the taxonomy itself via `/api/admin/topics/[id].ts`; entity-level correction is the natural companion
+- [x] **Cap the tag count** — and retrofit the same cap onto courses, where the hole is already open. Calibrated from real usage: 55 tags exist, courses average **2.5** and max **3**, so ~5 is generous while blocking claim-all-55. *This is the non-negotiable one — a live incentive problem with a one-line exploit.*
+- [x] **Union with derivation** (above), so the signal self-corrects when explicit tags drift
+- [x] **Let moderators edit, not only the creator** — communities are collectively run; a course has one accountable author, a community does not, and a creator who drifts away shouldn't freeze a wrong tag
+- [x] **Admin override** — admins already govern the taxonomy itself via `/api/admin/topics/[id].ts`; entity-level correction is the natural companion
 
 Other reasons sole-source is weak, recorded for future reference: **drift with no correction** (explicit tags rot, derived ones self-correct); **no feedback loop** (there is no impressions or per-lane click-through anywhere, so a creator cannot learn whether their tags worked); **taxonomy unfamiliarity at the worst moment** (15 topics / 55 tags presented at creation, when the creator wants to get live — and pre-seeding from `user_tags` biases toward the creator's personal interests rather than the community's purpose).
+
+### ✅ Phase 4 shipped — Conv 432
+
+Five gates green; suite **6289 → 6335** (+46: 21 `entity-tags` unit, 16 community-tag API, 5 `/communities` filter, 4 rails union). Lint **164 → 163** (the new Topic control adds none, and the sibling Sort label's pre-existing a11y warning was fixed with it). `prov:sweep` consistent. Verified live against local D1 and a real browser.
+
+**The cap became TWO caps, and the original one was aimed at the wrong quantity.** `lanes.ts` ranks For You by **distinct topic** overlap — `overlapCount` counts `item.topicIds`, and `compute.ts` builds that with `group_concat(DISTINCT tg.topic_id)`. So five tags inside one topic score overlap = 1 and buy *no rank at all*; the rails exploit is topic **spread**, which a 5-tag cap bounds only loosely. But `smart-feed/scoring.ts` scores at *tag* granularity, so that payoff genuinely is per-tag. Two payoffs at two granularities ⇒ `MAX_ENTITY_TAGS = 5` **and** `MAX_ENTITY_TOPICS = 3`. Re-measuring the same seed through `tags.topic_id` gave the number that actually mattered and was never in the original calibration:
+
+| | tags | distinct topics |
+|---|---|---|
+| average per course | 2.5 | **1.67** |
+| max | 3 | **2** |
+
+**`courses.primary_topic_id` was dead, and its death changes the block's own premise.** The plan said `/courses` was "merely degraded — its topic filter reads the same data, so a user can approximate the lane by hand". It does not read the same data. `CoursesCatalog` filtered on `c.primary_topic_id`, a column whose **only writer in the entire repo is the dev seed** — neither create endpoint sets it, no PATCH accepts it. Every course created through the product was permanently unfilterable by topic; only the 6 seeded ones ever responded. The column is now removed and both catalogs read the `course_tags` roll-up, so they match **any** claimed topic rather than one primary (live: `top-014` now returns 5 courses, two of which — `intro-to-n8n` and `vibe-coding-101` — have different primaries and could never have appeared).
+
+**Truncating the backfill is lossless, which is a consequence of the union.** Materializing the derivation at tag level can exceed the cap even though every contributing course is individually legal — the walk aggregates across courses, and `comm-ai-for-you` derived 6 tags. Backfill therefore truncates (system default) rather than rejecting (user claim). Nothing is lost, because `compute.ts` still UNIONs the derived half at query time: verified on local D1, `ai-for-you` resolves all three topics from a 5-tag materialization that dropped `tag-049`.
+
+**Cap selection is round-robin across topics, not a prefix.** A straight `slice(0, 5)` can spend the whole budget inside one topic and drop the entity's other topics entirely — discarding exactly the signal the cap protects. `capTagsPreservingTopics` takes one tag per topic before a second from any.
+
+**The cold-start hole was closed and proven live.** A community inserted with zero progressions, zero courses, and one explicit tag appeared under its topic filter on `/communities` and was correctly absent from every other topic. Before this it derived 0 topics and was unreachable by any topical surface.
+
+Two live readings looked like defects and were **my own instrument**, retracted after checking: `a[href^="/community/"]` was picking up `DiscoveryRailCard` links from the still-hydrating `lg:hidden` rails mount (the Conv-431 finding, hit again), which masked the filter completely until the query was scoped to `article[data-prov-name="CommunityCatalogCard"]`.
 
 ---
 
@@ -203,7 +224,7 @@ Other reasons sole-source is weak, recorded for future reference: **drift with n
 2. ✅ **SETTLED (Conv 431) — after For You.** If Recently Visited leads and the narrow mount shows one lane, mobile *never* shows For You. These two cannot be decided independently.
 3. ✅ **SETTLED (Conv 431) — recency respects claim order** (verified live both ways). `lanes.ts:130-138` claims each entity for one lane only, so a recently-visited entity would be claimed by that lane and vanish from For You. Probably right (no repeats), but it means recency cannibalises personalization.
 4. ✅ **SETTLED (Conv 431) — yes, re-visiting resurrects.** Remove semantics are lane-scoped (settled); persistence across a fresh visit is not.
-5. **Tag-level or topic-level for communities?** Consistency says tags — free roll-up, and `scoring.ts:176` scores the smart feed at *tag* granularity. But a community is a much coarser object than a course, and tag-level precision on a broad container may produce noise. Leaning tags; the first call in this design not settled by precedent.
+5. ✅ **SETTLED (Conv 432) — tags, and it was never actually open.** Checked against *consumers* rather than the definition, all three existing surfaces already store tags and roll up to topics at read time (`user_tags` → `api/me/full.ts`, `course_tags` → `compute.ts COURSE_COLS`, communities → the derived walk). Tag-level storage, topic-level reads, uniformly. `community_tags` is a literal third instance and no judgment call was required. The granularity question had teeth only for the **cap** and the **filter** — both topic-level, both resolved below.
 6. ✅ **SETTLED (Conv 431) — no.** Its feed already carries ungated interest-matched suggestion-cards, so a second surface duplicates. User said "each page"; recommendation is to skip Home for Phase 1 and give it recency in Phase 3.
 
 ---
