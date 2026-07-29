@@ -3,6 +3,17 @@
 
 ## 8. Deployment & Infrastructure
 
+### A **Dropped** Column Removes the ALTER Branch Entirely — Reseed Staging at the Level It Is Already At, and Redeploy Every Worker That Imports the Changed Lib (COMM-TOPICS, Conv 432)
+**Date:** 2026-07-29 (Conv 432)
+
+Third condition on the Conv-363 / Conv-394 reseed-vs-ALTER pair below. Those two split on *data value* (disposable seed → reseed; must-preserve → surgical `ALTER`). This conv adds the case where the choice is not open: the schema delta included a **column removal** (`courses.primary_topic_id`), and `[D1-SCHEMA-REMOTE]` means an in-place `0001` edit never reaches an already-migrated remote D1 — so `reset → migrate → reseed` was the only path. Two operational rules go with it. **(1) Reseed at the level staging is already at, verified by probe first.** Staging held 11 users, 21 feed activities and a booking-test user, so it sat at the **feeds** level; the reflex `db:setup:staging:dev` would have silently dropped all of that. Users were checked to be seed-recreatable before the wipe (the one non-seed-looking `created_at` was `'now'` at seed time, not a hand-made account). R2 is untouched by a D1 reset, so the resource blobs survive. **(2) A change under `src/lib/` can oblige a second deploy** — `workers/cron/src/index.ts:13` imports `refreshDiscoveryRails` → `compute.ts`, so `deploy:staging` alone would have left the cron worker recomputing the cached rails blob every 15 minutes with code that does not know `community_tags` exists: a correct main worker serving a stale-schema blob, with no obvious cause. Rejected: `ALTER` (structurally impossible for a drop, and would miss unenumerated drift); `:dev`-level reseed.
+
+**Rationale:** A probe error (`no such column: payment_intent_id`) revealed a *third* schema gap predating this conv, which settled the judgment call — only a reset fixes drift that was never enumerated. Reading the probe error rather than routing around it is what converted "should I ALTER or reset?" into a determined answer.
+
+**Consequences:** Staging D1 rebuilt with `db:setup:staging:feeds`; `community_tags` 12 rows, `primary_topic_id` gone, union SQL byte-identical to local, rails blob regenerated. Both `peerloop-staging` and `peerloop-cron-staging` redeployed and browser-verified.
+
+**See:** `migrations/0001_schema.sql`, `workers/cron/src/index.ts`, `src/lib/discovery-rails/compute.ts`; `docs/sessions/2026-07/20260729_1856 Decisions.md` §5, Learnings §§9–10; Conv 432.
+
 ### [THUMB-404] Public R2 Assets Are Served Through a Two-Prefix Allowlist, Never a Bucket Proxy (MERGE-BRIAN §3 N14, Conv 426)
 **Date:** 2026-07-28 (Conv 426)
 

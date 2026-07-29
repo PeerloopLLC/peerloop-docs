@@ -1105,7 +1105,9 @@ Update course details.
 }
 ```
 
-**Tag resolution:** The `tags` array accepts both tag IDs (prefixed with `tag-`) and tag names/slugs. Names are resolved case-insensitively via `COLLATE NOCASE`. Unknown tags are silently skipped. Duplicates are handled with `INSERT OR IGNORE`. (Conv 077)
+**Tag resolution:** The `tags` array accepts both tag IDs (prefixed with `tag-`) and tag names/slugs, matched case-insensitively against `is_active = 1` tags. Unknown tags are silently skipped — this endpoint's long-standing contract, deliberately *not* changed to match `PATCH /api/me/communities/[slug]`, which rejects them. Duplicates are handled with `INSERT OR IGNORE`. (Conv 077; moved onto the shared `resolveEntityTags` in Conv 432, replacing the per-tag lookup loop with one batched query.)
+
+**Claim caps (Conv 432, [COMM-TOPICS]).** A claim may name at most `MAX_ENTITY_TAGS = 5` tags spanning at most `MAX_ENTITY_TOPICS = 3` distinct topics (`src/lib/entity-tags.ts`). Over-cap → **400**, and because resolution now runs *before* the course UPDATE, a rejected tag claim leaves every other field untouched. Two axes rather than one because over-claiming has two payoffs at two granularities — the discovery rails rank by distinct-topic overlap, the smart feed scores per tag. Both thresholds sit clear of measured usage (2.5 tags / 1.67 topics average across the seeded catalog).
 
 **Response (200):** the same fully-enriched `course` object as `GET /api/me/courses/[id]` — all course columns (boolean-coerced) plus the joined arrays `modules`, `tags`, `objectives`, `includes`, `prerequisites`, `target_audience`, and `peerloop_features`. (The `topics` dropdown list is GET-only editor chrome and is **not** returned by PUT.)
 ```json
@@ -1126,7 +1128,7 @@ Update course details.
 
 | Status | Error |
 |--------|-------|
-| 400 | Invalid level / Slug format invalid |
+| 400 | Invalid level / Slug format invalid / Too many tags (>5) / Tags span too many topics (>3) |
 | 401 | Authentication required |
 | 403 | Not authorized to edit this course |
 | 404 | Course not found |

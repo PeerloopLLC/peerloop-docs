@@ -20,6 +20,15 @@ Two halves of one decision about what a topic filter reads.
 
 **See:** `src/lib/entity-tags.ts`, `src/lib/discovery-rails/compute.ts`, `migrations/0001_schema.sql`, `plan/discovery-aside/README.md` § Phase 4
 
+### A Dropped Column Removes the ALTER Branch — Reseed Staging at Its Existing Level, Redeploy Every Worker Importing the Changed Lib (COMM-TOPICS)
+**Date:** 2026-07-29 (Conv 432)
+
+Third condition on the reseed-vs-ALTER pair (Conv 363 disposable-data → reseed; Conv 394 must-preserve-data → surgical `ALTER`): when the schema delta includes a **column removal**, `ALTER` is not an option at all, and `[D1-SCHEMA-REMOTE]` means the in-place `0001` edit never reaches an already-migrated remote D1 — so `reset → migrate → reseed` is the only path. Reseed at the level staging is **already at**, established by probe before wiping: staging held 11 users, 21 feed activities and a booking-test user (the **feeds** level), so the reflex `db:setup:staging:dev` would have silently dropped them. Second rule: a change under `src/lib/` can oblige a **second deploy** — `workers/cron/src/index.ts:13` imports `refreshDiscoveryRails` → `compute.ts`, so deploying only the main worker would have left the cron worker rewriting the cached rails blob every 15 minutes with schema-blind code.
+
+**Rationale:** A probe error (`no such column: payment_intent_id`) exposed a third schema gap predating this conv, which turned the reset-vs-ALTER judgment call into a determined one — only a reset fixes drift that was never enumerated. R2 is untouched by a D1 reset, so resource blobs survive the wipe.
+
+**See:** `docs/decisions/08-deployment-infra.md`, `workers/cron/src/index.ts`, `migrations/0001_schema.sql`; `docs/sessions/2026-07/20260729_1856 Decisions.md` §5
+
 ### Identity vs Commerce: /@handle Is Identity; /creator + /teacher Are Commercial Entry Surfaces (SPOKE-COMMERCE)
 **Date:** 2026-06-29 (Conv 349)
 

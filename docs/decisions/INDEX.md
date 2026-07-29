@@ -537,6 +537,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [8. Deployment & Infrastructure](08-deployment-infra.md)
 
+- [A **Dropped** Column Removes the ALTER Branch Entirely — Reseed Staging at the Level It Is Already At, and Redeploy Every Worker That Imports the Changed Lib (COMM-TOPICS, Conv 432)](08-deployment-infra.md#a-dropped-column-removes-the-alter-branch-entirely--reseed-staging-at-the-level-it-is-already-at-and-redeploy-every-worker-that-imports-the-changed-lib-comm-topics-conv-432)
 - [[THUMB-404] Public R2 Assets Are Served Through a Two-Prefix Allowlist, Never a Bucket Proxy (MERGE-BRIAN §3 N14, Conv 426)](08-deployment-infra.md#thumb-404-public-r2-assets-are-served-through-a-two-prefix-allowlist-never-a-bucket-proxy-merge-brian-3-n14-conv-426)
 - [Uploaded Brand Marks Are Raster-Only — SVG Rejected Because Our Own Origin Serves Them (MERGE-BRIAN §3 N13, Conv 426)](08-deployment-infra.md#uploaded-brand-marks-are-raster-only--svg-rejected-because-our-own-origin-serves-them-merge-brian-3-n13-conv-426)
 - [[MF-SKEW] wrangler vs astro-dev Miniflare Version Skew — Resolved by an Exact-Pin wrangler 4.112.0 + workers-types v5 That Dedupes miniflare (Conv 416)](08-deployment-infra.md#mf-skew-wrangler-vs-astro-dev-miniflare-version-skew--resolved-by-an-exact-pin-wrangler-41120--workers-types-v5-that-dedupes-miniflare-conv-416)

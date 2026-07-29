@@ -168,7 +168,7 @@ Gates: 5 green — suite **6247 → 6284** (+37: 20 store, 12 lane-splice, 5 com
 
 ---
 
-## Phase 4 — community interest tags
+## Phase 4 — community interest tags ✅ COMPLETE (Conv 432)
 
 Reframed in Conv 431 from optional polish to **the piece that retires the underlying weakness**: it closes the cold-start hole, gives narrow-screen users a manual fallback on the worst-hit page, and makes community topics readable by something other than the rails blob.
 

@@ -385,16 +385,26 @@ Create a new community. Atomically creates the community, a default "General" pr
 - Slug auto-generated from name (unique suffix added if conflict)
 - Creator auto-joined as `community_members` with `role = 'creator'`
 - Stream timeline follow established (non-fatal)
+- **`community_tags` pre-seeded from the creator's own `user_tags`** (Conv 432, [COMM-TOPICS]) via `pickSeedTagsFromUser` — so a brand-new community is discoverable before it has any courses to derive topics from. This is a *system-chosen default*, so it **truncates** to the caps (round-robin across topics) rather than failing creation; a creator with no interests simply gets no tags. Tags are editable afterwards via `PATCH`.
 
 ### PATCH /api/me/communities/[slug]
 
 Update community settings. If name changes, slug is regenerated.
 
-**Request:** Any subset of `{ name, description, icon, is_public, cover_image_url }`.
+**Request:** Any subset of `{ name, description, icon, is_public, cover_image_url, tags }`.
 
 **`logo_url` is returned but not writable here** (Conv 426, [MERGE-BRIAN §3 · N13]) — the brand mark is written only by `POST`/`DELETE /api/me/communities/[slug]/logo` below, so a PATCH body carrying `logo_url` is ignored.
 
-**Errors:** 400 (empty name, no changes), 403 (not owner), 404 (not found)
+**`tags` (Conv 432, [COMM-TOPICS]).** An array of tag IDs (`tag-*`), slugs, or names, matched case-insensitively against `is_active = 1` tags. **Replace-in-full**, matching how `course_tags` and `user_tags` are written — `[]` clears. A tags-only PATCH is a real change and is *not* refused as "No changes provided".
+
+- **Claim caps:** at most `MAX_ENTITY_TAGS = 5` tags spanning at most `MAX_ENTITY_TOPICS = 3` distinct topics (`src/lib/entity-tags.ts`). Over-cap → **400**, no write.
+- **Unknown tags are rejected, not skipped** — deliberately the opposite of `PUT /api/me/courses/[id]`, whose silent-skip contract predates this and was left alone.
+- **Resolution runs before the settings UPDATE**, so a rejected tag claim leaves name/description/icon untouched.
+- **Wider editor set — tags only.** `canEditCommunityTags` allows the creator, a platform admin/moderator (from the JWT), or an **active** `community_moderators` row. Every other field on this endpoint stays creator-only: a moderator PATCHing `name` still gets 403. A community has no single accountable author the way a course does, and a creator who drifts away shouldn't freeze a wrong tag set on a live community.
+
+**Errors:** 400 (empty name, no changes, over-cap tag claim, unknown/inactive tag), 403 (not owner; not a permitted tag editor), 404 (not found)
+
+**Tests:** `tests/api/me/communities/tags.test.ts` (the `tags` field, both caps, the editor set, and the `POST` pre-seed), `tests/api/me/communities/[slug]/index.test.ts` (the settings fields)
 
 ### DELETE /api/me/communities/[slug]
 

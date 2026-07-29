@@ -2,7 +2,8 @@
 
 React component tests using Vitest and React Testing Library.
 
-**Last Updated:** 2026-07-29 (Conv 431 — DISCOVERY-ASIDE Phases 1–3 ([REC-MOBILE]/[REC-RECENT]): **+1 new file**, a new **Discovery** category. `discovery/DiscoveryRails.test.tsx` (14 — the rails island now that it mounts twice per host: `maxLanes` as a **count** rather than a lane-kind filter, whose load-bearing case is that a viewer with **no** interests — i.e. every signed-out visitor — still gets a lane, because `buildDiscoveryLanes` omits For You entirely without interests and a `'for-you'` filter would therefore have rendered the narrow mount empty, the exact defect the mount exists to fix; the cap keeping builder order and not disturbing items within the kept lane; the no-children narrow mount rendering **nothing** when there is nothing to recommend or the blob fails, versus the ≥lg aside falling back to the host's placeholder children; the Recently Visited lane placed after For You so `maxLanes={1}` still leads with personalization, suppressible via `showRecent={false}`; the remove control given to the **recency lane only** and not coming back on re-read; the two-island case where a removal on one updates the other in the same document; and the `/communities` bridge surfacing the parent community of a recently-visited course). Grand total files **83→84**, cases **1,880→1,894**. Also corrected the `**Total:**` line, which had lagged at 82 since Conv 430.)
+**Last Updated:** 2026-07-29 (Conv 432 — DISCOVERY-ASIDE Phase 4 ([COMM-TOPICS]): **+1 new file**. `communities/CommunitiesCatalog.test.tsx` (5 — the `/communities` Topic filter the page never had: every community shown when no topic is selected, narrowed to those claiming the selected one, matching **any** claimed topic rather than only the first (the defect the retired `courses.primary_topic_id` single-FK model made structural), a community claiming no topics excluded, and the topic filter composing with search rather than replacing it) → Community 9→10 files / 118→123 cases. Grand total files **84→85**, cases **1,894→1,899**.)
+**Prev:** 2026-07-29 (Conv 431 — DISCOVERY-ASIDE Phases 1–3 ([REC-MOBILE]/[REC-RECENT]): **+1 new file**, a new **Discovery** category. `discovery/DiscoveryRails.test.tsx` (14 — the rails island now that it mounts twice per host: `maxLanes` as a **count** rather than a lane-kind filter, whose load-bearing case is that a viewer with **no** interests — i.e. every signed-out visitor — still gets a lane, because `buildDiscoveryLanes` omits For You entirely without interests and a `'for-you'` filter would therefore have rendered the narrow mount empty, the exact defect the mount exists to fix; the cap keeping builder order and not disturbing items within the kept lane; the no-children narrow mount rendering **nothing** when there is nothing to recommend or the blob fails, versus the ≥lg aside falling back to the host's placeholder children; the Recently Visited lane placed after For You so `maxLanes={1}` still leads with personalization, suppressible via `showRecent={false}`; the remove control given to the **recency lane only** and not coming back on re-read; the two-island case where a removal on one updates the other in the same document; and the `/communities` bridge surfacing the parent community of a recently-visited course). Grand total files **83→84**, cases **1,880→1,894**. Also corrected the `**Total:**` line, which had lagged at 82 since Conv 430.)
 **Prev:** 2026-07-29 (Conv 430 — [WS-DATA-MODEL]: **+1 new file**. `dashboard/DiplomasSection.test.tsx` (8 — the section re-sourced from `useCurrentUser().getDiplomas()` after `GET /api/me/diplomas` was retired: only completed enrollments render, ordering by `diplomaAwardedAt` then `completedAt`, the `/diploma/{enrollmentId}` href, the pre-Conv-430 cache tolerance that drops rows with no `enrollmentId` rather than linking `/diploma/undefined`, and the auth-aware skeleton the old fetch version could not express). Builds a **real** `CurrentUser` from a `MeFullResponse` fixture instead of a hand-rolled partial duck-type — the pattern `pages/dashboard/StudentDashboard.test.tsx` lacks, which is why adding one getter to the class broke 23 of its cases this conv. Dashboard 7→8 files / 93→101. Grand total files **82→83**, cases **1,872→1,880**.)
 **Prev:** 2026-07-28 (Conv 428 — no new or deleted files; **two files changed in place**. `dashboard/TeacherDashboard.test.tsx` **14→17** (+3 for the generalised `useRoleGate('teacher')` gate: the shared `RoleGatePanel` renders instead of this island's fetch-error branch when denied, the teacher API is not called at all when denied, and the skeleton — not the gate — shows while access is still resolving) → Dashboard 90→93. `courses/CourseCatalogCard.test.tsx` **14→13** (−1: the "overlay ignores cover-story-only props" guard went with the `overlay` variant itself — Conv 427's [REC-REHOME] left it with no production call site, so `CourseCardVariant` narrowed to `'stacked' | 'cover-story'`; `CommunityCatalogCard`'s `overlay` was dropped in the same sweep but its 16 cases were retargeted rather than reduced) → Courses 55→54. Grand total files **82** (unchanged), cases **1,870→1,872**.)
 **Prev:** 2026-07-28 (Conv 427 — [REC-REHOME]: **−2 files**, the whole **Recommendations Components** category. `recommendations/RecommendedCommunities.test.tsx` (11) and `recommendations/RecommendedCourses.test.tsx` (9) were deleted with the two carousels they covered — the recommendations surface moved to the right rail as the rails-backed `DiscoveryRails` island, whose logic is pure and tested in `tests/lib/discovery-rails-lanes.test.ts` (a lib test, so it does not land in this file). Recommendations 2→0 files / 20→0 cases, category removed. Grand total files **84→82**, cases **1,890→1,870**.)
@@ -24,7 +25,7 @@ React component tests using Vitest and React Testing Library.
 **Prev:** 2026-06-26 (Conv 339 — [SESSHIST]/[OLD-PORTED-CLEANUP] retired `teaching/SessionHistory.test.tsx` (42) and added `teaching/TeacherSessionsList.test.tsx` (32); Teaching cases 154→144, file count unchanged (4).)
 **Prev:** 2026-06-15 (Conv 286 — two changes: [TESTCOMP-DRIFT] reconciled the doc against on-disk via a verified `vitest run` (removed stale `booking/SessionJoinableView.test.tsx`; corrected 5 drifted per-file counts: SessionBooking 32→31, EnrollButton 13→17, CreatorTeacherList 21→18, Messages 19→17, ModeratorQueue 61→59), then [NUDGE-TC-V2] added a new Progression category `progression/ProgressionNudge.test.tsx` (15). Net: 93→95 files / 2,262→2,498 cases.)
 
-**Total:** 84 test files
+**Total:** 85 test files
 
 ---
 
@@ -120,10 +121,11 @@ The opt-in pill variant added in Conv 426 ([MERGE-BRIAN §3 · N9]) — the acti
 
 ---
 
-## Community/Feeds Components (9 files)
+## Community/Feeds Components (10 files)
 
 | Component | Test File | Tests |
 |-----------|-----------|:-----:|
+| CommunitiesCatalog | `tests/components/communities/CommunitiesCatalog.test.tsx` | 5 |
 | CommunityCatalogCard | `tests/components/communities/CommunityCatalogCard.test.tsx` | 16 |
 | CourseFeed | `tests/components/community/CourseFeed.test.tsx` | 22 |
 | FeedActivityCard | `tests/components/community/FeedActivityCard.test.tsx` | 35 |
@@ -314,7 +316,7 @@ The other 8 files here were deleted in Conv 419 ([MKTDEAD]) along with the `src/
 | Analytics | 9 | 152 |
 | Auth | 1 | 11 |
 | Booking | 4 | 108 |
-| Community | 9 | 118 |
+| Community | 10 | 123 |
 | Courses | 5 | 54 |
 | Creator | 2 | 56 |
 | Entity | 1 | 5 |
@@ -335,7 +337,7 @@ The other 8 files here were deleted in Conv 419 ([MKTDEAD]) along with the `src/
 | UI | 2 | 10 |
 | Shared hooks | 1 | 6 |
 | Shared primitives | 1 | 12 |
-| **Total** | **84** | **1,894** |
+| **Total** | **85** | **1,899** |
 
 ---
 

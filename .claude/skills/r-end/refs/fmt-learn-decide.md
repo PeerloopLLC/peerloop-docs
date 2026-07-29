@@ -147,7 +147,7 @@ When a decision is **important**, also add it to the correct file based on topic
 Decisions about the Peerloop application: schema, API design, UI patterns, technology selection, component architecture, testing strategy. As of Conv 228 these live in `docs/decisions/` topic chunks — **not** the now-pointer `docs/DECISIONS.md`. Write-path (3 steps):
 
 1. Add/replace the decision under the matching topic chunk (`docs/decisions/01-architecture.md` … `11-new-routing.md`), keeping **latest-wins** — if it supersedes an older entry, replace that entry rather than appending a duplicate.
-2. Append a dated entry to `docs/decisions/decision-log.md` (newest at the bottom).
+2. Add a dated entry to `docs/decisions/decision-log.md` — **newest at the TOP**, directly under the `## Decision Log` intro line. (The file is newest-first and its own header states decisions are *latest-wins*; this ref said "bottom" until Conv 432, which had every agent appending against the file's actual order.)
 3. Add the decision title to `docs/decisions/INDEX.md` under the right chunk.
 
 ### → DOC-DECISIONS.md (Docs-Repo Topics)
@@ -176,7 +176,7 @@ Decisions about the docs repo itself: organization, CC workflow, Obsidian vault,
 **Rationale:** [Why this was chosen]
 ```
 
-For code topics this is the entry you place in the matching `docs/decisions/` chunk (step 1); the `decision-log.md` entry (step 2) uses the same shape, appended at the bottom; the `INDEX.md` line (step 3) is just the title as a bullet link under the chunk's heading. **Remember:** update the "Last Updated" date at the top of whichever file carries one (`DOC-DECISIONS.md` and the `docs/DECISIONS.md` pointer do; the chunks and the log use a `> Part of…` header instead).
+For code topics this is the entry you place in the matching `docs/decisions/` chunk (step 1); the `decision-log.md` entry (step 2) uses the same shape, inserted at the TOP; the `INDEX.md` line (step 3) is just the title as a bullet link under the chunk's heading. **Remember:** update the "Last Updated" date at the top of whichever file carries one (`DOC-DECISIONS.md` and the `docs/DECISIONS.md` pointer do; the chunks and the log use a `> Part of…` header instead).
 
 ---
 

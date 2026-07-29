@@ -65,6 +65,7 @@
 38. [RATING-COUNT-DEAD](#rating-count-dead) — dead `rating_count` + "Active" vs "Published" split
 39. [PROVDOC](#provdoc) — `matt-provenance.md` §6a says "9 unmarked components"; registry has 22 + 38
 40. [PRUNEPTR](#pruneptr) — `/r-end` prune leaves no forwarding pointer when a `---` survives the span
+41. [SCHEMADIAG](#schemadiag) — `schema-diagram.md` claims 48 tables, 71 on disk (r-end docs agent, Conv 432)
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -174,6 +175,7 @@
 - **When picked up:** decide first whether this section stays hand-maintained or becomes `generated` (a `src/components/ui/*` scan would never drift) — that choice IS the work.
 - **Refs:** `docs/reference/_COMPONENTS.md`, `.claude/scripts/docs-registry.mjs doc-category`, `[A11Y]`, `[PROV-SWEEP-DEBT2]`.
 - **Conv 428 addition:** three components were DELETED (`EnrollmentCard`, `CourseModerationCard`, `CoursesRoleTabs`) and four added (`auth/useRoleGate.ts`, `auth/RoleGatePanel.tsx`, `ui/StickyViewTitle.astro`, `pages/_workspace-tabs.ts`), so the `ui/` section is now stale in both directions — it lists gone components and omits new ones.
+- **Conv 432 addition (different section, same file):** `:1090` cites `/feeds` as a live surface in the right-panel layout rule, but `/feeds` was deleted Conv 331 (`[FEEDS]`). Needs a live substitute (`/`, `/courses`, `/communities` all carry the right panel). Independent of the `ui/` section decision above — this one is a one-line fix.
 
 
 ### [COURSES-FIXES]
@@ -441,6 +443,14 @@
 - **Options:** (a) move Phase 2 into a named script (`conv-memory-sync.sh`) that reads as intentional; (b) Phase 1 writes a decision sentinel Phase 2 checks; (c) document the expected block so CC handles it deterministically; (d) a project `settings.json` allow-rule for the specific invocation.
 - **Asymmetry:** `/r-commit` Step 1.5 + `/r-end` Step 5b run the same rsync **live→mirror** (safe) and are never blocked. Only mirror→live is sensitive.
 - **Refs:** `.claude/skills/r-start/SKILL.md` Step 5.7 Phase 2, `[[feedback_msi_sync_user_checkpoint]]`. Surfaced Conv 395.
+
+### [SCHEMADIAG]
+
+- **State:** 📋 queued (doc drift)
+- **What:** `docs/as-designed/schema-diagram.md` is **badly stale and driftCheck** — claims "48 tables" against **71** on disk, still diagrams tables that were dropped (`user_interests`), and was last updated **2026-01-31**. Conv 432's `community_tags` is now one of ~23 missing tables, and `courses.primary_topic_id` (removed Conv 432) is presumably still drawn.
+- **Why it wasn't fixed inline:** the r-end docs agent (Conv 432) correctly declined — this needs a full ERD regeneration, not a one-line patch, and a drive-by partial edit is exactly the Conv-200 manufactured-edit anti-pattern.
+- **When picked up:** decide first whether the ERD stays hand-drawn or becomes `generated` from `migrations/0001_schema.sql` (a parser already exists — `scripts/reset-d1.js` extracts every `CREATE TABLE` + its `REFERENCES` to compute drop order, which is the same graph an ERD needs). That choice IS the work; a hand-redraw of 71 tables would be stale again within a few convs.
+- **Refs:** `docs/as-designed/schema-diagram.md`, `migrations/0001_schema.sql`, `scripts/reset-d1.js` (`getTableDropOrder`), `.claude/scripts/docs-registry.mjs doc-category`, `[COMPDOC]` (same hand-maintained-vs-generated question).
 
 ### [SCRATCH-DEBRIS]
 
