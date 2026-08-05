@@ -26,46 +26,47 @@
 > delete this note.
 
 1. [BRIAN-ARTIFACTS](#brian-artifacts) — 👀 external: the rationale artifacts his commits cite (MERGE-BRIAN itself is CLOSED)
-2. [SPACING-4X](#spacing-4x) — sweep for other 4× size artifacts Conv 423 preserved
-3. [A11Y](#a11y) — accessibility lint triage
-4. [RHOOKS](#rhooks) — react-hooks lint triage
-5. [KNIP](#knip) — dead-export oracle → gate
-6. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
-7. [EDITSAFE](#editsafe) — anchored-edit discipline
-8. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
-9. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
-10. [ROUTESTORIES-DRIFT](#routestories-drift) — route-stories.md §3 still documents dissolved /discover routes
-11. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
-12. [HOME-FIXES](#home-fixes) — Home route fix bucket
-13. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
-14. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
-15. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
-16. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
-17. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
-18. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
-19. [RSFD](#rsfd) — port `r-start-from-dirty`
-20. [DEPEXP](#depexp) — dependency-probe hygiene
-21. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
-22. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
-23. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
-24. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
-25. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
-26. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
-27. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
-28. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
-29. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
-30. [TLFMT](#tlfmt) — r-end ref documents a TIMELINE.md shape the file no longer uses
-31. [OUTLINE-V4B](#outline-v4b) — 3 residual `outline-none` sites the Conv-244 fix missed
-32. [ADMIN-OVFLW](#admin-ovflw) — 3 admin routes overflow horizontally (pre-existing, not Conv-423)
-33. [LH1](#lh1) — 23 typography tokens hardcode `line-height: 1` (TYPO-FDN axis)
-34. [BRIDGE-RESIZE](#bridge-resize) — `resize_window` silently ignores width
-35. [ICON-STATES](#icon-states) — Phase-5 tail: drive hidden/loading states over 528 call sites
-36. [GATEPAR](#gatepar) — `/w-codecheck` vs `npm run verify` diverged on the icon gate
-37. [VPHARNESS](#vpharness) — persist the exact-size iframe harness as a script
-38. [RATING-COUNT-DEAD](#rating-count-dead) — dead `rating_count` + "Active" vs "Published" split
-39. [PROVDOC](#provdoc) — `matt-provenance.md` §6a says "9 unmarked components"; registry has 22 + 38
-40. [PRUNEPTR](#pruneptr) — `/r-end` prune leaves no forwarding pointer when a `---` survives the span
-41. [SCHEMADIAG](#schemadiag) — `schema-diagram.md` claims 48 tables, 71 on disk (r-end docs agent, Conv 432)
+2. [COMM-IMG](#comm-img) — community art is all picsum placeholders; `cover_image_url` has a UI slot but **no upload/storage**
+3. [SPACING-4X](#spacing-4x) — sweep for other 4× size artifacts Conv 423 preserved
+4. [A11Y](#a11y) — accessibility lint triage
+5. [RHOOKS](#rhooks) — react-hooks lint triage
+6. [KNIP](#knip) — dead-export oracle → gate
+7. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
+8. [EDITSAFE](#editsafe) — anchored-edit discipline
+9. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
+10. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
+11. [ROUTESTORIES-DRIFT](#routestories-drift) — route-stories.md §3 still documents dissolved /discover routes
+12. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
+13. [HOME-FIXES](#home-fixes) — Home route fix bucket
+14. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
+15. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
+16. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
+17. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
+18. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
+19. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
+20. [RSFD](#rsfd) — port `r-start-from-dirty`
+21. [DEPEXP](#depexp) — dependency-probe hygiene
+22. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
+23. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
+24. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
+25. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
+26. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
+27. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
+28. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
+29. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
+30. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
+31. [TLFMT](#tlfmt) — r-end ref documents a TIMELINE.md shape the file no longer uses
+32. [OUTLINE-V4B](#outline-v4b) — 3 residual `outline-none` sites the Conv-244 fix missed
+33. [ADMIN-OVFLW](#admin-ovflw) — 3 admin routes overflow horizontally (pre-existing, not Conv-423)
+34. [LH1](#lh1) — 23 typography tokens hardcode `line-height: 1` (TYPO-FDN axis)
+35. [BRIDGE-RESIZE](#bridge-resize) — `resize_window` silently ignores width
+36. [ICON-STATES](#icon-states) — Phase-5 tail: drive hidden/loading states over 528 call sites
+37. [GATEPAR](#gatepar) — `/w-codecheck` vs `npm run verify` diverged on the icon gate
+38. [VPHARNESS](#vpharness) — persist the exact-size iframe harness as a script
+39. [RATING-COUNT-DEAD](#rating-count-dead) — dead `rating_count` + "Active" vs "Published" split
+40. [PROVDOC](#provdoc) — `matt-provenance.md` §6a says "9 unmarked components"; registry has 22 + 38
+41. [PRUNEPTR](#pruneptr) — `/r-end` prune leaves no forwarding pointer when a `---` survives the span
+42. [SCHEMADIAG](#schemadiag) — `schema-diagram.md` claims 48 tables, 71 on disk (r-end docs agent, Conv 432)
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -176,6 +177,19 @@
 - **Refs:** `docs/reference/_COMPONENTS.md`, `.claude/scripts/docs-registry.mjs doc-category`, `[A11Y]`, `[PROV-SWEEP-DEBT2]`.
 - **Conv 428 addition:** three components were DELETED (`EnrollmentCard`, `CourseModerationCard`, `CoursesRoleTabs`) and four added (`auth/useRoleGate.ts`, `auth/RoleGatePanel.tsx`, `ui/StickyViewTitle.astro`, `pages/_workspace-tabs.ts`), so the `ui/` section is now stale in both directions — it lists gone components and omits new ones.
 - **Conv 432 addition (different section, same file):** `:1090` cites `/feeds` as a live surface in the right-panel layout rule, but `/feeds` was deleted Conv 331 (`[FEEDS]`). Needs a live substitute (`/`, `/courses`, `/communities` all carry the right panel). Independent of the `ui/` section decision above — this one is a one-line fix.
+
+
+### [COMM-IMG]
+
+- **State:** 📋 queued
+- **What:** replace the `picsum.photos` placeholder imagery on communities with real, creator-maintained art — **and close the storage gap that forces placeholders in the first place.**
+- **Why now:** surfaced Conv 433 while deciding the `/communities` card's cover-vs-logo treatment. Every community image in the seed is random noise (`migrations-dev/0001_seed_dev.sql:174-188`): cover `picsum.photos/seed/<slug>/800/400`, logo `picsum.photos/seed/<slug>-logo/200/200`. The hay-bale photo on "AI for You" reads as meaningless because it *is* meaningless. Any further visual judgement on these cards is being made against noise.
+- **The real gap (checked, not assumed) — the two fields are NOT equally supported:**
+  - `logo_url` ✅ **has both a spot and storage.** Dedicated upload endpoint `src/pages/api/me/communities/[slug]/logo.ts` (POST + DELETE, R2-backed, guarded on the `communities/` prefix), wired to an instant-managed file input in `CommunitySettings.tsx` ([N13]).
+  - `cover_image_url` ⚠️ **has a spot but NO storage.** `CommunitySettings.tsx:198-210` is a plain **text input for a URL**, PATCHed through `/api/me/communities/[slug].ts:211`. There is no upload endpoint and no R2 path — a creator must host the image somewhere else and paste a link. The UI even gives 16:9 sizing guidance (CD-039 item 61) with no way to act on it. **This is why the seed uses picsum URLs.**
+- **Shape:** (a) build cover upload to match the logo's pattern — the logo endpoint is the template, so this is largely symmetry work; (b) then replace the seed placeholders with real art; (c) decide what an empty cover falls back to (today `bg-neutral-700`; the `icon` emoji already covers the empty-logo case).
+- **Blocks:** honest visual review of `/communities`, `/community/[slug]`, and the Discovery rails — all three render community imagery.
+- **Refs:** `migrations-dev/0001_seed_dev.sql:174-188`, `migrations/0002_seed_core.sql:213` (System community has a cover and **no** logo — the nullable case is real), `src/pages/api/me/communities/[slug]/logo.ts`, `src/components/creators/communities/CommunitySettings.tsx`, `[COMM-BAND-ADOPT]` (Conv 433).
 
 
 ### [COURSES-FIXES]
@@ -589,16 +603,43 @@
 
 ## ✅ Done this conv
 
-- **[COMM-TOPICS]** — `DISCOVERY-ASIDE` Phase 4, closing the block. `community_tags` added (third instance of
-  the `user_tags`/`course_tags` pattern), UNIONed with the derived progressions→courses→tags roll-up so the
-  cold-start hole closes without losing the self-correcting half; `/communities` gained the topic filter it
-  never had. **Two Conv-431 premises were false and both changed the build:** the cap was aimed at tag count
-  while `lanes.ts` ranks by *distinct topic* overlap (shipped as two caps — `MAX_ENTITY_TAGS=5`,
-  `MAX_ENTITY_TOPICS=3` — because `smart-feed/scoring.ts` scores at tag granularity and the rails at topic
-  granularity; re-measured usage: 2.5 tags / **1.67 topics** avg), and `/courses` did NOT "read the same
-  data" — it filtered on `courses.primary_topic_id`, whose **only writer in the repo was the dev seed**, so
-  every in-product course was permanently unfilterable by topic. That column is removed (reversing Conv 108),
-  both catalogs now read the `course_tags` roll-up and match *any* claimed topic. Cap retrofitted onto courses;
-  tag resolution moved before the settings UPDATE (no partial write on a 400); backfill truncates round-robin
-  across topics; moderators + admins may edit tags. Cold-start closure proven live (zero-progression community
-  reachable by topic filter). 5 gates green, suite **6289 → 6335**, lint **164 → 163**, `prov:sweep` consistent.
+- **[COMM-BAND-ADOPT]** — client request #1: the course cover-story card's community footer now
+  wears the client's band. His two hexes adopted verbatim as `--brian-band` (#e3f1fc) /
+  `--brian-band-line` (#d3e7f8) in the existing `brian-*` namespace, and `CommunityAffiliation`
+  gained a `presentation="band"` variant (tinted full-bleed strip + 40px white-ringed medallion
+  overhanging bottom-left) so `CourseHeader`'s inline use on the dark hero is untouched. Verified
+  live: `rgb(227,241,252)` / hairline `rgb(211,231,248)`, seal 40px circle at `left:20px`, no text
+  collision. His branch's class numbers all sat in the ten `--spacing-N` names already overridden
+  to literal px, so they ported 1:1 with no Conv-423 ×4 conversion. 5 gates green (suite 6335 /
+  407 files), `prov:sweep` consistent, `check:icons` 0. Reverses a MERGE-BRIAN §1 "not adopted"
+  note whose stated reason (per-community `accent_color`) no longer applies — the client disabled
+  that tinting on his own branch in his Conv 373; both affected docstrings corrected.
+  **Extended (user, after a side-by-side look):** the band blue + medallion propagated to the
+  `/communities` hero card too, so the sibling catalog cards agree — at `#F1F9FF` that band read
+  as a hairline divider, not a band. Its logo was already 40px and absolutely placed, so only
+  shape and ring changed; position deliberately does NOT follow his (the seal stays inside the
+  cover panel, since there the band is a sibling of the cover rather than the logo's container).
+  Two Conv-426 guard tests fired as designed and were **inverted, not deleted** — the "no raw hex
+  survives" invariant was kept intact and only its token name changed, because adopting his
+  COLOUR must never mean inlining his HEX. New `tests/components/entity/CommunityAffiliation.test.tsx`
+  (10 tests) guards the inline/band split — the only protection `CourseHeader`'s dark hero has,
+  since it has no tests of its own — and was calibrated per `[CMH]` with three injected
+  regressions (band colour reverted, medallion → rounded square, band chrome leaking into the
+  inline hero), each caught.
+- **[COMM-IDENT]** — the medallion propagation was then **reversed on the `/communities` card**, and
+  the card's cover/logo relationship settled instead. The user's question ("what does that image
+  represent from a community point of view?") exposed that the same asset means two different
+  things: on the course card `logo_url` is a **foreign** entity (a seal bridging the cover→band
+  seam that names another community), on the community card it is the card's **own** subject with
+  no seam to bridge. The medallion encoded the first meaning and was wrong for the second. The
+  answer was already in the codebase twice — our `/community/[slug]` hero and the client's own
+  community card both scrim the cover and put the logo forward — making our catalog card the only
+  surface still showing the cover undarkened with the logo as a corner inset. Now: cover behind the
+  detail hero's *exact* gradient (`rgba(0,0,0,0.7)→0.4`), logo forward as a centred 56px
+  `rounded-12` squircle (circle rejected — it crops app-icon-square marks). Verified live:
+  gradient string identical to the hero, logo 56×56 / radius 12px / no border / centred both axes.
+  Test churn is itself the lesson — the same assertion was inverted twice in one conv, so it is now
+  written against the **meaning** ("does NOT wear the course card medallion — the logo is this
+  card's own subject") rather than against whatever the course card happens to do.
+- Final: 5 gates green, suite **6347** (+12 from 6335), 408 files, lint 163 unchanged, `prov:sweep`
+  consistent, `check:icons` 0. Follow-up logged as **[COMM-IMG]** (#2 in 🎯 Now).
