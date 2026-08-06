@@ -3,6 +3,32 @@
 
 ## 5. UI/UX & Components
 
+### [COMM-BAND-ADOPT] The Client's Band Colours Are Adopted as `brian-*` **Tokens** on a New `presentation="band"` Variant — Never as Inline Hex, Never as a Wholesale Restyle (Conv 433)
+**Date:** 2026-08-05 (Conv 433)
+
+The client's off-palette band colours (`#e3f1fc` fill / `#d3e7f8` line) are adopted verbatim at his request — reversing the Conv-426 decision that declined them — but land as `--brian-band` / `--brian-band-line` in the **existing** `brian-*` namespace ([TAB-THEME], Conv 414), plus `bg-`/`border-` bridge re-exports. `CommunityAffiliation` gains `presentation: 'inline' | 'band'` rather than being restyled; `CourseCatalogCard` drops its footer wrapper so the band is full-bleed and owns its own border and padding. Rejected: inlining the raw hexes as arbitrary classes; adding a `150`/`200` step to the `info` ramp; restyling the component wholesale; porting the client's separate `CommunityBand.tsx` as a second component.
+
+**Rationale:** The `brian-*` namespace already exists for exactly this — verbatim client palette values, provenance labelled in the token name — so adoption follows a pattern instead of inventing one. The `info` ramp is `100/300/500` across all six ramps; a 150 in one ramp only would break that symmetry. The variant (rather than a restyle) is forced by the second consumer: `CourseHeader` renders the affiliation **inline inside a dark image hero**, so a wholesale restyle would have dropped a pale blue strip into the dark hero, and a second component would re-fragment what Conv 425 deliberately consolidated. The client's classes were checked against his own `tokens-tailwind-bridge.css` override list before porting — every number he used (`gap-8`, `px-24`, `py-8`, `sm:px-32`, `left-20`) was among the ten `--spacing-N` names his branch overrides to literal px, so all ported 1:1 despite his branch predating the Conv-423 spacing-base fix.
+
+**Consequences:** The Conv-426 tokenisation guard survives with **only its token name changed** — its "no raw hex from his branch survives" loop is untouched, because that assertion encoded a discipline rather than the decision that was reversed. `tests/components/entity/CommunityAffiliation.test.tsx` (10 tests, calibrated per `[CMH]` with 3 injected regressions) guards the inline/band split from both sides. Verified live via the Chrome bridge with DOM measurement, then on staging from the actually-served stylesheet (`brian-band` × 10).
+
+**See:** `src/components/entity/CommunityAffiliation.tsx`; `src/components/courses/CourseCatalogCard.tsx`; `src/styles/tokens-primitives.css`; `docs/sessions/2026-08/20260805_1547 Decisions.md` §§1,2, Learnings §§1,5; Conv 433.
+
+---
+
+### [COMM-IDENT] The Community Catalog Card Leads With the **Logo Over a Scrimmed Cover** and Wears **No** Course-Card Medallion — Treatment Follows Meaning, Not Uniformity (Conv 433)
+**Date:** 2026-08-05 (Conv 433)
+
+`communities.logo_url` renders on two surfaces and is given two different treatments. On `CourseCatalogCard` it keeps the client's medallion — overhanging the cover→band seam with a white ring. On `CommunityCatalogCard` the medallion is **reversed**, and the cover instead sits behind the `/community/[slug]` hero's exact gradient (`rgba(0,0,0,0.7)→0.4`) with the logo forward as a centred 56px `rounded-12` **squircle**. Both cards keep the shared `brian-band` blue. Rejected: keeping the medallion for uniformity; reverting the band colour too; leaving the structure and only settling the inset's shape; dropping the cover from the card entirely; a circular crop.
+
+**Rationale:** The same asset means opposite things on the two cards. On the course card the logo is a **foreign** entity — a seal naming *another* community, which is what justifies the overhang and the ring. On the community card it is the card's **own** subject, with no seam to bridge, so the medallion asserts something false. The scrim is not a new idea: our own `/community/[slug]` hero and the client's own community card both already scrim the cover and put the logo forward, which made our catalog card the only surface showing the cover undarkened with identity demoted. The image keeps a job (atmosphere) instead of competing with identity. Squircle over circle because these are app-icon-square marks a circle would crop. The band colour carries no ownership claim and was retained on legibility alone — `#F1F9FF` on a 25px strip read as a hairline divider, not a band.
+
+**Consequences:** The two catalog cards now share a band blue but not a logo treatment, which is the correct asymmetry. The medallion assertion on `CommunityCatalogCard` was inverted twice in one conv before being rewritten to assert *meaning* ("does NOT wear the course card medallion — the logo is this card's own subject") rather than parity with a sibling component. Three new assertions guard the scrim and the squircle. Surfaced a product gap logged as `[COMM-IMG]`: `logo_url` has a dedicated R2 upload endpoint with delete, while `cover_image_url` is a **pasted URL in a text box** with no upload and no storage — which is why all seed covers are `picsum.photos` placeholders.
+
+**See:** `src/components/communities/CommunityCatalogCard.tsx`; `src/components/entity/CommunityAffiliation.tsx`; `docs/sessions/2026-08/20260805_1547 Decisions.md` §§3,4, Learnings §§2,3,4; Conv 433.
+
+---
+
 ### [REC-MOBILE] Discovery Rails Get a Narrow-Screen Mount on `/courses` + `/communities` — `maxLanes` Is a **Count**, Not a Lane-Kind Filter (Conv 431)
 **Date:** 2026-07-29 (Conv 431)
 

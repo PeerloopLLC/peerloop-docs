@@ -27,46 +27,47 @@
 
 1. [BRIAN-ARTIFACTS](#brian-artifacts) — 👀 external: the rationale artifacts his commits cite (MERGE-BRIAN itself is CLOSED)
 2. [COMM-IMG](#comm-img) — community art is all picsum placeholders; `cover_image_url` has a UI slot but **no upload/storage**
-3. [SPACING-4X](#spacing-4x) — sweep for other 4× size artifacts Conv 423 preserved
-4. [A11Y](#a11y) — accessibility lint triage
-5. [RHOOKS](#rhooks) — react-hooks lint triage
-6. [KNIP](#knip) — dead-export oracle → gate
-7. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
-8. [EDITSAFE](#editsafe) — anchored-edit discipline
-9. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
-10. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
-11. [ROUTESTORIES-DRIFT](#routestories-drift) — route-stories.md §3 still documents dissolved /discover routes
-12. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
-13. [HOME-FIXES](#home-fixes) — Home route fix bucket
-14. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
-15. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
-16. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
-17. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
-18. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
-19. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
-20. [RSFD](#rsfd) — port `r-start-from-dirty`
-21. [DEPEXP](#depexp) — dependency-probe hygiene
-22. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
-23. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
-24. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
-25. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
-26. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
-27. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
-28. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
-29. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
-30. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
-31. [TLFMT](#tlfmt) — r-end ref documents a TIMELINE.md shape the file no longer uses
-32. [OUTLINE-V4B](#outline-v4b) — 3 residual `outline-none` sites the Conv-244 fix missed
-33. [ADMIN-OVFLW](#admin-ovflw) — 3 admin routes overflow horizontally (pre-existing, not Conv-423)
-34. [LH1](#lh1) — 23 typography tokens hardcode `line-height: 1` (TYPO-FDN axis)
-35. [BRIDGE-RESIZE](#bridge-resize) — `resize_window` silently ignores width
-36. [ICON-STATES](#icon-states) — Phase-5 tail: drive hidden/loading states over 528 call sites
-37. [GATEPAR](#gatepar) — `/w-codecheck` vs `npm run verify` diverged on the icon gate
-38. [VPHARNESS](#vpharness) — persist the exact-size iframe harness as a script
-39. [RATING-COUNT-DEAD](#rating-count-dead) — dead `rating_count` + "Active" vs "Published" split
-40. [PROVDOC](#provdoc) — `matt-provenance.md` §6a says "9 unmarked components"; registry has 22 + 38
-41. [PRUNEPTR](#pruneptr) — `/r-end` prune leaves no forwarding pointer when a `---` survives the span
-42. [SCHEMADIAG](#schemadiag) — `schema-diagram.md` claims 48 tables, 71 on disk (r-end docs agent, Conv 432)
+3. [CD035-STALE](#cd035-stale) — CD-035 reads 0/34 done but CD-039 shipped part of it; re-validate before working it
+4. [SPACING-4X](#spacing-4x) — sweep for other 4× size artifacts Conv 423 preserved
+5. [A11Y](#a11y) — accessibility lint triage
+6. [RHOOKS](#rhooks) — react-hooks lint triage
+7. [KNIP](#knip) — dead-export oracle → gate
+8. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
+9. [EDITSAFE](#editsafe) — anchored-edit discipline
+10. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
+11. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
+12. [ROUTESTORIES-DRIFT](#routestories-drift) — route-stories.md §3 still documents dissolved /discover routes
+13. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
+14. [HOME-FIXES](#home-fixes) — Home route fix bucket
+15. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
+16. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
+17. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
+18. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
+19. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
+20. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
+21. [RSFD](#rsfd) — port `r-start-from-dirty`
+22. [DEPEXP](#depexp) — dependency-probe hygiene
+23. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
+24. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
+25. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
+26. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
+27. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
+28. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
+29. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
+30. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
+31. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
+32. [TLFMT](#tlfmt) — r-end ref documents a TIMELINE.md shape the file no longer uses
+33. [OUTLINE-V4B](#outline-v4b) — 3 residual `outline-none` sites the Conv-244 fix missed
+34. [ADMIN-OVFLW](#admin-ovflw) — 3 admin routes overflow horizontally (pre-existing, not Conv-423)
+35. [LH1](#lh1) — 23 typography tokens hardcode `line-height: 1` (TYPO-FDN axis)
+36. [BRIDGE-RESIZE](#bridge-resize) — `resize_window` silently ignores width
+37. [ICON-STATES](#icon-states) — Phase-5 tail: drive hidden/loading states over 528 call sites
+38. [GATEPAR](#gatepar) — `/w-codecheck` vs `npm run verify` diverged on the icon gate
+39. [VPHARNESS](#vpharness) — persist the exact-size iframe harness as a script
+40. [RATING-COUNT-DEAD](#rating-count-dead) — dead `rating_count` + "Active" vs "Published" split
+41. [PROVDOC](#provdoc) — `matt-provenance.md` §6a says "9 unmarked components"; registry has 22 + 38
+42. [PRUNEPTR](#pruneptr) — `/r-end` prune leaves no forwarding pointer when a `---` survives the span
+43. [SCHEMADIAG](#schemadiag) — `schema-diagram.md` claims 48 tables, 71 on disk (r-end docs agent, Conv 432)
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -167,6 +168,16 @@
 - **What:** Course-hero (`CourseHeader`) metadata chips truncate at true-mobile (<~450px) via the chips-single-row `flex-nowrap overflow-hidden` (Conv 413 [HERO]). Cosmetic clip, not a break; cleanly cut at the card edge.
 - **Optional fix:** allow the chip row to wrap onto 2 rows on mobile ONLY (e.g. drop `flex-nowrap`/`overflow-hidden` under a low container breakpoint) so full metadata shows on phones.
 - **Gate:** user say-so — the desktop/tablet compaction is the priority and is DONE. Surfaced Conv 413.
+
+### [CD035-STALE]
+
+- **State:** 📋 queued
+- **What:** re-validate **CD-035 (UX & Pricing Changes)** against current code before anyone works its checklist. Its INDEX row reads **0 of 34 done**, which is almost certainly false.
+- **Why:** surfaced Conv 433 while picking a client-work source. CD-035's listing items — "CourseBrowse.tsx: replace grid with single column", "replace pagination with infinite scroll", "remove pagination UI entirely", "remove Showing X of Y" — describe work **CD-039 shipped in Convs 284–285** (`CoursesCatalog` / `CommunitiesCatalog` / `MemberDirectory` → `ListingShell.astro`, 640px column). And `CourseBrowse.tsx` **no longer exists** — the surviving `CourseBrowse` references are SSR loader names; the live surface is `CoursesCatalog.tsx`.
+- **Risk if skipped:** working the checklist top-down means re-doing shipped work or editing components that were deleted. The stale count also makes CD-035 look like the biggest open RFC when it may be among the smallest.
+- **Shape:** per-item disposition pass (done / superseded by CD-039 / still-real / obsolete-target), then correct `RFC.md` checkboxes and the `INDEX.md` Done count. This is an investigative framing — surface the dispositions and confirm before editing.
+- **Refs:** `docs/requirements/rfc/CD-035/RFC.md`, `docs/requirements/rfc/CD-039/RFC.md` (Closed, 21/21), `docs/requirements/rfc/INDEX.md`, `plan/` LIST-1COL.
+
 
 ### [COMPDOC]
 

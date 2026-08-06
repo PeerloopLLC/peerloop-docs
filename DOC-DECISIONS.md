@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-07-29 Conv 430 (`[PRUNESAFE]` — the `/r-end` Extract prune becomes a deterministic script computing §Learnings/§Decisions spans from the file, so no self-reported manifest line can reach another section — §3)
+**Last Updated:** 2026-08-05 Conv 433 (one-at-a-time client requests tracked as tasks first, batched into a single RFC later — no RFC folder per one-liner — §5)
 
 ---
 
@@ -2013,6 +2013,17 @@ Personal Obsidian vault (synced via Obsidian Sync) remains separate from peerloo
 ---
 
 ## 5. Documentation Conventions
+
+### One-at-a-Time Client Requests Are Tracked as Tasks First and Batched Into a Single RFC Later — No RFC Folder Per One-Liner (Conv 433)
+**Date:** 2026-08-05 (Conv 433)
+
+When the user relays client UI requests **one at a time**, each is implemented immediately and tracked under its own `[CODE]` in `CURRENT-TASKS.md`; the accumulated batch is then folded into a single RFC (CD-040) via `/w-add-client-note` once several have landed. Rejected: opening a `docs/requirements/rfc/CD-XXX/` folder per request.
+
+**Rationale:** A full RFC folder — `CD-XXX.md` raw input plus an `RFC.md` checklist plus two INDEX rows — is heavier than a one-line styling request warrants, and a folder per request would fragment one conversation's worth of client feedback across many near-empty RFCs. The batch still ends up recorded client-facing, which is the property that actually matters.
+
+**Consequences:** `[COMM-BAND-ADOPT]` and `[COMM-IDENT]` were tracked and closed on the task board this conv; CD-040 stays pending until enough volume accumulates. Separately surfaced (not audited): CD-035's checklist reads "0 of 34 done" while CD-039 appears to have shipped a chunk of its listing items, and the `CourseBrowse.tsx` it names no longer exists — anyone picking CD-035 up should re-validate before working it top-down.
+
+**See:** `docs/requirements/rfc/INDEX.md`; `CURRENT-TASKS.md`; `docs/sessions/2026-08/20260805_1547 Decisions.md` §5.
 
 ### A `driftCheck` Doc Whose Subject Is Deleted Is Deleted Too, Not Rewritten Onto the Replacement (Conv 427)
 **Date:** 2026-07-28 (Conv 427)

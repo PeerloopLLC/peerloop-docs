@@ -5,6 +5,24 @@
 
 For historical decisions and the full rationale behind each choice, see the session files in `docs/sessions/YYYY-MM/`.
 
+### The Client's Band Colours Adopted as `brian-*` Tokens on a `presentation="band"` Variant (COMM-BAND-ADOPT)
+**Date:** 2026-08-05 (Conv 433)
+
+The client's off-palette band colours (`#e3f1fc` / `#d3e7f8`) are adopted verbatim — reversing Conv 426's decline — as `--brian-band` / `--brian-band-line` in the existing `brian-*` namespace ([TAB-THEME], Conv 414) plus `bg-`/`border-` bridge re-exports, never as inline hex. `CommunityAffiliation` gains `presentation: 'inline' | 'band'` rather than being restyled wholesale, because its second consumer `CourseHeader` renders it inline inside a **dark** image hero.
+
+**Rationale:** Adoption follows an existing namespace instead of inventing one, and labels provenance in the token name; a `150` step in the `info` ramp alone would break the `100/300/500` symmetry shared by all six ramps. A wholesale restyle would have put a pale blue strip inside the dark hero; a second component would re-fragment what Conv 425 consolidated. The Conv-426 tokenisation guard survived with only its token name changed — its "no raw hex survives" loop encodes a discipline, not the reversed decision.
+
+**See:** `docs/sessions/2026-08/20260805_1547 Decisions.md` §§1,2; `docs/decisions/05-ui-ux-components.md`.
+
+### Community Catalog Card Leads With the Logo Over a Scrimmed Cover; No Course-Card Medallion (COMM-IDENT)
+**Date:** 2026-08-05 (Conv 433)
+
+`communities.logo_url` gets two different treatments on two surfaces. The course card keeps the client's seam-bridging medallion; the community card reverses it and instead scrims its cover behind the `/community/[slug]` hero's exact gradient (`rgba(0,0,0,0.7)→0.4`) with the logo forward as a centred 56px `rounded-12` squircle. Both cards keep the shared `brian-band` blue.
+
+**Rationale:** On the course card the logo is a **foreign** entity naming another community — which justifies the overhang and ring; on the community card it is the card's **own** subject with no seam to bridge, so the medallion asserts something false. Our own detail hero and the client's own community card already scrim-and-forward, making the catalog card the lone outlier. Squircle over circle because these are app-icon-square marks. The band colour carries no ownership claim and was kept on legibility (`#F1F9FF` on a 25px strip read as a hairline divider).
+
+**See:** `docs/sessions/2026-08/20260805_1547 Decisions.md` §§3,4; `docs/decisions/05-ui-ux-components.md`.
+
 ### Communities Get First-Class Tags; courses.primary_topic_id Removed Again (COMM-TOPICS)
 **Date:** 2026-07-29 (Conv 432)
 
