@@ -25,8 +25,7 @@
 > orphaned endpoint is deleted. Nothing outstanding — kept here one conv for traceability, then
 > delete this note.
 
-1. [TREQ-TEST](#treq-test) — teaching-request POST is untested; its IDEMPOTENCY is what stops the CTA spamming a creator
-2. [CD040-BATCH](#cd040-batch) — Conv-434 client changes never folded into CD-040; only 2 of 5 delivered
+1. [CD040-BATCH](#cd040-batch) — Conv-434 client changes never folded into CD-040; only 2 of 5 delivered
 3. [DIPL-SHELL](#dipl-shell) — /diploma/[id] renders in the MARKETING shell for signed-in viewers
 2. [CTA-HOST-GUARD](#cta-host-guard) — nothing stops a NEW host of CourseCatalogCard shipping dead cards; happened once already
 3. [BRIAN-ARTIFACTS](#brian-artifacts) — 👀 external: the rationale artifacts his commits cite (MERGE-BRIAN itself is CLOSED)
@@ -400,8 +399,13 @@
 
 - **State:** 📋 queued — small, mechanical, but touches focus behaviour so not folded into an unrelated commit.
 - **What:** `npm run check:tailwind` reports 1 issue: `outline-none` (v3) should be `outline-hidden` (v4).
-  3 sites remain — `src/components/ui/ClickableRow.tsx:73` (`focus-visible:outline-none`) and
-  `src/components/course/TeachersTabList.tsx:133,142` (`focus:outline-none`).
+  **5 sites remain, not the 3 this task was written with (re-measured Conv 435)** —
+  `src/components/ui/ClickableRow.tsx:73` (`focus-visible:outline-none`),
+  `src/components/course/TeachersTabList.tsx:133,142` (`focus:outline-none`), and
+  `src/components/discovery/DiscoveryRailCard.tsx:62,98` (`focus-visible:outline-none`).
+  The two `DiscoveryRailCard` sites postdate the task, which is the useful signal: **new `outline-none` is
+  still being written**, so this is an open drift channel and not a fixed backlog of 3. Re-measure before
+  working it rather than trusting the count above.
 - **Why it exists:** `[OUTLINE-V4]` (✅ Conv 244) fixed the ×4 sites in the SESS-GRAD booking files and
   closed; these 3 were never in that scope. Confirmed **pre-existing** in Conv 423 by grepping `HEAD` —
   it is not fallout from the spacing sweep, which only ever changed numbers.
@@ -592,20 +596,6 @@
   claim is accurate: the decision chunks/log/INDEX use a `> Part of…` header rather than a
   "Last Updated" line, so that instruction is a no-op today.
 
-### [TREQ-TEST]
-
-- **State:** 📋 queued — surfaced by the r-end docs agent, Conv 434
-- **What:** `POST /api/me/courses/[courseId]/teaching-request` has **no test file**. Its sibling
-  `GET /api/me/teaching-requests` has 4 cases; the POST endpoint's contract is entirely unpinned.
-- **Highest-value untested branch shipped this conv — the IDEMPOTENT REPLAY.** A second call must return 200
-  `alreadySent` and must **not** message the creator twice. That stamp is the only thing keeping the
-  "Teach this course" CTA from being a spam button aimed at a real person's inbox. It was verified by hand
-  (2 calls → 1 message) and by nothing else.
-- **Also unpinned:** the completed-enrollment gate, the 400 on an unfinished course, the creator-owns-it
-  rejection, and that the notification + message + stamp all land together.
-- **Refs:** `src/pages/api/me/courses/[courseId]/teaching-request.ts`,
-  `tests/api/me/teaching-requests.test.ts` (the sibling's harness is the template).
-
 ### [CD040-BATCH]
 
 - **State:** 📋 queued — process debt from Conv 434
@@ -723,87 +713,9 @@
 
 ## ✅ Done this conv
 
-- **[TEACH-REQ-CREATOR-PATH]** — creators can now actually act on teaching requests. New **Requests** tab in
-  the `/creating` workspace + `GET /api/me/teaching-requests`, scoped by **AUTHORSHIP** (`courses.creator_id`),
-  the same relationship `recommend.ts` accepts — so everything listed is actionable by whoever sees it.
-  Notification `actionUrl` re-pointed `/teaching/courses/[id]` → `/creating/requests`.
-  **Why not simply widen the teaching workspace (the option considered and rejected):** its student list is
-  scoped `WHERE assigned_teacher_id = <viewer>`, so widening the guard alone would have rendered an EMPTY list
-  for a creator who never taught the course — worse than the redirect, because it looks like the request
-  vanished. The creator studio had no per-student list at all, only counts, so no existing surface fit.
-  **Verified live on both halves:** Gabriel (creator, ZERO certifications) is bounced `/teaching/courses/[id]`
-  → `/teaching` but reaches `/creating/requests` (200); Guy sees Amanda's row with the reused
-  `RecommendCertButton`. **A test corrected my own diagnosis mid-flight:** deactivating a certification did NOT
-  reproduce the bounce, because the page guard selects a `teacher_certifications` row *without* filtering
-  `is_active` — only a creator with no row at all is redirected. Endpoint tests injection-calibrated: removing
-  the `creator_id` filter fails 3 of 4. 6 gates green, suite 6375.
-
-- **[TOKEN-TYPO]** — new gate `npm run check:tokens` (`scripts/check-token-names.ts`), wired into `verify` and
-  `/w-codecheck` as check #10. Validates `MattIcon name=` literals against `svg/*.svg`, and colour/type
-  utilities against the tokens actually declared — for **project-owned families only**, so a valid built-in
-  like `bg-neutral-700` can never be flagged (that restraint is what keeps the gate on).
-  **It found 6 pre-existing defects on its first run**, none of them mine: `text-warning-600` ×4 and
-  `text-warning-700` ×2, on a scale that only goes 100/300/500 — "Awaiting review" pills and receipt statuses
-  rendering with a pale amber background and INHERITED text. Fixed to `warning-500`; measured live, the broken
-  class computed `rgb(65,65,65)` (identical to no class at all) and now computes `rgb(180,83,9)`.
-  **Two calibration lessons, both from running it rather than reasoning:** an attribute-only scan missed 2 of
-  the 6 (class lists here are routinely built in variables/object maps, e.g. `pillClass`), so it scans every
-  string literal; and it first flagged 4 FALSE positives on my own valid `shadow-brian-pill`, because
-  `shadow-*` resolves against `--shadow-*`, not `--color-*` — prefix→namespace had to be modelled, not assumed.
-  Injection-calibrated per `[CMH]`: bad icon → +1, bad token → +1, valid built-in → +0. 6 gates green, suite 6371.
-
-- **[TEACH-REQ]** — a completed student can now ASK to be certified to teach, closing the flywheel's missing
-  first step (certification could only ever be *initiated by someone else*). New `/course/[slug]/teach` page +
-  `POST /api/me/courses/[courseId]/teaching-request`: verifies completion, messages the creator with diploma +
-  progress, notifies them (`cert_request`, an existing type), and stamps `enrollments.teaching_request_sent_at`.
-  **Idempotent** — a second call returns `alreadySent` and does NOT message again (verified: 2 calls, 1 message).
-  CTA flips "Teach this course" → **"Request sent"** on all three surfaces.
-  **Authorization widened (user-approved):** `recommend.ts` now accepts the course CREATOR as well as a
-  certified teacher. Necessary because the request is addressed to the creator and creators are not reliably
-  certified for their own courses (Guy 4/4, Gabriel 0/2). **A positive test caught a second gate I had missed** —
-  a global "are you a teacher at all" check ran first and rejected every non-teaching creator before the widened
-  per-course check was reached. Negative test added so the widening cannot drift into "any authenticated user".
-  Target moved off `/diploma/[id]`: that page is PUBLIC and unauthenticated, so it could not host the action.
-  5 gates green, suite 6371.
-
-- **[CARD-CTA-COMM]** — the community **Courses tab** (`/community/[slug]/courses`) now uses the same resolver.
-  It was the one other page rendering `CourseCatalogCard`, and change #2 had left it behind: enrolled viewers
-  got NO CTA there while `/courses` offered a next step, so the same student saw a live button on one page and
-  a dead card one click away — the divergence `[CARD-CTA]` closed, relocated to a different pair of surfaces.
-  Its own comment ("Deliberately NOT a CTA … we pass the same static one /courses uses") had become the last
-  thing preserving a reversed decision. Query gained `enrollment_id` + journey-aligned `next_session_id`, plus
-  viewer teaching-certs and created-courses lookups (the list-shaped `course.creator` carries no id).
-  **Attribution preserved:** `?via=community-courses` is re-attached to `/course/{slug}/…` hrefs only — not to
-  `/session/…`, `/teaching/…` or `/diploma/…`, which are destinations the viewer already owns; tagging those
-  would attribute a session booked weeks ago to a community browse. Verified live on all three surfaces.
-
-- **[CTA-MOD-GAP]** — community moderators no longer lose the enrol CTA. `myCourseIds` was a union of four
-  unrelated relationships all suppressed alike; moderating a COMMUNITY is not a role on the course, so it was
-  dropped. The set now suppresses **creators only** — teachers and enrolled viewers are resolved, not blanked.
-  Verified live: Sarah's two blank cards read "Enroll Now"; creator Guy still gets none on his four courses.
-
-- **[CTA-TEACHER-DUP]** — someone certified to teach a course is no longer told to "Teach this course". They
-  get "Manage your teaching" → `/teaching/courses/[id]` (200, no redirect), but ONLY when their student journey
-  has nothing actionable — a booked session still wins, being time-bound. Also fixes a case neither ticket
-  named: a certified teacher who never enrolled used to get NO CTA at all. Put in the SHARED resolver with
-  both surfaces passing `isTeacherOfCourse` (already loaded, CRT-1 — no new query), because doing it host-side
-  would have recreated the exact catalog/detail split `[CARD-CTA]` closed. Verified live: card and detail both
-  read "Manage your teaching → /teaching/courses/crs-ai-tools-overview".
-
-- **[CTA-CANCELLED]** — folded in: a cancelled enrolment now reads as not-enrolled on BOTH surfaces, so
-  re-enrolling is reachable. The detail page's lookup (`loaders/courses.ts:805`) had no status filter, so it
-  would have offered a cancelled student "Book your first session" while the card offered nothing. No seed row
-  exercises this, so it is proven by unit test and code path, not live.
-
-- **[CARD-CTA]** — `/courses` cards now carry the viewer's next step (client change #2). Reverses the
-  MERGE-BRIAN "CTA untouched" call by REMOVING its cause rather than overruling it: the catalog now calls the
-  detail page's own `buildCoursePrimaryCta` (moved to `@lib/course-cta`) over a snapshot that gained
-  `nextSessionId`, aligned to `computeCourseJourney`'s predicate. Proven live on the student who would have
-  shown the old divergence — catalog and detail both read "Go to Session 2 → /session/ses-david-n8n-3".
-  Completed → "Teach this course" → `/diploma/[id]` (200 verified). 5 gates green, suite 6360 (+8).
-
-- **[PILL-LIFT]** — `/courses` topic pills: hover lifts 1px + deepens a new resting shadow instead of
-  filling the capsule. His values adopted verbatim as `--brian-pill-shadow{,-hover}`; his tint turned out
-  to already be `--brian-ink`, so no new colour. Scroller `py-2`→`py-12` (overflow-x clips vertically).
-  Verified live (shadows, 1px delta, unchanged bg); 5 gates green, suite 6352 (+5 injection-calibrated
-  guards). Scope kept LOCAL to this row by user decision — other pill surfaces stay flat.
+- **[TREQ-TEST]** (Conv 435) — `tests/api/me/courses/[courseId]/teaching-request.test.ts`, 8 cases pinning the
+  POST endpoint that was shipped untested. Each assertion proved load-bearing by mutation rather than by a
+  green run: the guard moved below the send (correct `200 alreadySent`, creator messaged twice) → caught by the
+  row counts, `expected 2 to be 1`; `actionUrl` → `/teaching` → caught; the `!= 'cancelled'` clause dropped →
+  caught; the stamp write removed → broke the happy path **and** idempotency, which is the design claim. The
+  endpoint was restored byte-identical after each (`git diff` empty). 5 gates green; suite 6375 → 6383.
