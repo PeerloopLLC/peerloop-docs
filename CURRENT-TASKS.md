@@ -25,50 +25,51 @@
 > orphaned endpoint is deleted. Nothing outstanding — kept here one conv for traceability, then
 > delete this note.
 
-1. [CTA-HOST-GUARD](#cta-host-guard) — nothing stops a NEW host of CourseCatalogCard shipping dead cards; happened once already
-2. [BRIAN-ARTIFACTS](#brian-artifacts) — 👀 external: the rationale artifacts his commits cite (MERGE-BRIAN itself is CLOSED)
-3. [COMM-IMG](#comm-img) — community art is all picsum placeholders; `cover_image_url` has a UI slot but **no upload/storage**
-4. [CD035-STALE](#cd035-stale) — CD-035 reads 0/34 done but CD-039 shipped part of it; re-validate before working it
-5. [SPACING-4X](#spacing-4x) — sweep for other 4× size artifacts Conv 423 preserved
-6. [A11Y](#a11y) — accessibility lint triage
-7. [RHOOKS](#rhooks) — react-hooks lint triage
-8. [KNIP](#knip) — dead-export oracle → gate
-9. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
-10. [EDITSAFE](#editsafe) — anchored-edit discipline
-11. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
-12. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
-13. [ROUTESTORIES-DRIFT](#routestories-drift) — route-stories.md §3 still documents dissolved /discover routes
-14. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
-15. [HOME-FIXES](#home-fixes) — Home route fix bucket
-16. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
-17. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
-18. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
-19. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
-20. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
-21. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
-22. [RSFD](#rsfd) — port `r-start-from-dirty`
-23. [DEPEXP](#depexp) — dependency-probe hygiene
-24. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
-25. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
-26. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
-27. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
-28. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
-29. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
-30. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
-31. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
-32. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
-33. [TLFMT](#tlfmt) — r-end ref documents a TIMELINE.md shape the file no longer uses
-34. [OUTLINE-V4B](#outline-v4b) — 3 residual `outline-none` sites the Conv-244 fix missed
-35. [ADMIN-OVFLW](#admin-ovflw) — 3 admin routes overflow horizontally (pre-existing, not Conv-423)
-36. [LH1](#lh1) — 23 typography tokens hardcode `line-height: 1` (TYPO-FDN axis)
-37. [BRIDGE-RESIZE](#bridge-resize) — `resize_window` silently ignores width
-38. [ICON-STATES](#icon-states) — Phase-5 tail: drive hidden/loading states over 528 call sites
-39. [GATEPAR](#gatepar) — `/w-codecheck` vs `npm run verify` diverged on the icon gate
-40. [VPHARNESS](#vpharness) — persist the exact-size iframe harness as a script
-41. [RATING-COUNT-DEAD](#rating-count-dead) — dead `rating_count` + "Active" vs "Published" split
-42. [PROVDOC](#provdoc) — `matt-provenance.md` §6a says "9 unmarked components"; registry has 22 + 38
-43. [PRUNEPTR](#pruneptr) — `/r-end` prune leaves no forwarding pointer when a `---` survives the span
-44. [SCHEMADIAG](#schemadiag) — `schema-diagram.md` claims 48 tables, 71 on disk (r-end docs agent, Conv 432)
+1. [DIPL-SHELL](#dipl-shell) — /diploma/[id] renders in the MARKETING shell for signed-in viewers
+2. [CTA-HOST-GUARD](#cta-host-guard) — nothing stops a NEW host of CourseCatalogCard shipping dead cards; happened once already
+3. [BRIAN-ARTIFACTS](#brian-artifacts) — 👀 external: the rationale artifacts his commits cite (MERGE-BRIAN itself is CLOSED)
+4. [COMM-IMG](#comm-img) — community art is all picsum placeholders; `cover_image_url` has a UI slot but **no upload/storage**
+5. [CD035-STALE](#cd035-stale) — CD-035 reads 0/34 done but CD-039 shipped part of it; re-validate before working it
+6. [SPACING-4X](#spacing-4x) — sweep for other 4× size artifacts Conv 423 preserved
+7. [A11Y](#a11y) — accessibility lint triage
+8. [RHOOKS](#rhooks) — react-hooks lint triage
+9. [KNIP](#knip) — dead-export oracle → gate
+10. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
+11. [EDITSAFE](#editsafe) — anchored-edit discipline
+12. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
+13. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
+14. [ROUTESTORIES-DRIFT](#routestories-drift) — route-stories.md §3 still documents dissolved /discover routes
+15. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
+16. [HOME-FIXES](#home-fixes) — Home route fix bucket
+17. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
+18. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
+19. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
+20. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
+21. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
+22. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
+23. [RSFD](#rsfd) — port `r-start-from-dirty`
+24. [DEPEXP](#depexp) — dependency-probe hygiene
+25. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
+26. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
+27. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
+28. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
+29. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
+30. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
+31. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
+32. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
+33. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
+34. [TLFMT](#tlfmt) — r-end ref documents a TIMELINE.md shape the file no longer uses
+35. [OUTLINE-V4B](#outline-v4b) — 3 residual `outline-none` sites the Conv-244 fix missed
+36. [ADMIN-OVFLW](#admin-ovflw) — 3 admin routes overflow horizontally (pre-existing, not Conv-423)
+37. [LH1](#lh1) — 23 typography tokens hardcode `line-height: 1` (TYPO-FDN axis)
+38. [BRIDGE-RESIZE](#bridge-resize) — `resize_window` silently ignores width
+39. [ICON-STATES](#icon-states) — Phase-5 tail: drive hidden/loading states over 528 call sites
+40. [GATEPAR](#gatepar) — `/w-codecheck` vs `npm run verify` diverged on the icon gate
+41. [VPHARNESS](#vpharness) — persist the exact-size iframe harness as a script
+42. [RATING-COUNT-DEAD](#rating-count-dead) — dead `rating_count` + "Active" vs "Published" split
+43. [PROVDOC](#provdoc) — `matt-provenance.md` §6a says "9 unmarked components"; registry has 22 + 38
+44. [PRUNEPTR](#pruneptr) — `/r-end` prune leaves no forwarding pointer when a `---` survives the span
+45. [SCHEMADIAG](#schemadiag) — `schema-diagram.md` claims 48 tables, 71 on disk (r-end docs agent, Conv 432)
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -246,6 +247,23 @@
 - **What:** `/api/resources/[id]/download` sets `Content-Disposition: attachment; filename="${resource.name || getFilenameFromKey(r2_key)}"`. Because `resource.name` is a human title with **no file extension** (e.g. "n8n Node Reference"), downloaded files save without `.pdf`/`.zip`, so the OS/browser may not open them in the right app. The `r2_key` *does* carry the real filename (`node-reference.pdf`).
 - **Fix:** prefer `getFilenameFromKey(r2_key)` (has the extension) for the download filename, or append the extension (from the key/mime) to `resource.name`. Decide which reads better. Check the sibling `api/community-resources/[id]/download.ts` for the same pattern.
 - **Refs:** `src/pages/api/resources/[id]/download.ts` (~line 102), `getFilenameFromKey` in `@lib/r2`, `[R2-SEED]`. Surfaced Conv 415 while verifying the seeded downloads.
+
+### [DIPL-SHELL]
+
+- **State:** 📋 queued — user-observed Conv 434
+- **What:** `/diploma/[id]` renders in the **marketing shell** (`LandingLayout`: Courses / How It Works /
+  Pricing / For Creators nav + marketing footer) even for a signed-in user who arrived from inside the app.
+  No sidebar, no app chrome. Verified live as Guy — his avatar shows in the marketing header.
+- **Why it looks wrong but is not obviously a bug:** the Diploma is a **public, shareable, printable**
+  credential (Conv 389 `[DIPLOMA]`, no auth), so a marketing shell is defensible for a signed-out visitor
+  following a shared link. It is only wrong for the in-app viewer, which is the common case.
+- **Not caused by, but surfaced by, `[TEACH-REQ]`:** the completed-state CTA pointed here briefly, which is how
+  it was noticed. That CTA now goes to `/course/[slug]/teach`, so nothing in-app links here at present — which
+  is exactly why this could sit unnoticed again.
+- **Options:** (a) pick the layout by viewer — `AppLayout` when authenticated, `LandingLayout` when not;
+  (b) always `AppLayout` (loses the clean public/share render); (c) accept it as a print artifact and leave it.
+  (a) is the obvious answer but doubles the render paths for one page, so it is a real choice.
+- **Refs:** `src/pages/diploma/[id].astro:42`, `src/layouts/LandingLayout.astro`, `[DIPLOMA]` Conv 389.
 
 ### [EDITSAFE]
 
@@ -662,6 +680,21 @@
 ---
 
 ## ✅ Done this conv
+
+- **[TEACH-REQ-CREATOR-PATH]** — creators can now actually act on teaching requests. New **Requests** tab in
+  the `/creating` workspace + `GET /api/me/teaching-requests`, scoped by **AUTHORSHIP** (`courses.creator_id`),
+  the same relationship `recommend.ts` accepts — so everything listed is actionable by whoever sees it.
+  Notification `actionUrl` re-pointed `/teaching/courses/[id]` → `/creating/requests`.
+  **Why not simply widen the teaching workspace (the option considered and rejected):** its student list is
+  scoped `WHERE assigned_teacher_id = <viewer>`, so widening the guard alone would have rendered an EMPTY list
+  for a creator who never taught the course — worse than the redirect, because it looks like the request
+  vanished. The creator studio had no per-student list at all, only counts, so no existing surface fit.
+  **Verified live on both halves:** Gabriel (creator, ZERO certifications) is bounced `/teaching/courses/[id]`
+  → `/teaching` but reaches `/creating/requests` (200); Guy sees Amanda's row with the reused
+  `RecommendCertButton`. **A test corrected my own diagnosis mid-flight:** deactivating a certification did NOT
+  reproduce the bounce, because the page guard selects a `teacher_certifications` row *without* filtering
+  `is_active` — only a creator with no row at all is redirected. Endpoint tests injection-calibrated: removing
+  the `creator_id` filter fails 3 of 4. 6 gates green, suite 6375.
 
 - **[TOKEN-TYPO]** — new gate `npm run check:tokens` (`scripts/check-token-names.ts`), wired into `verify` and
   `/w-codecheck` as check #10. Validates `MattIcon name=` literals against `svg/*.svg`, and colour/type
