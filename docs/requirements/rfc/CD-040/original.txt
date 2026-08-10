@@ -1,0 +1,106 @@
+CD-040 — RAW CLIENT INPUT (reconstructed)
+
+PROVENANCE NOTE. Unlike CD-035..CD-039, this file is not a single pasted note. These
+requests arrived verbally, one at a time, across two working conversations (Conv 433 on
+2026-08-05 and Conv 434 on 2026-08-10), each accompanied by screenshots and by commits on
+the client's own branch `brian-July-7`. The text below is the client's requests as relayed
+verbatim by the user in those conversations, preserved in the conv Extracts at
+docs/sessions/2026-08/20260805_1547 Extract.md and 20260810_1442 Extract.md (§ Conv Prompts).
+Screenshots referenced by filename are not reproduced here.
+
+================================================================================
+CONV 433 — 2026-08-05
+================================================================================
+
+"We are going to work on updating the UI for client-requested changes"
+
+"We'll start with new requests from the client which I will present one at a time"
+
+--- Request 1: community band + logo on the course card ---
+
+"Here is a card from the home page from the staging site. / Here is the same card from the
+client's brian-July-7 branch / We need to make the background colour of the community
+section at the bottom edge of the card to be the clients, and the community logo to be the
+size, presentation and position the client used"
+
+--- Follow-up: what the image means ---
+
+"I may have overstepped on the communities card. Here is the screenshot: the inset is
+rounded, sits well inside the image rather than span the bottom border into the section
+below it. ANd what does that image represent from a community point of view?"
+
+"The logo for the community is shown on the course card yet if we remove it it doesnt
+visually confirm the connection to the community. The logo needsnto be the embassador of
+the community if used as such in the course card as it is now. What that calls into
+question is the image on community cards: should that be the logo instaead of the image.
+What then happpens to the image?"
+
+"Create a task to replace these picsum photos with real images that a creator will
+maintain. Check that we have a spot for these images and a way to store them too in that
+same task. For now, I chose #1: Scrim + forward logo (recommended)" [+ "Squircle"]
+
+"very good. I need to show this to the client. I don't think you made any cron related
+changes are seed data changes, so please delpoy to staging"
+
+================================================================================
+CONV 434 — 2026-08-10
+================================================================================
+
+--- Client change #1: topic-pill hover elevation ---
+
+"On the /courses page there is a horizontal row of pills that extends off screen. These are
+interests (I think). The client wants the hover to hover to not colour the buttons but
+instead to make the pills rise u slightly. There needs to be a dropshadow on each pill and
+that is deeper when the pill is hovered becuase the button lifts up on hover. This is a
+screenshot of what it looks like now: '…2026-08-10_10-45-03.png' and here is a screenshot
+he provided, from his brian-July-7 branch: '…2026-08-10_10-45-53.png'"
+
+"That looks pretty good. I don't want to make the shadow site-wide on pills yet. so the
+local implementation of the shadow is fine for now (SHADOW-DEAD]"
+
+--- Client change #2: per-card journey CTA ---
+
+"Again on the course listing page. The client has added a CTA to the upper right corner of
+each course card (see screenshot). 'Book next session' for when you have paid for a course,
+have taken at least 1 session and have not taken all the sessions; 'Book first session'
+when you have paid but not taken any sessions; 'Enroll Now' for courses your have never
+purchased; and 'Teach this course' for a course you have successfully completed.
+'…2026-08-10_11-21-17.png'"
+
+"We need to address CTA-MOD-GAP and CTA-TEACHER-GAP now. What do you suggest?"
+
+"Will the same CTAs show up if the Course Card shows up on other pages?"
+
+--- Client change #3: teaching-request flow ---
+
+"I need to see the working of a CTA that recommends becoming a teacher. What student show
+sthis?"
+
+"We had discussed wiring in the message to the creator of the course and sending the detals
+of the course and student so that the creator can start the process as only they can. We
+also dicussed a record of the message being sent, so that the next time that student sees
+the course in the listing or on its detail page that 'Request has been sent displauys'. Did
+we push that off to a new task? regardless, can we do that now?"
+
+--- Observations round ---
+
+"I have several obseervations. 1. The course/{stub}/diploma destiation of the CTA no longer
+that CTA's destination, but when it was the page rendered with the wrong layout. 2. Is the
+dev server still up? the 4321 port is snowing an error suggesting something is wrong there
+3. I need to test the Send Request to creator workflow. Can you load the person that will
+show that in the course? 4. I need to also see that the creator received the message and
+whether the message also shows up for the sender. 5. I need to identify what process the
+creator can take when they receove the request and if it is working"
+
+"Let's fix these found issues first"
+
+"Let's handle TEACH-REQ-CREATOR-PATH now"
+
+================================================================================
+NOT DELIVERED
+================================================================================
+
+Five client changes were planned for Conv 434; two were named and delivered (#1 pill
+elevation, #2 per-card CTA). The teaching-request flow grew out of #2 rather than being an
+independently planned request. Planned changes #3, #4 and #5 were never named — the rest of
+that conversation went into defects the first two surfaced. See RFC.md § Open Questions Q1.

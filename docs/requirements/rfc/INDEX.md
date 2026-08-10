@@ -1,6 +1,6 @@
 # RFC Index
 
-**Last Updated:** 2026-06-14
+**Last Updated:** 2026-08-10
 
 ## Rationale
 
@@ -21,6 +21,7 @@ New client documents (CD-035+) have impacts on what was already written and must
 | [CD-037](./CD-037/) | Instant Session Booking ("Book Now") | Closed | 30 | 30 | High |
 | [CD-038](./CD-038/) | Recording Downloads, Analytics Callbacks & Account Settings | Open | 22 | 16 | High |
 | [CD-039](./CD-039/) | Single-Column "Twitter-style" Listings | Closed | 21 | 21 | Medium |
+| [CD-040](./CD-040/) | Client UI Batch: Community Identity, Pill Elevation & Course-Card Journey CTA | In Progress | 35 | 30 | High |
 
 ## Status Key
 

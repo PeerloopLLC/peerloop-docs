@@ -25,7 +25,6 @@
 > orphaned endpoint is deleted. Nothing outstanding — kept here one conv for traceability, then
 > delete this note.
 
-1. [CD040-BATCH](#cd040-batch) — Conv-434 client changes never folded into CD-040; only 2 of 5 delivered
 3. [DIPL-SHELL](#dipl-shell) — /diploma/[id] renders in the MARKETING shell for signed-in viewers
 2. [CTA-HOST-GUARD](#cta-host-guard) — nothing stops a NEW host of CourseCatalogCard shipping dead cards; happened once already
 3. [BRIAN-ARTIFACTS](#brian-artifacts) — 👀 external: the rationale artifacts his commits cite (MERGE-BRIAN itself is CLOSED)
@@ -204,6 +203,7 @@
   refactor rather than a pure addition. Decide which before starting.
 - **Refs:** `src/components/courses/CourseCatalogCard.tsx` (`cta` prop), `CoursesCatalog.tsx`,
   `src/pages/community/[slug]/[...tab].astro`, `src/lib/course-cta.ts`.
+- **Client-visible:** open item in `docs/requirements/rfc/CD-040/RFC.md` §3. Tick it there when this closes.
 
 ### [COMPDOC]
 
@@ -227,6 +227,7 @@
 - **Shape:** (a) build cover upload to match the logo's pattern — the logo endpoint is the template, so this is largely symmetry work; (b) then replace the seed placeholders with real art; (c) decide what an empty cover falls back to (today `bg-neutral-700`; the `icon` emoji already covers the empty-logo case).
 - **Blocks:** honest visual review of `/communities`, `/community/[slug]`, and the Discovery rails — all three render community imagery.
 - **Refs:** `migrations-dev/0001_seed_dev.sql:174-188`, `migrations/0002_seed_core.sql:213` (System community has a cover and **no** logo — the nullable case is real), `src/pages/api/me/communities/[slug]/logo.ts`, `src/components/creators/communities/CommunitySettings.tsx`, `[COMM-BAND-ADOPT]` (Conv 433).
+- **Client-visible:** open item in `docs/requirements/rfc/CD-040/RFC.md` §1. Tick it there when this closes.
 
 
 ### [COURSES-FIXES]
@@ -266,6 +267,7 @@
   (b) always `AppLayout` (loses the clean public/share render); (c) accept it as a print artifact and leave it.
   (a) is the obvious answer but doubles the render paths for one page, so it is a real choice.
 - **Refs:** `src/pages/diploma/[id].astro:42`, `src/layouts/LandingLayout.astro`, `[DIPLOMA]` Conv 389.
+- **Client-visible:** open item in `docs/requirements/rfc/CD-040/RFC.md` §4. Tick it there when this closes.
 
 ### [EDITSAFE]
 
@@ -542,6 +544,8 @@
   the answer may be "delete the dead block and keep the defaults", which is a one-line fix with no visual delta.
 - **Refs:** `src/styles/tokens-primitives.css` § Shadows, `src/styles/tokens-tailwind-bridge.css` (`@theme`),
   Conv 311 `[SWEEP-SPACING-GREP]` radius precedent. Surfaced Conv 434 while adding `[PILL-LIFT]` tokens.
+- **Client-visible:** parked item in `docs/requirements/rfc/CD-040/RFC.md` §2, and open question Q2 there
+  ("does the pill elevation go app-wide?"). The client's answer is what un-gates this.
 
 ### [SCHEMADIAG]
 
@@ -596,20 +600,6 @@
   claim is accurate: the decision chunks/log/INDEX use a `> Part of…` header rather than a
   "Last Updated" line, so that instruction is a no-op today.
 
-### [CD040-BATCH]
-
-- **State:** 📋 queued — process debt from Conv 434
-- **What:** the Conv-434 client changes were never folded into an RFC. The Conv-433 working model was to track
-  each request under its own `[CODE]` and batch them into **CD-040** via `/w-add-client-note` once several
-  accumulated. Five accumulated; the note was never written.
-- **What to capture:** `[PILL-LIFT]` (pill hover elevation), `[CARD-CTA]` (per-card journey CTA, four client
-  states + the fifth his spec omits), `[TEACH-REQ]` (request-to-teach), and the three CTA defects the second
-  request exposed. Note that all three adopted mechanisms were previously "not adopted" in MERGE-BRIAN and are
-  now amended in `plan/merge-brian/NOT-ADOPTED.md` — the RFC should point at those rows rather than restate them.
-- **Also worth recording:** only 2 of 5 planned client changes were delivered; #3–#5 were never named, so the
-  batch is genuinely incomplete rather than merely unwritten.
-- **Refs:** `docs/requirements/rfc/INDEX.md`, `/w-add-client-note`, `plan/merge-brian/NOT-ADOPTED.md`.
-
 ### [SEED-NOTIF-STALE]
 
 - **State:** 📋 queued — trivial, local dev data only
@@ -620,6 +610,7 @@
   which is non-empty. Left deliberately rather than deleted unasked.
 - **Fix:** either drop the notification row, or re-seed (`npm run db:setup:local:dev` restores both).
 - **Refs:** `migrations-dev/0001_seed_dev.sql`, `[TEACH-REQ]` Conv 434.
+- **Client-visible:** open item in `docs/requirements/rfc/CD-040/RFC.md` §4. Tick it there when this closes.
 
 ### [TESTUNITDOC]
 
@@ -713,6 +704,13 @@
 
 ## ✅ Done this conv
 
+- **[CD040-BATCH]** (Conv 435) — `docs/requirements/rfc/CD-040/` created (`original.txt` + `CD-040.md` +
+  `RFC.md`, 35 items / 30 done), INDEX updated. Scoped to the **full five-change batch across Convs 433–434**,
+  not just Conv 434's three: the task's own "five accumulated" and the five amended `NOT-ADOPTED.md` rows
+  (2 Communities + 3 Courses) both resolve that way. The two "fives" are kept apart in the RFC — five
+  *delivered* across both convs, versus Conv 434's five *planned* of which only #1–#2 were ever named
+  (now client question Q1). Back-links added to the 5 open/parked items so closing one prompts ticking the RFC —
+  the RFC going stale unnoticed is the exact failure that created this task.
 - **[TREQ-TEST]** (Conv 435) — `tests/api/me/courses/[courseId]/teaching-request.test.ts`, 8 cases pinning the
   POST endpoint that was shipped untested. Each assertion proved load-bearing by mutation rather than by a
   green run: the guard moved below the send (correct `200 alreadySent`, creator messaged twice) → caught by the
