@@ -57,6 +57,7 @@ Only one argument allowed. Arguments are mutually exclusive.
 | 7 | locals.runtime.env access | Grep check (see below) | Manual (use `getEnv()`/`requireEnv()`) |
 | 8 | Schema-aware deleted_at | Node script (see below) | Manual (wrong column for that table) |
 | 9 | Figma-asset sweep | Grep check (see below) | Manual (inline the SVG / move to MattIcon) |
+| 10 | Invented token/icon names | `cd ../Peerloop && npm run check:tokens` | Manual (use a declared token / real icon) |
 
 ---
 

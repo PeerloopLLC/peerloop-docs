@@ -25,51 +25,54 @@
 > orphaned endpoint is deleted. Nothing outstanding — kept here one conv for traceability, then
 > delete this note.
 
-1. [BRIAN-ARTIFACTS](#brian-artifacts) — 👀 external: the rationale artifacts his commits cite (MERGE-BRIAN itself is CLOSED)
-2. [COMM-IMG](#comm-img) — community art is all picsum placeholders; `cover_image_url` has a UI slot but **no upload/storage**
-3. [CD035-STALE](#cd035-stale) — CD-035 reads 0/34 done but CD-039 shipped part of it; re-validate before working it
-4. [SPACING-4X](#spacing-4x) — sweep for other 4× size artifacts Conv 423 preserved
-5. [A11Y](#a11y) — accessibility lint triage
-6. [RHOOKS](#rhooks) — react-hooks lint triage
-7. [KNIP](#knip) — dead-export oracle → gate
-8. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
-9. [EDITSAFE](#editsafe) — anchored-edit discipline
-10. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
-11. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
-12. [ROUTESTORIES-DRIFT](#routestories-drift) — route-stories.md §3 still documents dissolved /discover routes
-13. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
-14. [HOME-FIXES](#home-fixes) — Home route fix bucket
-15. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
-16. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
-17. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
-18. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
-19. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
-20. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
-21. [RSFD](#rsfd) — port `r-start-from-dirty`
-22. [DEPEXP](#depexp) — dependency-probe hygiene
-23. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
-24. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
-25. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
-26. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
-27. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
-28. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
-29. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
-30. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
-31. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
-32. [TLFMT](#tlfmt) — r-end ref documents a TIMELINE.md shape the file no longer uses
-33. [OUTLINE-V4B](#outline-v4b) — 3 residual `outline-none` sites the Conv-244 fix missed
-34. [ADMIN-OVFLW](#admin-ovflw) — 3 admin routes overflow horizontally (pre-existing, not Conv-423)
-35. [LH1](#lh1) — 23 typography tokens hardcode `line-height: 1` (TYPO-FDN axis)
-36. [BRIDGE-RESIZE](#bridge-resize) — `resize_window` silently ignores width
-37. [ICON-STATES](#icon-states) — Phase-5 tail: drive hidden/loading states over 528 call sites
-38. [GATEPAR](#gatepar) — `/w-codecheck` vs `npm run verify` diverged on the icon gate
-39. [VPHARNESS](#vpharness) — persist the exact-size iframe harness as a script
-40. [RATING-COUNT-DEAD](#rating-count-dead) — dead `rating_count` + "Active" vs "Published" split
-41. [PROVDOC](#provdoc) — `matt-provenance.md` §6a says "9 unmarked components"; registry has 22 + 38
-42. [PRUNEPTR](#pruneptr) — `/r-end` prune leaves no forwarding pointer when a `---` survives the span
-43. [SCHEMADIAG](#schemadiag) — `schema-diagram.md` claims 48 tables, 71 on disk (r-end docs agent, Conv 432)
+1. [CTA-HOST-GUARD](#cta-host-guard) — nothing stops a NEW host of CourseCatalogCard shipping dead cards; happened once already
+2. [BRIAN-ARTIFACTS](#brian-artifacts) — 👀 external: the rationale artifacts his commits cite (MERGE-BRIAN itself is CLOSED)
+3. [COMM-IMG](#comm-img) — community art is all picsum placeholders; `cover_image_url` has a UI slot but **no upload/storage**
+4. [CD035-STALE](#cd035-stale) — CD-035 reads 0/34 done but CD-039 shipped part of it; re-validate before working it
+5. [SPACING-4X](#spacing-4x) — sweep for other 4× size artifacts Conv 423 preserved
+6. [A11Y](#a11y) — accessibility lint triage
+7. [RHOOKS](#rhooks) — react-hooks lint triage
+8. [KNIP](#knip) — dead-export oracle → gate
+9. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
+10. [EDITSAFE](#editsafe) — anchored-edit discipline
+11. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
+12. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
+13. [ROUTESTORIES-DRIFT](#routestories-drift) — route-stories.md §3 still documents dissolved /discover routes
+14. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
+15. [HOME-FIXES](#home-fixes) — Home route fix bucket
+16. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
+17. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
+18. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
+19. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
+20. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
+21. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
+22. [RSFD](#rsfd) — port `r-start-from-dirty`
+23. [DEPEXP](#depexp) — dependency-probe hygiene
+24. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
+25. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
+26. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
+27. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
+28. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
+29. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
+30. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
+31. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
+32. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
+33. [TLFMT](#tlfmt) — r-end ref documents a TIMELINE.md shape the file no longer uses
+34. [OUTLINE-V4B](#outline-v4b) — 3 residual `outline-none` sites the Conv-244 fix missed
+35. [ADMIN-OVFLW](#admin-ovflw) — 3 admin routes overflow horizontally (pre-existing, not Conv-423)
+36. [LH1](#lh1) — 23 typography tokens hardcode `line-height: 1` (TYPO-FDN axis)
+37. [BRIDGE-RESIZE](#bridge-resize) — `resize_window` silently ignores width
+38. [ICON-STATES](#icon-states) — Phase-5 tail: drive hidden/loading states over 528 call sites
+39. [GATEPAR](#gatepar) — `/w-codecheck` vs `npm run verify` diverged on the icon gate
+40. [VPHARNESS](#vpharness) — persist the exact-size iframe harness as a script
+41. [RATING-COUNT-DEAD](#rating-count-dead) — dead `rating_count` + "Active" vs "Published" split
+42. [PROVDOC](#provdoc) — `matt-provenance.md` §6a says "9 unmarked components"; registry has 22 + 38
+43. [PRUNEPTR](#pruneptr) — `/r-end` prune leaves no forwarding pointer when a `---` survives the span
+44. [SCHEMADIAG](#schemadiag) — `schema-diagram.md` claims 48 tables, 71 on disk (r-end docs agent, Conv 432)
 
 ## ⏸️ Parked  (gated — out of rotation)
+
+- [SHADOW-DEAD](#shadow-dead) — **gate:** deliberate app-wide shadow pass; not to be fixed as a token cleanup (Conv 434)
 
 - [ORPHAN-BACKLOG](#orphan-backlog) — gate: marketing redesign (RG-PUBLIC)
 - [PLATO-SEQ](#plato-seq) — gate: post-launch (Phase 4c)
@@ -178,6 +181,26 @@
 - **Shape:** per-item disposition pass (done / superseded by CD-039 / still-real / obsolete-target), then correct `RFC.md` checkboxes and the `INDEX.md` Done count. This is an investigative framing — surface the dispositions and confirm before editing.
 - **Refs:** `docs/requirements/rfc/CD-035/RFC.md`, `docs/requirements/rfc/CD-039/RFC.md` (Closed, 21/21), `docs/requirements/rfc/INDEX.md`, `plan/` LIST-1COL.
 
+
+### [CTA-HOST-GUARD]
+
+- **State:** 📋 queued — cheap; prevents a repeat of a gap that already happened once
+- **What:** nothing stops a NEW host of `CourseCatalogCard` from rendering it without wiring a CTA, so the next
+  page to use the card silently ships dead cards for enrolled viewers.
+- **Why it is not hypothetical:** exactly this happened in Conv 434. `[CARD-CTA]` gave `/courses` a next-step
+  CTA and left the community Courses tab — the only other consumer — on its own stale logic, where enrolled
+  viewers got no CTA at all. It was found only because the user asked "will the same CTAs show up on other
+  pages?", not by any check. Two consumers were tractable by hand; a third would not be noticed.
+- **Shape (options, cheapest first):**
+  - a static check that every file rendering `<CourseCatalogCard` also imports `buildCoursePrimaryCta` (or
+    passes `cta`), in the shape of `scripts/check-token-names.ts` — a grep-level gate, minutes to write;
+  - or make the card's `cta` prop **required** (`cta: … | null`), forcing each host to state its intent
+    explicitly rather than inheriting "undefined" — a type-level fix that needs no script at all, and is
+    probably the better answer since `tsc` then enforces it.
+- **Note:** the second option is the durable one, but it touches every existing call site, so it is a small
+  refactor rather than a pure addition. Decide which before starting.
+- **Refs:** `src/components/courses/CourseCatalogCard.tsx` (`cta` prop), `CoursesCatalog.tsx`,
+  `src/pages/community/[slug]/[...tab].astro`, `src/lib/course-cta.ts`.
 
 ### [COMPDOC]
 
@@ -469,6 +492,32 @@
 - **Asymmetry:** `/r-commit` Step 1.5 + `/r-end` Step 5b run the same rsync **live→mirror** (safe) and are never blocked. Only mirror→live is sensitive.
 - **Refs:** `.claude/skills/r-start/SKILL.md` Step 5.7 Phase 2, `[[feedback_msi_sync_user_checkpoint]]`. Surfaced Conv 395.
 
+### [SHADOW-DEAD]
+
+- **State:** ⏸️ parked · **gate:** a deliberate app-wide shadow pass — **user decision, Conv 434.** Not to be
+  picked up opportunistically as a "token cleanup"; the fix moves 30 live call sites onto different pixel
+  values, so it needs its own before/after sweep whenever elevation is next revisited across the app.
+  Note for whoever picks this up: this is **not** the "should the pill shadow go site-wide?" question — that
+  one is answered under `[PILL-LIFT]` (no, deliberately local). These two got conflated when the task was
+  parked, and they are independent.
+- **What:** the 7 `--shadow-{sm,md,lg,xl,2xl,inner,none}` tokens in `tokens-primitives.css` are declared in
+  `:root` only, **not** in an `@theme` block — so Tailwind generates no utilities from them and the app's
+  **30** `shadow-sm|md|lg|xl` call sites silently resolve to **Tailwind v4's defaults** instead.
+- **Verified, not inferred (Conv 434):** compiled the real stylesheet with `@tailwindcss/cli@4.3.3` —
+  `.shadow-sm` emits `0 1px 3px 0 rgb(0 0 0/.1), 0 1px 2px -1px rgb(0 0 0/.1)` (the v4 default) while `:root`
+  separately declares `--shadow-sm: 0 1px 2px 0 rgb(0 0 0/.05)` (the v3 value) with **zero** references.
+- **Why it matters:** this is the exact shape of the Conv-311 radius bug, where every bare `rounded-8`/`-12`/
+  `-16` computed 0px because the scale sat in `:root` instead of `@theme`. It is quieter here — the utilities
+  still *work*, they just don't mean what this repo says they mean — which is why it survived. The token file's
+  own comment ("Scaffolded — specific values pending") suggests nobody ever intended these to be live.
+- **Why NOT fixed inline:** moving them into `@theme` re-points 30 live call sites at different pixel values.
+  That is a **visual change across the app**, not a token cleanup, and it belongs behind a before/after sweep
+  (the Conv-423 compile-diff + live-measure technique applies directly). Out of scope for a client UI request.
+- **Shape:** decide first whether the declared v3-shaped values or the v4 defaults are the intended design —
+  the answer may be "delete the dead block and keep the defaults", which is a one-line fix with no visual delta.
+- **Refs:** `src/styles/tokens-primitives.css` § Shadows, `src/styles/tokens-tailwind-bridge.css` (`@theme`),
+  Conv 311 `[SWEEP-SPACING-GREP]` radius precedent. Surfaced Conv 434 while adding `[PILL-LIFT]` tokens.
+
 ### [SCHEMADIAG]
 
 - **State:** 📋 queued (doc drift)
@@ -614,43 +663,72 @@
 
 ## ✅ Done this conv
 
-- **[COMM-BAND-ADOPT]** — client request #1: the course cover-story card's community footer now
-  wears the client's band. His two hexes adopted verbatim as `--brian-band` (#e3f1fc) /
-  `--brian-band-line` (#d3e7f8) in the existing `brian-*` namespace, and `CommunityAffiliation`
-  gained a `presentation="band"` variant (tinted full-bleed strip + 40px white-ringed medallion
-  overhanging bottom-left) so `CourseHeader`'s inline use on the dark hero is untouched. Verified
-  live: `rgb(227,241,252)` / hairline `rgb(211,231,248)`, seal 40px circle at `left:20px`, no text
-  collision. His branch's class numbers all sat in the ten `--spacing-N` names already overridden
-  to literal px, so they ported 1:1 with no Conv-423 ×4 conversion. 5 gates green (suite 6335 /
-  407 files), `prov:sweep` consistent, `check:icons` 0. Reverses a MERGE-BRIAN §1 "not adopted"
-  note whose stated reason (per-community `accent_color`) no longer applies — the client disabled
-  that tinting on his own branch in his Conv 373; both affected docstrings corrected.
-  **Extended (user, after a side-by-side look):** the band blue + medallion propagated to the
-  `/communities` hero card too, so the sibling catalog cards agree — at `#F1F9FF` that band read
-  as a hairline divider, not a band. Its logo was already 40px and absolutely placed, so only
-  shape and ring changed; position deliberately does NOT follow his (the seal stays inside the
-  cover panel, since there the band is a sibling of the cover rather than the logo's container).
-  Two Conv-426 guard tests fired as designed and were **inverted, not deleted** — the "no raw hex
-  survives" invariant was kept intact and only its token name changed, because adopting his
-  COLOUR must never mean inlining his HEX. New `tests/components/entity/CommunityAffiliation.test.tsx`
-  (10 tests) guards the inline/band split — the only protection `CourseHeader`'s dark hero has,
-  since it has no tests of its own — and was calibrated per `[CMH]` with three injected
-  regressions (band colour reverted, medallion → rounded square, band chrome leaking into the
-  inline hero), each caught.
-- **[COMM-IDENT]** — the medallion propagation was then **reversed on the `/communities` card**, and
-  the card's cover/logo relationship settled instead. The user's question ("what does that image
-  represent from a community point of view?") exposed that the same asset means two different
-  things: on the course card `logo_url` is a **foreign** entity (a seal bridging the cover→band
-  seam that names another community), on the community card it is the card's **own** subject with
-  no seam to bridge. The medallion encoded the first meaning and was wrong for the second. The
-  answer was already in the codebase twice — our `/community/[slug]` hero and the client's own
-  community card both scrim the cover and put the logo forward — making our catalog card the only
-  surface still showing the cover undarkened with the logo as a corner inset. Now: cover behind the
-  detail hero's *exact* gradient (`rgba(0,0,0,0.7)→0.4`), logo forward as a centred 56px
-  `rounded-12` squircle (circle rejected — it crops app-icon-square marks). Verified live:
-  gradient string identical to the hero, logo 56×56 / radius 12px / no border / centred both axes.
-  Test churn is itself the lesson — the same assertion was inverted twice in one conv, so it is now
-  written against the **meaning** ("does NOT wear the course card medallion — the logo is this
-  card's own subject") rather than against whatever the course card happens to do.
-- Final: 5 gates green, suite **6347** (+12 from 6335), 408 files, lint 163 unchanged, `prov:sweep`
-  consistent, `check:icons` 0. Follow-up logged as **[COMM-IMG]** (#2 in 🎯 Now).
+- **[TOKEN-TYPO]** — new gate `npm run check:tokens` (`scripts/check-token-names.ts`), wired into `verify` and
+  `/w-codecheck` as check #10. Validates `MattIcon name=` literals against `svg/*.svg`, and colour/type
+  utilities against the tokens actually declared — for **project-owned families only**, so a valid built-in
+  like `bg-neutral-700` can never be flagged (that restraint is what keeps the gate on).
+  **It found 6 pre-existing defects on its first run**, none of them mine: `text-warning-600` ×4 and
+  `text-warning-700` ×2, on a scale that only goes 100/300/500 — "Awaiting review" pills and receipt statuses
+  rendering with a pale amber background and INHERITED text. Fixed to `warning-500`; measured live, the broken
+  class computed `rgb(65,65,65)` (identical to no class at all) and now computes `rgb(180,83,9)`.
+  **Two calibration lessons, both from running it rather than reasoning:** an attribute-only scan missed 2 of
+  the 6 (class lists here are routinely built in variables/object maps, e.g. `pillClass`), so it scans every
+  string literal; and it first flagged 4 FALSE positives on my own valid `shadow-brian-pill`, because
+  `shadow-*` resolves against `--shadow-*`, not `--color-*` — prefix→namespace had to be modelled, not assumed.
+  Injection-calibrated per `[CMH]`: bad icon → +1, bad token → +1, valid built-in → +0. 6 gates green, suite 6371.
+
+- **[TEACH-REQ]** — a completed student can now ASK to be certified to teach, closing the flywheel's missing
+  first step (certification could only ever be *initiated by someone else*). New `/course/[slug]/teach` page +
+  `POST /api/me/courses/[courseId]/teaching-request`: verifies completion, messages the creator with diploma +
+  progress, notifies them (`cert_request`, an existing type), and stamps `enrollments.teaching_request_sent_at`.
+  **Idempotent** — a second call returns `alreadySent` and does NOT message again (verified: 2 calls, 1 message).
+  CTA flips "Teach this course" → **"Request sent"** on all three surfaces.
+  **Authorization widened (user-approved):** `recommend.ts` now accepts the course CREATOR as well as a
+  certified teacher. Necessary because the request is addressed to the creator and creators are not reliably
+  certified for their own courses (Guy 4/4, Gabriel 0/2). **A positive test caught a second gate I had missed** —
+  a global "are you a teacher at all" check ran first and rejected every non-teaching creator before the widened
+  per-course check was reached. Negative test added so the widening cannot drift into "any authenticated user".
+  Target moved off `/diploma/[id]`: that page is PUBLIC and unauthenticated, so it could not host the action.
+  5 gates green, suite 6371.
+
+- **[CARD-CTA-COMM]** — the community **Courses tab** (`/community/[slug]/courses`) now uses the same resolver.
+  It was the one other page rendering `CourseCatalogCard`, and change #2 had left it behind: enrolled viewers
+  got NO CTA there while `/courses` offered a next step, so the same student saw a live button on one page and
+  a dead card one click away — the divergence `[CARD-CTA]` closed, relocated to a different pair of surfaces.
+  Its own comment ("Deliberately NOT a CTA … we pass the same static one /courses uses") had become the last
+  thing preserving a reversed decision. Query gained `enrollment_id` + journey-aligned `next_session_id`, plus
+  viewer teaching-certs and created-courses lookups (the list-shaped `course.creator` carries no id).
+  **Attribution preserved:** `?via=community-courses` is re-attached to `/course/{slug}/…` hrefs only — not to
+  `/session/…`, `/teaching/…` or `/diploma/…`, which are destinations the viewer already owns; tagging those
+  would attribute a session booked weeks ago to a community browse. Verified live on all three surfaces.
+
+- **[CTA-MOD-GAP]** — community moderators no longer lose the enrol CTA. `myCourseIds` was a union of four
+  unrelated relationships all suppressed alike; moderating a COMMUNITY is not a role on the course, so it was
+  dropped. The set now suppresses **creators only** — teachers and enrolled viewers are resolved, not blanked.
+  Verified live: Sarah's two blank cards read "Enroll Now"; creator Guy still gets none on his four courses.
+
+- **[CTA-TEACHER-DUP]** — someone certified to teach a course is no longer told to "Teach this course". They
+  get "Manage your teaching" → `/teaching/courses/[id]` (200, no redirect), but ONLY when their student journey
+  has nothing actionable — a booked session still wins, being time-bound. Also fixes a case neither ticket
+  named: a certified teacher who never enrolled used to get NO CTA at all. Put in the SHARED resolver with
+  both surfaces passing `isTeacherOfCourse` (already loaded, CRT-1 — no new query), because doing it host-side
+  would have recreated the exact catalog/detail split `[CARD-CTA]` closed. Verified live: card and detail both
+  read "Manage your teaching → /teaching/courses/crs-ai-tools-overview".
+
+- **[CTA-CANCELLED]** — folded in: a cancelled enrolment now reads as not-enrolled on BOTH surfaces, so
+  re-enrolling is reachable. The detail page's lookup (`loaders/courses.ts:805`) had no status filter, so it
+  would have offered a cancelled student "Book your first session" while the card offered nothing. No seed row
+  exercises this, so it is proven by unit test and code path, not live.
+
+- **[CARD-CTA]** — `/courses` cards now carry the viewer's next step (client change #2). Reverses the
+  MERGE-BRIAN "CTA untouched" call by REMOVING its cause rather than overruling it: the catalog now calls the
+  detail page's own `buildCoursePrimaryCta` (moved to `@lib/course-cta`) over a snapshot that gained
+  `nextSessionId`, aligned to `computeCourseJourney`'s predicate. Proven live on the student who would have
+  shown the old divergence — catalog and detail both read "Go to Session 2 → /session/ses-david-n8n-3".
+  Completed → "Teach this course" → `/diploma/[id]` (200 verified). 5 gates green, suite 6360 (+8).
+
+- **[PILL-LIFT]** — `/courses` topic pills: hover lifts 1px + deepens a new resting shadow instead of
+  filling the capsule. His values adopted verbatim as `--brian-pill-shadow{,-hover}`; his tint turned out
+  to already be `--brian-ink`, so no new colour. Scroller `py-2`→`py-12` (overflow-x clips vertically).
+  Verified live (shadows, 1px delta, unchanged bg); 5 gates green, suite 6352 (+5 injection-calibrated
+  guards). Scope kept LOCAL to this row by user decision — other pill surfaces stay flat.

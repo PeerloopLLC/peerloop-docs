@@ -10,7 +10,14 @@ through with him directly.
 - **The review is COMPLETE.** All six areas have been walked — the course page, the courses catalogue,
   communities, the site-wide shell, the sessions-files feature and the remaining miscellaneous changes.
   Every change of his now has a decision; nothing is left unreviewed.
-- **As of:** Conv 428 (2026-07-28), with **two §3 Communities rows amended Conv 433 (2026-08-05)** — the catalog-card band blues and the course-card logo medallion were adopted after the fact, on his direct request. Look for the ⚠️ notes before walking that section.
+- **As of:** Conv 428 (2026-07-28), with **three rows amended since** — two §3 Communities rows Conv 433
+  (2026-08-05, the catalog-card band blues and the course-card logo medallion) and the **catalog filter-pill
+  elevation Conv 434 (2026-08-10)**, all adopted after the fact on his direct request. Look for the ⚠️ notes
+  before walking those sections, plus the **catalog-card CTA** row in §2 (Conv 434). The pattern across the
+  colour ones is worth naming to him: what was left behind was never the *design*, it was the **raw hex and
+  rgba** carrying it — so each came back verbatim once the values were given names. The CTA row makes the
+  same point in a different register: the objection was a **correctness** one (his catalog CTA disagreed with
+  the detail page), so adopting it meant fixing the disagreement at its source, not overruling the review.
 - **Worth saying plainly when walking this through:** the great majority of his work is in the product.
   What follows is the minority we did not take, and in most of those cases we took the intent and built
   it differently rather than rejecting the idea. Several of his changes also **surfaced real bugs on our
@@ -206,7 +213,7 @@ and re-derived the colour from our palette:
 |---|---|
 | Course header band | Dark scrim gradient (`#0e3a5c`/`#0b2740`), on-dark link `#7cc4ec`, `#d7e6ef`, `#c6d6e2`, `#e8a213`; also forced white text over the course role colour, breaking role-blue links |
 | Tab pills (`SubNavItem`) | 10 raw values — `#2a93d5`, `#dfe6ee`, 8 `rgba` shadow stacks — on a primitive shared by 9 surfaces that previously carried **zero** |
-| Catalog filter pills | Same palette again, plus the gradient selected-capsule |
+| Catalog filter pills | Same palette again, plus the gradient selected-capsule. **⚠️ Amended Conv 434, at your request:** the pill **elevation** is now adopted — your exact two-layer resting shadow, the 1px hover lift and the deepened hover shadow, carried as `--brian-pill-shadow{,-hover}`. Hover no longer tints the capsule. Your shadow tint turned out to be `rgba(16,42,67)` = `#102A43` = **`--brian-ink`, a token we had already adopted from your tab palette**, so this cost no new colour at all. The gradient selected-capsule and `#2a93d5` stay behind |
 | Cover panel | Navy/teal/violet gradient (`rgba(18,179,168)`, `rgba(88,77,244)`) — replaced with a tokenised placeholder |
 | Course feed | 5 raw values — `bg-neutral-100` skeletons and `rgba` shadows |
 
@@ -233,11 +240,13 @@ colour. That is probably the most useful thing to show him.
 
 | His mechanism | What we left behind |
 |---|---|
+| **Pill elevation + hover lift** | **⚠️ Nothing, as of Conv 434 — this row is now fully adopted.** Originally the shadows were left behind with the rest of the raw-colour category (eight `rgba` stacks). On your request the resting shadow, the 1px hover lift and the deeper hover shadow all shipped verbatim as tokens, and the old `hover:bg-neutral-100` fill is gone — hover lifts, it does not colour. Two things of ours are unchanged: the label keeps its type-token weight rather than your `font-semibold`, and the selected pill keeps the tokenised `primary-light` fill rather than the gradient capsule |
 | **Topic pill row** replacing the filter dropdowns | The **removal of the Level and Length filters**. His version leaves them permanently `null` in the filter state — the code stays, the UI to reach them does not. We took the scrolling pill row and kept both filters reachable, along with our "available soon" filter |
 | **Toolbar slimming** | The site-wide part. The `compact` field props are additive and shipped; the toolbar riser trim is behind an opt-in prop so `/communities` and `/members` are byte-identical to before (verified) |
 | **Cover-story card** | The gradient (above), and the way it was gated — his overloads the existing `overlay` variant with a `catalog` context; ours is a third **named** variant, so no existing host of that card changed appearance as a side effect of the new one |
 | **Detail hero mirrors the catalog card** — *"make the detail page card look exactly like the summary listing"* | Most of it. Literally shared, the hero becomes the card — which is the option the review had already declined, since our hero is a full-bleed backdrop with white text over a scrim and has no cover panel to share. Narrowed by the user to **the price sticker only**: the same component renders at the same offsets on both surfaces, and the hero keeps its own slim band |
-| **Enrolled journey on the card** | The **CTA change**. His card CTA is derived from a client-side snapshot, while ours resolves an upcoming session first — so the same course would read "Book next session" on the catalog and "Go to Session 3" on the detail one click later. We took the ✓ Enrolled / ✓ Completed badge and the progress line; the CTA is untouched. His completed-state CTA ("Teach this course") is also not adopted |
+| **Enrolled journey on the card** | **⚠️ Amended Conv 434, at your request — the CTA is now adopted, and the objection is gone rather than overruled.** Every card carries the viewer's next step: Enroll Now · Book your first session · Book next session · Teach this course. What was declined was never the CTA, it was that his derived it from a snapshot blind to scheduled sessions — so a student with session 3 booked read "Book next session" on the catalog and "Go to Session 3" one click later. Rather than reproduce that, the catalog now calls the **detail page's own resolver**, over a snapshot that carries the session id, so the two surfaces share one set of branches and cannot drift. Verified on the exact student who would have shown the bug: catalog and detail both read "Go to Session 2 → /session/ses-david-n8n-3". Your four states also have no slot for that booked case, so it is kept as a fifth. "Teach this course" points at the student's **Diploma** — a self-serve path to actually teaching does not exist yet (certification requires an already-certified teacher to vouch), and is tracked as `[TEACH-REQ]`. Original note follows: |
+| *(original)* | The **CTA change**. His card CTA is derived from a client-side snapshot, while ours resolves an upcoming session first — so the same course would read "Book next session" on the catalog and "Go to Session 3" on the detail one click later. We took the ✓ Enrolled / ✓ Completed badge and the progress line; the CTA is untouched. His completed-state CTA ("Teach this course") is also not adopted |
 | **Link-style chips** | Hover-only underline — we use a persistent underline, matching the affordance standard set on the journey stepper |
 
 ### Recommendations on `/courses` and `/communities` — now done, differently
