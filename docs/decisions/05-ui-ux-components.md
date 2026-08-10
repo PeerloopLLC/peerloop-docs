@@ -3,6 +3,15 @@
 
 ## 5. UI/UX & Components
 
+### [PILL-LIFT] The Client's Pill Elevation Is Adopted as `--brian-pill-shadow{,-hover}` Tokens, Scoped **LOCAL** to the `/courses` Topic Row (Conv 434)
+**Date:** 2026-08-10 (Conv 434)
+
+The `/courses` topic pills adopt the client's exact two-layer drop shadow and 1px hover lift, carried as `--brian-pill-shadow` / `--brian-pill-shadow-hover` with an `@theme` bridge (`shadow-brian-pill{,-hover}`) — never inline `rgba`. `hover:bg-neutral-100` is **removed**: hover elevates, it no longer tints. A `motion-reduce` guard suppresses the lift. Scope is deliberately **LOCAL** to that one row by user decision — no other pill surface adopts it, and a component docstring records why it must not be propagated on consistency grounds. Rejected: inlining his eight raw `rgba` stacks; declining the treatment a second time; a site-wide pill shadow (parked as `[SHADOW-DEAD]`).
+
+**Rationale:** The MERGE-BRIAN ledger's objection to this mechanism was the **raw hex carrier**, not the effect — so adoption meant naming the values, not overruling the reviewer. His shadow tint `rgba(16,42,67)` decodes to `#102A43` = `--brian-ink`, a token already adopted here, so the whole elevation cost **no new colour**. Reading his actual branch (`origin/brian-July-7:CoursesFilters.tsx:161-174`) rather than the supplied screenshot is what surfaced that.
+
+**Consequences:** The scroller's `py-2` had to become `py-12` — `overflow-x-auto` computes `overflow-y: auto`, which clips the shadow. `plan/merge-brian/NOT-ADOPTED.md` amended from "not adopted" to adopted. `[SHADOW-DEAD]` (the `--shadow-*` scale is inert) logged and parked; it is a **different** question from "make the pill shadow site-wide" and the task body says so. Live verification needed `element.getAnimations().forEach(a => a.finish())` — a backgrounded Chrome window freezes the `box-shadow` transition at `currentTime: 0`, so `getComputedStyle` reported the pre-change value ([BRIDGE-OFFSCREEN-WINDOW] variant).
+
 ### [COMM-BAND-ADOPT] The Client's Band Colours Are Adopted as `brian-*` **Tokens** on a New `presentation="band"` Variant — Never as Inline Hex, Never as a Wholesale Restyle (Conv 433)
 **Date:** 2026-08-05 (Conv 433)
 

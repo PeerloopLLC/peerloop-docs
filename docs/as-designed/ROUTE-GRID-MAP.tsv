@@ -149,7 +149,8 @@ tab: /course/[slug]/learn C02"	"C03 /course/[slug]/success
 crd: /course/[slug] /community/[slug]
 crm: R03
 lnk: P01 /course/[slug]/modules /course/[slug]/benefits
-tab: C02 /course/[slug]/feed"			"R01 /@[handle]
+tab: C02 /course/[slug]/feed"	"C04 /course/[slug]/teach
+rdr: /course/[slug] A01"		"R01 /@[handle]
 crd: R02 R04
 rdr: R01 A01"	"R02 /creator/[handle]
 crd: R02
@@ -174,7 +175,7 @@ crd: /course/[slug] R01 R02
 lnk: M01 P01
 rdr: /teaching A01"				"K01 /creating/[...tab]
 crd: /course/[slug] R01
-lnk: M01 /profile /teaching /profile/payments
+lnk: M01 /profile /teaching /profile/payments /member/[handle] M09
 rdr: /creating /creating/studio A01 K03
 tab: /creating/communities /creating/analytics"	"K02 /creating/apply
 lnk: /creating

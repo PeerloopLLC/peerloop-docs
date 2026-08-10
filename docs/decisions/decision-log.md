@@ -5,6 +5,42 @@
 
 For historical decisions and the full rationale behind each choice, see the session files in `docs/sessions/YYYY-MM/`.
 
+### Invented Token / Icon Names Get a Static Gate Scoped to Project-Owned Families (TOKEN-TYPO)
+**Date:** 2026-08-10 (Conv 434)
+
+`scripts/check-token-names.ts` validates utility names against the token families this repo declares (and Tailwind does not ship) plus the `MattIcon` catalogue — wired into `verify` as `check:tokens` and into `/w-codecheck` as check #10. It does **not** attempt to validate every utility. Rejected: "be more careful"; validating Tailwind's full built-in surface.
+
+**Rationale:** Three invented names (`bg-success-background`, `text-success-700`, `text-text-secondary`) plus `MattIcon name="check"` shipped in one component while `tsc`, `eslint`, `astro check`, 6,371 tests and `build` were all green — Tailwind emits nothing for an unknown utility and MattIcon renders a placeholder with a DEV-only warning. Owned-family scoping makes "declared or invalid" exact and keeps false positives at zero, which is what keeps a gate switched on. Found 6 pre-existing `text-warning-600/700` defects on its first run.
+
+**See:** `docs/sessions/2026-08/20260810_1442 Decisions.md` §6; `docs/decisions/06-testing-ci.md`.
+
+### The Request-to-Teach Goes to the Course Creator; `recommend.ts` Widens to Creator-of-This-Course (TEACH-REQ)
+**Date:** 2026-08-10 (Conv 434)
+
+The student's request-to-teach flow (`/course/[slug]/teach` → idempotent `POST /api/me/courses/[courseId]/teaching-request`, stamped on `enrollments.teaching_request_sent_at`, CTA flipped on all three surfaces) delivers to the **course creator**, and both authorization gates in `api/me/certificates/recommend.ts` widen to accept creator-of-this-course. Creators get their own **Requests** tab in `/creating` backed by authorship-scoped `GET /api/me/teaching-requests`, with the notification `actionUrl` repointed there. Rejected: messaging the assigned teacher; messaging the creator without widening; widening the `/teaching/courses/[id]` guards instead of building the queue.
+
+**Rationale:** CLAUDE.md's model is that creators certify teachers — the endpoint as built contradicted it, and the contradiction is resolved in favour of the docs. Creators are not reliably certified for their own courses (seed: Guy 4/4, Gabriel 0/2), so without the widening half the courses dead-end. The teaching workspace's student list is scoped `WHERE assigned_teacher_id = <viewer>`, so a guard widening alone would have rendered an EMPTY list — worse than a redirect, because it reads as the request having vanished.
+
+**See:** `docs/sessions/2026-08/20260810_1442 Decisions.md` §§4,5; `docs/decisions/01-architecture.md`.
+
+### The Course Primary CTA Resolves Through One Shared `@lib/course-cta`; Enrol Suppression Is Creator-Only (CARD-CTA)
+**Date:** 2026-08-10 (Conv 434)
+
+`buildCoursePrimaryCta` moves to `src/lib/course-cta.ts` and every surface (`/courses`, course detail, community Courses tab) resolves through it; the client snapshot gains `nextSessionId` on a predicate aligned to `computeCourseJourney`'s scheduled-OR-in_progress test, not the future-only `nextSessionAt`. `myCourseIds` — previously enrolments + teaching certs + authored + moderated, all suppressed alike — reduces to **authored only**; teachers route to `/teaching/courses/[id]` and cancelled enrolments read as not-enrolled everywhere. Reverses the MERGE-BRIAN decline of the client's per-card CTA. Rejected: implementing his four states literally; declining again; special-casing moderators; a host-side teacher rule.
+
+**Rationale:** The review declined his CTA because it *disagreed with the detail page* for a student with a booked session — sharing the function removes the possibility rather than the symptom, and a parity test now fails if a second implementation reappears. On suppression, four unrelated relationships were being treated as one; only authorship genuinely has no next step to offer.
+
+**See:** `docs/sessions/2026-08/20260810_1442 Decisions.md` §§2,3; `docs/decisions/01-architecture.md`.
+
+### The Client's Pill Elevation Adopted as `--brian-pill-shadow{,-hover}`, Scoped LOCAL to the `/courses` Topic Row (PILL-LIFT)
+**Date:** 2026-08-10 (Conv 434)
+
+The `/courses` topic pills take the client's exact two-layer shadow and 1px hover lift as `--brian-pill-shadow` / `--brian-pill-shadow-hover` with an `@theme` bridge; `hover:bg-neutral-100` is removed so hover elevates rather than tints, under a `motion-reduce` guard. Scope stays **local** to that row by user decision, recorded in a component docstring. Rejected: inline `rgba`; declining again; a site-wide pill shadow (parked as `[SHADOW-DEAD]`).
+
+**Rationale:** The ledger's objection was the eight raw `rgba` stacks, not the effect. Reading his branch (`origin/brian-July-7:CoursesFilters.tsx:161-174`) rather than the screenshot showed his tint is `rgba(16,42,67)` = `#102A43` = `--brian-ink`, already adopted — so the elevation cost no new colour. The scroller needed `py-2`→`py-12` because `overflow-x-auto` computes `overflow-y: auto` and clips the shadow.
+
+**See:** `docs/sessions/2026-08/20260810_1442 Decisions.md` §1; `docs/decisions/05-ui-ux-components.md`.
+
 ### The Client's Band Colours Adopted as `brian-*` Tokens on a `presentation="band"` Variant (COMM-BAND-ADOPT)
 **Date:** 2026-08-05 (Conv 433)
 

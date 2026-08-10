@@ -167,6 +167,106 @@ A **Diploma** is the course-completion credential (distinct from a teach-readine
 
 ---
 
+## Teaching Request Endpoints
+
+The learn-teach-earn flywheel's missing first step (`[TEACH-REQ]`, Conv 434). `POST /api/me/certificates/recommend` must be called by someone vouching *for* a student, never by the student themselves, so a completed student had no way to start their own certification. These two endpoints open that conversation: the student asks, the course creator sees the queue and recommends.
+
+The state lives on `enrollments.teaching_request_sent_at` (nullable ISO timestamp) — it is both the idempotency guard and what flips the "Teach this course" CTA to "Request sent" on every surface that renders a course card.
+
+### POST /api/me/courses/[courseId]/teaching-request
+
+A student who has **completed** this course asks its creator to certify them to teach it.
+
+**Authentication:** Required (the caller is always the requesting student)
+
+**Path Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `courseId` | string | Course the caller wants to teach |
+
+**Behaviour:**
+1. Verifies the caller's enrolment is `completed` and not `cancelled`/soft-deleted — the same bar `recommend` enforces, so a request can never be sent that the recipient could not honour.
+2. Sends `courses.creator_id` a direct message (via `sendDirectMessage` in `@lib/messaging`) containing the course title, module count, and a link to the student's diploma.
+3. Creates a `cert_request` notification (an existing type) with `actionUrl: '/creating/requests'`.
+4. Stamps `enrollments.teaching_request_sent_at`.
+
+**Response (201):**
+```json
+{ "sent": true, "sentAt": "2026-08-10T13:02:11.000Z" }
+```
+
+**Response (200) — idempotent replay:**
+```json
+{ "alreadySent": true, "sentAt": "2026-08-10T13:02:11.000Z" }
+```
+
+A second call is **not** an error — the UI reaches it whenever a stale page is re-submitted. The stamp is the guard; without it the CTA would be a spam button.
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 400 | Course id is required |
+| 400 | Complete the course before requesting to teach it |
+| 400 | You already own this course (caller is the creator) |
+| 401 | Authentication required |
+| 403 | You are not enrolled in this course |
+| 503 | Database not available |
+
+---
+
+### GET /api/me/teaching-requests
+
+The creator's side of the flow — students who have asked to be certified to teach a course **this user created**.
+
+**Authentication:** Required
+
+**Scoping:** by **authorship** (`courses.creator_id = <viewer>`), *not* by teaching certification. This is deliberate: `/teaching/courses/[id]` is gated on a `teacher_certifications` row and its student list is scoped `WHERE assigned_teacher_id = <viewer>`, so a creator who never taught their own course would be redirected away — and widening only that guard would render an EMPTY list, which reads as the request having vanished. Authorship is the same relationship `POST /api/me/certificates/recommend` accepts (widened Conv 434), so everything listed here is guaranteed actionable by the person seeing it.
+
+**Response (200):**
+```json
+{
+  "requests": [
+    {
+      "enrollmentId": "enr-jennifer-intro-q",
+      "requestedAt": "2026-08-10T13:02:11.000Z",
+      "student": {
+        "id": "usr-jennifer-kim",
+        "name": "Jennifer Kim",
+        "handle": "jennifer_kim",
+        "avatarUrl": null
+      },
+      "course": {
+        "id": "crs-intro-q-system",
+        "title": "Introduction to the Q System",
+        "slug": "intro-q-system"
+      },
+      "modulesCompleted": 4,
+      "alreadyRecommended": false,
+      "alreadyCertified": false
+    }
+  ]
+}
+```
+
+**Notes:**
+- Filters to `teaching_request_sent_at IS NOT NULL` AND `status = 'completed'`; ordered by `teaching_request_sent_at DESC`.
+- `alreadyRecommended` — a `pending` `teaching` certificate already exists for this student/course.
+- `alreadyCertified` — an active `teacher_certifications` row already exists.
+- Acted-on requests are returned **with these flags rather than filtered out**, so the queue can show the outcome instead of silently emptying (a disappearing row looks like a bug).
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 401 | Authentication required |
+| 503 | Database not available |
+
+**Consumed by:** `src/components/creators/CreatorTeachingRequests.tsx` (the **Requests** tab at `/creating/requests`).
+
+---
+
 ## Enrollment Progress Endpoints
 
 ### GET /api/enrollments/[id]/progress

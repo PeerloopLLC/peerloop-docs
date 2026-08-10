@@ -3,6 +3,15 @@
 
 ## 6. Testing & CI/CD
 
+### [TOKEN-TYPO] Invented Token / Icon Names Get a Static Gate Scoped to **Project-Owned Families** — `scripts/check-token-names.ts`, `/w-codecheck` Check #10 (Conv 434)
+**Date:** 2026-08-10 (Conv 434)
+
+`scripts/check-token-names.ts` validates Tailwind utility names against the token families **this repo declares** (and Tailwind does not ship) plus the `MattIcon` catalogue, wired into the `verify` chain as `check:tokens` and into `/w-codecheck` as check #10. It deliberately does **not** attempt to validate every utility. Rejected: "be more careful"; validating the full utility surface (needs Tailwind's entire built-in namespace and is noisy).
+
+**Rationale:** Three invented names shipped in one small component — `bg-success-background`, `text-success-700`, `text-text-secondary` — plus `MattIcon name="check"` when no check icon exists, and `tsc`, `eslint`, `astro check`, **6,371 tests** and `build` were all green while the UI was visibly wrong. Tailwind emits nothing for an unknown utility; MattIcon renders a placeholder with a DEV-only warning. Each name was written by following the naming *convention* instead of checking the *catalogue*. Restricting the gate to owned families makes "declared or invalid" an **exact** test and keeps false positives at zero — which is what keeps a gate switched on.
+
+**Consequences:** Found **6 pre-existing** `text-warning-600/700` defects on its first run, on a scale that only goes 100/300/500. Calibration ([CMH]) was load-bearing and both first attempts were wrong in opposite directions: an attribute-only scan missed 2 of 6 real violations (class lists here live in variables and object maps, not just `className=`), and once broadened it flagged 4 **false** positives on a valid `shadow-brian-pill`, because `shadow-*` resolves against `--shadow-*`, not `--color-*`. Generalizes as **project-owned-family scoping**: police only what the repo declares and the framework does not ship.
+
 ### Dev-Server Teardown Is `npx astro dev stop`; Port-Liveness Checks Are LISTEN-Scoped — `lsof -ti:PORT` Is Banned Project-Wide (Conv 429)
 **Date:** 2026-07-29 (Conv 429)
 

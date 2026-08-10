@@ -39,6 +39,7 @@ All commands run from the code repo: `cd ../Peerloop && npm run <name>`
 | `npm run prov:page-report` | DOM page-conformity report — rendered-page check for unvetted UI (runtime companion to `prov:sweep`) |
 | `npm run prim:treewalk` | Static primitive-candidate surveyor — source-graph walk that nominates raw markup for vetting (static primary to `prov:page-report`'s runtime backstop) |
 | `npm run check:icons` | Static icon-sizing guard — bare-numeric `w-`/`h-`/`size-` classes **on icons**; **absolute at zero** since Conv 424 (any governed violation exits 1). Part of `npm run verify` |
+| `npm run check:tokens` | Static guard against **invented** Tailwind token / `MattIcon` names — the class both Tailwind and MattIcon fail silently on. Part of `npm run verify` (Conv 434) |
 | `npm run icons:scan` | Runtime icon measurement — 97 route-states at two root font sizes, diffed against a committed baseline (informational; needs dev server + dev seed) |
 | `npm run spacing:scan` | Runtime spacing-invariant proof — measures every rendered `X-N` spacing class and asserts it computes to N px (needs dev server + dev seed) |
 
@@ -536,6 +537,37 @@ npm run check:icons -- --update-baseline   # re-snapshot — REFUSES to write a 
 
 ---
 
+#### `scripts/check-token-names.ts`
+
+Static guard against **invented** token and icon names (Conv 434 `[TOKEN-TYPO]`).
+
+**The defect class it closes.** Both subsystems fail *silently* on a name that does not exist: Tailwind emits no rule at all for an unknown utility (so `bg-success-background` is not an error, it is simply no background), and `MattIcon` renders a placeholder box behind a **DEV-only** `console.warn` that no gate reads. Conv 434 shipped three invented names plus `name="check"` (no such icon) in one small component while `tsc`, `eslint`, `astro check`, 6,371 tests and `build` were all green and the banner rendered visibly wrong. Every one was written by following the naming *convention* instead of checking the *catalogue*.
+
+```bash
+npm run check:tokens
+npm run check:tokens -- --verbose   # list every violation (default caps each kind at 20)
+```
+
+**What it does:**
+- Builds the catalogue from source: every `--color-*`, `--text-*` and `--shadow-*` declared in `src/styles/*.css`, plus every filename in `src/components/icons/svg/`
+- **Icon rule** — a literal `name="…"` on a `<MattIcon>` tag that has no matching SVG
+- **Colour / typography rule** — a utility (`text-`, `bg-`, `border-`, `ring-`, `fill-`, `shadow-`, …) whose name is absent from the catalogue. Variant prefixes (`hover:`, `sm:`, `motion-reduce:`) are stripped; dynamic (`${…}`) and arbitrary (`[…]`) values are skipped
+- Reports the nearest declared names as a hint, so the message points at the fix
+
+**Two calibration facts, both found by running it against the real tree (`[CMH]`):**
+- **It scans every string literal, not just `class=`/`className=` attributes.** Class lists here are routinely assembled in variables and object maps (`pillClass` in `CoursesFilters`, the status maps in `HomeworkGradingPanel` and `receipt/[id]`), and an attribute-only first cut missed **2 of the 6** real violations. Scanning all literals is safe because a token only counts when it *both* starts with a utility prefix *and* names a project-owned family — which prose does not do.
+- **Prefix → namespace is modelled, not assumed.** `shadow-*` resolves against `--shadow-*` (and Tailwind's `shadow-<color>` form), not `--color-*`; without that the second run produced 4 false positives on the valid `shadow-brian-pill`. `text-*` legitimately spans two catalogues (`text-body-small` is typography, `text-error-500` is colour) and accepts either.
+
+**Why it polices only project-owned families.** Validating every utility would require Tailwind's full built-in surface, and a gate that cries wolf gets switched off. The colour check therefore runs only on families this repo **declares** and Tailwind does **not** ship (`success`, `error`, `text`, `brian`, `course`, …), where "declared or invalid" is exact. Families colliding with a built-in palette (`neutral`, `slate`, `red`, …) are skipped so a valid `bg-neutral-700` is never flagged. False positives stay at zero, which is what keeps a gate switched on.
+
+**What it cannot see:** names built at runtime (`text-${tone}-500`), and whether a *valid* token is the *right* one — a correct name in the wrong role still renders.
+
+**Exit code:** 0 = clean; 1 = at least one invented name. Found **6 pre-existing** `text-warning-600/700` defects on its first run (the warning scale is 100/300/500).
+
+**Called by:** `npm run check:tokens` · `npm run verify` · `/w-codecheck` (check #10)
+
+---
+
 #### `scripts/icon-scan.mjs`
 
 Runtime icon measurement (Conv 419 [ICON-TOK], Phase 2) — the **runtime** half. `check:icons` has total coverage but no truth: a class can be present, unique and still wrong for its context. This drives Playwright over the app and measures the rendered DOM.
@@ -1004,6 +1036,7 @@ npx tsx scripts/codemods/migrate-test-json-as-any.ts --limit=20
 | `prov:page-report` | `scripts/prov-page-report.ts` |
 | `prim:treewalk` | `scripts/prim-treewalk.ts` (imports both vetted-primitive registries) |
 | `check:icons` | `scripts/check-icon-sizing.ts` (baseline: `scripts/icon-sizing-baseline.json`) |
+| `check:tokens` | `scripts/check-token-names.ts` (no baseline — catalogue derived from `src/styles/*.css` + `src/components/icons/svg/`) |
 | `icons:scan` | `scripts/icon-scan.mjs` (baseline: `scripts/icon-scan-baseline.json`) |
 | `spacing:scan` | `scripts/spacing-scan.mjs` (no baseline — asserts an invariant) |
 | `gen:registries` | `scripts/gen-registries.ts` (emits `scripts/matt-sourced-registry.generated.ts`) |

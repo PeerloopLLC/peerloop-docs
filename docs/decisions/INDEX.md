@@ -27,6 +27,8 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [1. Architecture & Design (Highest Impact)](01-architecture.md)
 
+- [[CARD-CTA] The Course Primary CTA Resolves Through ONE Shared `@lib/course-cta` on Every Surface; Enrol Suppression Is Creator-Only (Conv 434)](01-architecture.md#card-cta-the-course-primary-cta-resolves-through-one-shared-libcourse-cta-on-every-surface-enrol-suppression-is-creator-only-conv-434)
+- [[TEACH-REQ] The Request-to-Teach Goes to the Course **Creator**, and `recommend.ts` Widens to Accept Creator-of-This-Course (Conv 434)](01-architecture.md#teach-req-the-request-to-teach-goes-to-the-course-creator-and-recommendts-widens-to-accept-creator-of-this-course-conv-434)
 - [[REC-RECENT] Visit History Is a Client-Side **Denormalized Snapshot** in localStorage, Keyed by Slug — No Endpoint, No Table (Conv 431)](01-architecture.md#rec-recent-visit-history-is-a-client-side-denormalized-snapshot-in-localstorage-keyed-by-slug--no-endpoint-no-table-conv-431)
 - [A Client Store Backing More Than One Island Exposes `subscribe*()` + a Named `window` `CustomEvent`; the `storage` Event Covers **Only** the Cross-Tab Case (Conv 431)](01-architecture.md#a-client-store-backing-more-than-one-island-exposes-subscribe--a-named-window-customevent-the-storage-event-covers-only-the-cross-tab-case-conv-431)
 - [[MKTDEAD] Dead Code Is Deleted, Not Parked — the 56 Orphaned Marketing/Admin-Intel Components Removed (Conv 419)](01-architecture.md#mktdead-dead-code-is-deleted-not-parked--the-56-orphaned-marketingadmin-intel-components-removed-conv-419)
@@ -266,6 +268,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [[PILL-LIFT] The Client's Pill Elevation Is Adopted as `--brian-pill-shadow{,-hover}` Tokens, Scoped **LOCAL** to the `/courses` Topic Row (Conv 434)](05-ui-ux-components.md#pill-lift-the-clients-pill-elevation-is-adopted-as---brian-pill-shadowhover-tokens-scoped-local-to-the-courses-topic-row-conv-434)
 - [[COMM-BAND-ADOPT] The Client's Band Colours Are Adopted as `brian-*` **Tokens** on a New `presentation="band"` Variant — Never as Inline Hex, Never as a Wholesale Restyle (Conv 433)](05-ui-ux-components.md#comm-band-adopt-the-clients-band-colours-are-adopted-as-brian--tokens-on-a-new-presentationband-variant--never-as-inline-hex-never-as-a-wholesale-restyle-conv-433)
 - [[COMM-IDENT] The Community Catalog Card Leads With the **Logo Over a Scrimmed Cover** and Wears **No** Course-Card Medallion — Treatment Follows Meaning, Not Uniformity (Conv 433)](05-ui-ux-components.md#comm-ident-the-community-catalog-card-leads-with-the-logo-over-a-scrimmed-cover-and-wears-no-course-card-medallion--treatment-follows-meaning-not-uniformity-conv-433)
 - [[REC-MOBILE] Discovery Rails Get a Narrow-Screen Mount on `/courses` + `/communities` — `maxLanes` Is a **Count**, Not a Lane-Kind Filter (Conv 431)](05-ui-ux-components.md#rec-mobile-discovery-rails-get-a-narrow-screen-mount-on-courses--communities--maxlanes-is-a-count-not-a-lane-kind-filter-conv-431)
@@ -449,6 +452,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [6. Testing & CI/CD](06-testing-ci.md)
 
+- [[TOKEN-TYPO] Invented Token / Icon Names Get a Static Gate Scoped to **Project-Owned Families** — `scripts/check-token-names.ts`, `/w-codecheck` Check #10 (Conv 434)](06-testing-ci.md#token-typo-invented-token--icon-names-get-a-static-gate-scoped-to-project-owned-families--scriptscheck-token-namests-w-codecheck-check-10-conv-434)
 - [Dev-Server Teardown Is `npx astro dev stop`; Port-Liveness Checks Are LISTEN-Scoped — `lsof -ti:PORT` Is Banned Project-Wide (Conv 429)](06-testing-ci.md#dev-server-teardown-is-npx-astro-dev-stop-port-liveness-checks-are-listen-scoped--lsof--tiport-is-banned-project-wide-conv-429)
 - [`prov:sweep` Existence-Checks **Both** Component Arrays — New Section 4b-ii Closes the Half-Bijection (Conv 429)](06-testing-ci.md#provsweep-existence-checks-both-component-arrays--new-section-4b-ii-closes-the-half-bijection-conv-429)
 - [[ICON-TOK] Phase 6 Ships an **Absolute** Icon Gate Wired Into `npm run verify` — and `--update-baseline` Refuses to Launder a Non-Zero Governed Baseline (Conv 424)](06-testing-ci.md#icon-tok-phase-6-ships-an-absolute-icon-gate-wired-into-npm-run-verify--and---update-baseline-refuses-to-launder-a-non-zero-governed-baseline-conv-424)

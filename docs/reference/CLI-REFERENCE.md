@@ -97,16 +97,16 @@ Alias for `npm run dev`.
 
 ### `npm run verify`
 
-Run the full baseline check — the five baseline gates plus the icon guard.
+Run the full baseline check — the five baseline gates plus the icon and token-name guards.
 
 ```bash
 npm run verify
 ```
 
 **What it does:**
-- Executes `typecheck && check && lint && check:icons && test && build` in sequence
+- Executes `typecheck && check && lint && check:icons && check:tokens && test && build` in sequence
 - Stops on the first failure (gates are sequential)
-- Equivalent to running all 5 baseline checks manually, with `check:icons` added Conv 424 (it had never been in the aggregate chain, so promoting it to a hard error would otherwise have been nominal)
+- Equivalent to running all 5 baseline checks manually, with `check:icons` added Conv 424 (it had never been in the aggregate chain, so promoting it to a hard error would otherwise have been nominal) and `check:tokens` added Conv 434 (invented Tailwind token / `MattIcon` names fail silently, so no other gate in the chain can see them)
 
 **Use when:**
 - Before creating a PR

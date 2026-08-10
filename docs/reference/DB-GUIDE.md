@@ -135,6 +135,7 @@ CREATE UNIQUE INDEX idx_enrollments_one_active
 - `teacher_certification_id` — which specific certification is teaching (links to rating/stats)
 - `progress_percent` — denormalized from `module_progress` table (0-100)
 - `recommended_as_teacher` — Teacher flagged this student as ready for certification
+- `teaching_request_sent_at` — when the **student** asked to be certified to teach this course (Conv 434 `[TEACH-REQ]`). Deliberately a **separate column** from `recommended_as_teacher`, not an overload: the two sides of the same conversation can be true independently, and the student-facing CTA needs to know which one happened — this stamp is what flips "Teach this course" → "Request sent" on the course card and detail page, and it is also the idempotency guard on `POST /api/me/courses/[courseId]/teaching-request`
 
 ---
 
@@ -144,10 +145,11 @@ CREATE UNIQUE INDEX idx_enrollments_one_active
 
 **How someone becomes a Student-Teacher:**
 1. Student completes a course
-2. Their assigned ST clicks "Recommend for Certification"
-3. The course Creator approves the certification
-4. A `teacher_certifications` row is created
-5. New students enrolling in that course can be assigned to this ST
+2. *(optional, Conv 434 `[TEACH-REQ]`)* The student **asks** — `POST /api/me/courses/[courseId]/teaching-request` messages + notifies the course **creator** and stamps `enrollments.teaching_request_sent_at`. This is the flywheel's entry point: certification can only be *initiated* by someone vouching **for** the student, so before this there was no way for them to start it themselves. The creator's queue is `/creating/requests`
+3. A **certified Teacher of that course, or the course's Creator**, clicks "Recommend for Certification" (`POST /api/me/certificates/recommend` → a `pending` `certificates` row). The creator arm was added Conv 434 — creators are not reliably certified for their own courses, so without it a request routed to the creator would arrive at someone with no button to press
+4. An admin approves the recommendation and the certificate is issued
+5. A `teacher_certifications` row is created
+6. New students enrolling in that course can be assigned to this ST
 
 **Per-course, not global:** A user certified to teach "Intro to AI" cannot teach "Advanced ML" — each certification is course-scoped. A single user can have many certifications across different courses.
 

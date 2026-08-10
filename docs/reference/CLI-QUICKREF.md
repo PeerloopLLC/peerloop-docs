@@ -31,9 +31,10 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `npm run lint:tz` | Check test files for timezone-unsafe date patterns |
 | `npm run format` | Format code with Prettier |
 | `npm run format:check` | Check formatting without changes |
-| `npm run verify` | Run the baseline chain: typecheck → check → lint → **check:icons** → test → build (`check:icons` wired in Conv 424) |
+| `npm run verify` | Run the baseline chain: typecheck → check → lint → **check:icons** → **check:tokens** → test → build (`check:icons` wired in Conv 424, `check:tokens` in Conv 434) |
 | `npm run check:tailwind` | Check for Tailwind v4 compatibility issues |
 | `npm run check:icons` | Static icon-sizing guard — **absolute at zero** since Conv 424: **any** bare-numeric dimension class **on an icon** exits 1 (`--verbose`; `--update-baseline` refuses a non-zero governed baseline) |
+| `npm run check:tokens` | Static guard against **invented** Tailwind token / MattIcon names — polices only project-owned families (see [SCRIPTS.md](SCRIPTS.md#scriptscheck-token-namests)) |
 | `npm run icons:scan` | Runtime icon measurement — measures 97 route-states at two root font sizes and diffs against a baseline (needs dev server + dev seed) |
 | `npm run spacing:scan` | Runtime spacing-invariant proof — asserts every rendered `X-N` spacing class computes to N px (`--routes`, `--verbose`; needs dev server + dev seed) |
 | `npm run knip` | Report unused files, exports, and dependencies (module-graph reachability oracle, Astro-aware) |
@@ -186,6 +187,7 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `npm run prov:page-report` | DOM page-conformity report — rendered-page check for unvetted UI (see [SCRIPTS.md](SCRIPTS.md#scriptsprov-page-reportts)) |
 | `npm run prim:treewalk` | Static primitive-candidate surveyor — walks a page's import graph from source and nominates raw markup that should be a vetted primitive (usage: `npm run prim:treewalk -- <entry-file>`; see [SCRIPTS.md](SCRIPTS.md#scriptsprim-treewalkts)) |
 | `npm run check:icons` | Static icon-sizing guard, absolute at zero governed violations; part of `npm run verify` (see [SCRIPTS.md](SCRIPTS.md#scriptscheck-icon-sizingts)) |
+| `npm run check:tokens` | Static guard against invented Tailwind token / `MattIcon` names, scoped to project-owned families; part of `npm run verify` and `/w-codecheck` check #10 (see [SCRIPTS.md](SCRIPTS.md#scriptscheck-token-namests)) |
 | `npm run icons:scan` | Runtime icon measurement at two root font sizes, diffed against `scripts/icon-scan-baseline.json` (see [SCRIPTS.md](SCRIPTS.md#scriptsicon-scanmjs)) |
 | `npm run spacing:scan` | Runtime proof that a spacing class `X-N` measures N px (strict on padding/margin/gap/min/max; see [SCRIPTS.md](SCRIPTS.md#scriptsspacing-scanmjs)) |
 
@@ -610,7 +612,9 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/api/me/certificates` | GET | Get current user's certificates |
-| `/api/me/certificates/recommend` | POST | Teacher recommends student for certification |
+| `/api/me/certificates/recommend` | POST | Certified teacher **or course creator** recommends student for certification (creator arm added Conv 434) |
+| `/api/me/courses/[courseId]/teaching-request` | POST | Completed student asks the course creator to certify them to teach (idempotent) |
+| `/api/me/teaching-requests` | GET | Teaching requests on courses the viewer created (creator queue) |
 | `/api/certificates/[id]/verify` | GET | Public certificate verification |
 | `/api/admin/certificates` | GET | List certificates (admin, filterable) |
 | `/api/admin/certificates` | POST | Manually issue certificate (admin) |

@@ -25,7 +25,9 @@
 > orphaned endpoint is deleted. Nothing outstanding — kept here one conv for traceability, then
 > delete this note.
 
-1. [DIPL-SHELL](#dipl-shell) — /diploma/[id] renders in the MARKETING shell for signed-in viewers
+1. [TREQ-TEST](#treq-test) — teaching-request POST is untested; its IDEMPOTENCY is what stops the CTA spamming a creator
+2. [CD040-BATCH](#cd040-batch) — Conv-434 client changes never folded into CD-040; only 2 of 5 delivered
+3. [DIPL-SHELL](#dipl-shell) — /diploma/[id] renders in the MARKETING shell for signed-in viewers
 2. [CTA-HOST-GUARD](#cta-host-guard) — nothing stops a NEW host of CourseCatalogCard shipping dead cards; happened once already
 3. [BRIAN-ARTIFACTS](#brian-artifacts) — 👀 external: the rationale artifacts his commits cite (MERGE-BRIAN itself is CLOSED)
 4. [COMM-IMG](#comm-img) — community art is all picsum placeholders; `cover_image_url` has a UI slot but **no upload/storage**
@@ -70,6 +72,7 @@
 43. [PROVDOC](#provdoc) — `matt-provenance.md` §6a says "9 unmarked components"; registry has 22 + 38
 44. [PRUNEPTR](#pruneptr) — `/r-end` prune leaves no forwarding pointer when a `---` survives the span
 45. [SCHEMADIAG](#schemadiag) — `schema-diagram.md` claims 48 tables, 71 on disk (r-end docs agent, Conv 432)
+46. [SEED-NOTIF-STALE](#seed-notif-stale) — seeded admin notification asserts a cert that Conv 434 deleted
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -588,6 +591,45 @@
   that's wrong, not the file. Also check whether `fmt-learn-decide.md`'s "Last Updated" convention
   claim is accurate: the decision chunks/log/INDEX use a `> Part of…` header rather than a
   "Last Updated" line, so that instruction is a no-op today.
+
+### [TREQ-TEST]
+
+- **State:** 📋 queued — surfaced by the r-end docs agent, Conv 434
+- **What:** `POST /api/me/courses/[courseId]/teaching-request` has **no test file**. Its sibling
+  `GET /api/me/teaching-requests` has 4 cases; the POST endpoint's contract is entirely unpinned.
+- **Highest-value untested branch shipped this conv — the IDEMPOTENT REPLAY.** A second call must return 200
+  `alreadySent` and must **not** message the creator twice. That stamp is the only thing keeping the
+  "Teach this course" CTA from being a spam button aimed at a real person's inbox. It was verified by hand
+  (2 calls → 1 message) and by nothing else.
+- **Also unpinned:** the completed-enrollment gate, the 400 on an unfinished course, the creator-owns-it
+  rejection, and that the notification + message + stamp all land together.
+- **Refs:** `src/pages/api/me/courses/[courseId]/teaching-request.ts`,
+  `tests/api/me/teaching-requests.test.ts` (the sibling's harness is the template).
+
+### [CD040-BATCH]
+
+- **State:** 📋 queued — process debt from Conv 434
+- **What:** the Conv-434 client changes were never folded into an RFC. The Conv-433 working model was to track
+  each request under its own `[CODE]` and batch them into **CD-040** via `/w-add-client-note` once several
+  accumulated. Five accumulated; the note was never written.
+- **What to capture:** `[PILL-LIFT]` (pill hover elevation), `[CARD-CTA]` (per-card journey CTA, four client
+  states + the fifth his spec omits), `[TEACH-REQ]` (request-to-teach), and the three CTA defects the second
+  request exposed. Note that all three adopted mechanisms were previously "not adopted" in MERGE-BRIAN and are
+  now amended in `plan/merge-brian/NOT-ADOPTED.md` — the RFC should point at those rows rather than restate them.
+- **Also worth recording:** only 2 of 5 planned client changes were delivered; #3–#5 were never named, so the
+  batch is genuinely incomplete rather than merely unwritten.
+- **Refs:** `docs/requirements/rfc/INDEX.md`, `/w-add-client-note`, `plan/merge-brian/NOT-ADOPTED.md`.
+
+### [SEED-NOTIF-STALE]
+
+- **State:** 📋 queued — trivial, local dev data only
+- **What:** seeded admin notification `notif-brian-001` reads *"Jennifer Kim has a pending teaching certificate
+  for…"*, which became false in Conv 434 when her seeded `cert-jennifer-cc-teach` row was deleted (at user
+  request, to clear a 409 blocking an end-to-end test of the new request flow).
+- **Impact:** cosmetic and admin-only — its `action_url` still points at a valid `/admin/certificates` queue,
+  which is non-empty. Left deliberately rather than deleted unasked.
+- **Fix:** either drop the notification row, or re-seed (`npm run db:setup:local:dev` restores both).
+- **Refs:** `migrations-dev/0001_seed_dev.sql`, `[TEACH-REQ]` Conv 434.
 
 ### [TESTUNITDOC]
 

@@ -1,7 +1,7 @@
 # Route ↔ API Map
 
 > **Auto-generated** by `scripts/route-api-map.mjs` — do not edit manually.
-> Last generated: 2026-08-06
+> Last generated: 2026-08-10
 >
 > Run: `cd ../Peerloop && node scripts/route-api-map.mjs`
 
@@ -9,10 +9,10 @@
 
 ## Quick Stats
 
-- **Pages scanned:** 67
-- **API endpoints found in UI:** 217
+- **Pages scanned:** 68
+- **API endpoints found in UI:** 219
 - **Routes reachable from navbar:** 53
-- **Unreachable routes:** 35
+- **Unreachable routes:** 36
 
 ## 1. Route → API Endpoints
 
@@ -262,6 +262,12 @@ Which API calls does each page make?
 | POST | `/api/enrollments/[param]/expectations` | src/components/learning/ExpectationsForm.tsx |
 | POST | `/api/feeds/course/[param]` | src/lib/feeds.ts |
 
+**`/course/[slug]/teach`** (src/pages/course/[slug]/teach.astro)
+
+| Method | API Endpoint | Component |
+|--------|-------------|-----------|
+| POST | `/api/me/courses/[param]/teaching-request` | src/components/courses/TeachRequestButton.tsx |
+
 ### Creating
 
 **`/creating/[...tab]`** (src/pages/creating/[...tab].astro)
@@ -271,6 +277,7 @@ Which API calls does each page make?
 | POST | `/api/courses/[param]/discussion-feed` | src/components/dashboard/CreatorCourseCard.tsx |
 | GET | `/api/feeds/promotable-entities` | src/components/promotion/PromoteNudge.tsx |
 | POST | `/api/feeds/promote-entity` | src/components/feed/EntityPromoComposer.tsx |
+| POST | `/api/me/certificates/recommend` | src/components/teachers/RecommendCertButton.tsx |
 | GET | `/api/me/communities` | src/components/creators/studio/CreatorStudio.tsx |
 | POST | `/api/me/communities` | src/components/creators/communities/CreateCommunityModal.tsx |
 | GET | `/api/me/communities/[param]/progressions` | src/components/creators/studio/CreateCourseModal.tsx |
@@ -298,6 +305,7 @@ Which API calls does each page make?
 | GET | `/api/me/feed-badges` | src/components/dashboard/MyFeeds.tsx |
 | POST | `/api/me/payouts/request` | src/components/creators/workspace/CreatorEarningsDetail.tsx |
 | PATCH | `/api/me/teacher/[param]/toggle` | src/components/dashboard/CreatorTeachingSummary.tsx |
+| GET | `/api/me/teaching-requests` | src/components/creators/CreatorTeachingRequests.tsx |
 | POST | `/api/reviews/course/[param]/response` | src/components/analytics/MaterialsFeedbackView.tsx |
 | GET | `/api/topics` | src/components/creators/studio/CreateCourseModal.tsx |
 
@@ -648,6 +656,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/me/teacher-earnings` | `/teaching/[...tab]` |
 | `GET /api/me/teacher-sessions` | `/teaching/[...tab]` |
 | `GET /api/me/teacher-students` | `/teaching/[...tab]` |
+| `GET /api/me/teaching-requests` | `/creating/[...tab]` |
 | `GET /api/members` | `/members` |
 | `GET /api/moderator-invites/[param]` | `/invite/mod/[token]` |
 | `GET /api/session-invites` | `/teaching/[...tab]` |
@@ -738,13 +747,14 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/feeds/system` | `/community/[slug]/[...tab]` |
 | `POST /api/homework/[param]/submit` | `/course/[slug]/[...tab]` |
 | `POST /api/me/availability/overrides` | `/teaching/[...tab]` |
-| `POST /api/me/certificates/recommend` | `/teaching/[...tab]`, `/teaching/courses/[courseId]` |
+| `POST /api/me/certificates/recommend` | `/creating/[...tab]`, `/teaching/[...tab]`, `/teaching/courses/[courseId]` |
 | `POST /api/me/communities` | `/creating/[...tab]` |
 | `POST /api/me/communities/[param]/logo` | `/creating/communities/[slug]` |
 | `POST /api/me/communities/[param]/progressions` | `/creating/communities/[slug]` |
 | `POST /api/me/communities/[param]/resources` | `/community/[slug]/[...tab]` |
 | `POST /api/me/courses` | `/creating/[...tab]` |
 | `POST /api/me/courses/[param]/teachers` | `/creating/[...tab]` |
+| `POST /api/me/courses/[param]/teaching-request` | `/course/[slug]/teach` |
 | `POST /api/me/courses/[param]/thumbnail` | `/creating/[...tab]` |
 | `POST /api/me/onboarding-profile` | `/onboarding`, `/profile/[...tab]` |
 | `POST /api/me/payouts/request` | `/creating/[...tab]`, `/teaching/[...tab]` |
@@ -784,6 +794,7 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/certificates/[id]` — ⚠️ no discovered path
 - `/community/[slug]/[...tab]` — ℹ️ no-nav by design
 - `/course/[slug]/[...tab]` — ℹ️ no-nav by design
+- `/course/[slug]/teach` — ⚠️ no discovered path
 - `/creating/[...tab]` — ℹ️ no-nav by design
 - `/creating/apply` — ⚠️ no discovered path
 - `/creating/communities/[slug]` — ⚠️ no discovered path

@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-08-05 Conv 433 (one-at-a-time client requests tracked as tasks first, batched into a single RFC later — no RFC folder per one-liner — §5)
+**Last Updated:** 2026-08-10 Conv 434 (a declined `NOT-ADOPTED.md` mechanism is re-opened by **dissolving the recorded objection**, and the ledger row is amended in place — §1)
 
 ---
 
@@ -17,6 +17,19 @@ This document tracks decisions about **how the peerloop-docs repo itself works**
 ---
 
 ## 1. Repo Architecture
+
+### A Declined `NOT-ADOPTED.md` Mechanism Is Re-Opened by **Dissolving the Recorded Objection**, and the Ledger Row Is Amended in Place (Conv 434)
+**Date:** 2026-08-10 (Conv 434)
+
+When the client re-asks for a mechanism the MERGE-BRIAN review formally **declined**, the procedure is: read *why* it was declined, and ask whether that stated reason can be **removed** — not whether the reviewer can be overruled. If the objection dissolves, build the adapted version and **amend the existing `plan/merge-brian/NOT-ADOPTED.md` row in place** from "not adopted" to adopted, recording that the objection was removed rather than overruled. Three rows were amended this way in one conv (`[PILL-LIFT]`, `[CARD-CTA]`, and the community-tab CTA), each naming the dissolved objection. Rejected: silently re-adopting without touching the ledger; re-litigating the decline on its merits; declining a second time by default.
+
+**Rationale:** In every case here the objection was about the **carrier**, not the design — raw hex for the colours, a divergent snapshot for the CTA. Fixing the carrier (name the values as `brian-*` tokens; share the resolver) satisfies the reviewer *and* the client, and produced a better implementation than either the original decline or a straight as-is adoption would have. Amending in place keeps the client-facing ledger honest: `NOT-ADOPTED.md` is what the client is shown, so a row that still reads "declined" for something now shipped is a lie, and a row deleted outright loses the reason the shipped version differs from his.
+
+**Consequences:** Extends the Conv-407 reference-exhibit rule and the Conv-428 closure — a *closed* review programme still has a live ledger, so `NOT-ADOPTED.md` is a maintained document rather than an archived one. The `[BRIAN-ARTIFACTS]` watch is unaffected. Reading the client's **actual branch** rather than his screenshot is what made two of the three dissolutions visible (his shadow tint decoded to an already-adopted token).
+
+**See:** `plan/merge-brian/NOT-ADOPTED.md`; `docs/sessions/2026-08/20260810_1442 Learnings.md` §1, `Decisions.md` §§1,2.
+
+---
 
 ### MERGE-BRIAN Closed — the Client-Branch Review Programme Ends at Six Units; the External Loose End Becomes a Watch (Conv 428)
 **Date:** 2026-07-28 (Conv 428)

@@ -26,8 +26,9 @@ Y01	/community/[slug]/[...tab]	COMMUNITY	yes	yes	P02	M01 P01	R02 R01 /course/[sl
 C01	/course/[slug]/[...tab]	COURSE	yes	yes	P02	P01 M01 M09 /course/[slug]/reviews /course/[slug]/benefits	/community/[slug]	C02 /course/[slug]/learn	R03	/course/[slug] /course/[slug]/modules A04	
 C02	/course/[slug]/book	COURSE	yes	yes	P02	/course/[slug]/modules /course/[slug]/benefits /learning	/community/[slug]	/course/[slug]/learn C02	R03	P01 /course/[slug] A01	
 C03	/course/[slug]/success	COURSE	yes	yes		P01 /course/[slug]/modules /course/[slug]/benefits	/course/[slug] /community/[slug]	C02 /course/[slug]/feed	R03		
+C04	/course/[slug]/teach	COURSE	yes	yes						/course/[slug] A01	
 P01	/courses	PERSONAL	yes	yes	A02	M01	R02				
-K01	/creating/[...tab]	CREATING	yes	yes		M01 /profile /teaching /profile/payments	/course/[slug] R01	/creating/communities /creating/analytics		/creating /creating/studio A01 K03	
+K01	/creating/[...tab]	CREATING	yes	yes		M01 /profile /teaching /profile/payments /member/[handle] M09	/course/[slug] R01	/creating/communities /creating/analytics		/creating /creating/studio A01 K03	
 K02	/creating/apply	CREATING	yes	yes		/creating				A01	
 K03	/creating/communities/[slug]	CREATING	yes	yes		M01 /creating P01				/creating/communities A01 /creating/studio K03	
 R02	/creator/[handle]	RESOURCE	yes	yes		M12 M01 P01 /profile/edit /creating	R02				
