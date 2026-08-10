@@ -25,7 +25,8 @@
 > orphaned endpoint is deleted. Nothing outstanding — kept here one conv for traceability, then
 > delete this note.
 
-3. [DIPL-SHELL](#dipl-shell) — /diploma/[id] renders in the MARKETING shell for signed-in viewers
+1. [RAIL-DETAIL](#rail-detail) — CLIENT: put the `/`+`/courses` right panel (DiscoveryRails) on `/course/{stub}`, then other detail pages
+2. [DIPL-SHELL](#dipl-shell) — /diploma/[id] renders in the MARKETING shell for signed-in viewers
 2. [CTA-HOST-GUARD](#cta-host-guard) — nothing stops a NEW host of CourseCatalogCard shipping dead cards; happened once already
 3. [BRIAN-ARTIFACTS](#brian-artifacts) — 👀 external: the rationale artifacts his commits cite (MERGE-BRIAN itself is CLOSED)
 4. [COMM-IMG](#comm-img) — community art is all picsum placeholders; `cover_image_url` has a UI slot but **no upload/storage**
@@ -473,6 +474,100 @@
 - **Pre-existing** — not created by Conv 429; the count has drifted over many convs. Conv 429 touched the second array (added its existence check, cleared 8 rows), which is what surfaced the omission.
 - **Why it matters:** `matt-provenance.md` is the reference a future conv reads to understand which components are candidates and where they live; a count off by 51 and a superseded path name both mislead.
 - **Refs:** `docs/as-designed/matt-provenance.md` §6a + §12a, `../Peerloop/scripts/matt-inspired-registry.ts`, `[PROV-DANGLE]` (Conv 429).
+
+### [RAIL-DETAIL]
+
+- **State:** 🔄 active — **CLIENT REQUEST**, received Conv 435. **Phase A ✅ DONE Conv 435** (course page
+  has the panel; measured live). Phases B + C remain.
+- **✅ PHASE A (Conv 435) — shipped and measured.** New `DiscoveryRailPanel.astro` (registered in
+  `matt-inspired-registry.ts`), new `right-panel` slot on `AppLayout`, wired into
+  `/course/[slug]/[...tab].astro`. 6 gates green (suite 6383).
+  - **A defect was introduced and caught by measuring, not by the gates.** The first cut made the outer row
+    `lg:flex-row` whenever a panel was present. That is wrong for the DEFAULT top-strip layout, where the
+    `sub-nav` slot holds a full-width horizontal strip: as a flex ROW item it became a column and took
+    **643px of a 948px row, collapsing the content div to w=0** — a broken course page. Every gate stayed
+    green through it (tsc, astro-check, lint, build all pass on a page that renders nothing).
+  - **Fix:** the outer row's direction still keys on `subNavOnLeft` ALONE; content + panel share their own
+    inner row. When no page fills the slot that wrapper is `display: contents`, so it has no box and the
+    no-panel DOM keeps today's layout semantics.
+  - **Measured (1440px iframe harness):** default layout → content 648 / panel 284, side by side. Rail
+    layout → **3 columns** 196 / 436 / 284, no overlap, at 1280 + 1440 + 1920. Below `lg` → panel
+    `display:none`, content full width. No-panel pages → wrapper `contents`, content fills the row, and
+    `/profile` in rail mode sits at x=576 = 364+196+**16** proving the parent `gap-16` still applies across
+    the inert wrapper.
+  - **Width:** the panel is pinned `lg:w-[284px]` on this page rather than the component default
+    `lg:flex-1`. On the three listing pages the rail is the REMAINDER beside a `max-w-[640px]` content
+    column (measured 284px @>=1440, 273 @1280); this page's content is uncapped, so `flex-1` on both split
+    it 50/50 and gave a rail nearly twice the client's. The component keeps `lg:flex-1` as its default so
+    Phase B's migration of those three pages is visually a no-op.
+  - ⚠️ **In rail layout the content column is 422px @1280** — a consequence of the user-approved 3-column
+    decision, taken before these numbers existed. Worth a look before Phase C.
+  - ⚠️ **No automated regression guard** — this is a CSS/layout change and the suite cannot see it. A
+    future edit to `AppLayout`'s row could silently re-break it exactly as above, and the gates would stay
+    green. Consider a DOM assertion in the browser-walk, or accept and re-measure per change.
+- **What the client asked:** "When you visit the /courses and / pages you see a panel (at desktop sizes) on
+  the right. The client wants that same panel on first the /course/{stub} pages and later on all detail pages
+  (/communities, /members and maybe elsewhere (TBD))."
+- **Which panel it is — identified, not assumed.** The two pages he named are exactly the two that render
+  **`DiscoveryRails`** in the right column, so that is "the same panel". It is NOT the `ListingShell`
+  filters panel — `/members` has that one and he did not name it.
+  | Page | Shell | Right column |
+  |---|---|---|
+  | `/` | bespoke 2-col | `DiscoveryRails entityTypes={['course','community']} maxItems={3}` |
+  | `/courses` | bespoke 2-col | `DiscoveryRails entityTypes={['course']}` |
+  | `/communities` | bespoke 2-col | `DiscoveryRails entityTypes={['community']}` — **already has it** |
+  | `/members` | `ListingShell` | `MembersFilters` rail — **no** DiscoveryRails |
+- **The reuse trap.** `/`, `/courses` and `/communities` only *mention* `ListingShell` in comments — each
+  hand-rolls its own two-column shell (all three replaced the centered `ListingShell` to kill a dead left
+  gutter). So there are already **three** near-duplicate implementations of "content + right rail", and this
+  request would add a fourth. That is the `[CTA-HOST-GUARD]` shape exactly: N copies of one arrangement,
+  free to drift. Strong argument for extracting the two-column-with-rail shell ONCE and porting the three
+  existing pages onto it, rather than pasting a fourth.
+- **Target 1 — `/course/[slug]/[...tab].astro`.** Uses `AppLayout`, whose slots are `header-bar`,
+  `entity-header`, `role-tab-bar`, `sub-nav`, default. **There is no right-panel slot** — so this needs
+  either a new `AppLayout` slot or a bespoke column in the page.
+- **⚠️ `[LAYOUT-MODE]` collision — smaller than it first looked.** `SUBNAV_LAYOUT` is **`'top'`**
+  (`src/lib/subnav-layout.ts`), so by default the `sub-nav` slot is a horizontal strip and there is **no left
+  rail at all**. `AppLayout` only goes side-by-side (`lg:flex-row`) when `subNavOnLeft` is true, which comes
+  from a per-user `Astro.locals.navLayout` opt-in or from flipping that one global constant back to `'left'`.
+  So content + right panel = **2 columns for the default case**, matching `/` and `/courses`; the 3-column
+  case (left rail + content + right panel) only arises for opted-in users. **Still needs a decision** for
+  that minority — see the open question below.
+- **Target 2 — CONFIRMED Conv 435 (user):** "the details pages are the ones that open when you pick a member
+  from /members and you pick a community from /communities" → **`/@[handle]`** and **`/community/[slug]`**.
+  The listing pages are NOT in scope (`/communities` already has the panel; `/members` keeps its filters rail).
+- **The three targets are structurally different — do not assume one fix ports:**
+  | Route | Shell | `sub-nav` slot | Rail collision? |
+  |---|---|---|---|
+  | `/course/[slug]/[...tab]` | `AppLayout` | yes — `CourseRail` (orientation-aware) | only in `'left'` opt-in |
+  | `/community/[slug]/[...tab]` | `AppLayout` | yes — plain `SubNav` | only in `'left'` opt-in |
+  | `/@[handle]` | `AppLayout` | **none** — content is `max-w-4xl mx-auto` | no collision; needs the centered cap reconsidered |
+- **APPROACH — DECIDED Conv 435 (user): extract the shared shell FIRST.** Build the two-column-with-rail
+  shell once, port `/course/[slug]` onto it, then migrate `/`, `/courses` and `/communities` onto it after.
+  Explicitly NOT a bespoke fourth copy. This is the `[CTA-HOST-GUARD]` lesson applied before the damage.
+- **3-COLUMN — DECIDED Conv 435 (user): SHOW the right panel in `'left'` rail mode too.** Left rail +
+  content + right panel at desktop. Must be proven with the exact-size iframe harness, not assumed.
+- **The extraction is smaller than the ask sounds.** The rail is a self-contained ~18-line block in
+  `courses.astro` (`<aside class="hidden lg:block lg:flex-1">` → sticky wrapper with a `max-h`/scroll cap →
+  `DiscoveryRails` with a blue honest-orphan placeholder as its fallback child). And `AppLayout` already
+  wraps sub-nav + content in `flex flex-col gap-16 flex-1 lg:flex-row`, so a third flex child is the natural
+  seam — a `right-panel` slot there produces the approved 3-column case for free.
+- **Phases:**
+  - **A (completable alone):** extract the rail block into one component; add a `right-panel` slot to
+    `AppLayout`; wire `/course/[slug]/[...tab].astro`; prove responsively incl. the 3-col `'left'` case.
+  - **B:** migrate `/`, `/courses`, `/communities` off their three bespoke shells onto the slot — this is
+    the part that actually removes the drift risk, so it is not optional garnish.
+  - **C:** `/community/[slug]` (has a `sub-nav` slot, same shape as A) and `/@[handle]` (no sub-nav slot;
+    its `max-w-4xl mx-auto` cap has to be reconsidered to make room).
+- **Testing note:** this is a desktop-breakpoint change — use the exact-size same-origin iframe harness
+  (`[MINWIDTH]` / `[SIDEBAR-COLLIDE]`, `reference_responsive_iframe_harness`), not viewport resizing, and
+  measure live per `[PREMISE]`.
+- **RFC:** not yet in one. Per the Conv-433 working model a client request gets its own `[CODE]` first and
+  batches into an RFC once several accumulate; CD-040 covers the *closed* 433–434 batch, so this belongs to
+  the next batch (CD-041), not appended there.
+- **Refs:** `src/components/discovery/DiscoveryRails.tsx`, `src/lib/discovery-rails/`,
+  `src/pages/{index,courses,communities,members}.astro`, `src/components/layout/ListingShell.astro`,
+  `src/layouts/AppLayout.astro`, `src/components/course/CourseRail.astro`, `[LAYOUT-MODE]` (Conv 357).
 
 ### [RATING-COUNT-DEAD]
 
