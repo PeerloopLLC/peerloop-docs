@@ -1212,6 +1212,19 @@ better result than either the original rejection or a straight adoption.
   `--brian-band-line`; N12's white-ringed medallion adopted on the `/courses` cover-story card and
   deliberately *not* on `CommunityCatalogCard`. Detail in the Status line above.
 
+- **Conv 435 — the five amended rows are now a client-facing RFC: [`docs/requirements/rfc/CD-040/`](../../docs/requirements/rfc/CD-040/RFC.md)**
+  (`[CD040-BATCH]`; `original.txt` + `CD-040.md` + `RFC.md`, 35 items / 30 done, `rfc/INDEX.md` updated).
+  Scope resolved to **five delivered changes across Convs 433–434** — `[COMM-BAND-ADOPT]`, `[COMM-IDENT]`,
+  `[PILL-LIFT]`, `[CARD-CTA]`, `[TEACH-REQ]` — matching the five amended `NOT-ADOPTED.md` rows
+  (2 § Communities + 3 § Courses) exactly, one RFC item per row. Two details worth carrying:
+  (a) the batch **arrived verbally, one request at a time**, so `original.txt` is a *reconstruction* from
+  the Conv-433/434 Extracts' § Conv Prompts and says so in a provenance note the CD-035..039 files do not
+  carry; (b) the RFC keeps the two different "fives" apart — five *delivered* across both convs vs Conv
+  434's five *planned*, of which only #1–#2 were ever named, so the unnamed #3–#5 became **client question
+  Q1** rather than a silent omission. The five open/parked tasks that trail these rows now back-link into
+  the RFC so a closure ticks the client-visible item too. **Walk CD-040 alongside NOT-ADOPTED.md** — the
+  ledger says what he'll notice missing, the RFC says what he asked for and got.
+
 ### Build log — § Courses amendments (Conv 434, all 5 gates green + live-verified)
 
 - **`[PILL-LIFT]` — topic-pill elevation ADOPTED (was: left behind with the raw-colour category).**

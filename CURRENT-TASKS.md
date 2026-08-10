@@ -25,7 +25,8 @@
 > orphaned endpoint is deleted. Nothing outstanding — kept here one conv for traceability, then
 > delete this note.
 
-1. [RAIL-DETAIL](#rail-detail) — CLIENT: put the `/`+`/courses` right panel (DiscoveryRails) on `/course/{stub}`, then other detail pages
+1. [SLOT-COLLIDE](#slot-collide) — `right-panel` now names TWO different slots; ListingShell's renders on the LEFT
+2. [QSLOT](#qslot) — Conv-435 calibration: batched answer landed in the wrong slot; truncated list read as newest-first
 2. [DIPL-SHELL](#dipl-shell) — /diploma/[id] renders in the MARKETING shell for signed-in viewers
 2. [CTA-HOST-GUARD](#cta-host-guard) — nothing stops a NEW host of CourseCatalogCard shipping dead cards; happened once already
 3. [BRIAN-ARTIFACTS](#brian-artifacts) — 👀 external: the rationale artifacts his commits cite (MERGE-BRIAN itself is CLOSED)
@@ -75,6 +76,7 @@
 
 ## ⏸️ Parked  (gated — out of rotation)
 
+- [RAIL-DETAIL](#rail-detail) — **gate:** the CLIENT accepting the right panel on `/course/{slug}` (phase A, shipped Conv 435). Everything else the panel touches — the 3 listing pages, the 2 detail pages, and both open warnings — waits behind that one answer
 - [SHADOW-DEAD](#shadow-dead) — **gate:** deliberate app-wide shadow pass; not to be fixed as a token cleanup (Conv 434)
 
 - [ORPHAN-BACKLOG](#orphan-backlog) — gate: marketing redesign (RG-PUBLIC)
@@ -477,8 +479,24 @@
 
 ### [RAIL-DETAIL]
 
-- **State:** 🔄 active — **CLIENT REQUEST**, received Conv 435. **Phase A ✅ DONE Conv 435** (course page
-  has the panel; measured live). Phases B + C remain.
+- **State:** ⏸️ parked · [Opus] · **gate: the client accepting the right panel on `/course/{slug}`** — phase A
+  shipped Conv 435 (`fba8016d`) and is what he is being shown. Everything below is deliberately ONE task
+  rather than several, because every part of it is answered by that single yes/no: if he accepts, all of it
+  is wanted; if he rejects, none of it is, and phase A comes back out instead.
+
+- **▶ WHAT'S LEFT (the whole of this task — un-park only after he says yes):**
+  1. **Phase B — migrate `/`, `/courses` and `/communities` onto the shared shell.** They still hand-roll
+     the rail block. This is the part that actually removes the drift risk; phase A only stopped it getting
+     worse. Should be visually a no-op — the component's default is `lg:flex-1`, which is what all three
+     already use — so prove it by measuring before/after, not by eye.
+  2. **Phase C — `/community/[slug]` and `/@[handle]`.** `/community/[slug]` has a `sub-nav` slot and is the
+     same shape as phase A. `/@[handle]` does NOT, and its content is capped `max-w-4xl mx-auto` — that cap
+     is what stands in the way of a rail, so it is a different problem, not a repeat.
+  3. **Decide the 422px rail-mode content column** (see the warning below) — the 3-column call was made
+     before the numbers existed.
+  4. **Decide the missing regression guard** (see the warning below).
+  5. **Fold into the next client RFC (CD-041).** Per the Conv-433 working model this request has its own
+     `[CODE]` and batches into an RFC once several accumulate; CD-040 covers the closed 433–434 batch.
 - **✅ PHASE A (Conv 435) — shipped and measured.** New `DiscoveryRailPanel.astro` (registered in
   `matt-inspired-registry.ts`), new `right-panel` slot on `AppLayout`, wired into
   `/course/[slug]/[...tab].astro`. 6 gates green (suite 6383).
@@ -553,12 +571,9 @@
   wraps sub-nav + content in `flex flex-col gap-16 flex-1 lg:flex-row`, so a third flex child is the natural
   seam — a `right-panel` slot there produces the approved 3-column case for free.
 - **Phases:**
-  - **A (completable alone):** extract the rail block into one component; add a `right-panel` slot to
-    `AppLayout`; wire `/course/[slug]/[...tab].astro`; prove responsively incl. the 3-col `'left'` case.
-  - **B:** migrate `/`, `/courses`, `/communities` off their three bespoke shells onto the slot — this is
-    the part that actually removes the drift risk, so it is not optional garnish.
-  - **C:** `/community/[slug]` (has a `sub-nav` slot, same shape as A) and `/@[handle]` (no sub-nav slot;
-    its `max-w-4xl mx-auto` cap has to be reconsidered to make room).
+  - **A ✅ SHIPPED Conv 435** — rail block extracted into one component, `right-panel` slot added to
+    `AppLayout`, `/course/[slug]/[...tab].astro` wired, proven responsively incl. the 3-col `'left'` case.
+  - **B + C** — the remaining phases, itemised under **WHAT'S LEFT** at the top of this task.
 - **Testing note:** this is a desktop-breakpoint change — use the exact-size same-origin iframe harness
   (`[MINWIDTH]` / `[SIDEBAR-COLLIDE]`, `reference_responsive_iframe_harness`), not viewport resizing, and
   measure live per `[PREMISE]`.
@@ -613,6 +628,48 @@
 - **Options:** (a) move Phase 2 into a named script (`conv-memory-sync.sh`) that reads as intentional; (b) Phase 1 writes a decision sentinel Phase 2 checks; (c) document the expected block so CC handles it deterministically; (d) a project `settings.json` allow-rule for the specific invocation.
 - **Asymmetry:** `/r-commit` Step 1.5 + `/r-end` Step 5b run the same rsync **live→mirror** (safe) and are never blocked. Only mirror→live is sensitive.
 - **Refs:** `.claude/skills/r-start/SKILL.md` Step 5.7 Phase 2, `[[feedback_msi_sync_user_checkpoint]]`. Surfaced Conv 395.
+
+### [QSLOT]
+
+- **State:** 📋 queued · small — process observation from Conv 435, worth one calibration pass not a project
+- **Two near-misses this conv, both the same shape: reading data before establishing its shape.**
+  1. **Batched questions answered out of slot.** Three `AskUserQuestion` items went out together; the reply in
+     Q1's slot was actually a correction to Q2's *premise* ("that was my mistake, the details pages are…").
+     Recording it as Q1's answer would have left the genuinely open question (the rail collision) unanswered
+     while proceeding as though all three were settled. It was caught, re-asked, and cost one turn.
+  2. **Truncated list read as ordered.** `wrangler deployments list | head -14` showed 2026-04 dates; read as
+     newest-first that means staging's cron was four months stale — a serious, wrong conclusion one sentence
+     from being reported. The list is **oldest-first**; the newest deployment was 2026-07-29.
+- **The common rule:** when the shape of the data (which slot an answer belongs to, which end of a list is
+  newest) is assumed rather than checked, a confident wrong statement follows. Cheap fixes:
+  `... | grep -c '^Created:'` then `| tail -3` before concluding; and when a batched answer doesn't match its
+  question, re-ask rather than infer.
+- **Disposition:** no code change. Decide whether either belongs in `memory/` as a standing rule — the
+  ordering one may already be covered by `[PREMISE]` (`feedback_retest_task_premise_before_executing`), in
+  which case this is a confirming instance, not a new memory. Check before writing.
+
+### [SLOT-COLLIDE]
+
+- **State:** 📋 queued — surfaced by the r-end docs agent, Conv 435
+- **What:** `AppLayout` gained a `right-panel` slot in Conv 435, but **`ListingShell` already has a slot of
+  that exact name** with different semantics, documented in `docs/reference/_COMPONENTS.md`
+  (lines ~1070–1071 / 1088). Two contracts, one name:
+  | Owner | `right-panel` means | Renders |
+  |---|---|---|
+  | `ListingShell` | the page's **filter** aside | on the **LEFT** in side-rail mode; not at all in top-bar mode |
+  | `AppLayout` (new) | the **discovery rail** | on the **RIGHT** at ≥lg, in both modes |
+- **Why it matters:** a reader hitting `slot="right-panel"` in `[...tab].astro` and looking it up finds the
+  wrong contract — and it is wrong in the most confusing possible way, since one of the two does not render
+  on the right. This is a name I chose without checking the existing slot vocabulary.
+- **Options:** (a) rename `AppLayout`'s slot to something unambiguous (`discovery-rail` / `aside-right`) —
+  cheap NOW, only 1 consumer; (b) rename `ListingShell`'s; (c) keep both and document the collision loudly.
+  (a) gets cheaper the sooner it is done and more expensive after phase B adds consumers.
+- **Do it with `[RAIL-DETAIL]` phase B** if (a) is chosen — the three listing pages migrate then, which is
+  when the two slot vocabularies actually meet. Note `[RAIL-DETAIL]` is parked on client acceptance, so if
+  the panel is rejected this dissolves.
+- **Also:** `_COMPONENTS.md` § Layout Components documents neither the new slot nor `DiscoveryRailPanel.astro`.
+- **Refs:** `docs/reference/_COMPONENTS.md`, `src/layouts/AppLayout.astro`,
+  `src/components/layout/ListingShell.astro`, `src/components/discovery/DiscoveryRailPanel.astro`.
 
 ### [SHADOW-DEAD]
 

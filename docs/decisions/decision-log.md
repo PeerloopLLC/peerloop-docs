@@ -5,6 +5,24 @@
 
 For historical decisions and the full rationale behind each choice, see the session files in `docs/sessions/YYYY-MM/`.
 
+### An Additive Column Is ALTERed Before the Deploy That Reads It; Remote-D1 Drift Is Proven by a Name-Level Signature Diff
+**Date:** 2026-08-10 (Conv 435)
+
+Staging, two convs behind, was missing `enrollments.teaching_request_sent_at`. Fixed with one `ALTER TABLE … ADD COLUMN` run **before** the deploy, not after — an additive nullable column is inert until code references it, while code-first guarantees a `no such column` window on `/courses` and `/course/{slug}`. The drift was established by a name-level schema signature diff (`sqlite_master` ⋈ `pragma_table_info`, sorted, `diff`'d), which showed exactly one difference across 72 tables (689 vs 690 columns). Rejected: a full reseed (seed files last changed Conv 432, which staging already had); a cron redeploy (its newest deployment 2026-07-29 postdates the last cron code change 2026-07-13); deploying without the ALTER.
+
+**Rationale:** `[D1-SCHEMA-REMOTE]` is documented but nothing *detects* it — this drift survived two convs and was found only because the conv happened to look. Comparing names rather than counts matters (a rename leaves counts equal). The cron answer was nearly wrong in the other direction: `wrangler deployments list` prints **oldest-first**, so a truncated `head` read as newest-first implied a four-month-stale worker.
+
+**See:** `docs/sessions/2026-08/20260810_1736 Decisions.md` §5, Learnings §§3–5; `docs/decisions/08-deployment-infra.md`.
+
+### The Right Rail Ships as ONE `DiscoveryRailPanel` Behind an `AppLayout` `right-panel` Slot (RAIL-DETAIL)
+**Date:** 2026-08-10 (Conv 435)
+
+The client's request to put the `/` + `/courses` right panel on `/course/{slug}` is met by extracting the shell rather than adding a fourth hand-rolled copy: new `DiscoveryRailPanel.astro` (the `<aside>`, the ≥`lg` gate, the sticky height cap, the honest-orphan placeholder) behind a new `AppLayout` `right-panel` slot, consumed by the course page now and by `/`, `/courses`, `/communities` in phase B. The panel pairs with the **content**, not the row — an inner row holds content+panel and carries `display: contents` when no panel is present. Course page pins `lg:w-[284px]`; the component default stays `lg:flex-1`; left-rail users see three columns. Rejected: a bespoke copy; migrating all four hosts at once; capping course content at `max-w-[640px]`; hiding the panel in left-rail mode.
+
+**Rationale:** Four free-to-drift copies is the `[CTA-HOST-GUARD]` problem Conv 434 had to unpick after it had already happened once, and a client request is the cheapest moment to collapse it. The width is pinned because on the listing pages the rail is the *remainder* beside a 640px-capped column — the client wants the same panel, not the same content cap.
+
+**See:** `docs/sessions/2026-08/20260810_1736 Decisions.md` §§1–3, Learnings §§1–2; `docs/decisions/05-ui-ux-components.md`.
+
 ### Invented Token / Icon Names Get a Static Gate Scoped to Project-Owned Families (TOKEN-TYPO)
 **Date:** 2026-08-10 (Conv 434)
 

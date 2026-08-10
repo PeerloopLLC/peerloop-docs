@@ -9,7 +9,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 **Where new decisions go** (write-path)
 1. Add/replace the decision under the matching topic chunk (`01`–`11`). Keep latest-wins: if it supersedes an older one, replace the old entry.
-2. Append a dated entry to [`decision-log.md`](decision-log.md) (newest at the bottom).
+2. Add a dated entry to [`decision-log.md`](decision-log.md) — **newest at the TOP**, directly under the `## Decision Log` intro line.
 3. Add the title to this index under the right chunk.
 
 > ✅ As of Conv 229 (**[DEC-SKILL-SYNC]**), the decision-authoring skills (`r-end` + its `fmt-learn-decide.md`/`fmt-update-plan.md` refs, `w-post-fix`, `w-sync-docs`, `r-commit`) and `.claude/config.json` target this 3-step write-path directly — no manual rerouting needed. `DOC-DECISIONS.md` (docs-repo topics) remains a separate single file.
@@ -17,7 +17,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 **Finding a decision** (read-path)
 - **Is there a decision about X?** → grep this index. Every entry is a `[Title](chunk#anchor)` link, so a hit jumps straight to the chunk — the fastest discovery surface (all ~396 titles in one file).
 - **What's the *current* decision on a topic?** → open the matching chunk: `01` architecture · `02` database · `03` api-data-fetching · `04` auth · `05` ui-ux-components · `06` testing-ci · `07` dev-workflow-docs · `08` deployment-infra · `09` feature-flags · `10` admin · `11` new-routing. **Latest-wins:** whatever is in the chunk *is* current truth.
-- **When / in what order / what superseded what?** → [`decision-log.md`](decision-log.md) (chronological, newest at the bottom). Superseded decisions survive **only** here — the chunks keep just the winner, so this is the place to reconstruct "why did we change from A to B?"
+- **When / in what order / what superseded what?** → [`decision-log.md`](decision-log.md) (chronological, newest at the top). Superseded decisions survive **only** here — the chunks keep just the winner, so this is the place to reconstruct "why did we change from A to B?"
 - **What was a term formerly called?** → [`terminology-footnotes.md`](terminology-footnotes.md).
 - **Mind the split:** application/code decisions live here; docs-repo / CC-workflow / dual-repo / Obsidian decisions live in [`DOC-DECISIONS.md`](../../DOC-DECISIONS.md) (a separate root file, outside this folder). Scan both when a topic could be either.
 
@@ -268,6 +268,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [[RAIL-DETAIL] The Right Rail Ships as ONE `DiscoveryRailPanel` Behind an `AppLayout` `right-panel` Slot — the Panel Pairs with the **Content**, Not the Row (Conv 435)](05-ui-ux-components.md#rail-detail-the-right-rail-ships-as-one-discoveryrailpanel-behind-an-applayout-right-panel-slot--the-panel-pairs-with-the-content-not-the-row-conv-435)
 - [[PILL-LIFT] The Client's Pill Elevation Is Adopted as `--brian-pill-shadow{,-hover}` Tokens, Scoped **LOCAL** to the `/courses` Topic Row (Conv 434)](05-ui-ux-components.md#pill-lift-the-clients-pill-elevation-is-adopted-as---brian-pill-shadowhover-tokens-scoped-local-to-the-courses-topic-row-conv-434)
 - [[COMM-BAND-ADOPT] The Client's Band Colours Are Adopted as `brian-*` **Tokens** on a New `presentation="band"` Variant — Never as Inline Hex, Never as a Wholesale Restyle (Conv 433)](05-ui-ux-components.md#comm-band-adopt-the-clients-band-colours-are-adopted-as-brian--tokens-on-a-new-presentationband-variant--never-as-inline-hex-never-as-a-wholesale-restyle-conv-433)
 - [[COMM-IDENT] The Community Catalog Card Leads With the **Logo Over a Scrimmed Cover** and Wears **No** Course-Card Medallion — Treatment Follows Meaning, Not Uniformity (Conv 433)](05-ui-ux-components.md#comm-ident-the-community-catalog-card-leads-with-the-logo-over-a-scrimmed-cover-and-wears-no-course-card-medallion--treatment-follows-meaning-not-uniformity-conv-433)
@@ -543,6 +544,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [8. Deployment & Infrastructure](08-deployment-infra.md)
 
+- [An Additive Column Is ALTERed **Before** the Deploy That Reads It, and Remote-D1 Drift Is Proven by a Name-Level Schema Signature Diff (Conv 435)](08-deployment-infra.md#an-additive-column-is-altered-before-the-deploy-that-reads-it-and-remote-d1-drift-is-proven-by-a-name-level-schema-signature-diff-conv-435)
 - [A **Dropped** Column Removes the ALTER Branch Entirely — Reseed Staging at the Level It Is Already At, and Redeploy Every Worker That Imports the Changed Lib (COMM-TOPICS, Conv 432)](08-deployment-infra.md#a-dropped-column-removes-the-alter-branch-entirely--reseed-staging-at-the-level-it-is-already-at-and-redeploy-every-worker-that-imports-the-changed-lib-comm-topics-conv-432)
 - [[THUMB-404] Public R2 Assets Are Served Through a Two-Prefix Allowlist, Never a Bucket Proxy (MERGE-BRIAN §3 N14, Conv 426)](08-deployment-infra.md#thumb-404-public-r2-assets-are-served-through-a-two-prefix-allowlist-never-a-bucket-proxy-merge-brian-3-n14-conv-426)
 - [Uploaded Brand Marks Are Raster-Only — SVG Rejected Because Our Own Origin Serves Them (MERGE-BRIAN §3 N13, Conv 426)](08-deployment-infra.md#uploaded-brand-marks-are-raster-only--svg-rejected-because-our-own-origin-serves-them-merge-brian-3-n13-conv-426)

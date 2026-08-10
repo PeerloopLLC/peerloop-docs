@@ -3,6 +3,17 @@
 
 ## 8. Deployment & Infrastructure
 
+### An Additive Column Is ALTERed **Before** the Deploy That Reads It, and Remote-D1 Drift Is Proven by a Name-Level Schema Signature Diff (Conv 435)
+**Date:** 2026-08-10 (Conv 435)
+
+Fourth condition on the Conv-363 / Conv-394 / Conv-432 reseed-vs-ALTER set below, plus the **ordering** rule and a **detection** method the set never had. Conv 434 edited `0001_schema.sql` (adding `enrollments.teaching_request_sent_at`) and shipped no deploy, so staging sat two convs behind with the column missing while the CTA resolver and course pages queried it. Resolution: **`ALTER` first, deploy second** — an additive nullable column is inert until code references it, so the intermediate state is harmless, whereas deploying code first guarantees a `no such column` window on `/courses` and `/course/{slug}`, the exact pages the client was about to be shown. Drift was *established*, not assumed, by a **name-level schema signature diff** — `SELECT m.name || '.' || p.name FROM sqlite_master m JOIN pragma_table_info(m.name) p WHERE m.type='table'`, sorted and `diff`'d local-vs-remote — proving the only difference across 72 tables was that one column (689 vs 690). Compare **names, not counts**: a rename leaves counts equal. Rejected: a full reseed (seed files last changed Conv 432, which staging already had, so it would wipe data to solve nothing extra); a cron redeploy (newest `peerloop-cron-staging` deployment 2026-07-29 postdates the last cron code change 2026-07-13); deploying without the ALTER.
+
+**Rationale:** `[D1-SCHEMA-REMOTE]` is documented but nothing *detects* it — this drift was found only because the conv happened to look, two convs after it was introduced; a six-line signature diff makes the check deterministic and is the missing half of the rule. On the cron question, `wrangler deployments list` prints **oldest-first**: a truncated `head -14` read as newest-first said the worker was four months stale — a serious, wrong conclusion one sentence from being reported. `grep -c "^Created:"` then `tail -3` establishes ordering and the true newest in one pass.
+
+**Consequences:** Staging's schema now matches local exactly and staging is current at Conv 435 — five pages 200, the new right panel present in SSR HTML, rails returning real items with a `generatedAt` minutes old (independently confirming the cron worker is live). A `check:staging-drift` gate built on the signature diff was offered and not taken up.
+
+**See:** `migrations/0001_schema.sql`; `docs/sessions/2026-08/20260810_1736 Decisions.md` §5, Learnings §§3–5; the Conv-432 / 394 / 363 entries below; Conv 435.
+
 ### A **Dropped** Column Removes the ALTER Branch Entirely — Reseed Staging at the Level It Is Already At, and Redeploy Every Worker That Imports the Changed Lib (COMM-TOPICS, Conv 432)
 **Date:** 2026-07-29 (Conv 432)
 
