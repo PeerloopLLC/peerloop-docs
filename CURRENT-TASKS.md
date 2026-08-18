@@ -25,7 +25,8 @@
 > orphaned endpoint is deleted. Nothing outstanding — kept here one conv for traceability, then
 > delete this note.
 
-1. [SLOT-COLLIDE](#slot-collide) — `right-panel` now names TWO different slots; ListingShell's renders on the LEFT
+1. [COURSE-PAGE-FIXES-AUG-17](#course-page-fixes-aug-17) — client change batch for course page(s), Conv 436
+2. [SLOT-COLLIDE](#slot-collide) — `right-panel` now names TWO different slots; ListingShell's renders on the LEFT
 2. [QSLOT](#qslot) — Conv-435 calibration: batched answer landed in the wrong slot; truncated list read as newest-first
 2. [DIPL-SHELL](#dipl-shell) — /diploma/[id] renders in the MARKETING shell for signed-in viewers
 2. [CTA-HOST-GUARD](#cta-host-guard) — nothing stops a NEW host of CourseCatalogCard shipping dead cards; happened once already
@@ -231,6 +232,13 @@
 - **Blocks:** honest visual review of `/communities`, `/community/[slug]`, and the Discovery rails — all three render community imagery.
 - **Refs:** `migrations-dev/0001_seed_dev.sql:174-188`, `migrations/0002_seed_core.sql:213` (System community has a cover and **no** logo — the nullable case is real), `src/pages/api/me/communities/[slug]/logo.ts`, `src/components/creators/communities/CommunitySettings.tsx`, `[COMM-BAND-ADOPT]` (Conv 433).
 - **Client-visible:** open item in `docs/requirements/rfc/CD-040/RFC.md` §1. Tick it there when this closes.
+
+
+### [COURSE-PAGE-FIXES-AUG-17]
+
+- **State:** 🔄 active
+- **What:** client change batch for course page(s) — details supplied incrementally during Conv 436.
+- **Refs:** (to be added as changes land)
 
 
 ### [COURSES-FIXES]
@@ -856,16 +864,4 @@
 
 ## ✅ Done this conv
 
-- **[CD040-BATCH]** (Conv 435) — `docs/requirements/rfc/CD-040/` created (`original.txt` + `CD-040.md` +
-  `RFC.md`, 35 items / 30 done), INDEX updated. Scoped to the **full five-change batch across Convs 433–434**,
-  not just Conv 434's three: the task's own "five accumulated" and the five amended `NOT-ADOPTED.md` rows
-  (2 Communities + 3 Courses) both resolve that way. The two "fives" are kept apart in the RFC — five
-  *delivered* across both convs, versus Conv 434's five *planned* of which only #1–#2 were ever named
-  (now client question Q1). Back-links added to the 5 open/parked items so closing one prompts ticking the RFC —
-  the RFC going stale unnoticed is the exact failure that created this task.
-- **[TREQ-TEST]** (Conv 435) — `tests/api/me/courses/[courseId]/teaching-request.test.ts`, 8 cases pinning the
-  POST endpoint that was shipped untested. Each assertion proved load-bearing by mutation rather than by a
-  green run: the guard moved below the send (correct `200 alreadySent`, creator messaged twice) → caught by the
-  row counts, `expected 2 to be 1`; `actionUrl` → `/teaching` → caught; the `!= 'cancelled'` clause dropped →
-  caught; the stamp write removed → broke the happy path **and** idempotency, which is the design claim. The
-  endpoint was restored byte-identical after each (`git diff` empty). 5 gates green; suite 6375 → 6383.
+_(none yet — cleared at each /r-start)_
