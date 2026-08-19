@@ -8,7 +8,7 @@ This file provides guidance to Claude Code when working in the Peerloop dual-rep
 
 These rules live elsewhere in this file in full, but they're recurring failures that the user has had to flag repeatedly. Treat this list as a **pre-send checklist** for every response that ends in a question or contains options.
 
-1. **Route every decision through the `AskUserQuestion` tool** — option picks AND yes/no. Put the reasoning/writeup/recommendation in prose *above*; the tool renders the choices as a selectable picker (labels 1–5 words; terse required descriptions; the user *selects*, not types). Don't hand-format inline `A)`/`B)` option blocks. Because the user selects, the old malformed-question failures (compound "X, or Y?" read as yes/no; untypeable symbol labels; misspelled yes/no) can't occur. (Conv 273 decision: this replaced the inline-label rule **and** retired the QLINT Stop-hook — structural prevention over post-hoc detection.) Full guidance in §User-Facing Questions; history in `memory/feedback_option_phrasing.md`.
+1. **A/B labels on separate lines for multi-option questions** — put reasoning/recommendation in prose above, then each option on its own line as `**A)** description` / `**B)** description`. Never trailing "or X?" (the compound "X, or Y?" reads as yes/no). End with `👉👉👉 **Which — A or B?**` (Conv 438 decision: replaces the AskUserQuestion tool directive, which is not reliably available.) Full guidance in §User-Facing Questions; history in `memory/feedback_option_phrasing.md`.
 
 2. **The decision must be the LAST thing in the turn** — the `AskUserQuestion` call, or a `👉👉👉` open-ended question. Do all independent work first (work whose outcome doesn't depend on the answer), then ask, then stop. No status updates after. Detail in `memory/feedback_pause_on_pointing_questions.md`.
 
@@ -96,7 +96,18 @@ For the §Uncategorized section in `/r-end` extracts, use orange:
 
 ## User-Facing Questions
 
-**Decisions go through `AskUserQuestion`.** When the user must choose — option picks (≥2 discrete choices) **and** yes/no — use the `AskUserQuestion` tool, not an inline hand-formatted question. Put all the reasoning, tradeoffs, and your recommendation in **prose above** the tool call; the tool then renders just the choices as a selectable picker. Option labels are 1–5 words; the (required) per-option `description` is a terse gloss, not the full case — that lives in the prose above. Because the user **selects rather than types**, the inline-format failure modes (compound "X, or Y?" read as yes/no; untypeable symbol labels `α/β`/`①②③`; misspelled yes/no) are structurally impossible. Mark a recommended option in its label/description. (Conv 273 decision: this replaced the inline-`A)/B)/C)` rule and the QLINT Stop-hook — `memory/feedback_option_phrasing.md` keeps the history.)
+**A/B format for option picks.** When the user must choose — option picks (≥2 discrete choices) **and** yes/no — use A/B labels on separate lines. Put reasoning, tradeoffs, and recommendation in **prose above**; then each option on its own line:
+
+```
+**A)** First option — terse description
+**B)** Second option — terse description
+
+👉👉👉 **Which — A or B?**
+```
+
+**Never trailing "or X?"** — the compound "X, or Y?" phrasing reads as a yes/no question, not an option pick. Each option gets its own labeled line. Mark a recommended option with "(Recommended)" in its description.
+
+(Conv 438 decision: replaces the AskUserQuestion tool directive — the tool is not reliably available across environments. The A/B format achieves the same structural clarity: options are visually distinct, the user selects by label, and the malformed-question failure modes are blocked by format discipline rather than tool enforcement. History in `memory/feedback_option_phrasing.md`.)
 
 **Open-ended clarifications** — a free-text question that isn't a discrete pick — use the **👉👉👉 + bold** convention (the emoji + bold is what the user scans for in long output; bold alone or emoji alone gets buried):
 
@@ -106,7 +117,7 @@ For the §Uncategorized section in `/r-end` extracts, use orange:
 
 **Emoji scope.** 👉 in pointing questions and 🔴/🟠 in issue alerts (§Issue Surfacing above) are the **only** emojis that belong in output. Avoid all others.
 
-**Pause behavior.** The decision — the `AskUserQuestion` call, or a `👉👉👉` open-ended question — must be the **last thing in the turn**. Complete independent work first (work whose outcome doesn't depend on the answer), then ask and stop. Don't use these for status updates, progress narration, or rhetorical questions you answer yourself. See `memory/feedback_pause_on_pointing_questions.md`.
+**Pause behavior.** The decision — the A/B question or a `👉👉👉` open-ended question — must be the **last thing in the turn**. Complete independent work first (work whose outcome doesn't depend on the answer), then ask and stop. Don't use these for status updates, progress narration, or rhetorical questions you answer yourself. See `memory/feedback_pause_on_pointing_questions.md`.
 
 ## Explanatory Style Override
 
