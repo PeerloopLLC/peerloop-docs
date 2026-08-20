@@ -3,6 +3,7 @@
     "CLAUDE_AFK_TIMEOUT_MS": "2147483647"
   },
   "verbose": false,
+  "model": "claude-opus-4-8",
   "permissions": {
     "allow": [
       "Read(/**)",
