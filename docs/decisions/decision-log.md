@@ -5,6 +5,15 @@
 
 For historical decisions and the full rationale behind each choice, see the session files in `docs/sessions/YYYY-MM/`.
 
+### Sidebar Long-Menu Pins Header + Account and Scrolls the Middle Nav — Retires SIDEBAR-COLLIDE; the "More" Cue Is a Pure-CSS Background Scroll-Shadow
+**Date:** 2026-08-19 (Conv 438)
+
+On short viewports the Sidebar now pins the brand header and the account row and scrolls only the primary-nav region between them (`.sidebar-scroll`, thin auto-hiding bar + `mt-auto` utilities inside the scroll region), across the expanded rail, collapsed 70px rail, and mobile drawer. This **retires the Conv-368 SIDEBAR-COLLIDE `ResizeObserver`/`data-merged` merge observer** (a real scroll region means the clusters cannot collide); the `@media (max-height:500px)` compaction is kept. A styled scrollbar is layout-taking (~11px), so `overflow-x-hidden` is paired with `overflow-y-auto`; a container `wheel` listener (`[SBAR-WHEEL]`) forwards `deltaY` to the scroll region + `overscroll-behavior: contain` so wheel over the aside scrolls the nav, not the page. The "more items" affordance is a **pure-CSS background scroll-shadow** (Lea Verou `background-attachment: local`), replacing a JS-toggled content mask that was invisible in the gaps between tall buttons. Rejected: chevron paging; whole-rail scroll; `mask-image` content fade; the JS scroll listener.
+
+**Rationale:** Pin-and-scroll matches Slack/Discord/Linear/Notion and keeps the native wheel/trackpad gesture; chevrons are non-idiomatic for a vertical nav. A background shadow paints continuously behind the transparent inter-row gaps and auto-hides at each end with no JS (VT-persist-safe). Only the small account row pins, so the scroll region keeps usable height on short screens. Related: the course stepper's container-query breakpoint was lowered 768px→600px in the same conv because the content column is a fixed ~648px at desktop and 768px was unreachable.
+
+**See:** `docs/sessions/2026-08/20260819_1512 Decisions.md` §§1–2 (and §4 for the stepper breakpoint), Learnings §§1–6; `docs/decisions/05-ui-ux-components.md`. Supersedes SIDEBAR-COLLIDE (Conv 368).
+
 ### An Additive Column Is ALTERed Before the Deploy That Reads It; Remote-D1 Drift Is Proven by a Name-Level Signature Diff
 **Date:** 2026-08-10 (Conv 435)
 
