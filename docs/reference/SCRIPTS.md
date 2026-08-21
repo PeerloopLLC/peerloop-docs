@@ -39,7 +39,13 @@ All commands run from the code repo: `cd ../Peerloop && npm run <name>`
 | `npm run prov:page-report` | DOM page-conformity report — rendered-page check for unvetted UI (runtime companion to `prov:sweep`) |
 | `npm run prim:treewalk` | Static primitive-candidate surveyor — source-graph walk that nominates raw markup for vetting (static primary to `prov:page-report`'s runtime backstop) |
 | `npm run check:icons` | Static icon-sizing guard — bare-numeric `w-`/`h-`/`size-` classes **on icons**; **absolute at zero** since Conv 424 (any governed violation exits 1). Part of `npm run verify` |
-| `npm run check:tokens` | Static guard against **invented** Tailwind token / `MattIcon` names — the class both Tailwind and MattIcon fail silently on. Part of `npm run verify` (Conv 434) |
+| `npm run check:tokens` | Static guard against **invented** Tailwind token / `MattIcon` names — the class both Tailwind and MattIcon fail silently on. Part of `npm run codecheck` / `npm run verify` (Conv 434) |
+| `npm run codecheck` | **Commit-safety reporter** (Conv 439) — runs every static check without short-circuit, groups findings 🔴 build-blockers / ⚠️ local gates / ℹ️ warnings; exits non-zero on a build-blocker or local-gate failure. Drives `/w-codecheck`. See [`scripts/codecheck.mjs`](#scriptscodecheckmjs) + [CODECHECK.md](CODECHECK.md) |
+| `npm run check:datetime` | Static gate (Conv 439) — flags SQLite `datetime()` in source SQL (must use `strftime` ISO). Part of `codecheck` |
+| `npm run check:error-render` | Static gate (Conv 439) — flags components that `setError()` but never render the error state. Part of `codecheck` |
+| `npm run check:env` | Static gate (Conv 439) — flags direct `locals.runtime` access (must use `getEnv`/`requireEnv`). Part of `codecheck` |
+| `npm run check:figma` | Static gate (Conv 439) — flags hot-linked Figma/MCP asset URLs (expire ~7 days). Part of `codecheck` |
+| `npm run check:deleted-at` | Schema-aware `deleted_at` lint (Conv 439, moved from docs repo) — flags queries filtering `deleted_at` on tables lacking the column. Part of `codecheck` |
 | `npm run icons:scan` | Runtime icon measurement — 97 route-states at two root font sizes, diffed against a committed baseline (informational; needs dev server + dev seed) |
 | `npm run spacing:scan` | Runtime spacing-invariant proof — measures every rendered `X-N` spacing class and asserts it computes to N px (needs dev server + dev seed) |
 
@@ -181,6 +187,41 @@ bash scripts/check-tailwind-v4.sh [search-path]
 - Default search path: `src/`
 
 **Called by:** `npm run check:tailwind`
+
+---
+
+#### `scripts/codecheck.mjs`
+
+Commit-safety **reporter** (Conv 439). Runs every static quality check **without short-circuit**, collects what each one found at every level, and prints ONE report grouped by severity — emphasising findings that would block a remote build.
+
+```bash
+node scripts/codecheck.mjs   # or: npm run codecheck
+```
+
+**What it does:**
+- Runs the static gates (tailwind/icons/tokens/datetime/error-render/env/figma/deleted-at) plus lint, typecheck, astro check, `lint:tz`
+- Groups findings: 🔴 **build-blockers** (CI gates per `.github/workflows/ci.yml`: lint-errors · typecheck · astro · `lint:tz`) / ⚠️ **local quality gates** (the custom checks, not in CI) / ℹ️ **warnings** (ESLint warnings — parsed structurally from `-f json`, since `eslint` exits 0 on warnings)
+- **Exit:** non-zero iff a build-blocker or local quality gate fails; ESLint warnings alone do NOT fail it
+
+**Why a reporter, not an `&&` chain:** a `&&` chain short-circuits at the first failure and can't report every issue type. Rationale + two-level model (commit-safety vs deploy-safety) in [CODECHECK.md](CODECHECK.md).
+
+**Called by:** `npm run codecheck` · `npm run verify` (= `codecheck && test && build`) · `/w-codecheck`
+
+---
+
+#### Commit-safety grep/lint gates (Conv 439)
+
+Five static gates ported into the code repo so `npm run verify` is a true superset of commit-safety. Each exits 1 on a hit, printing `file:line`; all are aggregated by `codecheck.mjs`. Rationale + fixes in [CODECHECK.md](CODECHECK.md).
+
+| Script | npm | Flags |
+|--------|-----|-------|
+| `scripts/check-datetime.sh` | `check:datetime` | SQLite `datetime()` in source SQL (must use `strftime('%Y-%m-%dT%H:%M:%fZ', …)`) |
+| `scripts/check-error-render.sh` | `check:error-render` | components that `setError()` but never render the error state |
+| `scripts/check-env-access.sh` | `check:env` | direct `locals.runtime` access (must use `getEnv`/`requireEnv` from `src/lib/env.ts`) |
+| `scripts/check-figma-assets.sh` | `check:figma` | hot-linked `figma.com` / `mcp/asset` URLs (expire ~7 days) |
+| `scripts/codecheck-deleted-at.mjs` | `check:deleted-at` | schema-aware — queries filtering `deleted_at` on a table lacking the column (moved from the docs repo this conv) |
+
+**Called by:** each via its `npm run check:*` alias; all via `npm run codecheck` / `npm run verify` / `/w-codecheck`.
 
 ---
 
@@ -1037,6 +1078,12 @@ npx tsx scripts/codemods/migrate-test-json-as-any.ts --limit=20
 | `prim:treewalk` | `scripts/prim-treewalk.ts` (imports both vetted-primitive registries) |
 | `check:icons` | `scripts/check-icon-sizing.ts` (baseline: `scripts/icon-sizing-baseline.json`) |
 | `check:tokens` | `scripts/check-token-names.ts` (no baseline — catalogue derived from `src/styles/*.css` + `src/components/icons/svg/`) |
+| `codecheck` | `scripts/codecheck.mjs` (commit-safety reporter — aggregates every static gate) |
+| `check:datetime` | `scripts/check-datetime.sh` |
+| `check:error-render` | `scripts/check-error-render.sh` |
+| `check:env` | `scripts/check-env-access.sh` |
+| `check:figma` | `scripts/check-figma-assets.sh` |
+| `check:deleted-at` | `scripts/codecheck-deleted-at.mjs` (moved from docs repo, Conv 439) |
 | `icons:scan` | `scripts/icon-scan.mjs` (baseline: `scripts/icon-scan-baseline.json`) |
 | `spacing:scan` | `scripts/spacing-scan.mjs` (no baseline — asserts an invariant) |
 | `gen:registries` | `scripts/gen-registries.ts` (emits `scripts/matt-sourced-registry.generated.ts`) |

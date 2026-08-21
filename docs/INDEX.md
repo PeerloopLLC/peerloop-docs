@@ -100,6 +100,7 @@ For the historical TERMINOLOGY rename (Sessions 346-356, ~960 files) including p
 |------|---------|
 | Database schema (SQL source of truth) | `../Peerloop/migrations/0001_schema.sql` |
 | Database design rationale | `docs/reference/DB-GUIDE.md` |
+| Set up a new dev machine (local, full seed) | `docs/reference/NEW-MACHINE-SETUP.md` |
 | Internal API endpoints | `docs/reference/DB-API.md` |
 | External service APIs | `docs/reference/REMOTE-API.md` (Stripe, Stream, PlugNmeet, Resend) |
 
@@ -170,6 +171,8 @@ The `/r-end` skill's docs agent maintains the following reference docs (scripts 
 | `docs/reference/API-REFERENCE.md` | REST API & database patterns | Endpoints or DB patterns changed |
 | `docs/reference/TEST-COVERAGE.md` | Test file inventory | Tests added/removed |
 | `docs/reference/DEVELOPMENT-GUIDE.md` | Dev patterns & conventions | New patterns established |
+| `docs/reference/NEW-MACHINE-SETUP.md` | Fresh dev-machine local setup + full seed | Setup/seed commands change |
+| `docs/reference/CODECHECK.md` | `/w-codecheck` gate rationale + commit/deploy two-level model | Gates or commands change |
 
 ### Project-Specific Docs
 

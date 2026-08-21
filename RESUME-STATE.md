@@ -1,4 +1,4 @@
-# State — Conv 438 (2026-08-19 ~15:12)
+# State — Conv 439 (2026-08-20 ~16:51)
 
 **Conv:** ended
 **Machine:** MacMiniM4Pro
@@ -6,17 +6,20 @@
 
 ## Summary
 
-Client-review conv on staging. Advanced `[COURSE-PAGE-FIXES-AUG-17]` (tab bar single-row + scroll arrows; corrected the course-stepper container breakpoint 768→600 so the full stepper actually shows at desktop) and did a substantial **sidebar long-menu** rework (pin logo + account, scroll the middle nav, thin auto-hiding scrollbar, pure-CSS background scroll-shadow, wheel-capture over the aside). Closed with a `/w-codecheck fix` pass that cleared all 13 astro-check hints and fixed an invented `text-text-secondary` token. Four staging redeploys through the conv; staging is current at Version `b8aaab80` (commit `6d04660f`).
+Rebuilt `/w-codecheck` around a **two-level safety model** — commit-safety (`npm run codecheck`, fast static, no test/build) vs deploy-safety (`npm run verify` = `codecheck && test && build`, −E2E/PLATO) — and turned `codecheck` into a **reporter** (`scripts/codecheck.mjs`) that runs every static check without short-circuiting and groups findings into 🔴 build-blockers / ⚠️ local quality gates / ℹ️ warnings. Also script-ified the 5 grep gates into the code repo, authored a fresh-machine onboarding doc, cleared small debt, and closed `[GATEPAR]` + `[TZLINT]`.
 
 ## Key Context
 
-- **Sidebar restructure (Sidebar.tsx + global.css):** header + account row are pinned; only the primary-nav region (`.sidebar-scroll`) scrolls, with utilities kept bottom-aligned via `mt-auto` inside it. The **Conv-368 SIDEBAR-COLLIDE JS merge observer was retired** (superseded by the real scroll region); the `@media(max-height:500px)` compaction stays. Scroll-shadow is pure CSS (Lea Verou `background-attachment: local`), no JS. `[SBAR-WHEEL]` is a `wheel` listener on the aside that forwards deltaY to the scroll region and preventDefaults (no-op when the nav fits). Decision routed to `docs/decisions/05-ui-ux-components.md`.
-- **Stepper:** container breakpoint is now `@[600px]:` in `CourseJourneyStepper.astro` — desktop content column is a fixed ~648px (max-w-[1248px] + 284px right panel), so 768px was unreachable; full-stepper min width measured 550px.
-- **Gotcha bank (this conv's learnings):** `@[Npx]:` container queries ARE valid in Tailwind v4 (verify against built CSS, not intuition); styling a scrollbar makes it layout-taking → pair `overflow-y-auto` with `overflow-x-hidden`; a content-mask scroll cue fails on tall rows (use a background scroll-shadow); `check:tokens` is the ONLY gate that catches invented design tokens.
-- **Tab bar:** no code change — Shift+Wheel / trackpad-horizontal / arrows already cover horizontal scroll (user confirmed).
-- `[COURSE-PAGE-FIXES-AUG-17]` remains 🔄 active — client is reviewing the batch on staging.
-- For the task backlog, see `CURRENT-TASKS.md` (git-tracked). All work this conv is committed (5 code commits a545b8f1→6d04660f, 1 docs deac437, plus this conv-close commit).
+- **codecheck is a reporter, not a fail-fast gate.** `scripts/codecheck.mjs` runs all checks, categorizes by **build-blocker** (CI gates from `.github/workflows/ci.yml`: lint-errors·typecheck·astro·`lint:tz`·test·build), **local quality gate** (tailwind/icons/tokens/datetime/error-render/env/figma/deleted_at — not in CI), and **warning**. Exit non-zero iff a build-blocker or local gate fails; ESLint warnings alone don't fail it.
+- **`npm run verify` is now a true superset** of commit-safety (= `codecheck && test && build`) and remains the authoritative baseline command (CLAUDE.md §Baseline + CLAUDE-OFFLOAD corrected this conv).
+- **▶ Conv-440 TOP PRIORITY (option C):** clear the **163 ESLint warnings** = **88 react-hooks (`[RHOOKS]`, already `[Opus]`)** + **75 jsx-a11y (`[A11Y]`)**. Non-blocking (CI's lint passes on warnings). **react-hooks are behavior-sensitive — go carefully, NOT bulk.**
+- **How to run codecheck:** `/w-codecheck` (unchanged — now drives the reporter + offers fix-on-demand), or `npm run codecheck` directly from `../Peerloop`.
+- **Gate scripts** now live in `../Peerloop/scripts/` (`codecheck.mjs`, `check-datetime.sh`, `check-error-render.sh`, `check-env-access.sh`, `check-figma-assets.sh`, `codecheck-deleted-at.mjs` — moved from the docs repo).
+- **Gotchas banked this conv:** `eslint src/` exits 0 on warnings; `spawnSync` maxBuffer=1 MB truncates `eslint -f json` (embeds source) → 64 MB, and parse **stdout only** (stderr corrupts the JSON); `check-tailwind-v4.sh` `[--x]` value-ref vs `[--x:val]` property-assignment (colon distinguishes); `size-16`→`size-icon-16` for the icon axis.
+- New reference docs (both `manual`): `docs/reference/CODECHECK.md`, `docs/reference/NEW-MACHINE-SETUP.md`.
+- A stray `aaa` file (env-template copy) was deleted from the code repo this conv.
+- For the task backlog, see `CURRENT-TASKS.md` (git-tracked).
 
 ## Resume Command
 
-To continue: run `/r-start` — it reads `CURRENT-TASKS.md` for the task sequence and this narrative for context.
+To continue: run `/r-start` — it reads `CURRENT-TASKS.md` for the task sequence (Conv-440 priority = `[RHOOKS]` + `[A11Y]`) and this narrative for context.

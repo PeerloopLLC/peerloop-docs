@@ -98,7 +98,7 @@ See `docs/reference/COMMIT-MESSAGE-FORMAT.md` for the v2 commit-body spec used b
 | `/w-schema-dump` | Export database table schema to TSV |
 | `/w-sync-docs` | Audit docs for drift against codebase |
 | `/w-add-client-note` | Process client notes into RFC |
-| `/w-codecheck` | Run comprehensive code quality checks |
+| `/w-codecheck` | Fast static code-quality checks (commit-safety; no test/build) |
 | `/w-post-fix` | Lightweight end-of-conv for bug-fix conversations |
 | `/w-git-history` | Extract commit history |
 | `/w-sync-skills` | Scan another dual-repo project for skill changes and port improvements |
@@ -141,7 +141,7 @@ For blocks too large for one session, create `CURRENT-BLOCK-PLAN.md` at project 
 - Running it repeatedly wastes time and context
 - Fixing tests one-by-one with targeted runs is efficient
 
-The test suite is one of five gates that constitute a baseline check — see CLAUDE.md §Baseline Verification for the full set and the verify-in-THIS-conv discipline. `/w-codecheck` is the authoritative skill that runs all five.
+The test suite is one of five gates that constitute a baseline check — see CLAUDE.md §Baseline Verification for the full set and the verify-in-THIS-conv discipline. **`npm run verify` is the authoritative baseline command** that runs all five (plus `check:tokens`/`check:icons`); `/w-codecheck` is the faster *commit-safety* pass and does **not** run `test`/`build`.
 
 ---
 
@@ -349,7 +349,7 @@ Rules: fold bare confirmations (yes/no) into the decision they answered rather t
 
 The two incidents behind CLAUDE.md §Baseline Verification (also in `memory/feedback_verify_baselines_in_conv.md`):
 
-- **Conv 104 (astro-check gate):** discovered 10 pre-existing type errors in `.astro` pages that had been hidden through Convs 100–103 because `astro check` was never run. `tsc --noEmit` alone does not scan `.astro` files — which is why all five gates are required and `/w-codecheck` bundles them.
+- **Conv 104 (astro-check gate):** discovered 10 pre-existing type errors in `.astro` pages that had been hidden through Convs 100–103 because `astro check` was never run. `tsc --noEmit` alone does not scan `.astro` files — which is why all five gates are required; the authoritative command that runs them is `npm run verify` (`/w-codecheck` is the faster commit-safety subset — static only, no `test`/`build`).
 - **Conv 101→102 (verify-in-conv):** Conv 101's RESUME-STATE confidently claimed "6399/6399 passing"; Conv 102 ran the suite and found 5 silently-broken session-creation tests (time-fragile `Date.now()+Nh` patterns) that had been failing for an unknown number of convs. Carry-forward claims hide regressions — treat a prior conv's claimed baseline as a hypothesis until re-verified.
 
 ---

@@ -1,13 +1,23 @@
 ---
 name: w-codecheck
-description: Run comprehensive code quality checks
-argument-hint: "[smart|fix|clear] - optional mode"
+description: Fast static code-quality checks for commit-safety (runs npm run codecheck; no test/build)
+argument-hint: "[smart|fix] - optional mode"
 allowed-tools: Read, Edit, Bash, Glob, Grep
 ---
 
-# Code Quality Check
+# Code Quality Check (commit-safety)
 
-Run comprehensive code quality checks (TypeScript + ESLint + Tailwind + Astro).
+Runs **`npm run codecheck`** — the fast **static** quality pass: TypeScript · ESLint · Tailwind ·
+Astro · icon-sizing · invented-token/icon names · SQLite-datetime · error-render · env-access ·
+Figma-assets · schema-aware `deleted_at`. Its job: a **commit is free of errors, especially nuisance
+hints and warnings**. It does **not** run `npm test` or `npm run build`.
+
+> **Two levels of safety.** `/w-codecheck` = *commit-safety* = `npm run codecheck` (fast static). The
+> next level up, *deploy-safety*, is **`npm run verify`** = `codecheck` + `npm test` + `npm run build`
+> (excludes Playwright E2E and PLATO browser tests). **Every gate is one npm script**, so `verify` is a
+> true superset of `codecheck` — nothing runs only in the skill. Gate rationale, fix guidance,
+> calibration and the Tailwind rename table live in
+> [docs/reference/CODECHECK.md](../../../docs/reference/CODECHECK.md).
 
 ---
 
@@ -16,16 +26,15 @@ Run comprehensive code quality checks (TypeScript + ESLint + Tailwind + Astro).
 !`cat .claude/config.json 2>/dev/null || echo "(no config)"`
 
 **Required scripts present:**
-!`cd ../Peerloop && node -e "const s=require('./package.json').scripts||{}; const need=['typecheck','lint','lint:fix','check','check:tailwind']; const miss=need.filter(n=>!s[n]); console.log(miss.length?'MISSING: '+miss.join(', '):'All present (typecheck, lint, lint:fix, check, check:tailwind)')" 2>/dev/null || echo "(could not check)"`
+!`cd ../Peerloop && node -e "const s=require('./package.json').scripts||{}; const need=['codecheck','verify','lint:fix']; const miss=need.filter(n=>!s[n]); console.log(miss.length?'MISSING: '+miss.join(', '):'All present (codecheck, verify, lint:fix)')" 2>/dev/null || echo "(could not check)"`
 
 ---
 
 ## Usage
 
-- `/w-codecheck` — Run all checks, report errors, add todos for failures
-- `/w-codecheck smart` — Skip checks if no relevant files changed
-- `/w-codecheck fix` — Run checks, fix issues, re-run, update todos
-- `/w-codecheck clear` — Remove all codecheck-related todos
+- `/w-codecheck` — run `npm run codecheck`, report per-check results
+- `/w-codecheck smart` — run only the `check:*` scripts whose inputs changed
+- `/w-codecheck fix` — run, auto-fix what's fixable, re-run, report
 
 Only one argument allowed. Arguments are mutually exclusive.
 
@@ -35,35 +44,43 @@ Only one argument allowed. Arguments are mutually exclusive.
 
 ## Execution Flow
 
-1. Parse argument (none, `smart`, `fix`, or `clear`)
-2. If `clear`: remove all codecheck todos and exit
-3. Check pre-computed "Required scripts present" above — if any MISSING, exit with warning
-4. Run checks (TypeScript, ESLint, Tailwind, Astro)
-5. Report combined results
-6. Add todos for any failures
+1. Parse argument (none, `smart`, or `fix`)
+2. Check pre-computed "Required scripts present" above — if any MISSING, exit with warning
+3. **Default:** `cd ../Peerloop && npm run codecheck` — the reporter (`scripts/codecheck.mjs`) runs every
+   static check **without short-circuiting** and prints ONE grouped report: 🔴 build-blockers (CI gates) ·
+   ⚠️ local quality gates · ℹ️ warnings/hints. **Smart:** run only the `check:*` scripts mapped to changed
+   files (see Smart Mode). Commit-safety only — no `test`/`build`; a deploy/baseline claim needs `npm run verify`.
+4. **Relay the grouped report**, emphasising anything under 🔴 — those fail CI and block a staging/prod deploy.
+5. **Fix on demand:** for each non-PASS finding, fix it when the user says so, or — when a fix is clearly
+   needed — invoke it directly and re-run to confirm. Large tracked backlogs (e.g. the ESLint warning
+   families → `[A11Y]`/`[RHOOKS]`) are surfaced *with their scope*, not silently bulk-fixed.
 
 ---
 
-## Checks
+## Checks (each is one npm script; `npm run codecheck` runs them all)
 
 | # | Check | Command | Has auto-fix? |
 |---|-------|---------|---------------|
-| 1 | TypeScript | `cd ../Peerloop && npm run typecheck` | Manual only |
-| 2 | ESLint | `cd ../Peerloop && npm run lint` | `npm run lint:fix` |
-| 3 | Tailwind | `cd ../Peerloop && npm run check:tailwind` | Manual (class renames) |
-| 4 | Astro | `cd ../Peerloop && npm run check` | No auto-fix |
-| 5 | SQLite datetime | Grep check (see below) | Manual (`datetime()` → `strftime()`) |
-| 6 | Error-captured-never-rendered | Grep check (see below) | Manual (add error display to JSX) |
-| 7 | locals.runtime.env access | Grep check (see below) | Manual (use `getEnv()`/`requireEnv()`) |
-| 8 | Schema-aware deleted_at | Node script (see below) | Manual (wrong column for that table) |
-| 9 | Figma-asset sweep | Grep check (see below) | Manual (inline the SVG / move to MattIcon) |
-| 10 | Invented token/icon names | `cd ../Peerloop && npm run check:tokens` | Manual (use a declared token / real icon) |
+| 1 | TypeScript | `npm run typecheck` | Manual only |
+| 2 | ESLint | `npm run lint` | `npm run lint:fix` |
+| 3 | Tailwind | `npm run check:tailwind` | Manual (rename table in CODECHECK.md) |
+| 4 | Astro | `npm run check` | No auto-fix |
+| 5 | Icon sizing | `npm run check:icons` | Manual |
+| 6 | Invented token/icon names | `npm run check:tokens` | Manual (use a declared token / real icon) |
+| 7 | SQLite datetime | `npm run check:datetime` | Manual (`datetime()` → `strftime()`) |
+| 8 | Error-captured-never-rendered | `npm run check:error-render` | Manual (add error display to JSX) |
+| 9 | locals.runtime.env access | `npm run check:env` | Manual (use `getEnv()`/`requireEnv()`) |
+| 10 | Figma-asset sweep | `npm run check:figma` | Manual (inline the SVG / move to MattIcon) |
+| 11 | Schema-aware deleted_at | `npm run check:deleted-at` | Manual (wrong column for that table) |
+
+Rationale, fix detail and calibration for every row: [docs/reference/CODECHECK.md](../../../docs/reference/CODECHECK.md).
+The gate scripts live in `../Peerloop/scripts/` (`check-*.sh`, `check-*.ts`, `codecheck-deleted-at.mjs`).
 
 ---
 
 ## Smart Mode (`smart`)
 
-Skip checks if no relevant files changed.
+Run only the checks whose inputs changed.
 
 ### Step 1: Get Changed Files
 
@@ -80,15 +97,21 @@ git ls-files --others --exclude-standard
 
 ### Step 2: Determine Which Checks to Run
 
-| Check | Run if ANY of these changed |
-|-------|----------------------------|
-| **TypeScript** | `*.ts`, `*.tsx`, `tsconfig.json`, `package.json` |
-| **ESLint** | `*.ts`, `*.tsx`, `eslint.config.*`, `package.json` |
-| **Tailwind** | `*.tsx`, `*.astro`, `src/**/*.ts`, `src/styles/*.css`, `tailwind.config.*`, `package.json` |
-| **Astro** | `*.astro`, `astro.config.*` |
-| **SQLite datetime** | `*.ts` (in `src/` only) |
-| **Schema-aware deleted_at** | `*.ts` (in `src/` only), `migrations/0001_schema.sql` |
-| **Figma-asset sweep** | `*.ts`, `*.tsx`, `*.astro`, `*.css` (in `src/` only) |
+Run each script (`cd ../Peerloop && npm run <script>`) if ANY of its trigger files changed:
+
+| Script | Run if ANY of these changed |
+|--------|----------------------------|
+| `typecheck` | `*.ts`, `*.tsx`, `tsconfig.json`, `package.json` |
+| `lint` | `*.ts`, `*.tsx`, `eslint.config.*`, `package.json` |
+| `check:tailwind` | `*.tsx`, `*.astro`, `src/**/*.ts`, `src/styles/*.css`, `tailwind.config.*`, `package.json` |
+| `check` (Astro) | `*.astro`, `astro.config.*` |
+| `check:icons` | `*.tsx`, `*.astro`, `src/**/*.ts` |
+| `check:tokens` | `*.tsx`, `*.astro`, `src/**/*.ts`, `src/styles/*.css`, `src/components/icons/svg/*.svg` |
+| `check:datetime` | `*.ts` (in `src/` only) |
+| `check:error-render` | `*.tsx` (in `src/components/` only) |
+| `check:env` | `*.ts`, `*.astro` (in `src/` only) |
+| `check:figma` | `*.ts`, `*.tsx`, `*.astro`, `*.css` (in `src/` only) |
+| `check:deleted-at` | `*.ts` (in `src/` only), `migrations/0001_schema.sql` |
 
 If no relevant files changed for a check, report "SKIP (no relevant changes)".
 
@@ -98,160 +121,36 @@ If no relevant files changed for a check, report "SKIP (no relevant changes)".
 
 Single-pass fix attempt:
 
-1. Run all checks to identify issues
+1. Run `npm run codecheck` to identify issues
 2. Attempt fixes:
-   - **TypeScript:** Fix type errors manually (missing types, mismatches, null/undefined)
-   - **ESLint:** Run `npm run lint:fix` first, then fix remaining manually
-   - **Tailwind:** Update deprecated class names using the rename table below
-   - **Astro:** Report only — no auto-fix available
-3. Re-run all checks once
-4. Update todos: passed → complete, still failing → update count
-5. Report final status
-
----
-
-## Clear Mode (`clear`)
-
-Remove all codecheck-related todos:
-- `Fix TypeScript errors (*)`
-- `Fix ESLint errors (*)`
-- `Fix Tailwind issues (*)`
-- `Fix Astro errors (*)`
+   - **ESLint:** run `npm run lint:fix` first, then fix remaining manually
+   - **Tailwind:** update deprecated class names using the rename table in [CODECHECK.md](../../../docs/reference/CODECHECK.md)
+   - **Everything else** (TypeScript · Astro · icons · tokens · datetime · error-render · env · figma · deleted_at): no auto-fix — apply the manual **Fix** documented for each in [CODECHECK.md](../../../docs/reference/CODECHECK.md)
+3. Re-run `npm run codecheck` once
+4. Report final status
 
 ---
 
 ## Report Format
 
 ```
-Code Quality Check
-──────────────────
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Code-Check Report — commit-safety (static; no test/build)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  TypeScript:   [PASS/FAIL/SKIP] (details)
-  ESLint:       [PASS/FAIL/SKIP] (details)
-  Tailwind:     [PASS/FAIL/SKIP] (details)
-  Astro:        [PASS/FAIL/SKIP] (details)
+🔴 BUILD-BLOCKERS — fail CI, block staging/prod deploy
+   ✓ none            (else: TypeScript / Astro / Timezone lint / ESLint errors, with findings)
 
-Status: [All Checks Passed / Issues Found]
+⚠️  LOCAL QUALITY GATES — not in CI; fix before it spreads, but won't block a deploy
+   ✓ none            (else: Tailwind / Icon sizing / tokens / datetime / error-render / env / figma / deleted_at)
+
+ℹ️  WARNINGS / HINTS — reported, non-blocking
+   ESLint  163 warning(s)  (88 react-hooks, 75 jsx-a11y)
+
+  Summary: 0 build-blocker(s) · 0 local-gate failure(s) · 163 warning(s)
 ```
 
-**If issues found (default mode):** Add todos for each failed check with error count:
-```
-Fix TypeScript errors (X errors)
-```
-
-Only add todos for checks that actually failed.
-
----
-
-## Tailwind v3 → v4 Class Renames
-
-Reference for fix mode. Matches what `check-tailwind-v4.sh` detects:
-
-| Old (v3) | New (v4) | Notes |
-|----------|----------|-------|
-| `bg-gradient-to-*` | `bg-linear-to-*` | |
-| `shadow-sm` | `shadow-xs` | Base shifts down |
-| `shadow` | `shadow-sm` | Base shifts down |
-| `drop-shadow-sm` | `drop-shadow-xs` | |
-| `drop-shadow` | `drop-shadow-sm` | |
-| `blur-sm` | `blur-xs` | Base shifts down |
-| `blur` | `blur-sm` | |
-| `backdrop-blur-sm` | `backdrop-blur-xs` | |
-| `backdrop-blur` | `backdrop-blur-sm` | |
-| `rounded-sm` | `rounded-xs` | Base shifts down |
-| `rounded` | `rounded-sm` | |
-| `ring` | `ring-3` | Default width changed 3px→1px |
-| `outline-none` | `outline-hidden` | Behavior change |
-| `bg-opacity-*` | `bg-color/opacity` | e.g., `bg-black/50` |
-| `text-opacity-*` | `text-color/opacity` | |
-| `border-opacity-*` | `border-color/opacity` | |
-| `flex-shrink-*` | `shrink-*` | |
-| `flex-grow-*` | `grow-*` | |
-| `overflow-ellipsis` | `text-ellipsis` | |
-| `decoration-slice` | `box-decoration-slice` | |
-| `decoration-clone` | `box-decoration-clone` | |
-| `[--var]` | `(--var)` | CSS variable syntax |
-
-**Note:** `check:tailwind` may report false positives for classes in comments or string literals. Review each match.
-
----
-
-## SQLite datetime() Check
-
-**Why:** SQLite's `datetime()` returns space-separated format (`2026-03-25 11:00:00`), but Peerloop stores all timestamps in ISO format with `T` separator (`2026-03-25T11:00:00.000Z`). In string comparisons, space (ASCII 32) < T (ASCII 84), causing `datetime()` results to silently compare as "less than" ISO strings. This produces incorrect query results. See `CLAUDE.md > SQLite Datetime Rule`.
-
-**Check:** Use Grep to find `datetime(` in `src/` `.ts` files, excluding lines that are comments (`//` or `*`).
-
-```bash
-cd ../Peerloop && grep -rn 'datetime(' src/ --include='*.ts' | grep -v '//' | grep -v '\*.*datetime' | grep -v 'NOTE.*datetime' | grep -v 'legacy'
-```
-
-**Pass condition:** Zero non-comment, non-documentation matches. Any `datetime()` call in application SQL is a potential bug.
-
-**Fix:** Replace `datetime(expr, modifier)` with `strftime('%Y-%m-%dT%H:%M:%fZ', expr, modifier)`.
-
-**Known safe uses (excluded from check):**
-- Schema DDL defaults: `DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))` — already uses strftime
-- Comments/docs referencing `datetime()` as a concept (excluded by grep filter)
-
-## Error-Captured-Never-Rendered Check
-
-**Why:** A common pattern is catching an error in a try/catch and storing it in state (`setError(...)`) but the component never renders the error state. The user sees nothing when an operation fails. Discovered in Conv 105 during [HW] cleanup.
-
-**Check:** Use Grep to find `setError(` in `src/components/` `.tsx` files. For each file that calls `setError`, verify that the same file also has a corresponding render of the error state (e.g., `{error &&` or `error ?` or `error !==` or `error ||`). If a file sets an error but never reads it in JSX, flag it.
-
-```bash
-# Find files that call setError but never render the error
-for f in $(cd ../Peerloop && grep -rl 'setError(' src/components/ --include='*.tsx'); do
-  if ! grep -q 'error &&\|error ?\|error !==\|{error}\|error\.message\|error ||' "$f" 2>/dev/null; then
-    echo "WARN: $f sets error but may not render it"
-  fi
-done
-```
-
-**Pass condition:** Zero files that set error state without rendering it.
-
-## locals.runtime.env Access Check
-
-**Why:** Cloudflare adapter v13 (Conv 100–101) removed `locals.runtime.env`. All env access must go through `getEnv()`/`requireEnv()` from `src/lib/env.ts`. Direct `locals.runtime` references will fail at runtime.
-
-**Check:** Use Grep to find `locals.runtime` in `src/` `.ts` and `.astro` files.
-
-```bash
-cd ../Peerloop && grep -rn 'locals\.runtime' src/ --include='*.ts' --include='*.astro'
-```
-
-**Pass condition:** Zero matches. Any `locals.runtime` reference in application code is a build-time silent, runtime-failure bug.
-
-## Figma-Asset Sweep Check
-
-**Why:** Matt-design translation runs Figma → code only; Figma asset URLs (`figma.com/...`, `mcp/asset/...`) expire after 7 days (see `memory/reference_figma_mcp_behavior`), so any such URL that leaks into `src/` is a time-bomb broken image. SVGs must be inlined or registered through `MattIcon` (`src/components/icons/svg/`), never hot-linked. Verified zero in Conv 186 ([ASSET-SWEEP]); this gate keeps it at zero ([ASSET-SWEEP-GATE], Conv 244).
-
-**Check:** Grep `src/` for Figma/MCP asset URLs.
-
-```bash
-cd ../Peerloop && grep -rEn 'figma\.com|mcp/asset' src/ --include='*.ts' --include='*.tsx' --include='*.astro' --include='*.css'
-```
-
-**Pass condition:** Zero matches. Any hit is a hot-linked Figma asset that will 404 within 7 days — inline the SVG or add it to the MattIcon `svg/` registry instead.
-
-## Schema-Aware deleted_at Check
-
-**Why:** Only 4 tables have a `deleted_at` column (`users`, `progressions`, `courses`, `enrollments`). Other tables use alternative soft-delete mechanisms (e.g., `communities` uses `is_archived`). Using `deleted_at IS NULL` in a query against a table without that column either silently returns wrong results or 500s at runtime (D1: `no such column`). Discovered as a regression class in Conv 117 (`communities` endpoint).
-
-**Check:** Run the schema-aware lint script. It parses `migrations/0001_schema.sql` to learn which tables have `deleted_at`, then scans every SQL template literal in `src/**/*.ts` and binds each `deleted_at` reference to its FROM/JOIN table (via alias resolution) before deciding whether to flag.
-
-```bash
-cd ../Peerloop && node ~/projects/peerloop-docs/.claude/scripts/codecheck-deleted-at.mjs
-```
-
-**Pass condition:** Script prints `PASS` (exit 0). Any output is one violation per line: file:line + a message naming the resolved table and qualifier shape.
-
-**Heuristic v2 (Conv 168).** v1 flagged "table-name and `deleted_at` token co-occur in the same block" — produced 90 false positives across 18 tables (Conv 167). v2 binds each `deleted_at` reference to a specific table:
-
-- **Qualified** `<token>.deleted_at` → resolve `<token>` via the alias map (or treat as a literal table name). Flag if the resolved table lacks the column.
-- **Unqualified** `deleted_at` → flag only when *none* of the FROM/JOIN tables in scope has the column. If at least one does, the SQL resolves there (or would error as ambiguous), so v2 stays silent.
-
-Calibration (Conv 168): Conv 117 motivating case fires, 5 hand-built counter-examples (3 silent / 2 fire) match expected behavior, live codebase scan emits 0 violations vs v1's 90.
-
-**Note:** This check only scans template-literal SQL strings in `.ts` files. SQL in `.astro` frontmatter is also covered since `.astro` SSR queries typically delegate to `.ts` lib functions.
+**Build-blocker = a CI gate** (`.github/workflows/ci.yml`): lint-errors · typecheck · astro check ·
+`lint:tz` · test · build. Of those, `test` + `build` are deploy-safety — `npm run verify` covers them.
+Exit is non-zero iff a 🔴 build-blocker **or** an ⚠️ local gate fails; ESLint warnings alone don't fail it.
+`fix` mode additionally attempts fixes and re-runs. Rationale: [CODECHECK.md](../../../docs/reference/CODECHECK.md).

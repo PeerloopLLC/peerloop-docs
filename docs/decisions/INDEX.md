@@ -453,6 +453,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [6. Testing & CI/CD](06-testing-ci.md)
 
+- [[CODECHECK] Two-Level Safety Model — `/w-codecheck` Is a Static Commit-Safety **Reporter** (`npm run codecheck`); `npm run verify` Is the Deploy-Safety Superset (Conv 439)](06-testing-ci.md#codecheck-two-level-safety-model--w-codecheck-is-a-static-commit-safety-reporter-npm-run-codecheck-npm-run-verify-is-the-deploy-safety-superset-conv-439)
 - [[TOKEN-TYPO] Invented Token / Icon Names Get a Static Gate Scoped to **Project-Owned Families** — `scripts/check-token-names.ts`, `/w-codecheck` Check #10 (Conv 434)](06-testing-ci.md#token-typo-invented-token--icon-names-get-a-static-gate-scoped-to-project-owned-families--scriptscheck-token-namests-w-codecheck-check-10-conv-434)
 - [Dev-Server Teardown Is `npx astro dev stop`; Port-Liveness Checks Are LISTEN-Scoped — `lsof -ti:PORT` Is Banned Project-Wide (Conv 429)](06-testing-ci.md#dev-server-teardown-is-npx-astro-dev-stop-port-liveness-checks-are-listen-scoped--lsof--tiport-is-banned-project-wide-conv-429)
 - [`prov:sweep` Existence-Checks **Both** Component Arrays — New Section 4b-ii Closes the Half-Bijection (Conv 429)](06-testing-ci.md#provsweep-existence-checks-both-component-arrays--new-section-4b-ii-closes-the-half-bijection-conv-429)

@@ -5,6 +5,15 @@
 
 For historical decisions and the full rationale behind each choice, see the session files in `docs/sessions/YYYY-MM/`.
 
+### [CODECHECK] Two-Level Safety Model — `/w-codecheck` Is a Static Commit-Safety Reporter (`npm run codecheck`); `npm run verify` Is the Deploy-Safety Superset
+**Date:** 2026-08-20 (Conv 439)
+
+Code-quality gating splits into **commit-safety** = `npm run codecheck` (static, no test/build, surfaced by `/w-codecheck`) and **deploy-safety** = `npm run verify` = `codecheck && test && build` (excludes E2E/PLATO) — now the authoritative baseline command and a true superset. `codecheck` is a `node scripts/codecheck.mjs` **reporter** (not a `&&` chain): runs every static check without short-circuit and prints one grouped report — 🔴 build-blockers (the `ci.yml` gates: lint-errors·typecheck·astro·`lint:tz`·test·build) / ⚠️ local quality gates / ℹ️ warnings — exiting non-zero only on a build-blocker or local-gate fail (ESLint warnings alone don't fail it). The 5 formerly-inline grep gates were scripted into `../Peerloop/scripts/` (incl. moving `codecheck-deleted-at.mjs` docs→code) and aggregated by `codecheck`, so deploy-safety ⊇ commit-safety by construction. Rejected: `/w-codecheck` running test+build; leaving grep gates inline (verify not a superset); a fail-fast `&&` chain. Fixed 2 reporter parse bugs (`spawnSync` maxBuffer 1 MB→64 MB; parse stdout not stdout+stderr) and, via `[CMH]` calibration, 3 false positives in the ported gates. Corrected the false "`/w-codecheck` bundles the 5 gates" claim (CLAUDE.md §Baseline + CLAUDE-OFFLOAD.md ×4); new `docs/reference/CODECHECK.md`; skill rebuilt as a thin reporter orchestrator. First clean run: 0 blockers · 0 local fails · 163 ESLint warnings (88 `[RHOOKS]` + 75 `[A11Y]`), deferred to Conv 440.
+
+**Rationale:** The skill had accreted a parallel check spec that drifted 3 ways from `verify` and CLAUDE.md; a single source of truth in the code repo (client-consistent with existing `check:*`) ends the drift, and "report all issues, emphasize build-blockers, fix on demand" needs a reporter, not a gate.
+
+**See:** `../Peerloop/scripts/codecheck.mjs`, `../Peerloop/package.json`; `docs/reference/CODECHECK.md`; `docs/decisions/06-testing-ci.md`; `docs/sessions/2026-08/20260820_1651 Decisions.md` §§1–3, Learnings §§1–6.
+
 ### Sidebar Long-Menu Pins Header + Account and Scrolls the Middle Nav — Retires SIDEBAR-COLLIDE; the "More" Cue Is a Pure-CSS Background Scroll-Shadow
 **Date:** 2026-08-19 (Conv 438)
 

@@ -19,6 +19,11 @@
 
 ## 🎯 Now  (execution order — top = next)
 
+> **▶ NEXT CONV (440) PRIORITY — clear the 163 codecheck warnings:** `[RHOOKS]` (88 react-hooks,
+> mostly `set-state-in-effect`) + `[A11Y]` (75 jsx-a11y). Agreed Conv 439 (option C) after the new
+> codecheck reporter surfaced them as the only non-PASS findings — non-blocking, but the chosen next
+> focus. **Start here next conv** (behavior-sensitive for react-hooks — go carefully, not bulk).
+
 > **MESSAGES mini-plan — ✅ COMPLETE (M1–M6, Convs 417–419).** `[MSGBOOT]` 417 · `[CANMSG]`,
 > `[MSG-ICON]`, `[MSG-ADOPT-A]` 418 · `[MSG-ADOPT-B]`, `[MSG-CLEANUP]` 419. Every per-user message
 > affordance composes in place, the per-row can-message fan-out is gone (4 requests → 0), and the
@@ -67,7 +72,6 @@
 37. [LH1](#lh1) — 23 typography tokens hardcode `line-height: 1` (TYPO-FDN axis)
 38. [BRIDGE-RESIZE](#bridge-resize) — `resize_window` silently ignores width
 39. [ICON-STATES](#icon-states) — Phase-5 tail: drive hidden/loading states over 528 call sites
-40. [GATEPAR](#gatepar) — `/w-codecheck` vs `npm run verify` diverged on the icon gate
 41. [VPHARNESS](#vpharness) — persist the exact-size iframe harness as a script
 42. [RATING-COUNT-DEAD](#rating-count-dead) — dead `rating_count` + "Active" vs "Published" split
 43. [PROVDOC](#provdoc) — `matt-provenance.md` §6a says "9 unmarked components"; registry has 22 + 38
@@ -296,22 +300,6 @@
 - **What:** Conv 398 deleted `src/emails/WelcomeEmail.tsx` + `PaymentReceiptEmail.tsx` (dead). Both still listed in `docs/reference/resend.md` + `DEVELOPMENT-GUIDE.md` — both **manual** category, so the r-end docs agent left them by policy.
 - **Next:** remove/annotate the two templates (verify each mention is the deleted template, not a live one).
 - **Refs:** `docs/reference/resend.md`, `docs/reference/DEVELOPMENT-GUIDE.md`. Surfaced Conv 398.
-
-### [GATEPAR]
-
-- **State:** 📋 queued — surfaced by the `/r-end` docs agent, Conv 424.
-- **What:** the two "run every gate" entry points have **diverged**. Conv 424 wired `check:icons` into
-  `npm run verify`, but `/w-codecheck` (`.claude/skills/w-codecheck/SKILL.md`) still runs only
-  TypeScript · ESLint · Tailwind · Astro + the grep gates, and **CLAUDE.md §Baseline Verification** +
-  `CLAUDE-OFFLOAD.md` both define the baseline as **five** gates.
-- **The decision, not the edit:** should the icon guard become a **sixth baseline gate**? If yes, update
-  `/w-codecheck`, CLAUDE.md §Baseline Verification and the offload doc together. If no, record why
-  `verify` and the baseline definition legitimately differ — otherwise the next conv will "fix" one of
-  them by guessing.
-- **Why it matters:** an inconsistency between the documented baseline and the executable chain is the
-  class of drift that makes a green report untrustworthy.
-- **Refs:** `package.json` (`verify`), `.claude/skills/w-codecheck/SKILL.md`, `CLAUDE.md §Baseline
-  Verification`, `docs/reference/SCRIPTS.md`. Surfaced Conv 424.
 
 ### [VPHARNESS]
 
@@ -864,4 +852,18 @@
 
 ## ✅ Done this conv
 
-_(none yet — cleared at each /r-start)_
+- **[GATEPAR]** — resolved via the Conv-439 `/w-codecheck` refactor (scope option B). Established the
+  two-level model (commit-safety `/w-codecheck` = fast static, no test/build; deploy-safety
+  `npm run verify` = +test+build, −E2E/PLATO); added `check:icons` to the skill; fixed the false
+  "`/w-codecheck` bundles the 5 gates" claim in CLAUDE.md §Baseline + CLAUDE-OFFLOAD.md (×3); moved gate
+  rationale + the Tailwind rename table to new `docs/reference/CODECHECK.md`; removed the dead
+  `clear`-mode / TodoWrite cruft.
+- **[TZLINT]** — resolved same conv. `lint:tz` is **not** orphaned: it's a gate in CI (`.github/workflows/ci.yml`).
+  The new `codecheck` reporter now also runs it locally as a 🔴 build-blocker, so `npm run verify` covers it too.
+- **codecheck reporter (scope A)** — `scripts/codecheck.mjs` replaces the `&&` chain: runs all static checks
+  without short-circuiting, prints one grouped report (🔴 build-blockers = CI gates / ⚠️ local quality gates /
+  ℹ️ warnings), emphasising CI-gating findings. Surfaces the 163 ESLint warnings (88 react-hooks / 75 jsx-a11y)
+  as non-blocking. Built + calibrated the 5 grep/script gates as real npm scripts; `verify` = `codecheck && test && build`.
+- **[OUTLINE-V4B]** — all 6 `outline-none`→`outline-hidden` sites cleared + a `check-tailwind-v4.sh` CSS-var
+  false-positive fixed; SubNav 2 icons `size-16`→`size-icon-16`. `check:tailwind`/`check:icons` green; new
+  `outline-none` is now caught by the gate, so the drift channel is closed. (Remove its 🎯 Now line at next tidy.)

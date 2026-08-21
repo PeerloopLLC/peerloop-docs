@@ -95,18 +95,38 @@ Alias for `npm run dev`.
 
 ---
 
+### `npm run codecheck`
+
+Commit-safety **reporter** (Conv 439) — the static half of the two-level safety model. Drives `/w-codecheck`.
+
+```bash
+npm run codecheck
+```
+
+**What it does:**
+- Runs every static quality check **without short-circuit** (so it reports all findings, not just the first failure) and prints ONE report grouped by severity: 🔴 build-blockers (CI gates per `.github/workflows/ci.yml`) / ⚠️ local quality gates (custom checks, not in CI) / ℹ️ warnings (ESLint warnings, parsed structurally)
+- **Exit:** non-zero iff a build-blocker or local quality gate fails; ESLint warnings alone do NOT fail it
+- Backed by `scripts/codecheck.mjs`; rationale in [CODECHECK.md](CODECHECK.md)
+
+**Use when:**
+- Before every commit (fast, static — no test/build)
+- Via `/w-codecheck`, which relays the grouped report and offers fix-on-demand
+
+---
+
 ### `npm run verify`
 
-Run the full baseline check — the five baseline gates plus the icon and token-name guards.
+Deploy-safety check (rewritten Conv 439) — the commit-safety reporter plus test and build.
 
 ```bash
 npm run verify
 ```
 
 **What it does:**
-- Executes `typecheck && check && lint && check:icons && check:tokens && test && build` in sequence
-- Stops on the first failure (gates are sequential)
-- Equivalent to running all 5 baseline checks manually, with `check:icons` added Conv 424 (it had never been in the aggregate chain, so promoting it to a hard error would otherwise have been nominal) and `check:tokens` added Conv 434 (invented Tailwind token / `MattIcon` names fail silently, so no other gate in the chain can see them)
+- Executes `codecheck && test && build` in sequence (stops on first failure)
+- `codecheck` (`scripts/codecheck.mjs`) runs **every** static gate without short-circuit — lint, typecheck, astro check, `lint:tz`, and the custom gates (tailwind/icons/tokens/datetime/error-render/env/figma/deleted-at) — and reports findings grouped by severity; see [`npm run codecheck`](#npm-run-codecheck) and [CODECHECK.md](CODECHECK.md)
+- Deliberately **excludes** E2E and PLATO browser tests — those are separate. This is the authoritative deploy-safety baseline
+- Two-level model (Conv 439): `/w-codecheck` = `codecheck` (fast, static, commit-safety); `npm run verify` = `codecheck && test && build` (deploy-safety)
 
 **Use when:**
 - Before creating a PR

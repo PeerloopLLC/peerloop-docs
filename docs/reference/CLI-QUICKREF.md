@@ -31,10 +31,16 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `npm run lint:tz` | Check test files for timezone-unsafe date patterns |
 | `npm run format` | Format code with Prettier |
 | `npm run format:check` | Check formatting without changes |
-| `npm run verify` | Run the baseline chain: typecheck → check → lint → **check:icons** → **check:tokens** → test → build (`check:icons` wired in Conv 424, `check:tokens` in Conv 434) |
+| `npm run codecheck` | **Commit-safety reporter** (Conv 439) — runs every static check without short-circuit, prints one report grouped 🔴 build-blockers / ⚠️ local gates / ℹ️ warnings; exits non-zero on a build-blocker or local-gate failure (ESLint warnings alone don't fail). Drives `/w-codecheck`. See [CODECHECK.md](CODECHECK.md) |
+| `npm run verify` | **Deploy-safety** (Conv 439) — `codecheck && test && build` (excludes E2E/PLATO). The authoritative baseline command |
 | `npm run check:tailwind` | Check for Tailwind v4 compatibility issues |
 | `npm run check:icons` | Static icon-sizing guard — **absolute at zero** since Conv 424: **any** bare-numeric dimension class **on an icon** exits 1 (`--verbose`; `--update-baseline` refuses a non-zero governed baseline) |
 | `npm run check:tokens` | Static guard against **invented** Tailwind token / MattIcon names — polices only project-owned families (see [SCRIPTS.md](SCRIPTS.md#scriptscheck-token-namests)) |
+| `npm run check:datetime` | Static gate (Conv 439) — flags SQLite `datetime()` in source SQL (must use `strftime` ISO); part of `codecheck` |
+| `npm run check:error-render` | Static gate (Conv 439) — flags components that `setError()` but never render the error state; part of `codecheck` |
+| `npm run check:env` | Static gate (Conv 439) — flags direct `locals.runtime` access (must use `getEnv`/`requireEnv`); part of `codecheck` |
+| `npm run check:figma` | Static gate (Conv 439) — flags hot-linked Figma/MCP asset URLs (they expire ~7 days); part of `codecheck` |
+| `npm run check:deleted-at` | Schema-aware `deleted_at` lint (Conv 439, moved from docs repo) — flags queries filtering `deleted_at` on tables lacking the column; part of `codecheck` |
 | `npm run icons:scan` | Runtime icon measurement — measures 97 route-states at two root font sizes and diffs against a baseline (needs dev server + dev seed) |
 | `npm run spacing:scan` | Runtime spacing-invariant proof — asserts every rendered `X-N` spacing class computes to N px (`--routes`, `--verbose`; needs dev server + dev seed) |
 | `npm run knip` | Report unused files, exports, and dependencies (module-graph reachability oracle, Astro-aware) |
