@@ -3,6 +3,15 @@
 
 ## 4. Authentication & Authorization
 
+### The Sidebar `/mod` Item Shows for Admins Too — Gate Relaxed to `isModerator || isAdmin` (Conv 441)
+**Date:** 2026-08-24 (Conv 441)
+
+Both AppLayout Sidebar moderation-nav gates in `Sidebar.tsx` change from `isModerator && !isAdmin` to `isModerator || isAdmin`, so admins now see the `/mod` item in the sidebar (they always had access via `requireModerationAccess`). The `!isAdmin` clause was pure redundancy-avoidance — the admin console already links a "Moderation Queue" → `/mod` (`AdminDashboard.tsx:75`) — which is a weak reason to hide a link admins are entitled to. OR'd `isAdmin` (not a bare negation-drop) to keep nav visibility exactly mirroring the middleware access predicate. **Supersedes the Conv-254 MOD-NAV `isModerator && !isAdmin` nav rule** below.
+
+**Rationale:** Admins hold global moderation scope, so hiding their moderation entry point contradicts the access model; nav visibility should mirror `requireModerationAccess`, not carve admins out for tidiness.
+
+**See:** `src/components/Sidebar.tsx`; `docs/sessions/2026-08/20260824_1228 Decisions.md` §2. Supersedes MOD-NAV (Conv 254).
+
 ### The Client-Side Role Gate Is Generalised to All Three Role Workspaces — `useRoleGate(role)` + `RoleGatePanel` (Conv 428)
 **Date:** 2026-07-28 (Conv 428)
 
@@ -157,7 +166,7 @@ Canonical surfaces: behavioral getters `get isCreator/isTeacher/isStudent/isMode
 
 **Revoke edge (accepted default):** `can_create_courses` is admin-revocable and creation requires it. An admin-revoked ex-creator with existing courses loses `/creating` access but the creator badge still shows (behavioral). Revisit only if orphaned-course management bites.
 
-**Moderator fragment + nav signal (RS-MOD-FRAG / MOD-NAV, Conv 254):** the community-mod identity fragment is named `isCommunityModeratorSubquery` (NOT a bare `isModeratorSubquery`) — the Moderator *role label* reads the `can_moderate_courses` permission, while this fragment reads the `community_moderators` table (behavioral); a bare name beside `isCreator/isTeacher` would falsely imply it is THE canonical moderator check. The fragment is one scalar `(SELECT COUNT(*) > 0 …)` form serving both filter (`WHERE`) and projection (`as is_x`) sites. The AppLayout Sidebar moderation nav signal computes `isModerator = can_moderate_courses OR isCommunityModeratorSubquery` and renders the `/mod` item only when `isModerator && !isAdmin` — mirrors the `/mod` middleware gate (`requireModerationAccess`) so nav visibility matches access, while `!isAdmin` keeps admins on `/admin` (their moderation entry) without a redundant item.
+**Moderator fragment + nav signal (RS-MOD-FRAG / MOD-NAV, Conv 254):** the community-mod identity fragment is named `isCommunityModeratorSubquery` (NOT a bare `isModeratorSubquery`) — the Moderator *role label* reads the `can_moderate_courses` permission, while this fragment reads the `community_moderators` table (behavioral); a bare name beside `isCreator/isTeacher` would falsely imply it is THE canonical moderator check. The fragment is one scalar `(SELECT COUNT(*) > 0 …)` form serving both filter (`WHERE`) and projection (`as is_x`) sites. The AppLayout Sidebar moderation nav signal computes `isModerator = can_moderate_courses OR isCommunityModeratorSubquery` and renders the `/mod` item (⛔ **the original `isModerator && !isAdmin` gate was relaxed to `isModerator || isAdmin` in Conv 441** — admins now see the item too; see the Conv-441 entry at the top of this chunk) — mirrors the `/mod` middleware gate (`requireModerationAccess`) so nav visibility matches access.
 
 **Rationale:** `canX` answers "may this user do X?"; `isX` answers "has this user done X?". Conflating them breaks on new-creator (perm=1, courses=0) and revoked-creator (perm=0, courses>0) edges. A 3-parallel-Explore blast-radius audit found `is_creator` had 3 competing definitions (behavioral, hybrid-access, and `roles.ts userRoles()` permission-based) and that the hybrid gates were access gates wrongly slated for a behavioral flip.
 

@@ -222,6 +222,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [4. Authentication & Authorization](04-auth.md)
 
+- [The Sidebar `/mod` Item Shows for Admins Too — Gate Relaxed to `isModerator || isAdmin` (Conv 441)](04-auth.md#the-sidebar-mod-item-shows-for-admins-too--gate-relaxed-to-ismoderator--isadmin-conv-441)
 - [The Client-Side Role Gate Is Generalised to All Three Role Workspaces — `useRoleGate(role)` + `RoleGatePanel` (Conv 428)](04-auth.md#the-client-side-role-gate-is-generalised-to-all-three-role-workspaces--userolegaterole--rolegatepanel-conv-428)
 
 - [[MSGBOOT] Client Consumers Gate on the Three-State `authStatus`, Never on a Nullable `getCurrentUser()` (Conv 417)](04-auth.md#msgboot-client-consumers-gate-on-the-three-state-authstatus-never-on-a-nullable-getcurrentuser-conv-417)

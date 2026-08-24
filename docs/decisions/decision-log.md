@@ -5,6 +5,15 @@
 
 For historical decisions and the full rationale behind each choice, see the session files in `docs/sessions/YYYY-MM/`.
 
+### The Sidebar `/mod` Item Shows for Admins Too — Gate Relaxed to `isModerator || isAdmin`
+**Date:** 2026-08-24 (Conv 441)
+
+Both AppLayout Sidebar moderation-nav gates in `Sidebar.tsx` change from `isModerator && !isAdmin` to `isModerator || isAdmin`, so admins now see the `/mod` item (they always had access via `requireModerationAccess`). The `!isAdmin` clause was pure redundancy-avoidance vs the admin console's "Moderation Queue" link (`AdminDashboard.tsx:75`) — a weak reason to hide a link admins are entitled to. OR'd `isAdmin` so nav visibility mirrors the middleware access predicate. Supersedes the Conv-254 MOD-NAV `isModerator && !isAdmin` nav rule. Same conv also filed **CD-041** (course-moderator role gap; propose, don't build) and added the every-role seed user Jack Elam.
+
+**Rationale:** Admins hold global moderation scope, so hiding their moderation entry contradicts the access model; nav visibility should mirror `requireModerationAccess`.
+
+**See:** `docs/decisions/04-auth.md`; `docs/sessions/2026-08/20260824_1228 Decisions.md` §2, Learnings §§1–6.
+
 ### [CODECHECK] Two-Level Safety Model — `/w-codecheck` Is a Static Commit-Safety Reporter (`npm run codecheck`); `npm run verify` Is the Deploy-Safety Superset
 **Date:** 2026-08-20 (Conv 439)
 

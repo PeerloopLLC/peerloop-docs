@@ -34,8 +34,6 @@
 
 - [FIXES-AUG-21](#fixes-aug-21) — client change batch (change requests received Aug 21), Conv 441
 
-- [TABTEST](#tabtest) — 🔴 pre-existing RED baseline: 5 test failures (from Conv 436 course-tab rename), unrelated to Conv-441 work
-
 ◆ **co-equal** — do next; order among these not significant
 - [SLOT-COLLIDE](#slot-collide) — `right-panel` now names TWO different slots; ListingShell's renders on the LEFT
 - [QSLOT](#qslot) — Conv-435 calibration: batched answer landed in the wrong slot; truncated list read as newest-first
@@ -255,7 +253,7 @@
 
 ### [CRSMOD]
 
-- **State:** ⏸️ parked · gate: CD-041 Pre-Implementation decisions
+- **State:** ⏸️ parked · gate: CD-041 Pre-Implementation decisions · [Opus]
 - **What:** Course-level content moderation + course-moderator role. Gap found Conv 441 while investigating the community-moderator purpose: courses are NOT a moderated content type (`content_flags.content_type ∈ post/comment/profile`), community mods don't cover courses, and `can_moderate_courses` is a global-scope misnomer. RFC written for review before any build.
 - **Proposal:** [docs/requirements/rfc/CD-041/](docs/requirements/rfc/CD-041/) — CD-041.md (context + two design options: **A** extend community-mod scope to course content vs **B** a dedicated `course_moderators` table) + RFC.md (18-item staged checklist, gated behind 5 Pre-Implementation decisions).
 - **Next:** user/team answers the CD-041 Pre-Implementation questions (moderatable content types · Option A/B · appointment · role-label & nav · rename `can_moderate_courses`), THEN unpark and build.
@@ -818,15 +816,6 @@
 - **Done test:** for a representative protected route, a public route, and `/profile`, the bare and trailing-slash forms produce the same auth outcome; policy documented; a test covers it.
 - Surfaced Conv 408 while investigating a separate (unreproduced) `/profile` → `/@handle` redirect report.
 
-### [TABTEST]
-
-- **State:** ✅ fixed Conv 441 (pending final clean-verify confirmation)
-- **What:** `npm run verify` was RED — **5 test failures across 2 files**. My earlier "all 5 pre-existing/unrelated" call was WRONG (based on the tail-masked verify output that only showed one file). Full clean run split them **3 pre-existing + 2 self-inflicted**:
-  - **3 PRE-EXISTING** (`tests/unit/journey-loop-tabs.test.ts`) — Conv 436 `[COURSE-PAGE-FIXES-AUG-17]` renamed the course Explore tabs (`_course-tabs.ts` → 5 tabs, auth-dependent: visitor `About·Reviews·Feed·Sessions·Teachers`, signed-in `Feed·About·Sessions·Teachers·Reviews`, +Homework enrolled) but left tests asserting the old 6-tab set. **Fixed:** rewrote the 3 stale tests to the intended set + added a signed-in-order test (24/24 pass).
-  - **2 SELF-INFLICTED** (`tests/integration/database.test.ts` "query all users/courses") — my Jack-Elam seed added +1 user and +1 course, breaking the exact-count assertions. **Fixed:** bumped `TEST_DATA_COUNTS.users + 2 → + 3` (comment already named core-admin + Fraser; added Jack) and `courses → courses + 1` (7/7 pass).
-- **Also caught:** the two overlapping background `npm test` runs contended on the shared test DB (spurious "query all courses/users") — reminder to never run two full suites at once.
-- **Refs:** `../Peerloop/src/pages/course/[slug]/_course-tabs.ts` (Conv 436 `f9d928b8`), `tests/unit/journey-loop-tabs.test.ts`, `tests/integration/database.test.ts`, `tests/helpers/test-data.ts`. Discovered running verify for the FIXES-AUG-21 commit gate (Conv 441).
-
 ### [TURNLOG]
 
 - **State:** 📋 queued (workflow guard)
@@ -881,3 +870,5 @@
 ## ✅ Done this conv
 
 - **[COURSE-PAGE-FIXES-AUG-17]** — client change batch for course page(s) (Conv 436); completed Conv 441, superseded by `[FIXES-AUG-21]`.
+- **[TABTEST]** — restored the green baseline: fixed 3 pre-existing stale course-tab tests (Conv-436 rename) + 2 self-inflicted count assertions (Jack seed). Verify green, committed `8e12de53`.
+- **[FIXES-AUG-21] #1–#3 committed** — sidebar active-highlight + collapsed-rail state, every-role Jack Elam seed, /mod admin-hide removed. Verify green; code `8e12de53`, docs `cdff189`. (Batch stays open; staging seed for Jack still pending.)
