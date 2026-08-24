@@ -32,7 +32,9 @@
 > orphaned endpoint is deleted. Nothing outstanding — kept here one conv for traceability, then
 > delete this note.
 
-- [COURSE-PAGE-FIXES-AUG-17](#course-page-fixes-aug-17) — client change batch for course page(s), Conv 436
+- [FIXES-AUG-21](#fixes-aug-21) — client change batch (change requests received Aug 21), Conv 441
+
+- [TABTEST](#tabtest) — 🔴 pre-existing RED baseline: 5 test failures (from Conv 436 course-tab rename), unrelated to Conv-441 work
 
 ◆ **co-equal** — do next; order among these not significant
 - [SLOT-COLLIDE](#slot-collide) — `right-panel` now names TWO different slots; ListingShell's renders on the LEFT
@@ -98,6 +100,7 @@
 - [BROWSER-SMOKE-2B](#browser-smoke-2b) — gate: post-launch
 - [MINWIDTH-320](#minwidth-320) — gate: user say-so
 - [ICON-LIC](#icon-lic) — gate: MVP-GOLIVE
+- [CRSMOD](#crsmod) — gate: CD-041 Pre-Implementation decisions (Option A/B + which course content is moderatable)
 
 ---
 
@@ -243,19 +246,20 @@
 - **Client-visible:** open item in `docs/requirements/rfc/CD-040/RFC.md` §1. Tick it there when this closes.
 
 
-### [COURSE-PAGE-FIXES-AUG-17]
-
-- **State:** 🔄 active
-- **What:** client change batch for course page(s) — details supplied incrementally during Conv 436.
-- **Refs:** (to be added as changes land)
-
-
 ### [COURSES-FIXES]
 
 - **State:** 📋 queued (deferred per-route bucket)
 - **What:** deferred bucket of per-route fixes captured while sweeping the Courses route(s) — batch later. Sibling of `[HOME-FIXES]`.
 - **Holds (from the Conv-292 sweep):** `[FILTERS-RESPONSIVE]` (⟂ responsive/compact filters — the Conv-425 compact toolbar plausibly overlaps this but it was never verified against the original intent) + `[TYPO-REVIEW]` (⟂ app-wide typography).
 - **Added Conv 425 — role-tab empty states ignore their `sub` filter.** The all-tab empty state was fixed this conv to distinguish an empty catalog from over-narrow filters; the four ROLE tabs have the same defect class via a different trigger. Each branches on `q` only, so a student on `sub=completed` holding only in-progress enrolments reads *"You haven't enrolled in any courses yet."* — denying enrolments that exist. Same for teaching (`active`/`paused`), created (`published`/`draft`/`retired`) and moderating. Left unfixed deliberately: those tabs are dispositioned for retirement once `[ROLE-CRS-LIST]` lands (MERGE-BRIAN §2 M3), so fix them only if that gate slips. `src/components/courses/CoursesCatalog.tsx` ~lines 366/377/389/408.
+
+### [CRSMOD]
+
+- **State:** ⏸️ parked · gate: CD-041 Pre-Implementation decisions
+- **What:** Course-level content moderation + course-moderator role. Gap found Conv 441 while investigating the community-moderator purpose: courses are NOT a moderated content type (`content_flags.content_type ∈ post/comment/profile`), community mods don't cover courses, and `can_moderate_courses` is a global-scope misnomer. RFC written for review before any build.
+- **Proposal:** [docs/requirements/rfc/CD-041/](docs/requirements/rfc/CD-041/) — CD-041.md (context + two design options: **A** extend community-mod scope to course content vs **B** a dedicated `course_moderators` table) + RFC.md (18-item staged checklist, gated behind 5 Pre-Implementation decisions).
+- **Next:** user/team answers the CD-041 Pre-Implementation questions (moderatable content types · Option A/B · appointment · role-label & nav · rename `can_moderate_courses`), THEN unpark and build.
+- **Refs:** `../Peerloop/src/lib/auth/moderation.ts`, `content_flags`/`community_moderators` in `migrations/0001_schema.sql`, `src/lib/roles.ts`. Surfaced during FIXES-AUG-21 #3 (Conv 441).
 
 ### [DEPEXP]
 
@@ -305,6 +309,16 @@
 - **What:** Conv 398 deleted `src/emails/WelcomeEmail.tsx` + `PaymentReceiptEmail.tsx` (dead). Both still listed in `docs/reference/resend.md` + `DEVELOPMENT-GUIDE.md` — both **manual** category, so the r-end docs agent left them by policy.
 - **Next:** remove/annotate the two templates (verify each mention is the deleted template, not a live one).
 - **Refs:** `docs/reference/resend.md`, `docs/reference/DEVELOPMENT-GUIDE.md`. Surfaced Conv 398.
+
+### [FIXES-AUG-21]
+
+- **State:** 🔄 active
+- **What:** client change batch — change requests received Aug 21, details supplied incrementally during Conv 441. Successor to `[COURSE-PAGE-FIXES-AUG-17]` (completed Conv 441).
+- **Requests:**
+  1. **Sidebar highlights the current menu selection.** Root cause (Conv 441): the desktop `Sidebar` is `client:load` + `transition:persist="matt-sidebar"` (`AppLayout.astro:209`), so its server-rendered `currentPath` prop (`Astro.url.pathname`) goes STALE after every View-Transition nav — the active pill freezes on the first-loaded page. Fix = mirror `AdminNavbar.tsx:108-120`'s `astro:page-load` path-sync (internal `pathname` state from `window.location.pathname`). Secondary gap: the collapsed 70px rail (`Sidebar.tsx:397-450`) has NO active state at all (plain `<a>`, no `matchHref`). The `matchHref` logic itself (`MainNav.tsx`) is correct. **✅ IMPLEMENTED Conv 441** (option B — both fixes): (a) `Sidebar.tsx` now tracks a `pathname` state synced on `astro:page-load` (all `matchHref`/`MainNav` matching reads it, not the stale prop); (b) collapsed 70px rail got an active treatment (`collapsedLinkClass` — white `rounded-[12px]` pill w/ NavItem-Selected border+shadow tokens, `text-text-primary`, `aria-current="page"`) on all 5 icon rows + gated links. tsc + eslint(Sidebar) exit 0. **✅ VERIFIED live Conv 441** (localhost:4321, admin dev-login): client-side View-Transition nav `/`→`/courses` moved the active pill to Courses (persist-staleness gone — the whole point); collapsed 70px rail shows the white `rounded-[12px]` pill + `aria-current="page"` on the active icon. Both via DOM probe + screenshot.
+  2. **Every-role seed user (Fraser).** Dev-seed change: Brian (used as the multi-role test user) isn't truly every-role. Want ONE canonical user holding all of Student + Teacher + Creator + Admin + Moderator, on `fraser@meristics.com`. Requires the supporting graph so each role is *real*: a course authored by Fraser (Creator), an active teacher_certification (Teacher), a community owned/moderated by Fraser (Moderator + ownership), an enrolment (Student). Dev seed only (`migrations-dev/`), local + staging. **✅ IMPLEMENTED + VERIFIED Conv 441.** Decision: did NOT repurpose Fraser (he + Alex Chen/`newuser` are the two member-only fixtures — converting Fraser would have thinned member-only coverage); instead created a NEW every-role user **Jack Elam** (`usr-jack-elam`, `jack-elam@example.com` / Peerloop2), Fraser untouched. Full course build (option A): appended a self-contained "PART 13" block to `migrations-dev/0001_seed_dev.sql` — user + user_stats/expertise/qualification, community `comm-prompt-forge` (+ progression, community_members creator row, active community_moderators row), course `crs-prompt-engineering-foundations` (+ peerloop_features, 5 objectives, 3 includes, 6 curriculum, 3 prereqs, 3 audience, 3 course_tags, 3 community_tags), self-approved `teacher_certifications` row, and a student enrolment in Guy's AI Tools Overview; comm-system member_count 11→12. Reseeded local D1 (`db:setup:local:dev`) — applied clean. DB probe: Jack = [Admin, Creator, Teacher, Mod, Student]; Fraser still MEMBER-ONLY. DOM probe (dev-login as Jack): sidebar shows Home/Courses/Communities/Members/Learning/Teaching/Creating/Admin/Messages/Notifications/Profile; `/mod` correctly hidden (admin-suppressed by design); profile row "Admin + 3 more". **Not yet applied to staging** (needs the staging seed run).
+  3. **Show Moderation in the Sidebar for admins (remove admin-hide).** ✅ IMPLEMENTED + VERIFIED Conv 441. The `/mod` sidebar item was gated `isModerator && !isAdmin` (ROLE-STUDIOS [MOD-NAV], Conv 254) — hidden from admins because the admin console already carries a "Moderation Queue" link (`AdminDashboard.tsx:75` → `/mod`). User judged that redundancy too weak to justify hiding it (option B). Relaxed both gates (expanded `Sidebar.tsx` + collapsed rail) to `isModerator || isAdmin` — OR'd `isAdmin` (not just dropped the negation) so the link shows for any user with moderation access, matching `requireModerationAccess` (admins get global scope regardless of `can_moderate_courses`). tsc + eslint clean; DOM-verified Jack now shows BOTH Admin + Moderation (bottom cluster Messages·Notifications·Admin·Moderation). No test asserted the old gate. Shipping behavior change for ALL admins.
+- **Refs:** `../Peerloop/src/components/Sidebar.tsx`, `src/components/MainNav.tsx`, `src/layouts/AppLayout.astro:209`, precedent `src/components/layout/AdminNavbar.tsx:108-120`; (#2) `../Peerloop/migrations-dev/*.sql`, role subqueries in `src/layouts/AppLayout.astro`; (#3) `Sidebar.tsx` gate, `src/lib/auth/moderation.ts` (two-tier scope), `src/components/admin/AdminDashboard.tsx:75`.
 
 ### [VPHARNESS]
 
@@ -804,6 +818,15 @@
 - **Done test:** for a representative protected route, a public route, and `/profile`, the bare and trailing-slash forms produce the same auth outcome; policy documented; a test covers it.
 - Surfaced Conv 408 while investigating a separate (unreproduced) `/profile` → `/@handle` redirect report.
 
+### [TABTEST]
+
+- **State:** ✅ fixed Conv 441 (pending final clean-verify confirmation)
+- **What:** `npm run verify` was RED — **5 test failures across 2 files**. My earlier "all 5 pre-existing/unrelated" call was WRONG (based on the tail-masked verify output that only showed one file). Full clean run split them **3 pre-existing + 2 self-inflicted**:
+  - **3 PRE-EXISTING** (`tests/unit/journey-loop-tabs.test.ts`) — Conv 436 `[COURSE-PAGE-FIXES-AUG-17]` renamed the course Explore tabs (`_course-tabs.ts` → 5 tabs, auth-dependent: visitor `About·Reviews·Feed·Sessions·Teachers`, signed-in `Feed·About·Sessions·Teachers·Reviews`, +Homework enrolled) but left tests asserting the old 6-tab set. **Fixed:** rewrote the 3 stale tests to the intended set + added a signed-in-order test (24/24 pass).
+  - **2 SELF-INFLICTED** (`tests/integration/database.test.ts` "query all users/courses") — my Jack-Elam seed added +1 user and +1 course, breaking the exact-count assertions. **Fixed:** bumped `TEST_DATA_COUNTS.users + 2 → + 3` (comment already named core-admin + Fraser; added Jack) and `courses → courses + 1` (7/7 pass).
+- **Also caught:** the two overlapping background `npm test` runs contended on the shared test DB (spurious "query all courses/users") — reminder to never run two full suites at once.
+- **Refs:** `../Peerloop/src/pages/course/[slug]/_course-tabs.ts` (Conv 436 `f9d928b8`), `tests/unit/journey-loop-tabs.test.ts`, `tests/integration/database.test.ts`, `tests/helpers/test-data.ts`. Discovered running verify for the FIXES-AUG-21 commit gate (Conv 441).
+
 ### [TURNLOG]
 
 - **State:** 📋 queued (workflow guard)
@@ -857,4 +880,4 @@
 
 ## ✅ Done this conv
 
-_(none yet — cleared at each /r-start)_
+- **[COURSE-PAGE-FIXES-AUG-17]** — client change batch for course page(s) (Conv 436); completed Conv 441, superseded by `[FIXES-AUG-21]`.

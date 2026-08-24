@@ -1,0 +1,16 @@
+Source: FIXES-AUG-21 client batch, relayed by Fraser during Conv 441 (2026-08-24).
+The course-moderator idea was surfaced while investigating what a community
+moderator actually does. Verbatim requests:
+
+---
+
+"I would like Jack to be a moderator on a course and a community, and I would
+like you to see how having a moderator in the Sidebar for Jac affects the UI of
+the Sidebar"
+
+---
+
+"I wonder why we decided to hide the moderator tab for admins. I think that needs
+to be removed unless you can think of a good reason. So I pick B. And look up the
+purpose of a moderator at the community level. Are they supposed to monitor all
+courses in that community? We may need a course moderator role"
