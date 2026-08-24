@@ -19,7 +19,7 @@ allowed-tools: Read, Write, Edit, Bash
 
 Four load-bearing `## ` H2 anchors, in this order:
 
-- **`## 🎯 Now`** — ordered execution TOC. Numbered list; each line `N. [CODE](#code-slug) — short title`. Top = next.
+- **`## 🎯 Now`** — ordered execution TOC. Bulleted; each line `- [CODE](#code-slug) — short title`. **Top = next**; position *is* the order (no numbers). A run of co-equal tasks (order among them not significant) is grouped under a `◆ **co-equal**` divider line. (Legacy numbered `N. [CODE]…` lines are still accepted by the checker.)
 - **`## ⏸️ Parked`** — gated TOC. Bulleted; each line `- [CODE](#code-slug) — gate: …`.
 - **`## Tasks`** — one `### [CODE]` body per task, **alphabetical by code**, each opening with a `- **State:** …` bullet then terse bullets. **Bodies never move** as state changes.
 - **`## ✅ Done this conv`** — one-liners for tasks finished this conv (`/r-start` clears it each conv).

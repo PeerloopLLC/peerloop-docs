@@ -7,7 +7,9 @@
 > **How it works.** `[CODE]` (unique, bracketed) is the stable key — the whole commit/timecard/memory
 > system references it. Task **bodies** live in `## Tasks`, alphabetical by code, and **never move**.
 > Ordering + status live in two tables of contents that link down to the bodies:
-> - **`## 🎯 Now`** — the ordered execution queue (top = next). Reprioritise by reordering *here* only.
+> - **`## 🎯 Now`** — the ordered execution queue, **top = next**. Bulleted (`- [CODE]`), **no numbers** —
+>   position *is* the order; reprioritise by reordering *here* only. Mark a run of co-equal tasks (order
+>   among them not significant) with a `◆ **co-equal**` divider line above the group.
 > - **`## ⏸️ Parked`** — gated / out-of-rotation, each with its gate.
 >
 > Reprioritise / start / park a task by editing a TOC line + its `State:` bullet — the body stays put.
@@ -30,54 +32,57 @@
 > orphaned endpoint is deleted. Nothing outstanding — kept here one conv for traceability, then
 > delete this note.
 
-1. [COURSE-PAGE-FIXES-AUG-17](#course-page-fixes-aug-17) — client change batch for course page(s), Conv 436
-2. [SLOT-COLLIDE](#slot-collide) — `right-panel` now names TWO different slots; ListingShell's renders on the LEFT
-2. [QSLOT](#qslot) — Conv-435 calibration: batched answer landed in the wrong slot; truncated list read as newest-first
-2. [DIPL-SHELL](#dipl-shell) — /diploma/[id] renders in the MARKETING shell for signed-in viewers
-2. [CTA-HOST-GUARD](#cta-host-guard) — nothing stops a NEW host of CourseCatalogCard shipping dead cards; happened once already
-3. [BRIAN-ARTIFACTS](#brian-artifacts) — 👀 external: the rationale artifacts his commits cite (MERGE-BRIAN itself is CLOSED)
-4. [COMM-IMG](#comm-img) — community art is all picsum placeholders; `cover_image_url` has a UI slot but **no upload/storage**
-5. [CD035-STALE](#cd035-stale) — CD-035 reads 0/34 done but CD-039 shipped part of it; re-validate before working it
-6. [SPACING-4X](#spacing-4x) — sweep for other 4× size artifacts Conv 423 preserved
-7. [A11Y](#a11y) — accessibility lint triage
-8. [RHOOKS](#rhooks) — react-hooks lint triage
-9. [KNIP](#knip) — dead-export oracle → gate
-10. [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
-11. [EDITSAFE](#editsafe) — anchored-edit discipline
-12. [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
-13. [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
-14. [ROUTESTORIES-DRIFT](#routestories-drift) — route-stories.md §3 still documents dissolved /discover routes
-15. [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
-16. [HOME-FIXES](#home-fixes) — Home route fix bucket
-17. [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
-18. [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
-19. [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
-20. [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
-21. [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
-22. [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
-23. [RSFD](#rsfd) — port `r-start-from-dirty`
-24. [DEPEXP](#depexp) — dependency-probe hygiene
-25. [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
-26. [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
-27. [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
-28. [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
-29. [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
-30. [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
-31. [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
-32. [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
-33. [PROBESAFE](#probesafe) — `--help` on a generator script executed it
-34. [TLFMT](#tlfmt) — r-end ref documents a TIMELINE.md shape the file no longer uses
-35. [OUTLINE-V4B](#outline-v4b) — 3 residual `outline-none` sites the Conv-244 fix missed
-36. [ADMIN-OVFLW](#admin-ovflw) — 3 admin routes overflow horizontally (pre-existing, not Conv-423)
-37. [LH1](#lh1) — 23 typography tokens hardcode `line-height: 1` (TYPO-FDN axis)
-38. [BRIDGE-RESIZE](#bridge-resize) — `resize_window` silently ignores width
-39. [ICON-STATES](#icon-states) — Phase-5 tail: drive hidden/loading states over 528 call sites
-41. [VPHARNESS](#vpharness) — persist the exact-size iframe harness as a script
-42. [RATING-COUNT-DEAD](#rating-count-dead) — dead `rating_count` + "Active" vs "Published" split
-43. [PROVDOC](#provdoc) — `matt-provenance.md` §6a says "9 unmarked components"; registry has 22 + 38
-44. [PRUNEPTR](#pruneptr) — `/r-end` prune leaves no forwarding pointer when a `---` survives the span
-45. [SCHEMADIAG](#schemadiag) — `schema-diagram.md` claims 48 tables, 71 on disk (r-end docs agent, Conv 432)
-46. [SEED-NOTIF-STALE](#seed-notif-stale) — seeded admin notification asserts a cert that Conv 434 deleted
+- [COURSE-PAGE-FIXES-AUG-17](#course-page-fixes-aug-17) — client change batch for course page(s), Conv 436
+
+◆ **co-equal** — do next; order among these not significant
+- [SLOT-COLLIDE](#slot-collide) — `right-panel` now names TWO different slots; ListingShell's renders on the LEFT
+- [QSLOT](#qslot) — Conv-435 calibration: batched answer landed in the wrong slot; truncated list read as newest-first
+- [DIPL-SHELL](#dipl-shell) — /diploma/[id] renders in the MARKETING shell for signed-in viewers
+- [CTA-HOST-GUARD](#cta-host-guard) — nothing stops a NEW host of CourseCatalogCard shipping dead cards; happened once already
+
+- [BRIAN-ARTIFACTS](#brian-artifacts) — 👀 external: the rationale artifacts his commits cite (MERGE-BRIAN itself is CLOSED)
+- [COMM-IMG](#comm-img) — community art is all picsum placeholders; `cover_image_url` has a UI slot but **no upload/storage**
+- [CD035-STALE](#cd035-stale) — CD-035 reads 0/34 done but CD-039 shipped part of it; re-validate before working it
+- [SPACING-4X](#spacing-4x) — sweep for other 4× size artifacts Conv 423 preserved
+- [A11Y](#a11y) — accessibility lint triage
+- [RHOOKS](#rhooks) — react-hooks lint triage
+- [KNIP](#knip) — dead-export oracle → gate
+- [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
+- [EDITSAFE](#editsafe) — anchored-edit discipline
+- [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
+- [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
+- [ROUTESTORIES-DRIFT](#routestories-drift) — route-stories.md §3 still documents dissolved /discover routes
+- [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
+- [HOME-FIXES](#home-fixes) — Home route fix bucket
+- [COURSES-FIXES](#courses-fixes) — Courses route fix bucket
+- [BRAND-DOCS](#brand-docs) — "PeerLoop"→"Peerloop" docs casing
+- [SCRATCH-DEBRIS](#scratch-debris) — delete retired `conv-tasks.md`
+- [BRIDGE-UPLOAD](#bridge-upload) — browser file-upload fallback
+- [BLOCKPLAN](#blockplan) — `CURRENT-BLOCK-PLAN.md` keep/remove
+- [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
+- [RSFD](#rsfd) — port `r-start-from-dirty`
+- [DEPEXP](#depexp) — dependency-probe hygiene
+- [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
+- [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
+- [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
+- [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
+- [CHIPWRAP](#chipwrap) — course-hero mobile chips wrap (optional, user say-so)
+- [DL-FILENAME](#dl-filename) — download Content-Disposition filename lacks file extension
+- [TESTUNITDOC](#testunitdoc) — `TEST-UNIT.md` stale since Conv 253 (r-end docs agent)
+- [INTTESTDOC](#inttestdoc) — TEST-COVERAGE Integration header says 10, lists 9
+- [PROBESAFE](#probesafe) — `--help` on a generator script executed it
+- [TLFMT](#tlfmt) — r-end ref documents a TIMELINE.md shape the file no longer uses
+- [OUTLINE-V4B](#outline-v4b) — 3 residual `outline-none` sites the Conv-244 fix missed
+- [ADMIN-OVFLW](#admin-ovflw) — 3 admin routes overflow horizontally (pre-existing, not Conv-423)
+- [LH1](#lh1) — 23 typography tokens hardcode `line-height: 1` (TYPO-FDN axis)
+- [BRIDGE-RESIZE](#bridge-resize) — `resize_window` silently ignores width
+- [ICON-STATES](#icon-states) — Phase-5 tail: drive hidden/loading states over 528 call sites
+- [VPHARNESS](#vpharness) — persist the exact-size iframe harness as a script
+- [RATING-COUNT-DEAD](#rating-count-dead) — dead `rating_count` + "Active" vs "Published" split
+- [PROVDOC](#provdoc) — `matt-provenance.md` §6a says "9 unmarked components"; registry has 22 + 38
+- [PRUNEPTR](#pruneptr) — `/r-end` prune leaves no forwarding pointer when a `---` survives the span
+- [SCHEMADIAG](#schemadiag) — `schema-diagram.md` claims 48 tables, 71 on disk (r-end docs agent, Conv 432)
+- [SEED-NOTIF-STALE](#seed-notif-stale) — seeded admin notification asserts a cert that Conv 434 deleted
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -852,18 +857,4 @@
 
 ## ✅ Done this conv
 
-- **[GATEPAR]** — resolved via the Conv-439 `/w-codecheck` refactor (scope option B). Established the
-  two-level model (commit-safety `/w-codecheck` = fast static, no test/build; deploy-safety
-  `npm run verify` = +test+build, −E2E/PLATO); added `check:icons` to the skill; fixed the false
-  "`/w-codecheck` bundles the 5 gates" claim in CLAUDE.md §Baseline + CLAUDE-OFFLOAD.md (×3); moved gate
-  rationale + the Tailwind rename table to new `docs/reference/CODECHECK.md`; removed the dead
-  `clear`-mode / TodoWrite cruft.
-- **[TZLINT]** — resolved same conv. `lint:tz` is **not** orphaned: it's a gate in CI (`.github/workflows/ci.yml`).
-  The new `codecheck` reporter now also runs it locally as a 🔴 build-blocker, so `npm run verify` covers it too.
-- **codecheck reporter (scope A)** — `scripts/codecheck.mjs` replaces the `&&` chain: runs all static checks
-  without short-circuiting, prints one grouped report (🔴 build-blockers = CI gates / ⚠️ local quality gates /
-  ℹ️ warnings), emphasising CI-gating findings. Surfaces the 163 ESLint warnings (88 react-hooks / 75 jsx-a11y)
-  as non-blocking. Built + calibrated the 5 grep/script gates as real npm scripts; `verify` = `codecheck && test && build`.
-- **[OUTLINE-V4B]** — all 6 `outline-none`→`outline-hidden` sites cleared + a `check-tailwind-v4.sh` CSS-var
-  false-positive fixed; SubNav 2 icons `size-16`→`size-icon-16`. `check:tailwind`/`check:icons` green; new
-  `outline-none` is now caught by the gate, so the drift channel is closed. (Remove its 🎯 Now line at next tidy.)
+_(none yet — cleared at each /r-start)_

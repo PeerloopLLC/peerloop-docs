@@ -2,7 +2,7 @@
 # current-tasks-check.sh — validate CURRENT-TASKS.md (the write-through task board).
 #
 # Format (Conv 406 Task-tool detach):
-#   ## 🎯 Now      — numbered TOC:  `N. [CODE](#slug) — title`
+#   ## 🎯 Now      — ordered TOC (top=next): `- [CODE](#slug) — title`  (legacy `N. [CODE]…` still accepted)
 #   ## ⏸️ Parked   — bulleted TOC:  `- [CODE](#slug) — gate: …`
 #   ## Tasks       — bodies:        `### [CODE]` then a `- **State:** …` bullet
 #   ## ✅ Done this conv
@@ -37,7 +37,7 @@ REC=$(awk '
   /^## ⏸️ Parked/  { sec="park"; next }
   /^## Tasks/      { sec="body"; next }
   /^## /           { sec="other" }
-  sec=="now"  && /^[0-9]+\. \[/ { c=code_of($0); s=slug_of($0); if (c!="") print "NOW " c " " s }
+  sec=="now"  && (/^- \[/ || /^[0-9]+\. \[/) { c=code_of($0); s=slug_of($0); if (c!="") print "NOW " c " " s }
   sec=="park" && /^- \[/        { c=code_of($0); s=slug_of($0); if (c!="") print "PARK " c " " s }
   sec=="body" && /^### \[/      { cur=code_of($0); if (cur!="") print "BODY " cur; statedone=0 }
   sec=="body" && cur!="" && statedone==0 && /\*\*State:\*\*/ {

@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-08-10 Conv 434 (a declined `NOT-ADOPTED.md` mechanism is re-opened by **dissolving the recorded objection**, and the ledger row is amended in place — §1)
+**Last Updated:** 2026-08-23 Conv 440 (`## 🎯 Now` TOC lines are bulleted `- [CODE]` with no ordinals; co-equal runs wear a `◆` band; the checker tolerates both forms — §3)
 
 ---
 
@@ -563,6 +563,19 @@ The 4572-line `docs/DECISIONS.md` was split into a `docs/decisions/` folder: ele
 ---
 
 ## 3. Claude Code Workflow
+
+### `## 🎯 Now` TOC Lines Are Bulleted `- [CODE]` (No Ordinals); Co-Equal Runs Wear a `◆` Band; the Checker Tolerates Both Forms (Conv 440)
+**Date:** 2026-08-23 (Conv 440)
+
+`CURRENT-TASKS.md`'s `## 🎯 Now` execution order drops per-line ordinals — lines are now `- [CODE]` bullets and **top-down position is the order**; the `[CODE]` bracket is the stable key. A run of tasks with no meaningful order among them is grouped under a `◆ **co-equal** — order among them not significant` divider, which expresses ties (the one thing pure position can't). To land this without a flag-day, `current-tasks-check.sh`'s Now-line regex was made **tolerant of both** the new bullet and the legacy ordinal form (`(/^- \[/ || /^[0-9]+\. \[/)`) rather than switched to bullets-only. Rejected: keeping the numbers but making ties explicit (`2a/2b/2c/2d`); switching the parser to bullets-only and rewriting both test fixtures.
+
+**Rationale:** Ordinals are redundant with position and **decay under reordering** — the board already carried four duplicate `2.`s and a skipped `40.` (max ordinal read 46 while the real count was 48). A display prefix that *looked* cosmetic was in fact the checker's parse anchor, so stripping it naively would have orphaned every entry; making the checker tolerant keeps not-yet-migrated / cross-machine boards and the existing fixtures valid through the transition. Style enforcement isn't the checker's job — TOC↔body consistency is.
+
+**Consequences:** Real board migrated (48 Now lines, 11 Parked, 59 bodies, 0 issues); the board header note, `.claude/skills/r-update-tasks/SKILL.md` format line, and the checker docstring now document the convention. Both suites stayed green unchanged — `current-tasks-check.test.sh` 7/7, `task-board-lifecycle.test.sh` 15/15.
+
+**See:** `CURRENT-TASKS.md`; `.claude/scripts/current-tasks-check.sh`; `.claude/skills/r-update-tasks/SKILL.md`; `docs/sessions/2026-08/20260823_2029 Decisions.md` §§1,2, Learnings §§1,2; Conv 440.
+
+---
 
 ### [PRUNESAFE] The `/r-end` Extract Prune Becomes a Deterministic Script — Section Spans Computed from the File, Not Trusted from the Agent (Conv 430)
 **Date:** 2026-07-29 (Conv 430)
