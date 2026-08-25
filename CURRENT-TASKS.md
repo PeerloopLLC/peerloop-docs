@@ -32,6 +32,7 @@
 > orphaned endpoint is deleted. Nothing outstanding — kept here one conv for traceability, then
 > delete this note.
 
+- [CAS](#cas) — ▶ NEXT CONV: community avatars get a generated style (light-purple bg, white initials of non-stop title words + white star icon)
 - [FIXES-AUG-21](#fixes-aug-21) — client change batch (change requests received Aug 21), Conv 441
 
 ◆ **co-equal** — do next; order among these not significant
@@ -83,6 +84,7 @@
 - [PRUNEPTR](#pruneptr) — `/r-end` prune leaves no forwarding pointer when a `---` survives the span
 - [SCHEMADIAG](#schemadiag) — `schema-diagram.md` claims 48 tables, 71 on disk (r-end docs agent, Conv 432)
 - [SEED-NOTIF-STALE](#seed-notif-stale) — seeded admin notification asserts a cert that Conv 434 deleted
+- [STREAM-ENV](#stream-env) — ⚠️ CONFIRMED: seed feeds accumulate duplicate Stream activities each --clean reseed (16 in PF now); fix needs Stream-API work
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -180,6 +182,23 @@
 - **Fallback (Conv 379):** set course thumbnail via the app's `PUT /api/me/courses/[id]/thumbnail` (external URL, JSON). Document API-PUT as the standard for file-gated browser steps.
 - **Next:** re-test on a newer Chrome-in-Claude build.
 - **Refs:** `memory/reference_chrome_bridge_island_stale_cache` [BRIDGE-UPLOAD]. Surfaced Conv 379.
+
+### [CAS]
+
+- **State:** 📋 queued — ▶ NEXT CONV (spec given at end of Conv 442, for Conv 443)
+- **What:** Give community avatars a **generated "style"** instead of picsum/uploaded images: **light-purple background**, **white letters** — one initial per **non-stop word** in the community's title (skip stop words like the/for/of/a/and), plus a **white star icon** placed elsewhere in the avatar. Examples (illustrative): "Prompt Forge" → **PF**; "AI for You" → **AY** (skip "for"); "Automation Majors" → **AM**; "The Q-System" → **QS** (skip "the").
+- **Open Qs (resolve at conv start):** exact stop-word list; letter = first char of each non-stop word?; star placement (fixed corner vs free "elsewhere"); runtime SVG component (like `default-avatar.svg`) vs build-time asset; which surfaces (community cards / header / feed author chip); does it replace `cover_image_url`/`logo_url` or a distinct avatar field.
+- **Related:** `[COMM-IMG]` (community art is all picsum placeholders; `cover_image_url` has a UI slot but no upload/storage) — this generated-style approach may supersede or complement it.
+- **Refs:** community avatar rendering (CommunityCard / community header), `../Peerloop/public/images/default-avatar.svg` (SVG-avatar precedent).
+
+### [STREAM-ENV]
+
+- **State:** 📋 queued · **CONFIRMED REAL** (probed Conv 442) — not low-priority
+- **What:** Local + staging both seed feeds into the **same Stream DEV app** (`seed-feeds.mjs` uses `.dev.vars` Stream creds regardless of `--local`/`--staging`), and `--clean` clears the D1 feed tables but **not** Stream activities. Because each run stamps a fresh `time` (relative to `Date.now()`), re-adds with the same `foreign_id` create NEW activities — so seed feeds **accumulate duplicates** every reseed.
+- **✅ Confirmed Conv 442 (probe):** after ~4 local reseeds, `GET /api/feeds/community/prompt-forge` returned **16 activities** — 4 copies each of `seed-community-prompt-forge-{21..24}` (same foreign_id, different time). Stream does NOT upsert on foreign_id alone. Local + staging PF feeds are currently 4×-duplicated; visible on any community/course feed after repeated seeds.
+- **Why not fixed at Conv-442 wrap (user asked "if relatively simple"):** a correct Stream-side clean needs verified vendor semantics ([VDF]) — does delete-by-`foreign_id` remove ALL duplicates for that id, or one? is there a feed truncate / batch delete? — plus clearing the already-accumulated dupes. That's external-API work, not a quick handle.
+- **Options:** (a) add a Stream-side clean to `--clean` (GET activities per seed feed → DELETE all, or truncate) — needs Stream-API verification first; (b) deterministic `time` per post so re-adds upsert (loses the "recent 48h" recency the smart-feed decay wants); (c) per-environment Stream apps.
+- **Refs:** `../Peerloop/scripts/seed-feeds.mjs` (`--clean` block ~L483, `hoursAgo`/`time` ~L508), `.dev.vars` STREAM_*.
 
 ### [CHIPWRAP]
 

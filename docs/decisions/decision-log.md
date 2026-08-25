@@ -5,6 +5,15 @@
 
 For historical decisions and the full rationale behind each choice, see the session files in `docs/sessions/YYYY-MM/`.
 
+### [FEED-KEY] Seeded Stream Feeds Key by ENTITY ID (`comm-`/`crs-<slug>`), Not Slug — `streamFeedIdFor()` in `seed-feeds.mjs`; D1 `feed_id` Stays Slug
+**Date:** 2026-08-24 (Conv 442)
+
+`scripts/seed-feeds.mjs` gains a `streamFeedIdFor(post)` helper mapping slug→entity id for the Stream write (`comm-<slug>` communities, `crs-<slug>` courses; pass-through for a `streamFeedId` override, system/townhall = `'main'`); D1 `feed_activities.feed_id` stays the slug (matches the app POST + `recordFeedVisit`). Fixes a pre-existing latent bug: the feed API reads/writes Stream by entity id but the seed keyed by slug, so every seeded community/course activity was invisible. Rejected: app-POST hack (one community only); log-and-leave. A green baseline missed it ("26/26 created", correct D1 rows) — only a DOM render check exposed the empty feeds.
+
+**Rationale:** The app (reader + its own POST) was self-consistent on entity id; the seed was the sole outlier, so aligning the seed un-hides every seeded feed at once, not just the newly-added Prompt Forge one.
+
+**See:** `docs/decisions/06-testing-ci.md`; `../Peerloop/scripts/seed-feeds.mjs`; `docs/sessions/2026-08/20260824_1602 Decisions.md` §1, Learnings §§1–2.
+
 ### The Sidebar `/mod` Item Shows for Admins Too — Gate Relaxed to `isModerator || isAdmin`
 **Date:** 2026-08-24 (Conv 441)
 

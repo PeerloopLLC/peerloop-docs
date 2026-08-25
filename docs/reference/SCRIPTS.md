@@ -751,10 +751,10 @@ node scripts/seed-feeds.mjs --staging --clean    # Staging D1 + Stream DEV app
 ```
 
 **What it does:**
-- Creates 21 activities across 9 feeds (system, community, course) via Stream REST API
-- Adds 17 reactions (likes, comments, celebrates) for engagement signal testing
+- Creates 26 activities across 11 feeds (system, community, course) via Stream REST API — the Stream write keys each community/course feed by its **entity id** (`comm-<slug>` / `crs-<slug>`; system → `main`) via `streamFeedIdFor()`, matching what the app's feed API reads/writes, while D1 `feed_activities.feed_id` keeps the slug (Conv 442 fix — slug-keyed Stream writes previously hid every seeded feed)
+- Adds 23 reactions (likes, comments, celebrates) for engagement signal testing
 - Dual-writes `feed_activities` rows to D1 with real `stream_activity_id`
-- Seeds 5 `post_promotions` (FEED-U3a) — declared inline via a `promoteTo` tag on the source post, so the `source_activity_id` FK is derived from that post's real `feed_activities` index (reorder-proof): 3 to System (admin moderation surface), 2 to community feeds (per-feed Promoted lane)
+- Seeds 6 `post_promotions` (FEED-U3a) — declared inline via a `promoteTo` tag on the source post, so the `source_activity_id` FK is derived from that post's real `feed_activities` index (reorder-proof): 3 to System (admin moderation surface), 3 to community feeds (per-feed Promoted lane)
 - Seeds `feed_visits` for 4 users at staggered timestamps (unseen badge testing)
 - `--clean` flag clears existing `post_promotions` (child first), `feed_activities`, `feed_visits`, and `smart_feed_dismissals`
 

@@ -498,7 +498,7 @@ Seed Stream.io feeds and D1 `feed_activities` for smart feed E2E testing.
 npm run db:seed:feeds:local
 ```
 
-Runs `node scripts/seed-feeds.mjs --local --clean`. Creates 19 activities across 9 feeds (townhall/system, community, course) via the Stream REST API, adds 22 reactions (likes, comments, celebrates), and dual-writes metadata to D1 `feed_activities` + `feed_visits` tables. The `--clean` flag clears existing feed data before seeding.
+Runs `node scripts/seed-feeds.mjs --local --clean`. Creates 26 activities across 11 feeds (townhall/system, community, course) via the Stream REST API, adds 23 reactions (likes, comments, celebrates), and dual-writes metadata to D1 `feed_activities` + `feed_visits` tables. The `--clean` flag clears existing feed data before seeding.
 
 **Prerequisites:** Stream API credentials must be in `.dev.vars` (the script skips gracefully if absent). Now runs automatically as the final step of `npm run db:setup:local:dev`; run standalone only to re-seed feeds without resetting the rest of the DB.
 

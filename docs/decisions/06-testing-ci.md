@@ -3,6 +3,17 @@
 
 ## 6. Testing & CI/CD
 
+### [FEED-KEY] Seeded Stream Feeds Key by ENTITY ID (`comm-`/`crs-<slug>`), Not Slug — `streamFeedIdFor()` in `seed-feeds.mjs`; D1 `feed_id` Stays Slug (Conv 442)
+**Date:** 2026-08-24 (Conv 442)
+
+`scripts/seed-feeds.mjs` gains a `streamFeedIdFor(post)` helper that maps a post's slug to the entity id used by the app when writing Stream activities (`comm-<slug>` for communities, `crs-<slug>` for courses), with pass-through for an explicit `streamFeedId` override (system/townhall = `'main'`). The D1 `feed_activities.feed_id` **stays** the slug — that is what the app's own POST endpoint and `recordFeedVisit` use for badges/visits. Rejected: hacking Jack's posts in via the app POST endpoint (fixes one community, not the class); logging the bug and leaving it.
+
+**Rationale:** The feed API reads *and* writes Stream feeds by the ENTITY ID (`communities.id`/`courses.id`), but the seed had been keying Stream writes by SLUG, so every seeded community/course activity landed in a Stream feed the app never reads — invisible on every entity's feed. The app (reader + its own POST) was self-consistent on entity id; the seed was the sole outlier, so fixing the seed aligns them and un-hides all seeded feeds at once. The two systems deliberately key differently (Stream = entity id, D1 = slug), and only the Stream write was wrong.
+
+**Consequences:** All seeded community + course feeds now render (not just the newly-added Prompt Forge feed); the fix flows to staging via the normal `db:seed:feeds` run. A green baseline never caught this — the seed reported "26/26 created" and D1 rows were correct; only a DOM render check exposed the empty feeds.
+
+**See:** `../Peerloop/scripts/seed-feeds.mjs` (`streamFeedIdFor`); `docs/sessions/2026-08/20260824_1602 Decisions.md` §1, Learnings §§1–2; Conv 442.
+
 ### [CODECHECK] Two-Level Safety Model — `/w-codecheck` Is a Static Commit-Safety **Reporter** (`npm run codecheck`); `npm run verify` Is the Deploy-Safety Superset (Conv 439)
 **Date:** 2026-08-20 (Conv 439)
 
