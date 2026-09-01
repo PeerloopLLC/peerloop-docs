@@ -62,6 +62,8 @@
 - [link](feedback_persistent_dev_server_4321.md) — NO persistent dev server (retired Conv 366) — EPHEMERAL `npm run dev` on demand, killed when done. ≠ preflip :4331.
 - [link](reference_devserver_stale_daemon.md) — [DEVSRV-STALE] 3 brick variants via one `curl` (`000`/500/200-stale), **ALL root-caused Conv 429**: astro-7 `npm run dev` DAEMONIZES (why they outlive convs); preflip's astro-6 `astro dev stop` *STARTS* a pre-flip :4321. NEVER port-kill — `lsof -ti` returns Chrome. Clean build ⇒ never the code.
 - [link](feedback_codecheck_moment_includes_tests_and_build.md) — `/w-codecheck` = decision point: also weigh prov-sweep + full suite + build. Anti-pattern: inline `tsc`/`lint` skipping the skill. Conv 207.
+- [link](feedback_pipefail_when_teeing_verify.md) — `verify`/`test`/`build` piped `| tee | tail` returns TAIL's exit (0), hiding failures. Use `set -o pipefail`+`$?` or redirect-then-read; trust the output's `Test Files…passed` line, not `$?`. Conv 443 [TBK] (6 masked failures).
+- [link](feedback_tailwind_arbitrary_class_stale_on_viewtransition.md) — newly-added arbitrary Tailwind class (`mr-[20px]`) can compute to 0 on the ClientRouter View-Transition **swap** path (right on full load, wrong after tab-click) = dev-CSS staleness → **restart dev server**. Verify spacing on a real in-app swap, not `navigate()`. Conv 443 [TBK] spacing saga.
 - [link](plato_walk_mocked_service_divergence.md) — [PLATO-SEQ] browser-walk row-identity EXCLUDES `notifications`; [PSA-WAITUNTIL] fixed Conv 384; CUT-2 enroll has NO `payment_intent`.
 
 ### Output & terms
