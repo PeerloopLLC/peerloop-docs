@@ -32,7 +32,6 @@
 > orphaned endpoint is deleted. Nothing outstanding — kept here one conv for traceability, then
 > delete this note.
 
-- [CAS](#cas) — ▶ NEXT CONV: community avatars get a generated style (light-purple bg, white initials of non-stop title words + white star icon)
 - [FIXES-AUG-21](#fixes-aug-21) — client change batch (change requests received Aug 21), Conv 441
 
 ◆ **co-equal** — do next; order among these not significant
@@ -182,14 +181,6 @@
 - **Fallback (Conv 379):** set course thumbnail via the app's `PUT /api/me/courses/[id]/thumbnail` (external URL, JSON). Document API-PUT as the standard for file-gated browser steps.
 - **Next:** re-test on a newer Chrome-in-Claude build.
 - **Refs:** `memory/reference_chrome_bridge_island_stale_cache` [BRIDGE-UPLOAD]. Surfaced Conv 379.
-
-### [CAS]
-
-- **State:** 📋 queued — ▶ NEXT CONV (spec given at end of Conv 442, for Conv 443)
-- **What:** Give community avatars a **generated "style"** instead of picsum/uploaded images: **light-purple background**, **white letters** — one initial per **non-stop word** in the community's title (skip stop words like the/for/of/a/and), plus a **white star icon** placed elsewhere in the avatar. Examples (illustrative): "Prompt Forge" → **PF**; "AI for You" → **AY** (skip "for"); "Automation Majors" → **AM**; "The Q-System" → **QS** (skip "the").
-- **Open Qs (resolve at conv start):** exact stop-word list; letter = first char of each non-stop word?; star placement (fixed corner vs free "elsewhere"); runtime SVG component (like `default-avatar.svg`) vs build-time asset; which surfaces (community cards / header / feed author chip); does it replace `cover_image_url`/`logo_url` or a distinct avatar field.
-- **Related:** `[COMM-IMG]` (community art is all picsum placeholders; `cover_image_url` has a UI slot but no upload/storage) — this generated-style approach may supersede or complement it.
-- **Refs:** community avatar rendering (CommunityCard / community header), `../Peerloop/public/images/default-avatar.svg` (SVG-avatar precedent).
 
 ### [STREAM-ENV]
 
@@ -888,4 +879,4 @@
 
 ## ✅ Done this conv
 
-_(none yet — cleared at each /r-start)_
+- **[CAS]** — generated community avatar. New `CommunityAvatar.tsx` (brand-purple **circle** `bg-brand-300`, white monogram initials, white `ratings` star bottom-right, sizes 20/40/56) + pure `lib/community-initials.ts` (stop-words + whitespace/hyphen tokenize + 3-cap) + 8 passing unit tests. Wired as the no-logo fallback at all 4 community-mark sites (catalog hero 56 + stacked 20, detail header 56, affiliation band 40 + inline 20 — **closes the prior band no-fallback gap**, creators card 40). Nulled the 4 picsum `logo_url` seeds (covers kept). Registered in `matt-inspired-registry.ts` (prov:sweep GREEN). Live-verified on all 4 surfaces (reseed + dev + browser); colour approved by user; shape switched square→circle per user. **Then made ALL community logo marks circular per user** — the real-uploaded-logo `<img>` branches too (catalog hero 56 + stacked 20, detail header 56, affiliation inline 20; band was already `rounded-full`; creators card 40), updated the catalog card's anti-circle comment. Real-logo circle-crop live-verified (temp logo injected → circle → reverted). **Then swapped the corner star** from the 5-pointed `ratings` glyph (had a sparkle adornment) to a new hand-drawn clean **4-pointed** `star-4.svg` (registered `source:'ours'` in `icon-provenance.ts`; needed a dev-server restart to pick up the new `?raw` glob file), **then added a 2nd `star-4` at 60% size** diagonally opposite (top-left, centre mirrors the primary across the avatar centre). codecheck 0/0. (Left alone: the discovery-rail thumbnail — a shared course/community card image, not a logo mark.)
