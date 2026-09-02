@@ -3,6 +3,17 @@
 
 ## 5. UI/UX & Components
 
+### [PRICE-OPTOUT] The /courses Card's Price Move Off the Cover Is a Prop-Gated Opt-Out on the Shared `CourseCoverPanel`, Not a Removal or a Fork (Conv 443)
+**Date:** 2026-09-01 (Conv 443)
+
+The client wants the price off the /courses cover, but the price sticker lives in the shared `CourseCoverPanel` (also used by `CommunityCatalogCard`) and `CoursePriceSticker` is used directly by the detail hero. `CourseCoverPanel` gains a `showPriceSticker` prop (default `true`); only /courses passes `false`, and `CoursePriceSticker` gains an `inline` (in-flow) variant for the new title-row placement. Rejected: removing the sticker from `CourseCoverPanel` outright (breaks the detail hero + community cards); forking a /courses-specific cover panel (drift).
+
+**Rationale:** Keeps the detail hero and community cards unchanged, one component, no drift — the default-true opt-out makes every other surface a no-op.
+
+**Consequences:** `CourseCoverPanel` gained `showPriceSticker`; `CoursePriceSticker` gained `inline`. Same conv also moved the Enrolled/Completed enrollment state off the cover into a meta-line pill and removed the redundant "Diploma earned" / "3 of 3 sessions" text on completed cards (diploma verified coincident with completion).
+
+**See:** `../Peerloop/src/components/courses/CourseCatalogCard.tsx`, `CourseCoverPanel.tsx`, `CoursePriceSticker.tsx`; `docs/sessions/2026-09/20260901_1941 Decisions.md` §1; Conv 443.
+
 ### [RAIL-DETAIL] The Right Rail Ships as ONE `DiscoveryRailPanel` Behind an `AppLayout` `right-panel` Slot — the Panel Pairs with the **Content**, Not the Row (Conv 435)
 **Date:** 2026-08-10 (Conv 435)
 

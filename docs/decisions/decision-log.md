@@ -5,6 +5,15 @@
 
 For historical decisions and the full rationale behind each choice, see the session files in `docs/sessions/YYYY-MM/`.
 
+### [PRICE-OPTOUT] The /courses Card's Price Move Off the Cover Is a Prop-Gated Opt-Out on the Shared `CourseCoverPanel`, Not a Removal or a Fork
+**Date:** 2026-09-01 (Conv 443)
+
+`CourseCoverPanel` gains `showPriceSticker` (default `true`); only /courses passes `false`, and `CoursePriceSticker` gains an `inline` variant for the new title-row placement. Rejected: removing the sticker outright (breaks the detail hero + community cards) and forking a /courses cover panel (drift). Same conv moved Enrolled/Completed off the cover into a meta-line pill and dropped the redundant "Diploma earned" / "3 of 3 sessions" text on completed cards.
+
+**Rationale:** One component, no drift — the default-true opt-out makes every other surface a no-op.
+
+**See:** `docs/decisions/05-ui-ux-components.md`; `../Peerloop/src/components/courses/CourseCoverPanel.tsx`, `CoursePriceSticker.tsx`; `docs/sessions/2026-09/20260901_1941 Decisions.md` §1.
+
 ### [FEED-KEY] Seeded Stream Feeds Key by ENTITY ID (`comm-`/`crs-<slug>`), Not Slug — `streamFeedIdFor()` in `seed-feeds.mjs`; D1 `feed_id` Stays Slug
 **Date:** 2026-08-24 (Conv 442)
 

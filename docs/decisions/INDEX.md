@@ -269,6 +269,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [[PRICE-OPTOUT] The /courses Card's Price Move Off the Cover Is a Prop-Gated Opt-Out on the Shared `CourseCoverPanel`, Not a Removal or a Fork (Conv 443)](05-ui-ux-components.md#price-optout-the-courses-cards-price-move-off-the-cover-is-a-prop-gated-opt-out-on-the-shared-coursecoverpanel-not-a-removal-or-a-fork-conv-443)
 - [[RAIL-DETAIL] The Right Rail Ships as ONE `DiscoveryRailPanel` Behind an `AppLayout` `right-panel` Slot — the Panel Pairs with the **Content**, Not the Row (Conv 435)](05-ui-ux-components.md#rail-detail-the-right-rail-ships-as-one-discoveryrailpanel-behind-an-applayout-right-panel-slot--the-panel-pairs-with-the-content-not-the-row-conv-435)
 - [[PILL-LIFT] The Client's Pill Elevation Is Adopted as `--brian-pill-shadow{,-hover}` Tokens, Scoped **LOCAL** to the `/courses` Topic Row (Conv 434)](05-ui-ux-components.md#pill-lift-the-clients-pill-elevation-is-adopted-as---brian-pill-shadowhover-tokens-scoped-local-to-the-courses-topic-row-conv-434)
 - [[COMM-BAND-ADOPT] The Client's Band Colours Are Adopted as `brian-*` **Tokens** on a New `presentation="band"` Variant — Never as Inline Hex, Never as a Wholesale Restyle (Conv 433)](05-ui-ux-components.md#comm-band-adopt-the-clients-band-colours-are-adopted-as-brian--tokens-on-a-new-presentationband-variant--never-as-inline-hex-never-as-a-wholesale-restyle-conv-433)
