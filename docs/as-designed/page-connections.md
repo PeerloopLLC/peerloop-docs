@@ -52,10 +52,9 @@ Routes referenced in code but **no matching .astro page exists:**
 | `/contact` | `[Footer]` |
 | `/cookies` | `[Footer]` |
 | `/course/[slug]` | `/`, `/admin/enrollments`, `/community/[slug]/[...tab]`, `/course/[slug]/[...tab]`, `/course/[slug]/book`, `/course/[slug]/success`, `/course/[slug]/teach`, `/creating/[...tab]`, `/dev/primitives`, `/diploma/[id]`, `/learning/[...tab]`, `/receipt/[id]`, `/session/[id]`, `/teacher/[handle]`, `/teaching/[...tab]`, `/teaching/courses/[courseId]`, `/verify/[id]` |
-| `/course/[slug]/benefits` | `/course/[slug]/[...tab]`, `/course/[slug]/book`, `/course/[slug]/success` |
 | `/course/[slug]/feed` | `/course/[slug]/success` |
 | `/course/[slug]/learn` | `/course/[slug]/[...tab]`, `/course/[slug]/book`, `/learning/[...tab]`, `/session/[id]` |
-| `/course/[slug]/modules` | `/course/[slug]/[...tab]`, `/course/[slug]/book`, `/course/[slug]/success`, `/session/[id]` |
+| `/course/[slug]/modules` | `/course/[slug]/[...tab]`, `/session/[id]` |
 | `/course/[slug]/reviews` | `/course/[slug]/[...tab]` |
 | `/course/intro-to-claude-code` | `/dev/primitives` |
 | `/creating` | `/creating/[...tab]`, `/creating/apply`, `/creating/communities/[slug]`, `/creator/[handle]`, `[Sidebar]` |
@@ -543,12 +542,12 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/` (link)
 - `/community/[slug]` (card) ⚠️
 - `/course/[slug]` (redir) ⚠️
-- `/course/[slug]/benefits` (link) ⚠️
 - `/course/[slug]/book` (tab)
 - `/course/[slug]/learn` (tab) ⚠️
 - `/course/[slug]/modules` (redir) ⚠️
 - `/course/[slug]/reviews` (link) ⚠️
 - `/courses` (link)
+- `/creator/[handle]` (card)
 - `/diploma/[id]` (link)
 - `/messages` (btn)
 - `/session/[id]` (crumb)
@@ -565,11 +564,10 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Outbound (page-specific):**
 - `/community/[slug]` (card) ⚠️
 - `/course/[slug]` (redir) ⚠️
-- `/course/[slug]/benefits` (link) ⚠️
 - `/course/[slug]/book` (tab)
 - `/course/[slug]/learn` (tab) ⚠️
-- `/course/[slug]/modules` (link) ⚠️
 - `/courses` (redir)
+- `/creator/[handle]` (card)
 - `/learning` (link) ⚠️
 - `/login` (redir)
 - `/messages` (btn)
@@ -593,11 +591,10 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 **Outbound (page-specific):**
 - `/community/[slug]` (card) ⚠️
 - `/course/[slug]` (card) ⚠️
-- `/course/[slug]/benefits` (link) ⚠️
 - `/course/[slug]/book` (tab)
 - `/course/[slug]/feed` (tab) ⚠️
-- `/course/[slug]/modules` (link) ⚠️
 - `/courses` (link)
+- `/creator/[handle]` (card)
 - `/session/[id]` (crumb)
 
 **Inherits:** `[Sidebar]`, `[AuthModals]`, `[Footer]`
@@ -1134,6 +1131,9 @@ They occupy FROM rows in the adjacency matrix but not TO columns.
 - `/admin/teachers` (card)
 - `/communities` (card)
 - `/community/[slug]/[...tab]` (card)
+- `/course/[slug]/[...tab]` (card)
+- `/course/[slug]/book` (card)
+- `/course/[slug]/success` (card)
 - `/courses` (card)
 - `/creator/[handle]` (card)
 - `/teaching/courses/[courseId]` (card)

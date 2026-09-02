@@ -272,7 +272,7 @@
 
 ### [CTA-COLOR]
 
-- **State:** 📋 queued · design-system convention + sweep (spans a conv+) — user asked Conv 444 (option A)
+- **State:** 📋 queued · design-system convention + sweep (spans a conv+) — user asked Conv 444 (option A) · [Opus]
 - **What:** define a **CTA background-color convention** and sweep the app to it. Motivated by course pages showing a green (`variant="course"`) and a blue (`variant="primary"` / `bg-primary-light`) filled CTA side-by-side with no stable meaning separating them (user-observed on `/course/[slug]/sessions`).
 - **Audit findings (Conv 444, Explore sweep):** Button variants app-wide — blue `primary` **144** · `outlined` 67 · `danger` 31 · green `course` **18** · student 3 · creator 2 (blue dominates; green rare, course-surfaces only). The green↔blue **CTA** collision (NOT the decorative role-tints, which are fine) appears at ~10 same-page sites: `SessionRoom.tsx`, `SessionCompletedView.tsx`, `success.astro`, `ModulesTab.astro`, `[...tab].astro`, `CourseProgressCard.tsx`, `CourseJourneyStepper.astro`, catalog card. Same "Book" action is green on `success.astro` but blue in `SessionRoom.tsx`.
 - **KEEP (do NOT touch):** the **status coding** green = completed/done, blue = booked/active/scheduled — intentional + consistent in the progress/stepper WIDGETS (`ModulesTab` progress bar, `CourseJourneyStepper` step states, `CourseProgressCard` pills). The problem is only the **action buttons** ignoring it.

@@ -135,20 +135,20 @@ lnk: M01 P01
 rdr: M05 /community/[slug] A01
 tab: K03"					"C01 /course/[slug]/[...tab]
 btn: P02
-crd: /community/[slug]
+crd: R02 /community/[slug]
 crm: R03
-lnk: P01 M01 M09 /course/[slug]/reviews /course/[slug]/benefits
+lnk: P01 M01 M09 /course/[slug]/reviews
 rdr: /course/[slug] /course/[slug]/modules A04
 tab: C02 /course/[slug]/learn"	"C02 /course/[slug]/book
 btn: P02
-crd: /community/[slug]
+crd: R02 /community/[slug]
 crm: R03
-lnk: /course/[slug]/modules /course/[slug]/benefits /learning
+lnk: /learning
 rdr: P01 /course/[slug] A01
 tab: /course/[slug]/learn C02"	"C03 /course/[slug]/success
-crd: /course/[slug] /community/[slug]
+crd: /course/[slug] R02 /community/[slug]
 crm: R03
-lnk: P01 /course/[slug]/modules /course/[slug]/benefits
+lnk: P01
 tab: C02 /course/[slug]/feed"	"C04 /course/[slug]/teach
 rdr: /course/[slug] A01"		"R01 /@[handle]
 crd: R02 R04

@@ -5,6 +5,24 @@
 
 For historical decisions and the full rationale behind each choice, see the session files in `docs/sessions/YYYY-MM/`.
 
+### [CBAN] The Course-Family Banner Is Unified on the Shared Cover-Story `CourseCatalogCard`; the Dark `CourseHeader` Hero Is Deleted, Lost Detail Re-Homed
+**Date:** 2026-09-02 (Conv 444)
+
+`/course/[slug]/[...tab]`, `/book` and `/success` drop the bespoke dark `CourseHeader` hero and reuse the exact `/courses` cover-story `CourseCatalogCard` as the `panelSpan="full"` entity-header (prop-mapped 1:1). Lost hero detail is re-homed: enrolled next-session → new `CourseNextSessionBand.astro`; `course_includes` → a "What's included" Card in About; Level + student count → an always-on `IconLabelChip` row in the About card. Detail pages omit `description` (fall back to tagline — description duplicates the About section); `/courses` keeps it. `CourseHeader.tsx` deleted (−285 lines, zero importers). Banner-height bug fixed by removing a vestigial `h-full` that stretched the card as an entity-header (190 vs 282px on Reviews → 190px-stable). Deployed to staging (UI-only, no reseed/cron).
+
+**Rationale:** One shared card on every surface — the user wanted the detail banner to *be* the /courses card, with lost enrolled/includes detail preserved where it matters.
+
+**See:** `docs/decisions/05-ui-ux-components.md`; `../Peerloop/src/components/course/CourseNextSessionBand.astro`, `src/pages/course/[slug]/[...tab].astro`; `docs/sessions/2026-09/20260902_1146 Decisions.md` §§1–6, Learnings §1.
+
+### [CTA-COLOR] Status-Widget Green/Blue Coding Stays; Primary-Action CTA Colours Get a Convention + Sweep, Non-Functional CTAs Flag Gold/Yellow
+**Date:** 2026-09-02 (Conv 444)
+
+Audit found green=done/blue=booked is an intentional, consistent convention inside progress/stepper widgets (kept), but primary-action Buttons flip between green `variant="course"` and blue `variant="primary"` with no rule (same Book action green on `success.astro`, blue in `SessionRoom`; app-wide 144 blue vs 18 green, ~10 same-page mixing sites in the course/booking flow). Task `[CTA-COLOR]` will define a CTA background-colour convention + sweep the ~10 sites; non-functional/not-yet-wired CTAs get a gold/yellow flag. Queued, not executed; token choice (amber `warning` vs new gold variant) deferred to execution. Rejected: quick one-page fix; leave it.
+
+**Rationale:** A convention is a design decision the user must own (§Critical Rule) — surface → sign-off → sweep.
+
+**See:** `docs/decisions/05-ui-ux-components.md`; `docs/sessions/2026-09/20260902_1146 Decisions.md` §7, Learnings §5.
+
 ### [PRICE-OPTOUT] The /courses Card's Price Move Off the Cover Is a Prop-Gated Opt-Out on the Shared `CourseCoverPanel`, Not a Removal or a Fork
 **Date:** 2026-09-01 (Conv 443)
 

@@ -3,6 +3,28 @@
 
 ## 5. UI/UX & Components
 
+### [CBAN] The Course-Family Banner Is Unified on the Shared Cover-Story `CourseCatalogCard`; the Dark `CourseHeader` Hero Is Deleted, Lost Detail Re-Homed (Conv 444)
+**Date:** 2026-09-02 (Conv 444)
+
+Every course-family surface (`/course/[slug]/[...tab]`, `/book`, `/success`) drops the bespoke dark `CourseHeader` hero and reuses the exact `/courses` cover-story `CourseCatalogCard` as the `panelSpan="full"` entity-header, prop-mapped 1:1 (rating/price formatters, `enrollment` markers, shared `buildCoursePrimaryCta`). Two hero-only details lost by the swap are re-homed: the enrolled next-session widget → a new `CourseNextSessionBand.astro` (About + Sessions tabs; also `/book` unconditional, `/success` while-not-complete), and the `course_includes` "what's included" list → a Card in the About body. Detail-family pages omit the `description` prop (card falls back to the tagline — description would duplicate the About section right below), while `/courses` keeps description as the card's useful body. Level + student-count get an always-on `IconLabelChip` row at the bottom of the About card (banner/card show them to non-enrolled viewers only). Rejected: keeping the dark hero anywhere; exact /courses parity (description) on detail pages.
+
+**Rationale:** One shared card on every surface (extends the Conv-443 [PRICE-OPTOUT] one-component principle) — the user wanted the detail banner to *be* the /courses card, with the lost enrolled/includes detail preserved where it matters rather than dropped.
+
+**Consequences:** `entity/CourseHeader.tsx` lost its last consumers and was deleted (−285 lines). New `CourseNextSessionBand.astro`. Per-host prop difference (tagline vs description) documented in code. Banner-height bug surfaced + fixed: the cover-story root carried a vestigial `h-full` (no-op in the /courses vertical list) that stretched it as a `panelSpan="full"` entity-header — 190px most tabs / 282px on Reviews; removed, leaving `min-h-[190px]` as the content-driven floor, Playwright-verified 190px-stable on every tab for visitor + enrolled. Deployed to staging (UI-only diff, no reseed/cron).
+
+**See:** `../Peerloop/src/components/course/CourseNextSessionBand.astro`, `src/components/courses/CourseCatalogCard.tsx`, `src/pages/course/[slug]/[...tab].astro`, `book.astro`, `success.astro`; `docs/sessions/2026-09/20260902_1146 Decisions.md` §§1–6, Learnings §1; Conv 444.
+
+### [CTA-COLOR] The Green/Blue Status Coding Stays, but Primary-Action CTA Colours Get a Codebase Convention + Sweep; Non-Functional CTAs Flag Gold/Yellow (Conv 444)
+**Date:** 2026-09-02 (Conv 444)
+
+A CTA-colour audit found green=completed/done and blue=booked/active is an *intentional, consistent* convention inside progress/stepper widgets (ModulesTab bar, CourseJourneyStepper, CourseProgressCard) — that coding is kept. The real problem is the primary-action Buttons: "Book"/"Enroll"/"Join" flip between green `variant="course"` and blue `variant="primary"` with no rule (same Book action green on `success.astro`, blue in `SessionRoom`). App-wide: 144 blue-primary vs 18 green-course Button variants; ~10 same-page mixing sites, all in the course/booking flow. Decision: task `[CTA-COLOR]` to define a CTA background-colour convention + sweep the ~10 sites; **non-functional/not-yet-wired CTAs get a gold/yellow flag** (dev-visible, tied to `[CTA-HOST-GUARD]` + the Conv-443 yellow-marker precedent). Rejected: quick one-page fix; leave it.
+
+**Rationale:** A convention is a genuine design decision the user must own (§Critical Rule) — surface convention → sign-off → sweep, over a one-page patch that deepens the inconsistency.
+
+**Consequences:** Queued task, not executed this conv. Token choice TBD (amber `warning` vs a new gold variant) and the exact "non-functional" interpretation deferred to task execution.
+
+**See:** `docs/sessions/2026-09/20260902_1146 Decisions.md` §7, Learnings §5; `CURRENT-TASKS.md` `[CTA-COLOR]`; Conv 444.
+
 ### [PRICE-OPTOUT] The /courses Card's Price Move Off the Cover Is a Prop-Gated Opt-Out on the Shared `CourseCoverPanel`, Not a Removal or a Fork (Conv 443)
 **Date:** 2026-09-01 (Conv 443)
 
