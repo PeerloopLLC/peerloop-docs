@@ -5,6 +5,24 @@
 
 For historical decisions and the full rationale behind each choice, see the session files in `docs/sessions/YYYY-MM/`.
 
+### [HW-MERGE] Course Homework Tab Merged Into Sessions (Hybrid); `/homework` 301→`/modules`
+**Date:** 2026-09-04 (Conv 446)
+
+The standalone Homework tab folds into the Sessions (Modules) tab as a hybrid: an SSR loader attaches per-module + course-level homework summaries (`CourseHomeworkSummary`) rendered as inline per-session indicators (status badge + `#homework-<id>` jump-link) plus a course tail, while the existing `HomeworkTab` island is reused below the module list. Standalone tab removed, `/homework` 301→`/modules`, mirroring Conv-445 [CRS-MEMBERS]. Bidirectional cross-ref badges: session→homework is a link pill, homework→session is a label-only pill (`<a>` can't nest in the card header's toggle `<button>`), built from an SSR `moduleSessionMap`.
+
+**Rationale:** Reuses the heavy submit island unchanged (low risk), keeps homework tied to its session, and the 301 keeps reminder-email deep links resolving.
+
+**See:** `docs/decisions/05-ui-ux-components.md`; `docs/sessions/2026-09/20260904_1340 Decisions.md` §1; Conv 446.
+
+### [HW-MERGE] Student-Facing Session Numbering by Curriculum Position, Not `session_number`
+**Date:** 2026-09-04 (Conv 446)
+
+The Sessions tab numbered `1,1,2` because `ModulesTab.astro` printed the creator-editable `session_number` column, which carried stale seed values. Since Session↔Module is 1:1, `ModulesTab` now renders by curriculum position (`i + 1`); the `session_number` column is left as-is (no migration).
+
+**Rationale:** One display change corrects every affected course at once with no migration; prefer positional numbering over a nullable/editable ordinal when the model guarantees 1:1 ordering.
+
+**See:** `docs/decisions/05-ui-ux-components.md`; `docs/sessions/2026-09/20260904_1340 Decisions.md` §2; Conv 446.
+
 ### [CRS-MEMBERS] Course Teachers Tab Merged Into Members as a Composite; `/teachers` 301→`/members`
 **Date:** 2026-09-04 (Conv 445)
 

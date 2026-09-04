@@ -3,6 +3,28 @@
 
 ## 5. UI/UX & Components
 
+### [HW-MERGE] Course Homework Tab Merged Into Sessions (Hybrid); `/homework` 301→`/modules` (Conv 446)
+**Date:** 2026-09-04 (Conv 446)
+
+The standalone Homework tab is folded into the Sessions (Modules) tab as a hybrid: an SSR loader (`fetchCourseModulesView`) attaches per-module `homework[]` + course-level `courseHomework[]` (enrolled-only, LEFT JOIN `homework_submissions`; new `CourseHomeworkSummary` type), which `ModulesTab.astro` renders as inline per-session indicators (title + To-do/Submitted/Reviewed/Resubmit status badge + `#homework-<id>` jump-link) plus a Course-homework tail; the existing `HomeworkTab` island is reused wholesale below the module list. The standalone tab is removed (`homework` dropped from `VALID_TABS`/`TAB_LABELS`, `_course-tabs.ts` strip entry gone, `isEnrolled`→`_isEnrolled` reserved), `/homework` 301→`/modules`, mirroring the Conv-445 [CRS-MEMBERS] Teachers→Members merge and the Conv-412 [RESTAB-RETIRE] Resources retirement. Bidirectional cross-ref badges: session rows with homework show a "Homework" link pill (→ `#homework-<id>`) and `id="session-N"` anchors; each homework card shows a **label-only** "Session N" pill (an `<a>` can't nest inside the card header's toggle `<button>`) built from an SSR `moduleSessionMap` (module_id → curriculum position) threaded into `HomeworkTab`.
+
+**Rationale:** Reuses the heavy submit/feedback island unchanged (low risk), keeps homework visually tied to its session, and the 301 keeps deep links (reminder emails) resolving. Chosen over interleaved-full (rebuild submit UI inline) and separate-section (un-ties from sessions).
+
+**Consequences:** New `CourseHomeworkSummary` type + `homework`/`courseHomework` fields on the modules view; `HomeworkTab` gained an optional `moduleSessionMap` prop; the enrolled-only Homework strip tab is gone. Known tradeoff: the badge indicator (SSR snapshot) and HomeworkTab (client fetch) double-source the same status data — accepted for a snapshot. Committed code `6c9f85be`.
+
+**See:** `../Peerloop/src/lib/ssr/loaders/courses.ts`, `src/components/course/ModulesTab.astro`, `src/components/learning/HomeworkTab.tsx`, `src/pages/course/[slug]/[...tab].astro`, `_course-tabs.ts`; `docs/sessions/2026-09/20260904_1340 Decisions.md` §1.
+
+### [HW-MERGE] Student-Facing Session Numbering by Curriculum Position, Not `session_number` (Conv 446)
+**Date:** 2026-09-04 (Conv 446)
+
+The Sessions tab numbered `1, 1, 2` because `ModulesTab.astro` printed `course_curriculum.session_number` directly, and that creator-editable column carried stale seed values (diverging from `module_order`) across several courses. Since Session↔Module is 1:1, `ModulesTab` now renders by curriculum position (`i + 1`, list already ordered by `module_order`); the `session_number` column is left as-is (still creator-editable via `CurriculumEditor`) — no data migration. Rejected: fixing/reseeding mock data, and treating `1,1,2` as an intentional multi-module grouping.
+
+**Rationale:** One display change corrects every affected course at once with no migration, and doesn't disturb the creator-owned column. Prefer positional numbering over trusting a nullable/editable ordinal when the model guarantees 1:1 ordering.
+
+**Consequences:** Student-facing Sessions tab numbers sequentially regardless of stored `session_number`.
+
+**See:** `../Peerloop/src/components/course/ModulesTab.astro`; `docs/sessions/2026-09/20260904_1340 Decisions.md` §2.
+
 ### [CRS-MEMBERS] Course Teachers Tab Merged Into Members as a Composite; `/teachers` 301→`/members` (Conv 445)
 **Date:** 2026-09-04 (Conv 445)
 

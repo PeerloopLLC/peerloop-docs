@@ -269,6 +269,8 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [[HW-MERGE] Course Homework Tab Merged Into Sessions (Hybrid); `/homework` 301→`/modules` (Conv 446)](05-ui-ux-components.md#hw-merge-course-homework-tab-merged-into-sessions-hybrid-homework-301modules-conv-446)
+- [[HW-MERGE] Student-Facing Session Numbering by Curriculum Position, Not `session_number` (Conv 446)](05-ui-ux-components.md#hw-merge-student-facing-session-numbering-by-curriculum-position-not-session_number-conv-446)
 - [[CRS-MEMBERS] Course Teachers Tab Merged Into Members as a Composite; `/teachers` 301→`/members` (Conv 445)](05-ui-ux-components.md#crs-members-course-teachers-tab-merged-into-members-as-a-composite-teachers-301members-conv-445)
 - [Reviews Tab Made Contextual (Active-Only) on the Course Detail Strip (Conv 445)](05-ui-ux-components.md#reviews-tab-made-contextual-active-only-on-the-course-detail-strip-conv-445)
 - [[CBAN] The Course-Family Banner Is Unified on the Shared Cover-Story `CourseCatalogCard`; the Dark `CourseHeader` Hero Is Deleted, Lost Detail Re-Homed (Conv 444)](05-ui-ux-components.md#cban-the-course-family-banner-is-unified-on-the-shared-cover-story-coursecatalogcard-the-dark-courseheader-hero-is-deleted-lost-detail-re-homed-conv-444)

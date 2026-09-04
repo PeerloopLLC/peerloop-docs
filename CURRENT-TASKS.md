@@ -85,6 +85,7 @@
 - [SCHEMADIAG](#schemadiag) — `schema-diagram.md` claims 48 tables, 71 on disk (r-end docs agent, Conv 432)
 - [SEED-NOTIF-STALE](#seed-notif-stale) — seeded admin notification asserts a cert that Conv 434 deleted
 - [STREAM-ENV](#stream-env) — ⚠️ CONFIRMED: seed feeds accumulate duplicate Stream activities each --clean reseed (16 in PF now); fix needs Stream-API work
+- [HW-DUP](#hw-dup) — session row shows both the "Homework" title-badge AND the detailed inline homework row (redundant); collapse if client finds it noisy
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -352,6 +353,13 @@
 - **Why it exists at all:** `resize_window` never applies width (see `[BRIDGE-RESIZE]`), so this is the
   only way to measure or eyeball a viewport wider than the window manager grants.
 - **Refs:** `[BRIDGE-RESIZE]`, `memory/reference_responsive_iframe_harness.md`. Surfaced Conv 424.
+
+### [HW-DUP]
+
+- **State:** 📋 queued · low priority (UI polish, client say-so)
+- **What:** On the course Sessions tab, a session that has homework now shows **two** homework affordances stacked: the new title-line "Homework" badge (jump-link → `#homework-<id>`) AND the earlier detailed inline row (assignment title + status badge + link). Slightly redundant.
+- **Options:** keep both (badge = at-a-glance flag, row = status detail) · drop the detailed inline row and let status live only on the homework card below · drop the badge. Left as both this conv (Conv 446) pending the client's read.
+- **Refs:** `../Peerloop/src/components/course/ModulesTab.astro` — the title-row "Homework" badge + the `m.homework.map(...)` inline indicator list. Surfaced Conv 446 [HW-MERGE].
 
 ### [HOME-FIXES]
 
