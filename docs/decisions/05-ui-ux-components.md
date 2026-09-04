@@ -3,6 +3,28 @@
 
 ## 5. UI/UX & Components
 
+### [CRS-MEMBERS] Course Teachers Tab Merged Into Members as a Composite; `/teachers` 301→`/members` (Conv 445)
+**Date:** 2026-09-04 (Conv 445)
+
+The course detail page's overlapping Teachers and Members tabs are merged into a single composite `CourseMembersTab`: a Teachers section (creator first + peer teachers, reusing the rich `TeacherCard`) atop a Students section, one shared search. The standalone Teachers tab is removed, `/teachers` 301s to `/members`, and the orphaned `TeachersTab.astro` is deleted. The Members tab itself was first *restored* — it existed on `brian-July-20` (`51e1f1e3`, never merged into `jfg-dev-14`) and was rebuilt fresh modeled on the current Matt-conformed `CommunityMembersTab` rather than cherry-picked (brian's Fable-authored version predates our token gates). Per-row treatment unified: every card/row gets a white outlined "Visit Member" + "Message" button (message glyph + label, grouped at row end, `hover:bg-primary-light`); whole-row click/hover removed on student rows; creator badged with a role pill + a "Meet the Creator" link to `/course/[slug]/creator`; a non-certified creator renders `hideStats`.
+
+**Rationale:** Client asked to merge the tabs (they duplicated teachers + creator; students appeared only in Members). A single directory removes duplicate creator/teacher rows; the 301 preserves link-honesty for the retired route.
+
+**Consequences:** New `CourseMembersTab.tsx` + `members` loader roster (`courses.ts`); `TeacherCard` exported from `TeachersTabList` and extended (hideStats, creatorPageHref, handle, role pill, Visit Member). Breaking route change: `/teachers` no longer serves its own tab. Committed `6130118d` (jfg-dev-14).
+
+**See:** `../Peerloop/src/components/course/CourseMembersTab.tsx`, `TeachersTabList.tsx`, `src/lib/ssr/loaders/courses.ts`, `src/pages/course/[slug]/[...tab].astro`, `_course-tabs.ts`; `docs/sessions/2026-09/20260904_1222 Decisions.md` §§2–4.
+
+### Reviews Tab Made Contextual (Active-Only) on the Course Detail Strip (Conv 445)
+**Date:** 2026-09-04 (Conv 445)
+
+The Reviews tab is removed from the course browse strip but the `/reviews` route stays reachable (banner rating chip + About-body link). To avoid a "no you-are-here anchor" when the route is active, `buildCourseExploreTabs` takes an `activeTab` param and appends a highlighted Reviews tab **only** when `activeTab === 'reviews'`. Rejected: fully removing the tab (disorienting), an in-content header only, and reverting.
+
+**Rationale:** Satisfies the client's "no visible Reviews tab in the strip" while restoring the location anchor exactly when the user is on `/reviews`.
+
+**Consequences:** `activeTab` param added to `buildCourseExploreTabs`; only `[...tab].astro` passes it (`tab`). Establishes a reusable "contextual tab" pattern (append + highlight a tab only when its route is active).
+
+**See:** `../Peerloop/src/pages/course/[slug]/_course-tabs.ts`, `[...tab].astro`; `docs/sessions/2026-09/20260904_1222 Decisions.md` §1.
+
 ### [CBAN] The Course-Family Banner Is Unified on the Shared Cover-Story `CourseCatalogCard`; the Dark `CourseHeader` Hero Is Deleted, Lost Detail Re-Homed (Conv 444)
 **Date:** 2026-09-02 (Conv 444)
 

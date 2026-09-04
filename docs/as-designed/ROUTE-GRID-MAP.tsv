@@ -135,10 +135,10 @@ lnk: M01 P01
 rdr: M05 /community/[slug] A01
 tab: K03"					"C01 /course/[slug]/[...tab]
 btn: P02
-crd: R02 /community/[slug]
+crd: R02 /community/[slug] R01
 crm: R03
 lnk: P01 M01 M09 /course/[slug]/reviews
-rdr: /course/[slug] /course/[slug]/modules A04
+rdr: /course/[slug] /course/[slug]/modules /course/[slug]/members A04
 tab: C02 /course/[slug]/learn"	"C02 /course/[slug]/book
 btn: P02
 crd: R02 /community/[slug]

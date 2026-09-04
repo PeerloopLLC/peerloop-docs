@@ -269,6 +269,8 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [5. UI/UX & Components](05-ui-ux-components.md)
 
+- [[CRS-MEMBERS] Course Teachers Tab Merged Into Members as a Composite; `/teachers` 301→`/members` (Conv 445)](05-ui-ux-components.md#crs-members-course-teachers-tab-merged-into-members-as-a-composite-teachers-301members-conv-445)
+- [Reviews Tab Made Contextual (Active-Only) on the Course Detail Strip (Conv 445)](05-ui-ux-components.md#reviews-tab-made-contextual-active-only-on-the-course-detail-strip-conv-445)
 - [[CBAN] The Course-Family Banner Is Unified on the Shared Cover-Story `CourseCatalogCard`; the Dark `CourseHeader` Hero Is Deleted, Lost Detail Re-Homed (Conv 444)](05-ui-ux-components.md#cban-the-course-family-banner-is-unified-on-the-shared-cover-story-coursecatalogcard-the-dark-courseheader-hero-is-deleted-lost-detail-re-homed-conv-444)
 - [[CTA-COLOR] The Green/Blue Status Coding Stays, but Primary-Action CTA Colours Get a Codebase Convention + Sweep; Non-Functional CTAs Flag Gold/Yellow (Conv 444)](05-ui-ux-components.md#cta-color-the-greenblue-status-coding-stays-but-primary-action-cta-colours-get-a-codebase-convention--sweep-non-functional-ctas-flag-goldyellow-conv-444)
 - [[PRICE-OPTOUT] The /courses Card's Price Move Off the Cover Is a Prop-Gated Opt-Out on the Shared `CourseCoverPanel`, Not a Removal or a Fork (Conv 443)](05-ui-ux-components.md#price-optout-the-courses-cards-price-move-off-the-cover-is-a-prop-gated-opt-out-on-the-shared-coursecoverpanel-not-a-removal-or-a-fork-conv-443)

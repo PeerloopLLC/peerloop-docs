@@ -5,6 +5,24 @@
 
 For historical decisions and the full rationale behind each choice, see the session files in `docs/sessions/YYYY-MM/`.
 
+### [CRS-MEMBERS] Course Teachers Tab Merged Into Members as a Composite; `/teachers` 301→`/members`
+**Date:** 2026-09-04 (Conv 445)
+
+The course detail page's overlapping Teachers and Members tabs merge into a single composite `CourseMembersTab` — a Teachers section (creator first + peer teachers, reusing `TeacherCard`) atop a Students section, one search. Standalone Teachers tab removed, `/teachers` 301→`/members`, orphaned `TeachersTab.astro` deleted. The Members tab was first restored (existed only on `brian-July-20` `51e1f1e3`, never merged) by porting fresh, modeled on the current `CommunityMembersTab` rather than cherry-picking. Rows unified: white outlined Visit Member + Message buttons at row end, whole-row click removed on students, creator badged with a role pill + "Meet the Creator" link.
+
+**Rationale:** Client asked to merge the duplicative tabs; one directory removes duplicate rows and the 301 keeps the retired route link-honest.
+
+**See:** `docs/decisions/05-ui-ux-components.md`; `docs/sessions/2026-09/20260904_1222 Decisions.md` §§2–4; Conv 445.
+
+### Reviews Tab Made Contextual (Active-Only) on the Course Detail Strip
+**Date:** 2026-09-04 (Conv 445)
+
+Reviews is removed from the course browse strip (still reachable via the banner rating chip + About link); `buildCourseExploreTabs` takes an `activeTab` param and appends a highlighted Reviews tab only when `activeTab === 'reviews'`, restoring the location anchor when the route is active.
+
+**Rationale:** Satisfies "no visible Reviews tab" while avoiding a no-you-are-here strip when on `/reviews`. Establishes a reusable contextual-tab pattern.
+
+**See:** `docs/decisions/05-ui-ux-components.md`; `docs/sessions/2026-09/20260904_1222 Decisions.md` §1; Conv 445.
+
 ### [CBAN] The Course-Family Banner Is Unified on the Shared Cover-Story `CourseCatalogCard`; the Dark `CourseHeader` Hero Is Deleted, Lost Detail Re-Homed
 **Date:** 2026-09-02 (Conv 444)
 
