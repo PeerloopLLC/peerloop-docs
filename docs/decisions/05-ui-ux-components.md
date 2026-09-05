@@ -3,6 +3,17 @@
 
 ## 5. UI/UX & Components
 
+### [TAB-SHADOW] The Raised-Pill Treatment Is Extended to All Top-Strip Sub-Nav Tabs via the Conv-434 `shadow-brian-pill` Tokens (Conv 447)
+**Date:** 2026-09-05 (Conv 447)
+
+The client's `[TAB-FLOAT]` drop-shadow + hover-lift (flattened in Conv 414 to keep the primitive at 0 raw colour) is re-adopted for the top-strip tabs on all six tabbed routes (`/profile` `/learning` `/creating` `/teaching` `/community/{slug}` `/course/{slug}`) via a single `compact`-scoped edit in `SubNavItem.astro`, reusing the Conv-434 `[PILL-LIFT]` `shadow-brian-pill`/`-hover` tokens (0 raw colour). Inactive tabs become white pills (`bg-white border-border-default`), active keeps its `--Tab-Selected-*` fill with `border-transparent`; added `border transition duration-150 hover:-translate-y-[1px]`. The vertical rail stays flat (edit is `compact`-only). This widens the `[PILL-LIFT]` "scoped LOCAL, do-not-propagate" constraint from the `/courses` topic row to the shared sub-nav primitive. Chosen over matching the client's full solid-blue/white active capsule (kept the current pale-blue active fill — client asked only for shadow + movement).
+
+**Rationale:** The Conv-414 flattening's only objection was raw hex in the primitive; Conv 434 already tokenised the exact shadow, so reusing it dissolves that objection without reintroducing colour — the "objection dissolved, not overruled" MERGE-BRIAN principle applied again. `/moderating` is unaffected (no tab strip; `mod.astro` is a plain queue).
+
+**Consequences:** All six tabbed routes get the raised-pill top strip from one shared primitive; deployed to staging (`2e8303ae`, verified in served `global.De6bmzKU.css`). Committed code `6b7f01aa`.
+
+**See:** `../Peerloop/src/components/SubNavItem.astro`; `docs/sessions/2026-09/20260905_1212 Decisions.md` §1; [PILL-LIFT] entry below.
+
 ### [HW-MERGE] Course Homework Tab Merged Into Sessions (Hybrid); `/homework` 301→`/modules` (Conv 446)
 **Date:** 2026-09-04 (Conv 446)
 

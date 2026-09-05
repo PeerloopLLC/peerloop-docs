@@ -5,6 +5,13 @@
 
 For historical decisions and the full rationale behind each choice, see the session files in `docs/sessions/YYYY-MM/`.
 
+### [TAB-SHADOW] Raised-Pill Treatment Extended to All Top-Strip Sub-Nav Tabs via Conv-434 `shadow-brian-pill` Tokens
+**Date:** 2026-09-05 (Conv 447)
+
+The client's `[TAB-FLOAT]` drop-shadow + hover-lift is re-adopted for the top-strip tabs on all six tabbed routes (`/profile` `/learning` `/creating` `/teaching` `/community/{slug}` `/course/{slug}`) via a single `compact`-scoped edit in `SubNavItem.astro`, reusing the Conv-434 `[PILL-LIFT]` `shadow-brian-pill`/`-hover` tokens (0 raw colour). Inactive tabs → white pills (`bg-white border-border-default`); active keeps its `--Tab-Selected-*` fill with `border-transparent`; adds `hover:-translate-y-[1px]` + `transition duration-150`. Vertical rail unchanged. Widens the `[PILL-LIFT]` do-not-propagate scope to the shared sub-nav primitive; kept the current pale-blue active fill (option A). Deployed to staging `2e8303ae`; code `6b7f01aa`.
+
+**Rationale:** Conv-414's only objection to the client treatment was raw hex in the primitive; Conv 434 tokenised the exact shadow, so reuse dissolves the objection without reintroducing colour — "objection dissolved, not overruled" MERGE-BRIAN principle.
+
 ### [HW-MERGE] Course Homework Tab Merged Into Sessions (Hybrid); `/homework` 301→`/modules`
 **Date:** 2026-09-04 (Conv 446)
 
