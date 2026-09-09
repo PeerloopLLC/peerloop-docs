@@ -899,5 +899,4 @@
 
 ## ✅ Done this conv
 
-- **[TAB-SHADOW]** — client request: raised drop-shadow + 1px hover-lift on all top-strip tab pills across `/profile` `/learning` `/creating` `/teaching` `/community/{slug}` `/course/{slug}` (one edit in the shared `SubNavItem.astro`, `compact`-scoped). Inactive tabs → white pills w/ hairline border; active keeps pale-blue fill (option A). Reused the Conv-434 `shadow-brian-pill`/`-hover` tokens → 0 raw colour, codecheck clean. Verified live (shadow + `translate:-1px` lift + 0.15s transition). `/moderating` has no tab strip — N/A. Also cleared a stale Vite dep-optimizer cache (`[DEVSRV-STALE]` recurrence: `deps_ssr/stripe.js` missing) via `astro dev stop` + `rm -rf node_modules/.vite` + restart. Committed `6b7f01aa`.
-- **[STAGING-DEPLOY]** — deployed to staging (`npm run deploy:staging`, version `2e8303ae`) — ships this conv's tab shadow + the undeployed Conv 445/446 course-page work (Members merge, Homework-into-Sessions, numbering). `npm run verify` green first (6406 tests, build clean). Full staging reseed `db:setup:staging:feeds` (reset+migrate+dev+stripe+booking+feeds) — picks up Conv 441–443 seed improvements. Verified: staging 200s, deployed `global.De6bmzKU.css` contains `shadow-brian-pill(-hover)`. Note: `:feeds` tier carries the known `[STREAM-ENV]` feed-duplication caveat.
+_(none yet — cleared at each /r-start)_

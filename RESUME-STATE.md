@@ -1,4 +1,4 @@
-# State — Conv 447 (2026-09-05 ~12:12)
+# State — Conv 448 (2026-09-09 ~12:21)
 
 **Conv:** ended
 **Machine:** MacMiniM4Pro
@@ -6,16 +6,15 @@
 
 ## Summary
 
-Conv 447 was one client-driven UI change plus a staging deploy. Added a drop-shadow + 1px hover-lift to the tab pills on every tabbed page (`/profile` `/learning` `/creating` `/teaching` `/community/{slug}` `/course/{slug}`) via a single `compact`-scoped edit in the shared `SubNavItem.astro`, reusing the Conv-434 `shadow-brian-pill` tokens (0 raw colour). Then deployed to staging (`deploy:staging`, v`2e8303ae`) and did a full `:feeds`-tier reseed — shipping this change plus the previously-undeployed Conv 445/446 course-page work, and syncing staging to the Conv 441–443 seed data.
+Conv 448 was a billing-artifact run: generated daily timecards via `/r-timecard-day` for every commit-bearing day from **May 6 → Sept 8, 2026** (~66 cards, skipping empty days, in weekly Y/N-gated batches), all written to the Obsidian vault. Along the way, corrected two setup issues — switched the code repo off the client-namespace `brian-sep-05` onto `jfg-dev-15` (identical tip, zero risk), and repointed `rTimecardDay.vaultPath` to `~/Obsidian Vaults/main2025/_timecards/PEERLOOP`. The config edit is this conv's only in-repo change; everything else lives in the vault.
 
 ## Key Context
 
-- **Branch handoff (post-close, this conv):** after `/r-end`, closed out `jfg-dev-14` and created **`jfg-dev-15`** as the new working branch; also created **`brian-sep-05`** for the client. The Branch line above reads `jfg-dev-15` because that is where the next conv should work — the code repo was moved there after the end-of-conv commit landed on `jfg-dev-14`. `jfg-dev-14`, `jfg-dev-15`, and `brian-sep-05` all point at the same tip (`c173c7b3` — the Conv-447 end-of-conv code commit; the tab change itself is `6b7f01aa`).
-- **`/moderating` is not a tabbed page** — `mod.astro` is a plain queue; six of the seven listed routes share the one primitive.
-- **Deployed & verified:** staging returns 200 across homepage/course/communities; deployed `global.De6bmzKU.css` contains `shadow-brian-pill(-hover)`. `npm run verify` was green this conv (6406 tests, build clean).
-- **`[STREAM-ENV]` caveat live on staging:** the `:feeds` reseed means community/course feeds carry duplicate Stream activities (staging shares the dev Stream app). Known, cosmetic; fix is the tracked `[STREAM-ENV]` Stream-side clean.
-- **Probe-error note:** mid-verify I raised a false 🔴 "shadow not rendering" alarm (truncated computed box-shadow + wrong element); self-corrected, captured in Learnings.md + a feedback draft.
-- **Task backlog:** see `CURRENT-TASKS.md`.
+- **The `config.json` vaultPath change is the substantive commit** (`Block: (misc)`). The ~66 timecards are outside both repos (Obsidian vault, now 80 `.md` files), so `git diff` looks nearly empty by design.
+- **Code repo is on `jfg-dev-15`** (moved off `brian-sep-05` this conv). All three of `jfg-dev-14`/`jfg-dev-15`/`brian-sep-05` still share tip `c173c7b3`.
+- **Timecard allowlist verified across the whole range:** no `brian-*` client branch ever entered a timecard, including the early-July `[MERGE-BRIAN-JULY7]` window — the `^jfg-dev` `codeBranchAllowPattern` held.
+- **MEMORY.md at 81% of the byte auto-load cap** — `/r-prune-memory` owed (tracked as `[MEM-PRUNE]`, note "full run still owed" since Conv 420).
+- **No code work, no PLAN block advanced, no docs drift, no new tasks.** Task backlog unchanged — see `CURRENT-TASKS.md`; flagged next-conv focus remains `[RHOOKS]` + `[A11Y]` (clear the ~163 codecheck warnings; `[RHOOKS]` is `[Opus]`, behavior-sensitive).
 
 ## Resume Command
 
