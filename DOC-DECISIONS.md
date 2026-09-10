@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-08-23 Conv 440 (`## 🎯 Now` TOC lines are bulleted `- [CODE]` with no ordinals; co-equal runs wear a `◆` band; the checker tolerates both forms — §3)
+**Last Updated:** 2026-09-10 Conv 449 (`r-block-report` ported to Peerloop with native columns + `Billable`-sourced Hours — §4)
 
 ---
 
@@ -2003,6 +2003,17 @@ To inspect the legacy app's look and behavior — which now lives under `/old` o
 ---
 
 ## 4. Obsidian Vault
+
+### `r-block-report` Peerloop Port — Native Columns and `Billable`-Sourced Hours (Conv 449)
+**Date:** 2026-09-10 (Conv 449)
+
+When porting the SPT `r-block-report` billing roll-up to Peerloop, the report defaults to **Peerloop-native columns** (`Date, Focus, Start, End, Adjust, Hours, Bill?, Convs, Blocks`) rather than SPT's Dataview merge-parity columns (`Channel/Who/Via/Slack`), and computes `Hours` from the vault's authoritative slot-rounded `Billable` field (`billableToHours(Billable)`) with an End−Start+Adjust fallback. Source folder is resolved via `rTimecardDay.vaultPath` (`_timecards/PEERLOOP`), not SPT's `outputDir`.
+
+**Rationale:** Peerloop coding is standalone billing, not a merge-into-Obsidian-exports workflow, so the Slack/meeting columns would always empty-drop while Convs/Blocks are the useful dimensions. `Billable` is what Peerloop actually bills (slot-rounded, overflow-capped) — e.g. Aug 10 `7h10` → 7.17h vs the naive 7.13h — so recomputing would diverge from billed time. Parity remains reachable via the `rBlockReport.columns` config edit without a code change.
+
+**See:** `.claude/scripts/block-report.js`; `.claude/skills/r-block-report/SKILL.md`; `.claude/config.json → rBlockReport`; `docs/sessions/2026-09/20260910_0824 Decisions.md` §§1,2, Learnings §§1,2.
+
+---
 
 ### Local .obsidian/ Per User
 **Date:** 2026-02-20 (Session 229)

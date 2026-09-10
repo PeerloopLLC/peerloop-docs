@@ -1,4 +1,4 @@
-# State — Conv 448 (2026-09-09 ~12:21)
+# State — Conv 449 (2026-09-10 ~08:24)
 
 **Conv:** ended
 **Machine:** MacMiniM4Pro
@@ -6,15 +6,15 @@
 
 ## Summary
 
-Conv 448 was a billing-artifact run: generated daily timecards via `/r-timecard-day` for every commit-bearing day from **May 6 → Sept 8, 2026** (~66 cards, skipping empty days, in weekly Y/N-gated batches), all written to the Obsidian vault. Along the way, corrected two setup issues — switched the code repo off the client-namespace `brian-sep-05` onto `jfg-dev-15` (identical tip, zero risk), and repointed `rTimecardDay.vaultPath` to `~/Obsidian Vaults/main2025/_timecards/PEERLOOP`. The config edit is this conv's only in-repo change; everything else lives in the vault.
+Conv 449 ported the SPT `r-block-report` skill into Peerloop — a headless billing roll-up over the vault coding-timecard notes (`_timecards/PEERLOOP/`) that emits a `.scratch/` markdown report + `.tsv`, filtered by `Bill?`/Block code. Added three files (skill + `block-report.js` + a `rBlockReport` config block), adjusted for Peerloop's coding-timecard schema, and validated end-to-end (80 cards / 770.84h / Block-09). No code-repo change; no PLAN block advanced.
 
 ## Key Context
 
-- **The `config.json` vaultPath change is the substantive commit** (`Block: (misc)`). The ~66 timecards are outside both repos (Obsidian vault, now 80 `.md` files), so `git diff` looks nearly empty by design.
-- **Code repo is on `jfg-dev-15`** (moved off `brian-sep-05` this conv). All three of `jfg-dev-14`/`jfg-dev-15`/`brian-sep-05` still share tip `c173c7b3`.
-- **Timecard allowlist verified across the whole range:** no `brian-*` client branch ever entered a timecard, including the early-July `[MERGE-BRIAN-JULY7]` window — the `^jfg-dev` `codeBranchAllowPattern` held.
-- **MEMORY.md at 81% of the byte auto-load cap** — `/r-prune-memory` owed (tracked as `[MEM-PRUNE]`, note "full run still owed" since Conv 420).
-- **No code work, no PLAN block advanced, no docs drift, no new tasks.** Task backlog unchanged — see `CURRENT-TASKS.md`; flagged next-conv focus remains `[RHOOKS]` + `[A11Y]` (clear the ~163 codecheck warnings; `[RHOOKS]` is `[Opus]`, behavior-sensitive).
+- **New skill `/r-block-report`** (`Block: (misc)`). Reads `rTimecardDay.vaultPath`; `Hours` derives from the authoritative `Billable` field (fallback Start/End/Adjust); default Block from `billing.currentCode`. Columns are Peerloop-native (`Date, Focus, Start, End, Adjust, Hours, Bill?, Convs, Blocks`) — the Slack/meeting columns SPT keeps for Dataview merge-parity were dropped. Strict `project-time-report3` parity remains reachable via `rBlockReport.columns` if ever wanted.
+- **Output is `.scratch/` only** (gitignored, timestamped filenames) — never touches the Obsidian vault, never commits.
+- **Conv opened via stash → r-start → pop** so the block-report work landed inside Conv 449 rather than amending the already-pushed Conv 448 commit.
+- **MEMORY.md at 81% of the byte auto-load cap** — `/r-prune-memory` owed (standing `[MEM-PRUNE]`/`[MEM-CAP]`).
+- Task backlog unchanged — see `CURRENT-TASKS.md`; flagged next-conv focus remains `[RHOOKS]` (`[Opus]`) + `[A11Y]` (clear the ~163 codecheck warnings).
 
 ## Resume Command
 

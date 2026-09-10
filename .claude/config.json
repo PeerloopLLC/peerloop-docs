@@ -65,6 +65,23 @@
     "currentCode": "Block-09"
   },
 
+  "rBlockReport": {
+    "_doc": "Config for /r-block-report (.claude/scripts/block-report.js) — a headless billing roll-up over the Peerloop coding-timecard notes /r-timecard-day writes to the vault, emitted as .scratch markdown + .tsv. Ported from spt-docs and adjusted for Peerloop's coding schema: sourceDir defaults to rTimecardDay.vaultPath; Hours derives from the authoritative `Billable` field (fallback Start/End/Adjust); columns reflect the Peerloop coding card (no Channel/Who/Via/Slack; adds Convs/Blocks). usedColumns drops empties, preserving relative order.",
+    "columns": [
+      "Date",
+      "Focus",
+      "Start",
+      "End",
+      "Adjust",
+      "Hours",
+      "Bill?",
+      "Convs",
+      "Blocks"
+    ],
+    "projectLabel": "Peerloop",
+    "scratchDir": ".scratch"
+  },
+
   "editor": "code",
 
   "commitTags": [
