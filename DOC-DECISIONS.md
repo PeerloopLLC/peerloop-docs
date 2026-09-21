@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-09-10 Conv 449 (`r-block-report` ported to Peerloop with native columns + `Billable`-sourced Hours — §4)
+**Last Updated:** 2026-09-21 Conv 450 (client linear-superset branch curated by history-preserving cherry-pick — §1; dormant-component preservation pattern — §3)
 
 ---
 
@@ -17,6 +17,19 @@ This document tracks decisions about **how the peerloop-docs repo itself works**
 ---
 
 ## 1. Repo Architecture
+
+### A Client Branch That Is a Strict Linear Superset Is Curated by History-Preserving Cherry-Pick onto a Fresh `jfg-dev-*` — Not Squashed, Not Adopted As-Is (Conv 450)
+**Date:** 2026-09-21 (Conv 450)
+
+When the shared client branch (`brian-sep-05`) is a **strict linear superset** of our branch — 0 divergence, confirmed by `git rev-list --left-right --count jfg-dev-15...origin/brian-sep-05` — the curation path is: cut a **fresh** `jfg-dev-16` off `jfg-dev-15` (preserving the old branch as a point-in-time snapshot), then `git cherry-pick -x` the keep-candidates **in their original linear order**. This is conflict-free by construction and satisfies every inter-commit dependency automatically; `-x` records the source SHA and preserves the client's authorship. Pruning is trivial when the "ignore" set is exactly the branch tip (here the 3 named ignores EMBED-CHECKOUT / CREATOR-TEACHER / COVER-UPLOAD were the tip, the 11 keep-candidates the contiguous prefix). Each cherry-pick was gated on a per-commit coherence/safety/style assessment (4 parallel agents) before the batch ran.
+
+**Rationale:** Refines the Conv-396 "squash, never history-preserving" and Conv-407 "reference exhibit, no as-is adoption" entries for the **specific** case of a linear-superset branch under an explicit client curation directive: when the branch has 0 divergence and the client has named exactly which commits to drop, a history-preserving cherry-pick is both safe and higher-fidelity than a squash — it keeps his authorship and the source SHAs, and the assessment gate replaces the intent-reimplementation step. This is a curation of *his commits*, not a merge of his branch and not a blind adoption.
+
+**Consequences:** `jfg-dev-16` carries 13 commits above `jfg-dev-15` (11 cherry-picks + a `data-prov` fix + the filter-preservation commit); verify green (6520 tests, build clean). Held local (unpushed) pending review — pushing creates a new branch on the shared client repo, so it is gated at the `/r-end` pre-commit checkpoint.
+
+**See:** `docs/sessions/2026-09/20260921_1856 Decisions.md` §1, `Learnings.md` §1; Conv 450.
+
+---
 
 ### A Declined `NOT-ADOPTED.md` Mechanism Is Re-Opened by **Dissolving the Recorded Objection**, and the Ledger Row Is Amended in Place (Conv 434)
 **Date:** 2026-08-10 (Conv 434)
@@ -563,6 +576,19 @@ The 4572-line `docs/DECISIONS.md` was split into a `docs/decisions/` folder: ele
 ---
 
 ## 3. Claude Code Workflow
+
+### Deleted-but-Wanted Functionality Is Preserved as a Dormant Compiling Component + Commented Consumer Block + Endpoint Guard — Not a Flag, Not a Comment Blob (Conv 450)
+**Date:** 2026-09-21 (Conv 450)
+
+When the client removes a feature we want to keep recoverable ("commented out … or better yet as components that are commented out"), the preservation pattern is: **extract** the control into a new self-contained component carrying a re-enable checklist header (`CoursesFilterPanel.tsx`); **comment** the import+mount at the live call site (`CoursesFilters.tsx`); **preserve the consumer half** — FilterState fields, fetch, filter branches — as a commented block in the container (`CoursesCatalog.tsx`); and add a **guard comment** to any backend endpoint it still depends on (`availability-batch.ts`) so a dead-code sweep won't delete it. Rejected: live-behind-a-false-flag (leaves dead runtime code); a raw comment blob (won't re-enable cleanly). A never-imported component is gate-clean here because eslint doesn't flag unused *files* and knip isn't wired into codecheck.
+
+**Rationale:** A faithful "uncomment to restore" requires **both halves** — control + consumer — or restoration silently doesn't work. A dormant real component keeps the code type-checked and refactor-visible (unlike a comment blob) without shipping any live path (unlike a flag).
+
+**Consequences:** Committed `2f4bf7e1`; the depended-on endpoint is retained with a guard comment. Establishes the "Dormant-component preservation" pattern for future client removals.
+
+**See:** `docs/sessions/2026-09/20260921_1856 Decisions.md` §4, `Learnings.md` §2; Conv 450.
+
+---
 
 ### `## 🎯 Now` TOC Lines Are Bulleted `- [CODE]` (No Ordinals); Co-Equal Runs Wear a `◆` Band; the Checker Tolerates Both Forms (Conv 440)
 **Date:** 2026-08-23 (Conv 440)

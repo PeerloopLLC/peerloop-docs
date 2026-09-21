@@ -18,10 +18,10 @@ btn: M30
 lnk: M01
 ⊘ no footer
 ⊘ no navbar"	"M05 /communities
-btn: A02
+btn: A01 A02
 crd: R02
 lnk: M01
-tab: /community/[slug]/courses"	"A01 /login
+tab: /community/[slug]/courses K03"	"A01 /login
 rdr: M01"	"A02 /onboarding
 rdr: M01"	"A03 /reset-password
 btn: A01"	"A04 /signup
@@ -130,15 +130,15 @@ Y - COMMUNITY					C - COURSE					R - RESOURCE
 "Y01 /community/[slug]/[...tab]
 btn: P02
 crd: R02 R01 /course/[slug]
-crm: A04
+crm: K03 A04
 lnk: M01 P01
-rdr: M05 /community/[slug] A01
-tab: K03"					"C01 /course/[slug]/[...tab]
+rdr: M05 /community/[slug] Y01 A01
+tab: /community/[slug]/courses"					"C01 /course/[slug]/[...tab]
 btn: P02
 crd: R02 /community/[slug] R01
 crm: R03
 lnk: P01 M01 M09 /course/[slug]/reviews
-rdr: /course/[slug] /course/[slug]/modules /course/[slug]/members A04
+rdr: /course/[slug] /course/[slug]/modules /course/[slug]/members C01 A04
 tab: C02 /course/[slug]/learn"	"C02 /course/[slug]/book
 btn: P02
 crd: R02 /community/[slug]

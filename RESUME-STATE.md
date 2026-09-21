@@ -1,21 +1,24 @@
-# State — Conv 449 (2026-09-10 ~08:24)
+# State — Conv 450 (2026-09-21 ~18:56)
 
 **Conv:** ended
 **Machine:** MacMiniM4Pro
-**Branch:** code: `jfg-dev-15`, docs: `main`
+**Branch:** code: `jfg-dev-16`, docs: `main`
 
 ## Summary
 
-Conv 449 ported the SPT `r-block-report` skill into Peerloop — a headless billing roll-up over the vault coding-timecard notes (`_timecards/PEERLOOP/`) that emits a `.scratch/` markdown report + `.tsv`, filtered by `Bill?`/Block code. Added three files (skill + `block-report.js` + a `rBlockReport` config block), adjusted for Peerloop's coding-timecard schema, and validated end-to-end (80 cards / 770.84h / Block-09). No code-repo change; no PLAN block advanced.
+Conv 450 imported the client's `brian-sep-05` work into a **new `jfg-dev-16` branch** (off `jfg-dev-15`). Brian (client) had pushed 14 commits on top of `jfg-dev-15` (a linear superset); we cherry-picked the 11 keep-candidates in original order (`-x`, authorship preserved, zero conflicts) and pruned the 3 he told us to ignore (EMBED-CHECKOUT, CREATOR-TEACHER, COVER-UPLOAD — the exact tip). Applied a `data-prov` fix, preserved the FILTER-STRIP'd Level/Length/Available-soon filters as a **dormant `CoursesFilterPanel`** (+ commented consumer block + guarded endpoint) per the user's "don't lose it, comment it out" ask, verified the baseline green (6520 tests), and confirmed via a 375px iframe harness that mobile is clean (the earlier "lost mobile" was browser-cache staleness, not a regression). Pushed `jfg-dev-16` to the shared origin at close.
 
 ## Key Context
 
-- **New skill `/r-block-report`** (`Block: (misc)`). Reads `rTimecardDay.vaultPath`; `Hours` derives from the authoritative `Billable` field (fallback Start/End/Adjust); default Block from `billing.currentCode`. Columns are Peerloop-native (`Date, Focus, Start, End, Adjust, Hours, Bill?, Convs, Blocks`) — the Slack/meeting columns SPT keeps for Dataview merge-parity were dropped. Strict `project-time-report3` parity remains reachable via `rBlockReport.columns` if ever wanted.
-- **Output is `.scratch/` only** (gitignored, timestamped filenames) — never touches the Obsidian vault, never commits.
-- **Conv opened via stash → r-start → pop** so the block-report work landed inside Conv 449 rather than amending the already-pushed Conv 448 commit.
-- **MEMORY.md at 81% of the byte auto-load cap** — `/r-prune-memory` owed (standing `[MEM-PRUNE]`/`[MEM-CAP]`).
-- Task backlog unchanged — see `CURRENT-TASKS.md`; flagged next-conv focus remains `[RHOOKS]` (`[Opus]`) + `[A11Y]` (clear the ~163 codecheck warnings).
+- **`jfg-dev-16` = `jfg-dev-15` + 13 commits** (11 Brian cherry-picks + `bb19cd25` data-prov fix + `2f4bf7e1` filter-preservation). Pushed to origin this conv.
+- **Dormant-component pattern** (new): deleted-but-wanted functionality preserved as a compiling, never-mounted component + commented consumer block + re-enable checklist header + endpoint guard comment. See `src/components/courses/CoursesFilterPanel.tsx` and the commented block in `CoursesCatalog.tsx`.
+- **`/api/courses/availability-batch.ts`** is intentionally retained (guard comment) for the dormant Available-soon filter — do NOT sweep it as dead.
+- **Brian's task codes were his own** (not our board); the related MERGE-BRIAN block is CLOSED (Conv 428, different branch).
+- Three follow-ons logged to `CURRENT-TASKS.md`: `[CARD-ARBVAL]`, `[SEARCH-SORT-SPREAD]`, `[INSTANT-TAB-GAPS]`.
+- New memory: `[BRIDGE-CONNECT]` (`reference_chrome_bridge_connection_recovery.md`) — bridge "extension not connected" recovery; #1 cause = not signed into the Claude extension.
+- Dev server (`npm run dev`, localhost:4321) was left running/daemonized on `jfg-dev-16` — `npx astro dev stop` from `~/projects/Peerloop` to kill it.
+- MEMORY.md ~81%+ of the auto-load byte cap — `[MEM-PRUNE]`/`[MEM-CAP]` owed.
 
 ## Resume Command
 
-To continue: run `/r-start` — it reads `CURRENT-TASKS.md` for the task sequence and this narrative for context. Note the code repo is on `jfg-dev-15`.
+To continue: run `/r-start` — it reads `CURRENT-TASKS.md` for the task sequence and this narrative for context. Note the code repo is on `jfg-dev-16`.

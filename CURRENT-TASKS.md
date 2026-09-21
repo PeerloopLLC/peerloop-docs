@@ -45,6 +45,9 @@
 - [COMM-IMG](#comm-img) — community art is all picsum placeholders; `cover_image_url` has a UI slot but **no upload/storage**
 - [CD035-STALE](#cd035-stale) — CD-035 reads 0/34 done but CD-039 shipped part of it; re-validate before working it
 - [SPACING-4X](#spacing-4x) — sweep for other 4× size artifacts Conv 423 preserved
+- [CARD-ARBVAL](#card-arbval) — CourseCatalogCard file-wide measured-px arbitrary values (convention, not a gate fail)
+- [SEARCH-SORT-SPREAD](#search-sort-spread) — extend Brian's sort-in-search pattern to teachers/students/admin list pages
+- [INSTANT-TAB-GAPS](#instant-tab-gaps) — INSTANT-TAB uncovered spots: expandable sub-nav variant + RoleTabBar
 - [A11Y](#a11y) — accessibility lint triage
 - [RHOOKS](#rhooks) — react-hooks lint triage
 - [KNIP](#knip) — dead-export oracle → gate
@@ -253,6 +256,7 @@
 - **Shape:** (a) build cover upload to match the logo's pattern — the logo endpoint is the template, so this is largely symmetry work; (b) then replace the seed placeholders with real art; (c) decide what an empty cover falls back to (today `bg-neutral-700`; the `icon` emoji already covers the empty-logo case).
 - **Blocks:** honest visual review of `/communities`, `/community/[slug]`, and the Discovery rails — all three render community imagery.
 - **Refs:** `migrations-dev/0001_seed_dev.sql:174-188`, `migrations/0002_seed_core.sql:213` (System community has a cover and **no** logo — the nullable case is real), `src/pages/api/me/communities/[slug]/logo.ts`, `src/components/creators/communities/CommunitySettings.tsx`, `[COMM-BAND-ADOPT]` (Conv 433).
+- **Candidate implementation exists (Conv 450):** Brian's `cea60cdf` [COVER-UPLOAD][COVER-FIT] on `origin/brian-sep-05` builds exactly shape-(a) — upload endpoint + Settings control + shrink-before-upload + whole-picture card fit + dark-shade removal. **Deliberately NOT cherry-picked** into jfg-dev-16 (Brian's directive said ignore it). If/when we do [COMM-IMG], read `git show cea60cdf` first — it may be adoptable as-is or a strong template.
 - **Client-visible:** open item in `docs/requirements/rfc/CD-040/RFC.md` §1. Tick it there when this closes.
 
 
@@ -265,9 +269,31 @@
 - **Draft convention (refine + get user sign-off BEFORE sweeping — §Critical Rule design decision):**
   1. One filled accent CTA per view establishes primary; secondary actions = `outlined`/neutral, never a 2nd competing filled accent.
   2. Course-scoped primary action = green (`course`); app-level/non-entity primary = blue (`primary`). Pick ONE rule and apply consistently to Book/Enroll/Join.
-  3. **Non-functional / not-yet-wired CTAs → GOLD/YELLOW** (user suggestion Conv 444). Interpretation to confirm: a dev-visible flag so a dead/placeholder CTA is obviously un-shipped (ties to `[CTA-HOST-GUARD]`, and to the Conv-443 experimental `bg-[#fef9c3]` yellow-marker precedent). **Token/variant TBD** — closest existing is `warning` (amber); a distinct gold likely needs a new Button variant + token on a gold ramp. Decide: new `variant="wip"`/`"unwired"` vs reuse amber.
+  3. **Non-functional / not-yet-wired CTAs → GOLD/YELLOW** (user suggestion Conv 444). Interpretation to confirm: a dev-visible flag so a dead/placeholder CTA is obviously un-shipped (ties to `[CTA-HOST-GUARD]`, and to the Conv-443 experimental `bg-[#fef9c3]` yellow-marker precedent — **NOTE Conv 450:** that `bg-[#fef9c3]` marker was removed by Brian's cherry-picked `407f9389`, so the precedent is now historical, not live in the code). **Token/variant TBD** — closest existing is `warning` (amber); a distinct gold likely needs a new Button variant + token on a gold ramp. Decide: new `variant="wip"`/`"unwired"` vs reuse amber.
 - **Approach:** investigate → propose the finalized convention (per-item disposition for the ~10 sites) → 👉 user approval → sweep. Investigative framing: surface before writing.
 - **Refs:** `../Peerloop/src/components/ui/Button.tsx` (variant→bg map: `variantBg`/`variantText`), the 10 sites above, `matt-design-system.md §5` (Color collection), sibling `[CTA-HOST-GUARD]`.
+
+### [SEARCH-SORT-SPREAD]
+
+- **State:** 📋 queued · consistency follow-on — surfaced Conv 450 (Brian import Q4: "applicable elsewhere?")
+- **What:** Brian's `43852d12` [FILTER-STRIP][SORT-IN-SEARCH] built a docked-sort pattern (`SearchSortSelect` rendered via `SearchInput.trailingAddon`) now live on `/courses` + `/communities`. Other `SearchInput` consumers still use the OLD search/filter UX and should adopt the same pattern for site consistency.
+- **Not-yet-migrated call-sites (from Conv-450 assessment):** `TeachersTabList`, `MyStudents`, several admin tables. Verify the full consumer list with `git -C ../Peerloop grep -l 'SearchInput' -- src/`.
+- **Refs:** `../Peerloop/src/components/form/SearchSortSelect.tsx`, `../Peerloop/src/components/form/SearchInput.tsx` (`trailingAddon` slot), `../Peerloop/src/components/form/TopicPillRow.tsx`.
+
+### [INSTANT-TAB-GAPS]
+
+- **State:** 📋 queued · minor coverage gap — surfaced Conv 450 (Brian import Q4)
+- **What:** Brian's `c89b1f33` [INSTANT-TAB] gives instant highlight-on-click to every FLAT `SubNavItem` (`a[data-subnav-tab]`), but two spots aren't covered: (i) the expandable `SelectedWithSubNav` variant (a `<div>` with nested `<a>`) lacks `data-subnav-tab`, so clicking away from an expanded course tab leaves a **transient double-highlight** until the page lands (cosmetic, self-resolves); (ii) `RoleTabBar.tsx` (separate React tab UI) has no `data-subnav-tab` — it's React-driven and self-updates, so likely fine, but unverified.
+- **Also:** `api/storage/[...key].ts` (generic R2 path) was out of scope of `49dcecad`'s download-permission broadening — glance for consistency if we revisit private-file access.
+- **Refs:** `../Peerloop/src/lib/instant-tab.ts`, `../Peerloop/src/components/nav/SubNavItem.astro`, `../Peerloop/src/components/nav/RoleTabBar.tsx`.
+
+### [CARD-ARBVAL]
+
+- **State:** 📋 queued · style-coherence review (pre-existing, file-wide) — surfaced Conv 450 during the Brian cherry-pick integration
+- **What:** `CourseCatalogCard.tsx` uses **measured-pixel arbitrary Tailwind values throughout** (`min-h-[190px]`, `rounded-[16px]`, `@xl:w-[180px]`, `min-w-[150px]`, `@xl:w-[156px]`, `min-h-[2lh]`/`[3lh]`, `hover:shadow-[0_4px_12px_rgba(...)]`). All pre-existing (mostly on jfg-dev-15; `min-w-[150px]`/`@xl:w-[156px]` added by Brian's `[PRICE-LEFT]` `3aed5ed3`, cherry-picked Conv 450). `check:tailwind` passes (it validates v3→v4 syntax, does NOT ban arbitrary px) — so this is a **convention question, not a gate failure.**
+- **Decision Conv 450 (option A):** left the 2 new PRICE-LEFT widths as-is — snapping just those to scale would make them the odd ones out next to the pre-existing `@xl:w-[180px]` and 150/156 aren't clean 4px steps. The whole-file pattern is the real question.
+- **To decide:** is a `@matt-inspired` card allowed deliberate measured-px layout (likely yes — the `min-h-[190px]` "banner measured 190px" comment documents intent), or should the card migrate to scale/tokens? If migrate, do it file-wide in one pass, not piecemeal. Ties to `[SPACING-4X]` and the `[DEMO-HOME]`/`suggestCanonicalClasses` bug class (memory `reference_tailwind_intellisense_canonical_suggestions`).
+- **Refs:** `../Peerloop/src/components/courses/CourseCatalogCard.tsx`.
 
 ### [GSN-SPIN]
 

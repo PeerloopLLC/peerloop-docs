@@ -587,7 +587,7 @@ Download a resource file from R2 storage. Streams the file directly.
 - Content-Disposition: `attachment; filename="..."`
 - Body: File stream
 
-**Authorization:** Enrollment gate checks `status != 'cancelled'` AND `deleted_at IS NULL`. Soft-deleted enrollments are blocked. Disputed enrollments (`status = 'disputed'`) retain access — see `docs/POLICIES.md §5`.
+**Authorization:** Public resources (`is_public = 1`) are open. Non-public resources authorize, in order: the course creator, a platform admin (`isUserAdmin`), an active moderator of the community owning the course's progression (`community_moderators.is_active = 1`), then an active enrollment. The enrollment gate checks `status != 'cancelled'` AND `deleted_at IS NULL`. Soft-deleted enrollments are blocked. Disputed enrollments (`status = 'disputed'`) retain access — see `docs/POLICIES.md §5`. (The privileged bypass mirrors `canViewAllFiles` on the course page, so creator/admin/moderator viewers who see a non-public file can also download it without enrolling.)
 
 **Errors:**
 
@@ -595,5 +595,5 @@ Download a resource file from R2 storage. Streams the file directly.
 |--------|-------|
 | 400 | Resource is not downloadable (external link only) |
 | 401 | Authentication required (for non-public resources) |
-| 403 | Not enrolled in course (or enrollment is cancelled / soft-deleted) |
+| 403 | Not authorized (not creator/admin/community moderator, and no active enrollment) |
 | 404 | Resource not found / File not found in storage |

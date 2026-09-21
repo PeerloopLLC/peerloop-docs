@@ -1,7 +1,7 @@
 # Route ↔ API Map
 
 > **Auto-generated** by `scripts/route-api-map.mjs` — do not edit manually.
-> Last generated: 2026-09-05
+> Last generated: 2026-09-21
 >
 > Run: `cd ../Peerloop && node scripts/route-api-map.mjs`
 
@@ -10,9 +10,9 @@
 ## Quick Stats
 
 - **Pages scanned:** 68
-- **API endpoints found in UI:** 219
-- **Routes reachable from navbar:** 53
-- **Unreachable routes:** 36
+- **API endpoints found in UI:** 220
+- **Routes reachable from navbar:** 56
+- **Unreachable routes:** 35
 
 ## 1. Route → API Endpoints
 
@@ -219,8 +219,9 @@ Which API calls does each page make?
 
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
-| DELETE | `/api/communities/[param]/join` | src/pages/community/[slug]/[...tab].astro |
-| POST | `/api/communities/[param]/join` | src/pages/community/[slug]/[...tab].astro |
+| GET | `/api/communities/...` | src/lib/ssr/loaders/communities.ts |
+| POST | `/api/communities/[param]/join` | src/components/communities/CommunityMembershipActions.tsx |
+| DELETE | `/api/communities/[param]/join` | src/components/communities/CommunityMembershipActions.tsx |
 | POST | `/api/communities/[param]/moderators` | src/components/community/CommunityMembersTab.tsx |
 | DELETE | `/api/communities/[param]/moderators/[param]` | src/components/community/CommunityMembersTab.tsx |
 | GET | `/api/courses` | src/components/community/SystemFeed.tsx |
@@ -355,6 +356,8 @@ Which API calls does each page make?
 | Method | API Endpoint | Component |
 |--------|-------------|-----------|
 | GET | `/api/admin/intel/communities` | src/components/communities/CommunitiesCatalog.tsx |
+| POST | `/api/communities/[param]/join` | src/components/communities/CommunityMembershipActions.tsx |
+| DELETE | `/api/communities/[param]/join` | src/components/communities/CommunityMembershipActions.tsx |
 
 **`/dev/primitives`** — *no API calls detected*
 
@@ -562,7 +565,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `DELETE /api/admin/teachers/[param]` | `/admin/teachers` |
 | `DELETE /api/admin/topics/[param]` | `/admin/topics` |
 | `DELETE /api/admin/users/[param]` | `/admin/users` |
-| `DELETE /api/communities/[param]/join` | `/community/[slug]/[...tab]` |
+| `DELETE /api/communities/[param]/join` | `/communities`, `/community/[slug]/[...tab]` |
 | `DELETE /api/communities/[param]/moderators/[param]` | `/community/[slug]/[...tab]` |
 | `DELETE /api/me/account` | `/profile/[...tab]` |
 | `DELETE /api/me/availability/overrides/[param]` | `/teaching/[...tab]` |
@@ -611,6 +614,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `GET /api/admin/topics` | `/admin/topics` |
 | `GET /api/admin/users` | `/admin/users` |
 | `GET /api/admin/users/[param]` | `/admin/users` |
+| `GET /api/communities/...` | `/community/[slug]/[...tab]` |
 | `GET /api/conversations` | `/messages` |
 | `GET /api/conversations/[param]` | `/messages` |
 | `GET /api/courses` | `/admin/certificates`, `/admin/enrollments`, `/admin/teachers`, `/community/[slug]/[...tab]` |
@@ -730,7 +734,7 @@ Which pages call each API endpoint? Use this to find the UI for a given API acti
 | `POST /api/auth/logout` | `/profile/[...tab]` |
 | `POST /api/auth/reset-password` | `/reset-password` |
 | `POST /api/checkout/create-session` | `/course/[slug]/[...tab]` |
-| `POST /api/communities/[param]/join` | `/community/[slug]/[...tab]` |
+| `POST /api/communities/[param]/join` | `/communities`, `/community/[slug]/[...tab]` |
 | `POST /api/communities/[param]/moderators` | `/community/[slug]/[...tab]` |
 | `POST /api/conversations` | `/messages`, `/session/[id]` |
 | `POST /api/conversations/[param]/messages` | `/messages` |
@@ -797,7 +801,6 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/course/[slug]/teach` — ⚠️ no discovered path
 - `/creating/[...tab]` — ℹ️ no-nav by design
 - `/creating/apply` — ⚠️ no discovered path
-- `/creating/communities/[slug]` — ⚠️ no discovered path
 - `/dev/primitives` — ℹ️ no-nav by design
 - `/dev/saved` — ℹ️ no-nav by design
 - `/dev/todo` — ℹ️ no-nav by design
@@ -840,8 +843,9 @@ Used by PLATO browser-runs to follow real user navigation instead of direct URL 
 - `/admin/enrollments` — Click "Admin" in sidebar → Link on /admin
 - `/admin/teachers` — Click "Admin" in sidebar → Link on /admin
 - `/admin/users` — Click "Admin" in sidebar → Link on /admin
+- `/creating/communities/[slug]` — Click "Communities" in sidebar → Link on /communities
 - `/creator/[handle]` — Click "Courses" in sidebar → Link on /courses
-- `/login` — Click "Messages" in sidebar → Link on /messages
+- `/login` — Click "Communities" in sidebar → Link on /communities
 - `/onboarding` — Click "Home" in sidebar → Link on /
 - `/signup` — Click "Home" in sidebar → Link on /
 - `/teaching/courses/[courseId]` — Click "Teaching" in sidebar → Click course card tab/link on /teaching
