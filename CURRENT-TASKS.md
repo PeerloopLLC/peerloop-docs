@@ -32,6 +32,7 @@
 > orphaned endpoint is deleted. Nothing outstanding — kept here one conv for traceability, then
 > delete this note.
 
+- [CRTEACH](#crteach) — 🔄 teacher-availability gating (listing/rails/badge ✅) + creator auto-cert at creation (remaining) + seed decision
 - [GSN-SPIN](#gsn-spin) — 🐞 "Get Started Now" button stuck on spinner/"Processing…" after cancelling Stripe (bfcache stale state?)
 - [CTA-COLOR](#cta-color) — define CTA background-color convention + sweep ~10 green/blue mixing sites; non-functional CTAs → gold/yellow
 
@@ -259,6 +260,26 @@
 - **Candidate implementation exists (Conv 450):** Brian's `cea60cdf` [COVER-UPLOAD][COVER-FIT] on `origin/brian-sep-05` builds exactly shape-(a) — upload endpoint + Settings control + shrink-before-upload + whole-picture card fit + dark-shade removal. **Deliberately NOT cherry-picked** into jfg-dev-16 (Brian's directive said ignore it). If/when we do [COMM-IMG], read `git show cea60cdf` first — it may be adoptable as-is or a strong template.
 - **Client-visible:** open item in `docs/requirements/rfc/CD-040/RFC.md` §1. Tick it there when this closes.
 
+
+### [CRTEACH]
+
+- **State:** 🔄 active (Conv 451) — teacher-availability gating + creator auto-cert (Brian/client ask) · [Opus]
+- **What:** A course with no active teacher (`teacher_certifications` where `is_active=1`) is not enrollable (checkout rejects `no_teachers`). Two threads: (1) don't surface teacherless courses as dead ends; (2) auto-certify the creator as first teacher at course creation so a published course always has ≥1 teacher.
+- **Done this conv (uncommitted working-tree edits, branch `jfg-dev-16`):**
+  - ✅ Catalog listing gate — `api/courses/index.ts:42` `whereClause` now `is_active=1 AND EXISTS(active teacher_certifications)` (covers count + fetch). Verified local 7 active → 5 with teacher.
+  - ✅ Discovery rails gate — `lib/discovery-rails/compute.ts` `COURSE_BASE` gets the same EXISTS (flows to popular/new/trending course queries; communities untouched). Bumped `DISCOVERY_RAILS_VERSION` 1→2 (`types.ts`) so stale KV blobs self-invalidate. Verified Q-System courses gone from local course rail.
+  - ✅ Detail-page badge — `CourseCatalogCard` new `noTeachers?` prop → "No teachers currently available" warning pill (`bg-alert-light text-alert-default`, mirrors SessionBooking/EnrollButton copy); wired `noTeachers={data.teachers.length===0}` from `course/[slug]/[...tab].astro`. Detail page still shows teacherless courses (per user). Verified badge shows on `intro-q-system`, absent on `ai-tools-overview`. tsc + astro-check clean.
+  - ✅ Creator→public link already existed (`CourseEditor.tsx:431` "Preview" → `/course/{slug}`) — user: keep "Preview" (no rename).
+  - ✅ **Auto-certify creator at creation** (option A backend) — `POST /api/me/courses` now INSERTs an active `teacher_certifications` row for the creator (self-approved) + enables `can_teach_courses`, right after the course INSERT. Mirrors `isCreatorSelfCert`.
+  - ✅ **Seed** — added Gabriel's self-cert rows for both Q-System courses to `migrations-dev/0001_seed_dev.sql` (validated on local: catalog back to 7).
+  - ✅ **Tests** — fixed catalog + rails fixtures (each fixture course now gets a cert), added catalog regression test (teacherless course excluded), bumped rails version assertion 1→2. All affected tests green; tsc clean.
+  - ✅ **Teacher removal (user chose C)** — reuse existing controls + opt-out UI + guard:
+    - Backend guard: `PUT teachers/[teacherId]` now BLOCKS deactivating the LAST active teacher of a PUBLISHED course with active enrollments (mirrors the DELETE revoke guard). No students → allowed (course just goes teacherless).
+    - UI (studio Peer Teachers, `CourseEditor.tsx`): creator's own row now shows a **"You"** marker and a **"Stop teaching" / "Teach again"** toggle (confirm dialog on stop) instead of generic Deactivate/Activate.
+    - Tests: +2 guard cases (blocked-with-students / allowed-without). All green; tokens (`bg-purple-50`/`text-purple-700`) valid; tsc clean.
+- **Remaining:**
+  - ⬜ **Prod note** — on any prod deploy the discovery-rails KV blob must rebuild (daily cron or manual `refreshDiscoveryRails`); the version bump forces invalidation on next serve.
+  - ⬜ `npm run verify` (running) → commit → redeploy staging.
 
 ### [CTA-COLOR]
 

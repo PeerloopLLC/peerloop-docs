@@ -7,6 +7,14 @@
 
 ## DEPLOYMENT.STAGING-DEPLOY — Staging deploy log
 
+**[STG-DEPLOY] Conv 451 — app-only deploy of the `jfg-dev-16` Brian import (no schema/reseed/cron).** First staging deploy off the new `jfg-dev-16` branch (Conv 450's `brian-sep-05` import: 11 client cherry-picks + `data-prov` fix + dormant `CoursesFilterPanel` preservation). `jfg-dev-16` HEAD (`dddbd04b`) is a **clean descendant** of the deployed `c173c7b3` (= `jfg-dev-14`/`jfg-dev-15` Conv-447 tip) — 14 commits forward, 0 diverged. Diff touched **no** `migrations/` / `migrations-dev/` / `workers/cron/` files, so **no DB reset, no reseed, no cron redeploy** — staging D1 (Conv-447 reseed) is schema-compatible and the client's staging data is preserved. **Staging only — prod cutover still gated.**
+
+- **Worker version:** app `60b375de` (env=staging, DB=peerloop-db-staging, Stripe `pk_test_…` = sandbox).
+- **Baseline:** `npm run verify` green this conv (419 files / 6520 tests pass, build clean) before the deploy.
+- **Pre-flight per runbook:** branch clean descendant (§1a), schema identical `jfg-dev-14..16` (§1b → code-only), all 6 staging secrets present (§1d), cron unchanged (§5 skipped).
+- **Post-deploy smoke:** homepage / `/courses` / `/communities` all 200; `/api/feeds/smart` 200 with real activities; discovery rails 200 with fresh `generatedAt`; browser-confirmed the Smart Feed renders (visitor view, sample posts + Join-Community CTAs).
+- **Aside (local dev only, not a staging issue):** earlier this conv the *local* `.dev.vars` was found emptied (5 bytes, `JWT_SECRET` gone) → local Smart Feed 500'd "Server configuration error"; user restored the file, dev-server restart fixed it. Staging's own secrets were never affected (JWT_SECRET set on the worker, confirmed §1d) — staging Smart Feed served 200 throughout.
+
 **[STG-DEPLOY] Conv 348 — first staging deploy past Conv 261.** Deployed jfg-dev-14 HEAD (`8cc4ce7e`, 167 commits ahead of the prior staging point `92e1929b` from Conv 261) to staging and browser-verified the homework file-upload feature end-to-end. **Staging only — prod cutover remains gated** (DEPLOYMENT.PROD + DEPLOYMENT.DB-SYNC below untouched).
 
 - **Worker versions:** app `6553c1cb`, cron `e5a75e73` (cron had changed +24 lines → redeploy required).
