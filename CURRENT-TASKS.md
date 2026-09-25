@@ -925,4 +925,10 @@
 
 ## ✅ Done this conv
 
-- **[SESS-DL]** — client staging download.json bug. Root cause: bare `<a download>` saved the endpoint's JSON error body when the R2 object was missing. **A (hardening):** new `ResourceDownloadEnhancer` island — failed downloads now show an error toast, never `download.json` (`94b044dc`/`2efe606e`; verified via Chrome bridge). **B (data):** seeded local+staging R2 with valid DEMO sample files via a generalized gap-fill seeder; staging endpoint now streams the file (200). Part 2 found no upload bug. Both pushed. **NB: A's toast ships to staging on the next staging Worker deploy; B (R2 data) is already live.**
+- **[DISC-TOGGLE] / [DISC-DEFAULT]** — Client (Guy Rymberg) question answered + acted on. The per-course "Discussion" toggle on `/creating` cards is the master on/off for a Stream.io-backed course discussion feed (gates feed access + discovery/promotion). **New behavior (client decision B + A″):**
+  - Toggle **defaults ON** at course creation (`discussion_feed_enabled=1` in the `/api/me/courses` INSERT) — reads ON while developing the draft.
+  - The feed is "live" only when **published AND toggled on**; announcement posts fire on transitions of that effective-live state, each dated `formatDateTimeUTC(now) + " UTC"`.
+  - **Publish always turns the feed on** (A″): `publish.ts` sets `is_active=1, discussion_feed_enabled=1`, provisions the Stream feed on first publish, posts *"Discussion feed started…"* (/"started again" on re-activation).
+  - **Unpublish** posts *"Discussion feed turned off…"* (if it was live). **Manual toggle** off→*"turned off"*, on (published)→*"started/started again"*; toggling a draft posts nothing.
+  - Shared helper `src/lib/course-discussion-feed.ts` (`activate`/`deactivate`). Stream failures are non-fatal (publish/toggle roll back a failed first-provision to keep the feed endpoint from 500ing; unpublish/disable swallow).
+  - Files: `course-discussion-feed.ts` (new), `me/courses/index.ts`, `me/courses/[id]/publish.ts`, `me/courses/[id]/unpublish.ts`, `courses/[slug]/discussion-feed.ts` + 4 test files. 5 gates green (6528 tests). **Not yet deployed to staging** (`deploy:staging`).
