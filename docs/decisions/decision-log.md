@@ -5,6 +5,15 @@
 
 For historical decisions and the full rationale behind each choice, see the session files in `docs/sessions/YYYY-MM/`.
 
+### [CRTEACH] Creator Auto-Certified as First Teacher at Creation (Backend); Catalog & Rails Gate on an Active Teacher; Removal via Opt-Out + Last-Teacher Guard
+**Date:** 2026-09-24 (Conv 451)
+
+`POST /api/me/courses` auto-INSERTs the creator's active `teacher_certifications` row + `can_teach_courses=1` (safe: course is a draft `is_active=0` until published). Catalog + Discovery rails now require `EXISTS(teacher_certifications is_active=1)` (rails `DISCOVERY_RAILS_VERSION` 1→2); `/api/courses/{slug}` still resolves with a "No teachers currently available" badge. Removal (option C) = studio deactivate/revoke + creator-row opt-out toggle + backend last-active-teacher guard (blocks deactivating the only active teacher of a published course with active enrollments).
+
+**Rationale:** Backend auto-cert is authoritative and one write; the client wants creators to teach automatically. The read-time active-teacher gate enforces the enrollability invariant, closing the visible-but-un-enrollable dead end; the last-teacher guard closes the strand gap PUT-deactivate had.
+
+**See:** `docs/decisions/03-api-data-fetching.md`; `docs/sessions/2026-09/20260924_1324 Decisions.md` §§1-2; Conv 451. Supersedes creation-time timing of "Creator Self-Certification as Teacher via Existing Endpoint" (now a re-activation/discover path).
+
 ### [TAB-SHADOW] Raised-Pill Treatment Extended to All Top-Strip Sub-Nav Tabs via Conv-434 `shadow-brian-pill` Tokens
 **Date:** 2026-09-05 (Conv 447)
 

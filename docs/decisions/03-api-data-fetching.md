@@ -3,6 +3,17 @@
 
 ## 3. API & Data Fetching (Medium-High Impact)
 
+### [CRTEACH] Creator Auto-Certified as First Teacher at Creation (Backend); Catalog & Rails Gate on an Active Teacher; Removal via Opt-Out + Last-Teacher Guard (Conv 451)
+**Date:** 2026-09-24 (Conv 451)
+
+`POST /api/me/courses` now INSERTs an active `teacher_certifications` row for the creator (mirroring `isCreatorSelfCert`) and sets `can_teach_courses=1` — so a new course always has a teacher. Safe because the course is a draft (`is_active=0`) at creation: invisible + un-bookable until published. The catalog (`GET /api/courses`) and Discovery rails (`discovery-rails/compute.ts` `COURSE_BASE`, `DISCOVERY_RAILS_VERSION` 1→2 to self-invalidate the KV blob) now require `EXISTS(teacher_certifications is_active=1)` alongside `is_active=1`; `GET /api/courses/{slug}` still resolves, showing a "No teachers currently available" badge (`CourseCatalogCard` `noTeachers` prop). Removal (option C) reuses the studio deactivate/revoke plus a creator-row "You"/"Stop teaching"/"Teach again" opt-out toggle, guarded by a backend **last-active-teacher** check that blocks deactivating the only active teacher of a published course with active enrollments.
+
+**Rationale:** Backend auto-cert is authoritative (can't be skipped by a non-UI caller), one write, no round-trip; the client (Brian) wants creators to teach automatically. The active-teacher gate enforces the enrollability invariant at read time ("a listed/recommended course has ≥1 active teacher") — closing the visible-but-un-enrollable dead end. The last-teacher guard closes the gap DELETE already covered but PUT-deactivate didn't (stranding enrolled students).
+
+**Consequences:** Supersedes the creation-time timing of "Creator Self-Certification as Teacher via Existing Endpoint" — that explicit self-cert POST is now a re-activation / discover path (an explicit self-cert after creation returns 409). PLATO steps converted from self-cert to *discover* the auto-created cert. New backend guard + 2 regression tests + fixture teacher-certs across catalog/rails/smart-feed/PLATO. Prod note: on any prod deploy the discovery-rails KV blob must rebuild (daily cron or manual `refreshDiscoveryRails`); the version bump forces invalidation on next serve.
+
+**See:** `src/pages/api/me/courses/index.ts`, `src/pages/api/courses/index.ts`, `src/lib/discovery-rails/compute.ts`, `src/pages/api/me/courses/[id]/teachers/[teacherId].ts`, `src/components/creators/studio/CourseEditor.tsx`; `docs/sessions/2026-09/20260924_1324 Decisions.md` §§1-2; Conv 451.
+
 ### [WS-DATA-MODEL] The Workspace Data Boundary Is a **Freshness Contract** — "Consume What's Loaded" Scoped, Not Rewritten (Conv 430)
 **Date:** 2026-07-29 (Conv 430)
 

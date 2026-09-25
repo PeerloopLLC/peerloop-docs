@@ -10,6 +10,8 @@ Course listing, details, reviews, curriculum, and resources. Part of [API Refere
 
 List courses with optional filtering, search, and pagination.
 
+**Active-teacher gate ([CRTEACH], Conv 451).** The listing returns only courses that are published (`is_active = 1`) **and** have at least one active teacher — `EXISTS (SELECT 1 FROM teacher_certifications tc WHERE tc.course_id = c.id AND tc.is_active = 1)`. A published-but-teacherless course is excluded from the catalog (it would be un-enrollable — checkout rejects `no_teachers`). The same gate applies to the Discovery rails; the course-detail page (`GET /api/courses/[slug]`) is deliberately **not** gated and instead shows a "No teachers currently available" badge.
+
 **Query Parameters:**
 
 | Parameter | Type | Default | Description |

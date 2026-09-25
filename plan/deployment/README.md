@@ -7,6 +7,15 @@
 
 ## DEPLOYMENT.STAGING-DEPLOY — Staging deploy log
 
+**[STG-DEPLOY] Conv 451 (2nd) — `[CRTEACH]` teacher-availability gating + creator auto-cert (full destructive reseed + app deploy).** Second Conv-451 deploy (after the Brian-import app-only deploy below). Ships the teacher-gate feature: catalog + discovery-rails now hide teacherless courses, the course-detail hero shows a "No teachers currently available" badge, `POST /api/me/courses` auto-certifies the creator as first teacher (+ `can_teach_courses`), and the studio Peer Teachers tab gains a creator opt-out ("Stop teaching") guarded against stranding enrolled students. Reseed required because `migrations-dev/0001_seed_dev.sql` gained Gabriel's Q-System self-certs. **Staging only — prod cutover still gated.**
+
+- **Worker version:** app `d3b8c594` (env=staging, DB=peerloop-db-staging).
+- **DB convergence:** destructive `db:setup:staging:feeds` — reset → migrate → dev+stripe+booking+feeds. Lands `st-intro-qsys-gabriel` / `st-inter-qsys-gabriel` active certs so both Q-System courses are enrollable + visible again.
+- **Baseline:** `npm run verify` green this conv (419 files / 6523 tests, build clean). ⚠️ An earlier run **masked 10 fixture failures** via a trailing-`echo` exit code ([TBK]); the gates/auto-cert had broken catalog/rails/smart-feed/plato fixtures. Real green confirmed (`REAL_VERIFY_EXIT=0`) only after fixing the fixtures + converting the PLATO self-cert steps to *discover* the auto-created cert.
+- **Rails KV:** `DISCOVERY_RAILS_VERSION` 1→2 self-invalidates the blob on first serve → live recompute.
+- **Commits:** code `fbcf3571`, docs `ff14c7d`.
+- **Post-deploy smoke:** home/courses/communities 200; catalog returns 7 (both Q-System courses present — gate passes teacher'd courses); smart feed + rails 200; Q-System detail shows no badge (now has a teacher).
+
 **[STG-DEPLOY] Conv 451 — app-only deploy of the `jfg-dev-16` Brian import (no schema/reseed/cron).** First staging deploy off the new `jfg-dev-16` branch (Conv 450's `brian-sep-05` import: 11 client cherry-picks + `data-prov` fix + dormant `CoursesFilterPanel` preservation). `jfg-dev-16` HEAD (`dddbd04b`) is a **clean descendant** of the deployed `c173c7b3` (= `jfg-dev-14`/`jfg-dev-15` Conv-447 tip) — 14 commits forward, 0 diverged. Diff touched **no** `migrations/` / `migrations-dev/` / `workers/cron/` files, so **no DB reset, no reseed, no cron redeploy** — staging D1 (Conv-447 reseed) is schema-compatible and the client's staging data is preserved. **Staging only — prod cutover still gated.**
 
 - **Worker version:** app `60b375de` (env=staging, DB=peerloop-db-staging, Stripe `pk_test_…` = sandbox).

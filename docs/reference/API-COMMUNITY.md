@@ -897,7 +897,7 @@ Response carries `Cache-Control: public, max-age=300` (global + un-personalized 
 ```json
 {
   "generatedAt": "2026-06-13T09:00:00.000Z",
-  "version": 1,
+  "version": 2,
   "windows": { "newWindowDays": 30, "trendingWindowDays": 7, "topN": 12 },
   "rails": [
     {
@@ -929,6 +929,7 @@ Response carries `Cache-Control: public, max-age=300` (global + un-personalized 
 - `windows` echoes the dials actually used (from `loadRailsConfig`) for transparency + client display.
 - `RailEntity.memberCount` = students (course) or members (community); `RailEntity.score` is the parent rail's ranking signal as a number — trending → recent-window velocity (count), popular → magnitude, new → `createdAt` epoch ms.
 - `icon` is `communities.icon` (always `null` for courses); `title`/`description`/`imageUrl` map to the course/community columns noted in `RailEntity`.
+- `version` is `DISCOVERY_RAILS_VERSION`, bumped `1 → 2` in Conv 451 ([CRTEACH]) to self-invalidate the cached KV blob when the **course rails gained an active-teacher gate** — a course rail now includes only courses with an active `teacher_certifications` row (mirrors the `GET /api/courses` catalog gate). Community rails are unaffected. Clients treat a version change as a cache-freshness signal.
 
 **Errors:**
 | Status | Error |

@@ -1123,6 +1123,7 @@ Create a new course (as draft). Requires a progression to place the course in.
 - `progression_position` auto-calculated as MAX(existing) + 1
 - Progression `course_count` incremented after insert
 - Badge auto-updates: progression badge set to `learning_path` when `course_count >= 2`
+- **Auto-certifies the creator as the course's first teacher ([CRTEACH], Conv 451)** — inserts an active `teacher_certifications` row for the creator and enables `can_teach_courses` on their user. Safe because the course is a draft (`is_active = false`) and thus un-bookable until published; guarantees a published course always has ≥1 teacher (see the catalog/rails active-teacher gate). The explicit `POST /api/me/courses/[id]/teachers` self-cert flow is now a re-activation/discover path (a fresh self-cert on the same course returns 409).
 
 **Errors:**
 
@@ -1908,6 +1909,18 @@ Update a teacher (activate/deactivate).
   "is_active": false
 }
 ```
+
+**Last-active-teacher guard ([CRTEACH], Conv 451).** Deactivating a teacher (`is_active: false`) is **blocked with 400** when the target is the *only* active teacher of a **published** course (`courses.is_active = 1`) that still has active enrollments (`status IN ('enrolled', 'in_progress')`) — those students would be stranded with no teacher to book. The message names the active-student count and suggests adding another teacher, reassigning students, or unpublishing first. Deactivation is allowed for draft courses, courses with another active teacher, or courses with no active enrollments.
+
+**Errors:**
+
+| Status | Error |
+|--------|-------|
+| 400 | Course ID and Teacher ID required / No changes provided / Cannot deactivate the only active teacher (published course with active students) |
+| 401 | Authentication required |
+| 403 | Not authorized to manage this course |
+| 404 | Course not found / Teacher not found |
+| 503 | Database not available |
 
 ---
 

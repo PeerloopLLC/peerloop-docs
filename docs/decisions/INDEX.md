@@ -189,6 +189,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [3. API & Data Fetching (Medium-High Impact)](03-api-data-fetching.md)
 
+- [[CRTEACH] Creator Auto-Certified as First Teacher at Creation (Backend); Catalog & Rails Gate on an Active Teacher; Removal via Opt-Out + Last-Teacher Guard (Conv 451)](03-api-data-fetching.md#crteach-creator-auto-certified-as-first-teacher-at-creation-backend-catalog--rails-gate-on-an-active-teacher-removal-via-opt-out--last-teacher-guard-conv-451)
 - [[WS-DATA-MODEL] The Workspace Data Boundary Is a **Freshness Contract** — "Consume What's Loaded" Scoped, Not Rewritten (Conv 430)](03-api-data-fetching.md#ws-data-model-the-workspace-data-boundary-is-a-freshness-contract--consume-whats-loaded-scoped-not-rewritten-conv-430)
 - [`/api/me/diplomas` Retired — a Diploma **Is** the Completed Enrollment; `/api/me/certificates` Kept (Conv 430)](03-api-data-fetching.md#apimediplomas-retired--a-diploma-is-the-completed-enrollment-apimecertificates-kept-conv-430)
 - [[MSG-CLEANUP] `GET /api/me/can-message/:userId` Deleted — an Endpoint With No Caller Is Removed, Not Kept as a "Valid Surface" (Conv 419)](03-api-data-fetching.md#msg-cleanup-get-apimecan-messageuserid-deleted--an-endpoint-with-no-caller-is-removed-not-kept-as-a-valid-surface-conv-419)
