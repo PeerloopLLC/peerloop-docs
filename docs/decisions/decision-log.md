@@ -5,6 +5,15 @@
 
 For historical decisions and the full rationale behind each choice, see the session files in `docs/sessions/YYYY-MM/`.
 
+### [SESS-DL] R2 Seed Parity — DEMO Sample Files Seeded to Both Local and Staging; Local Overwrites, Remote Gap-Fills
+**Date:** 2026-09-25 (Conv 453)
+
+Staging `db:setup:staging:dev` gained an R2-seed step (`db:seed:r2:staging`) to match local, closing the gap where seeded `session_resources` rows had `r2_key`s but no blobs (every seeded download 404'd on staging). A new pure-JS generator `scripts/demo-assets.mjs` produces valid, deterministic, DEMO-branded PDF/XLSX/DOCX/ZIP; `scripts/seed-r2-dev.mjs` generalized to local+remote — local overwrites, remote is **gap-fill** (probes each key, PUTs only missing objects, never clobbers real UI uploads). Staging seeded 7/7, byte-identical to local.
+
+**Rationale:** DEMO-marked real files let the client open a downloaded staging file while signalling sample data; gap-fill on remote is a safety invariant against overwriting real uploads. Pairs with the `ResourceDownloadEnhancer` client-side hardening (toast, not a saved `download.json`).
+
+**See:** `docs/decisions/08-deployment-infra.md`; `docs/sessions/2026-09/20260925_1319 Decisions.md` §§2-3.
+
 ### [CRTEACH] Creator Auto-Certified as First Teacher at Creation (Backend); Catalog & Rails Gate on an Active Teacher; Removal via Opt-Out + Last-Teacher Guard
 **Date:** 2026-09-24 (Conv 451)
 

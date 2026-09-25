@@ -32,7 +32,6 @@
 > orphaned endpoint is deleted. Nothing outstanding — kept here one conv for traceability, then
 > delete this note.
 
-- [SESS-DL](#sess-dl) — 🐞 CLIENT (staging): session-attachment Download saves `download.json` "File wasn't available" — R2 object missing + bare `download` attr masks the error
 - [GSN-SPIN](#gsn-spin) — 🐞 "Get Started Now" button stuck on spinner/"Processing…" after cancelling Stripe (bfcache stale state?)
 - [CTA-COLOR](#cta-color) — define CTA background-color convention + sweep ~10 green/blue mixing sites; non-functional CTAs → gold/yellow
 
@@ -783,21 +782,6 @@
 - **What:** `.scratch/conv-tasks.md` still exists despite being **retired by [CURTASKS] (Conv 351)** — `CURRENT-TASKS.md` replaced it. Verify nothing reads it (grep the skills), confirm it isn't depended-on machine-local state, delete. `.scratch/` is gitignored + machine-local, so MacMiniM4 may hold its own copy.
 - **Refs:** `[[feedback_current_tasks_persistence]]`. Surfaced Conv 395.
 
-### [SESS-DL]
-
-- **State:** 🔄 active · Conv 453 · client-reported (staging) · **REPRODUCED locally via Chrome bridge Conv 453** (deleted `res-cc-001`'s R2 object → `GET /api/resources/res-cc-001/download` returns 404 `application/json` `{error:"File not found in storage"}`, no `Content-Disposition`; object restored after). Happy path = 200 `application/pdf` + disposition.
-- **Symptom:** On a course Sessions/Modules tab (e.g. `/course/vibe-coding-101/modules` as Guy Rymberg), clicking a session attachment's **Download** saves a file named `download.json` → browser reports "File wasn't available on site". Seen on staging.
-- **Root mechanism (confirmed, read-only):** `ModulesTab.astro:264-271` renders `<a href={f.href} download>` with a **bare `download` attribute (no filename)** pointing at the streaming endpoint `GET /api/resources/[id]/download`. Happy path streams bytes with a proper `Content-Disposition`. Every error branch returns `Response.json(...)` with **no** `Content-Disposition` → because of the `download` attr the browser saves the JSON error body, naming it `download.json` (URL's terminal segment is `download`, body is `application/json`). Same pattern on the course-wide files strip (`:341-348`).
-- **Why it errors = R2 object missing.** Most likely branch: `download.ts:121-123` (`r2.get(r2_key)` → null → 404). Chain: loader `courses.ts:653` → `getResourceDownloadUrl` (`r2.ts:149`) → `external:false` for any row with an `r2_key`.
-- **Environment split:** local `db:setup:local:dev` includes `db:seed:r2:local` (`scripts/seed-r2-dev.mjs`) which PUTs placeholder blobs for every seeded `r2_key` — its header **documents this exact `download.json` symptom**. Local R2 currently has the blobs (13 objects) → seeded downloads work locally. **Staging `db:setup:staging:dev` has NO r2-seed step** → seeded `session_resources` rows point at nonexistent staging R2 objects → `download.json`. NB: `crs-vibe-coding-101`'s `assignment-1.pdf` is NOT in the SQL seed (staging UI-uploaded content); its 239 KB download did succeed in the screenshot, so for that specific file a key-mismatch / intermittent-object cause is possible and needs staging inspection.
-- **Plan = C (Conv 453): A now, B follow-up.**
-- **✅ A DONE (Conv 453) — implementation hardened.** New behavior-only island `src/components/course/ResourceDownloadEnhancer.tsx` (`client:load`, renders null) intercepts `a[data-resource-download]` clicks: fetch → on `!ok` show error toast (`@lib/toast`) and download NOTHING; on ok blob-download with the Content-Disposition/`data-filename` name. Native `download` kept as no-JS fallback; external links untouched. `ModulesTab.astro`: both anchors gained `data-resource-download`/`data-filename`, island mounted once when `hasUploadFiles`. **Verified via Chrome bridge:** missing object → red toast, **no `download.json`**, nothing on disk; present object → real `Claude Code Setup Guide.pdf` downloads. Gates: tsc 0, astro check 0/0/0, eslint clean (full `npm run verify` not yet run).
-- **B (staging follow-up) — in progress Conv 453:**
-  - **Part 2 CLOSED (no bug):** staging D1 read-only inspection — staging holds *exactly* the 8 seed `session_resources` rows (no Vibe Coding resource, no `assignment%`); the screenshot's `assignment-1.pdf` was wiped by a reset+reseed. No `r2_key`↔object mismatch to chase; upload path shows no defect. Staging R2 (`peerloop-storage-staging`) confirmed MISSING all probed seeded objects → the staging symptom is purely seed-objects-never-uploaded.
-  - **Part 1 built (decision B — real DEMO files):** new `scripts/demo-assets.mjs` generates valid, DEMO-branded PDF/XLSX/DOCX/ZIP (pure JS, no deps; xmllint-validated). `scripts/seed-r2-dev.mjs` generalized: default local (overwrite) + `--remote --env staging --bucket …` (GAP-FILL, never overwrites real uploads). Added `db:seed:r2:staging`, wired into `db:setup:staging:dev`. **Local reseeded 7/7 with demo files; scripts parse + eslint clean.**
-  - **⏳ Remaining:** run `npm run db:seed:r2:staging` against staging (remote write — awaiting user go-ahead), then commit B.
-- **Refs:** `src/components/course/ModulesTab.astro`, `src/pages/api/resources/[id]/download.ts`, `src/lib/ssr/loaders/courses.ts`, `src/lib/r2.ts`, `scripts/seed-r2-dev.mjs`, `migrations-dev/0001_seed_dev.sql:752`.
-
 ### [SESSION-REMIND-DEPLOY]
 
 - **State:** ⏸️ parked · **gate: MVP-GOLIVE** (prod repeat only; staging DONE Conv 388)
@@ -941,4 +925,4 @@
 
 ## ✅ Done this conv
 
-_(none yet — cleared at each /r-start)_
+- **[SESS-DL]** — client staging download.json bug. Root cause: bare `<a download>` saved the endpoint's JSON error body when the R2 object was missing. **A (hardening):** new `ResourceDownloadEnhancer` island — failed downloads now show an error toast, never `download.json` (`94b044dc`/`2efe606e`; verified via Chrome bridge). **B (data):** seeded local+staging R2 with valid DEMO sample files via a generalized gap-fill seeder; staging endpoint now streams the file (200). Part 2 found no upload bug. Both pushed. **NB: A's toast ships to staging on the next staging Worker deploy; B (R2 data) is already live.**

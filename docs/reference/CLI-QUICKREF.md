@@ -81,7 +81,8 @@ A concise summary of all CLI commands. Use this as your starting point to find a
 | `npm run db:seed:stripe:staging` | Apply Stripe sandbox account IDs (opt-in) | | ✓ | |
 | `npm run db:seed:feeds:local` | Seed Stream.io feeds + D1 feed_activities (smart feed E2E) | ✓ | | |
 | `npm run db:seed:feeds:staging` | Seed Stream.io feeds + D1 feed_activities (staging) | | ✓ | |
-| `npm run db:seed:r2:local` | Seed local R2 with placeholder blobs for `session_resources` files | ✓ | | |
+| `npm run db:seed:r2:local` | Seed local R2 with DEMO sample files for `session_resources` files (overwrites) | ✓ | | |
+| `npm run db:seed:r2:staging` | Seed staging R2 with the same DEMO sample files (gap-fill — never overwrites real uploads) | | ✓ | |
 | `npm run db:seed:plato` | Seed DB via PLATO seed-dev scenario (API-driven) | ✓ | | |
 | `npm run db:seed:prod` | 🚫 BLOCKED for safety | | | |
 | `npm run db:reset:local` | Delete SQLite files | ✓ | | |

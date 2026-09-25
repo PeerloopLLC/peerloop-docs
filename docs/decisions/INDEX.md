@@ -557,6 +557,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [8. Deployment & Infrastructure](08-deployment-infra.md)
 
+- [[SESS-DL] R2 Seed Parity — DEMO Sample Files Seeded to Both Local and Staging; Local Overwrites, Remote Gap-Fills (Conv 453)](08-deployment-infra.md#sess-dl-r2-seed-parity--demo-sample-files-seeded-to-both-local-and-staging-local-overwrites-remote-gap-fills-conv-453)
 - [An Additive Column Is ALTERed **Before** the Deploy That Reads It, and Remote-D1 Drift Is Proven by a Name-Level Schema Signature Diff (Conv 435)](08-deployment-infra.md#an-additive-column-is-altered-before-the-deploy-that-reads-it-and-remote-d1-drift-is-proven-by-a-name-level-schema-signature-diff-conv-435)
 - [A **Dropped** Column Removes the ALTER Branch Entirely — Reseed Staging at the Level It Is Already At, and Redeploy Every Worker That Imports the Changed Lib (COMM-TOPICS, Conv 432)](08-deployment-infra.md#a-dropped-column-removes-the-alter-branch-entirely--reseed-staging-at-the-level-it-is-already-at-and-redeploy-every-worker-that-imports-the-changed-lib-comm-topics-conv-432)
 - [[THUMB-404] Public R2 Assets Are Served Through a Two-Prefix Allowlist, Never a Bucket Proxy (MERGE-BRIAN §3 N14, Conv 426)](08-deployment-infra.md#thumb-404-public-r2-assets-are-served-through-a-two-prefix-allowlist-never-a-bucket-proxy-merge-brian-3-n14-conv-426)

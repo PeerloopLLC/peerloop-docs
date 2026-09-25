@@ -137,7 +137,7 @@ tab: /community/[slug]/courses"					"C01 /course/[slug]/[...tab]
 btn: P02
 crd: R02 /community/[slug] R01
 crm: R03
-lnk: P01 M01 M09 /course/[slug]/reviews
+lnk: P01 M01 M09 /course/[slug]/reviews /api/resources/:id/download
 rdr: /course/[slug] /course/[slug]/modules /course/[slug]/members C01 A04
 tab: C02 /course/[slug]/learn"	"C02 /course/[slug]/book
 btn: P02

@@ -3,6 +3,17 @@
 
 ## 8. Deployment & Infrastructure
 
+### [SESS-DL] R2 Seed Parity — DEMO Sample Files Seeded to Both Local and Staging; Local Overwrites, Remote Gap-Fills (Conv 453)
+**Date:** 2026-09-25 (Conv 453)
+
+Both environments run the same `0001_seed_dev.sql`, which inserts `session_resources` rows carrying `r2_key`s but cannot PUT the blobs — so every seeded resource 404'd on staging (`db:setup:staging:dev` had no R2-seed step, unlike local's `db:seed:r2:local`). Fix: a single env-aware seeder (`scripts/seed-r2-dev.mjs`, generalized local→local+remote) fed by a new pure-JS, dependency-free generator `scripts/demo-assets.mjs` that produces valid, **DEMO-branded** PDF/XLSX/DOCX/ZIP (store-only ZIP writer + minimal OOXML), deterministic so the same bytes land in every environment. New `db:seed:r2:staging` wired into `db:setup:staging:dev`. Remote seeding is **gap-fill** — it probes each key and PUTs only genuinely-missing objects — while local overwrites (idempotent). Staging seeded 7/7 into `peerloop-storage-staging`, byte-identical to local (hash `4e0d75a8…`), and `/api/resources/res-cc-001/download` now returns 200 `application/pdf`.
+
+**Rationale:** Real, clearly-marked DEMO files let the client actually open a downloaded staging file (a blank placeholder is confusing) while making it obvious the content is sample data. Gap-fill on remote is a safety invariant: a blind overwrite would clobber real UI-uploaded staging objects, so the seeder only fills the demo gaps.
+
+**Consequences:** New `scripts/demo-assets.mjs`; generalized `scripts/seed-r2-dev.mjs` (`--remote --env staging --bucket …` implies gap-fill); `package.json` `db:seed:r2:staging` + `db:setup:staging:dev` chain. Pairs with the client-side hardening (`ResourceDownloadEnhancer` island) that turns a missing-object error into a toast instead of a saved `download.json`.
+
+**See:** `docs/sessions/2026-09/20260925_1319 Decisions.md` §§2-3, Learnings §§1,3; Conv 453.
+
 ### An Additive Column Is ALTERed **Before** the Deploy That Reads It, and Remote-D1 Drift Is Proven by a Name-Level Schema Signature Diff (Conv 435)
 **Date:** 2026-08-10 (Conv 435)
 
