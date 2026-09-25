@@ -32,6 +32,7 @@
 > orphaned endpoint is deleted. Nothing outstanding — kept here one conv for traceability, then
 > delete this note.
 
+- [SESS-DL](#sess-dl) — 🐞 CLIENT (staging): session-attachment Download saves `download.json` "File wasn't available" — R2 object missing + bare `download` attr masks the error
 - [GSN-SPIN](#gsn-spin) — 🐞 "Get Started Now" button stuck on spinner/"Processing…" after cancelling Stripe (bfcache stale state?)
 - [CTA-COLOR](#cta-color) — define CTA background-color convention + sweep ~10 green/blue mixing sites; non-functional CTAs → gold/yellow
 
@@ -781,6 +782,18 @@
 - **State:** 📋 queued · trivial (cleanup)
 - **What:** `.scratch/conv-tasks.md` still exists despite being **retired by [CURTASKS] (Conv 351)** — `CURRENT-TASKS.md` replaced it. Verify nothing reads it (grep the skills), confirm it isn't depended-on machine-local state, delete. `.scratch/` is gitignored + machine-local, so MacMiniM4 may hold its own copy.
 - **Refs:** `[[feedback_current_tasks_persistence]]`. Surfaced Conv 395.
+
+### [SESS-DL]
+
+- **State:** 🔄 active · Conv 453 · client-reported (staging) · **REPRODUCED locally via Chrome bridge Conv 453** (deleted `res-cc-001`'s R2 object → `GET /api/resources/res-cc-001/download` returns 404 `application/json` `{error:"File not found in storage"}`, no `Content-Disposition`; object restored after). Happy path = 200 `application/pdf` + disposition.
+- **Symptom:** On a course Sessions/Modules tab (e.g. `/course/vibe-coding-101/modules` as Guy Rymberg), clicking a session attachment's **Download** saves a file named `download.json` → browser reports "File wasn't available on site". Seen on staging.
+- **Root mechanism (confirmed, read-only):** `ModulesTab.astro:264-271` renders `<a href={f.href} download>` with a **bare `download` attribute (no filename)** pointing at the streaming endpoint `GET /api/resources/[id]/download`. Happy path streams bytes with a proper `Content-Disposition`. Every error branch returns `Response.json(...)` with **no** `Content-Disposition` → because of the `download` attr the browser saves the JSON error body, naming it `download.json` (URL's terminal segment is `download`, body is `application/json`). Same pattern on the course-wide files strip (`:341-348`).
+- **Why it errors = R2 object missing.** Most likely branch: `download.ts:121-123` (`r2.get(r2_key)` → null → 404). Chain: loader `courses.ts:653` → `getResourceDownloadUrl` (`r2.ts:149`) → `external:false` for any row with an `r2_key`.
+- **Environment split:** local `db:setup:local:dev` includes `db:seed:r2:local` (`scripts/seed-r2-dev.mjs`) which PUTs placeholder blobs for every seeded `r2_key` — its header **documents this exact `download.json` symptom**. Local R2 currently has the blobs (13 objects) → seeded downloads work locally. **Staging `db:setup:staging:dev` has NO r2-seed step** → seeded `session_resources` rows point at nonexistent staging R2 objects → `download.json`. NB: `crs-vibe-coding-101`'s `assignment-1.pdf` is NOT in the SQL seed (staging UI-uploaded content); its 239 KB download did succeed in the screenshot, so for that specific file a key-mismatch / intermittent-object cause is possible and needs staging inspection.
+- **Plan = C (Conv 453): A now, B follow-up.**
+- **✅ A DONE (Conv 453) — implementation hardened.** New behavior-only island `src/components/course/ResourceDownloadEnhancer.tsx` (`client:load`, renders null) intercepts `a[data-resource-download]` clicks: fetch → on `!ok` show error toast (`@lib/toast`) and download NOTHING; on ok blob-download with the Content-Disposition/`data-filename` name. Native `download` kept as no-JS fallback; external links untouched. `ModulesTab.astro`: both anchors gained `data-resource-download`/`data-filename`, island mounted once when `hasUploadFiles`. **Verified via Chrome bridge:** missing object → red toast, **no `download.json`**, nothing on disk; present object → real `Claude Code Setup Guide.pdf` downloads. Gates: tsc 0, astro check 0/0/0, eslint clean (full `npm run verify` not yet run).
+- **⏳ B PENDING (staging follow-up):** add a staging R2 seed step (mirror `seed-r2-dev.mjs`) so seeded `session_resources` objects exist on staging, AND inspect whether Vibe Coding 101's `assignment-1.pdf` `r2_key` matches its real uploaded object (needs staging access).
+- **Refs:** `src/components/course/ModulesTab.astro`, `src/pages/api/resources/[id]/download.ts`, `src/lib/ssr/loaders/courses.ts`, `src/lib/r2.ts`, `scripts/seed-r2-dev.mjs`, `migrations-dev/0001_seed_dev.sql:752`.
 
 ### [SESSION-REMIND-DEPLOY]
 
