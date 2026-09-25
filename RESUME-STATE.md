@@ -1,4 +1,4 @@
-# State — Conv 451 (2026-09-24 ~13:24)
+# State — Conv 452 (2026-09-25 ~10:31)
 
 **Conv:** ended
 **Machine:** MacMiniM4Pro
@@ -6,18 +6,15 @@
 
 ## Summary
 
-Conv 451 finalized the Brian client-import (deployed `jfg-dev-16` to staging app-only, `60b375de`) and then built + shipped a new teacher-availability feature, `[CRTEACH]` (Brian's ask): a course with no active teacher is now hidden from the catalog + discovery rails, the course-detail hero shows a "No teachers currently available" badge, the creator is auto-certified as the first teacher at course creation, and the creator can step down via a guarded "Stop teaching" control. Committed (code `fbcf3571`, docs `ff14c7d`) and deployed to staging with a full destructive reseed (app `d3b8c594`); baseline green (6523 tests). Along the way, recovered an emptied local `.dev.vars` (JWT_SECRET) that had 500'd the Smart Feed, and caught a masked `npm run verify` "exit 0" that was hiding 10 real fixture failures.
+Short bookkeeping conv. Ran `/r-start` (counter 451→452), then generated the Sep 24, 2026 daily coding timecard into the Obsidian vault (198m billable, single `(misc)` block, `[CRTEACH]` work). User flagged that the *next* conv will be client-issue work rather than the task-board queue, then had to take a call — so we closed here before any client work began. No code changes this conv.
 
 ## Key Context
 
-- **Staging is CURRENT at Conv 451** — two deploys this conv: app-only Brian-import (`60b375de`), then the full-reseed `[CRTEACH]` deploy (`d3b8c594`). Both logged in `plan/deployment/README.md`.
-- **`[CRTEACH]` is DONE** (moved to `## ✅ Done this conv`). The enrollability invariant is enforced at read time: catalog (`api/courses/index.ts`) + rails (`discovery-rails/compute.ts COURSE_BASE`) require `EXISTS(teacher_certifications is_active=1)`. `DISCOVERY_RAILS_VERSION` bumped 1→2.
-- **Auto-cert:** `POST /api/me/courses` inserts an active `teacher_certifications` row for the creator + enables `can_teach_courses`. The explicit self-cert POST is now a re-activation/409 path — PLATO steps were changed to *discover* the auto-created cert.
-- **`[TBK]` recurrence:** a backgrounded `npm run verify > log; echo EXIT=$?` reported a false "exit 0" (the echo's exit) while 10 tests failed. Always capture the real exit INTO the log and read the `Test Files … passed` line.
-- **`.dev.vars` (local) was emptied on Sep 23** — cause unexplained (local-only; staging unaffected). Open question on the board only informally; user's call to investigate.
-- Prod-KV-rebuild note (rails blob) self-heals via the version bump; captured in the deploy log, not a standing task.
-- Dev server left running on `jfg-dev-16` (localhost:4321, pid ~82981); `npx astro dev stop` from `~/projects/Peerloop` to kill. Chrome bridge tab is dev-logged-in as Gabriel Rymberg.
+- **Next conv is client work** — expect a Brian note→RFC (`/w-add-client-note` → `docs/requirements/rfc/CD-XXX/`) or a direct fix on something he reported, NOT the `## 🎯 Now` queue. The open question "which client issue" is deferred to that conv.
+- **MEMORY.md at 82% of the SessionStart auto-load byte cap** (20946/25600 B; 133/200 lines) — tracked by watch task `[MEM-PRUNE]`/`[MEM-CAP]`; run `/r-prune-memory` (not `/r-prune-claude`) when convenient.
+- Code repo on `jfg-dev-16` (CBG MATCH). Task board is 66 bodies; top of `## 🎯 Now` is `[GSN-SPIN]` if the queue is picked up instead of client work.
+- Sep-24 timecard commits predate `Block-summary:` lines, so the timecard used the legacy LLM-fallback for the `(misc)` block — expected.
 
 ## Resume Command
 
-To continue: run `/r-start` — it reads `CURRENT-TASKS.md` for the task sequence and this narrative for context. Note the code repo is on `jfg-dev-16`.
+To continue: run `/r-start` — it reads `CURRENT-TASKS.md` for the task sequence and this narrative for context.

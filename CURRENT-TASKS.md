@@ -925,4 +925,4 @@
 
 ## ✅ Done this conv
 
-- **[CRTEACH]** — teacher-availability feature (Brian ask): catalog + discovery-rails active-teacher gate, course-detail "No teachers currently available" badge, creator auto-certification at course creation (+ `can_teach_courses`), creator opt-out UI ("You" marker + "Stop teaching"/"Teach again" toggle) with a last-active-teacher deactivation guard, and seeded Gabriel's Q-System certs. Fixed 10 masked test-fixture failures; verify green (6523). Committed code `fbcf3571`/docs `ff14c7d`; deployed to staging with full reseed (app `d3b8c594`). Prod-KV-rebuild note captured in `plan/deployment/README.md` (self-heals via the version bump).
+_(none yet — cleared at each /r-start)_
