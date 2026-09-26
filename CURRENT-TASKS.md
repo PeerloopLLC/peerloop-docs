@@ -88,6 +88,7 @@
 - [SCHEMADIAG](#schemadiag) — `schema-diagram.md` claims 48 tables, 71 on disk (r-end docs agent, Conv 432)
 - [SEED-NOTIF-STALE](#seed-notif-stale) — seeded admin notification asserts a cert that Conv 434 deleted
 - [STREAM-ENV](#stream-env) — ⚠️ CONFIRMED: seed feeds accumulate duplicate Stream activities each --clean reseed (16 in PF now); fix needs Stream-API work
+- [DISC-E2E-REAL](#disc-e2e-real) — optional: opt-in local-only real-Stream round-trip E2E for the discussion feed (post→Stream→render)
 - [HW-DUP](#hw-dup) — session row shows both the "Homework" title-badge AND the detailed inline homework row (redundant); collapse if client finds it noisy
 
 ## ⏸️ Parked  (gated — out of rotation)
@@ -324,6 +325,12 @@
 - **What:** in-place `npm install` probes (during `[A11Y]`) pulled newer transitive optional pins into resolution; a later `npm ci` then failed "out of sync" despite a byte-identical committed lockfile. Reconciled via `npm install` + `git restore package-lock.json`.
 - **Habit to adopt:** run dependency experiments in a throwaway git worktree, or always reconcile (`npm install` then restore the committed lockfile) after in-place probes.
 - **Refs:** `docs/sessions/2026-07/20260720_1245 Learnings.md §5`. Sibling of `[SCRATCH-DEBRIS]`/`[DEVSRV-KILL]`. Surfaced Conv 399.
+
+### [DISC-E2E-REAL]
+
+- **State:** 📋 queued · optional · Conv 454 · follow-up to [DISC-E2E]
+- **What:** Opt-in, local-only Playwright spec exercising the REAL Stream round-trip — drive publish → `/course/[slug]/feed` against real Stream (no `mockFeedApi`), assert the actual "Discussion feed started…" post appears. Verifies the post→Stream→render hop the mocked render test can't. Gate behind a flag/creds so CI (no `STREAM_API_*`) skips it. Not started.
+- **Refs:** `e2e/course-discussion-feed.spec.ts` (sibling), `src/pages/api/feeds/course/[slug].ts`, memory `reference_staging_url`.
 
 ### [DL-FILENAME]
 
@@ -932,3 +939,4 @@
   - **Unpublish** posts *"Discussion feed turned off…"* (if it was live). **Manual toggle** off→*"turned off"*, on (published)→*"started/started again"*; toggling a draft posts nothing.
   - Shared helper `src/lib/course-discussion-feed.ts` (`activate`/`deactivate`). Stream failures are non-fatal (publish/toggle roll back a failed first-provision to keep the feed endpoint from 500ing; unpublish/disable swallow).
   - Files: `course-discussion-feed.ts` (new), `me/courses/index.ts`, `me/courses/[id]/publish.ts`, `me/courses/[id]/unpublish.ts`, `courses/[slug]/discussion-feed.ts` + 4 test files. 5 gates green (6528 tests). **Not yet deployed to staging** (`deploy:staging`).
+- **[DISC-E2E]** — Built the CI-safe render E2E for the feed announcements (option A): `e2e/course-discussion-feed.spec.ts` + `announcementFeedResponse` fixture (mocked-feed pattern from `course-feed.spec.ts`). Asserts `MattCourseFeed` renders the started/started-again/turned-off system posts + doesn't fall to the empty state. **Run green live** (2 passed, 4.0s) against a freshly-restarted dev server — no reseed needed (`intro-to-n8n` already seeded). Fixed the stale-Vite-cache `[DEVSRV-STALE]` brick en route (astro dev stop + rm .vite). Optional real-Stream round-trip left as `[DISC-E2E-REAL]`.
