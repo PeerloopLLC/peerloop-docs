@@ -563,9 +563,11 @@ Enable or disable discussion feed for a course. Creator only.
 ```
 
 **Notes:**
-- On first enable: creates Stream feed with system activity
-- Disable: sets flag to 0 but preserves Stream data
-- `createdAt` and `feedId` only included when enabling
+- The feed is "live" (visible/postable) only when the course is **published** (`is_active = 1`) AND the toggle is on. Announcements fire on transitions of that effective-live state ([DISC-DEFAULT], Conv 454).
+- Enable **while published** (goes live): provisions the Stream feed on first activation and posts a dated system announcement — `"Discussion feed started on <UTC>"` (first ever) or `"…started again on <UTC>"` (re-activation). A failed *first* provision rolls the toggle back to OFF and returns 500.
+- Enable **while draft**: just flips the flag on; provisioning + announcement are deferred to publish (draft-silent).
+- Disable: sets flag to 0 (preserves Stream data); if the feed was live, posts a dated `"Discussion feed turned off on <UTC>"` announcement (best-effort).
+- `createdAt` (feed provisioning timestamp, null until first activation) and `feedId` (the course id) are only included when enabling.
 
 **Errors:**
 

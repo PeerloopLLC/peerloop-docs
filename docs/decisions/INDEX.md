@@ -27,6 +27,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [1. Architecture & Design (Highest Impact)](01-architecture.md)
 
+- [[DISC-DEFAULT] Course Discussion-Feed Announcements Fire on the Effective-Live Transition (`is_active && discussion_feed_enabled`); Toggle Defaults ON at Create, Publish Force-Enables (A″, Conv 454)](01-architecture.md#disc-default-course-discussion-feed-announcements-fire-on-the-effective-live-transition-is_active--discussion_feed_enabled-toggle-defaults-on-at-create-publish-force-enables-a-conv-454)
 - [[CARD-CTA] The Course Primary CTA Resolves Through ONE Shared `@lib/course-cta` on Every Surface; Enrol Suppression Is Creator-Only (Conv 434)](01-architecture.md#card-cta-the-course-primary-cta-resolves-through-one-shared-libcourse-cta-on-every-surface-enrol-suppression-is-creator-only-conv-434)
 - [[TEACH-REQ] The Request-to-Teach Goes to the Course **Creator**, and `recommend.ts` Widens to Accept Creator-of-This-Course (Conv 434)](01-architecture.md#teach-req-the-request-to-teach-goes-to-the-course-creator-and-recommendts-widens-to-accept-creator-of-this-course-conv-434)
 - [[REC-RECENT] Visit History Is a Client-Side **Denormalized Snapshot** in localStorage, Keyed by Slug — No Endpoint, No Table (Conv 431)](01-architecture.md#rec-recent-visit-history-is-a-client-side-denormalized-snapshot-in-localstorage-keyed-by-slug--no-endpoint-no-table-conv-431)
@@ -464,6 +465,7 @@ This folder holds the Peerloop application decisions, split from the former sing
 
 ### [6. Testing & CI/CD](06-testing-ci.md)
 
+- [[DISC-E2E] Discussion-Feed Announcement *Render* Is Covered by a CI-Safe Playwright E2E via `mockFeedApi`; the Real-Stream Round-Trip Is Deferred (Conv 454)](06-testing-ci.md#disc-e2e-discussion-feed-announcement-render-is-covered-by-a-ci-safe-playwright-e2e-via-mockfeedapi-the-real-stream-round-trip-is-deferred-conv-454)
 - [[FEED-KEY] Seeded Stream Feeds Key by ENTITY ID (`comm-`/`crs-<slug>`), Not Slug — `streamFeedIdFor()` in `seed-feeds.mjs`; D1 `feed_id` Stays Slug (Conv 442)](06-testing-ci.md#feed-key-seeded-stream-feeds-key-by-entity-id-comm-crs-slug-not-slug--streamfeedidfor-in-seed-feedsmjs-d1-feed_id-stays-slug-conv-442)
 - [[CODECHECK] Two-Level Safety Model — `/w-codecheck` Is a Static Commit-Safety **Reporter** (`npm run codecheck`); `npm run verify` Is the Deploy-Safety Superset (Conv 439)](06-testing-ci.md#codecheck-two-level-safety-model--w-codecheck-is-a-static-commit-safety-reporter-npm-run-codecheck-npm-run-verify-is-the-deploy-safety-superset-conv-439)
 - [[TOKEN-TYPO] Invented Token / Icon Names Get a Static Gate Scoped to **Project-Owned Families** — `scripts/check-token-names.ts`, `/w-codecheck` Check #10 (Conv 434)](06-testing-ci.md#token-typo-invented-token--icon-names-get-a-static-gate-scoped-to-project-owned-families--scriptscheck-token-namests-w-codecheck-check-10-conv-434)

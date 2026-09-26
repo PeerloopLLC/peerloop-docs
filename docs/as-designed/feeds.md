@@ -18,7 +18,7 @@ Feeds are a primary learning surface (~50% of learning per client directive). St
 |---------|-----|---------|-------------|
 | **Home Smart Feed** | `/` | Ranked aggregated feed (member posts + discovery + entity-promo) | `GET /api/feeds/smart` (`SmartFeed` island on Home) |
 | **Community Feed** | `/community/[slug]/feed` | Individual community feed | Stream.io community feed |
-| **Course Discussion** | `/course/[slug]/feed` | Course discussion feed (creator opt-in) | Stream.io course feed |
+| **Course Discussion** | `/course/[slug]/feed` | Course discussion feed (on by default; force-enabled at publish, creator can disable) | Stream.io course feed |
 | **System Feed** | `/community/system` | Platform-wide system feed (admin-only) | Stream.io feed group `townhall` |
 | **My Communities** | `/community` | Communities hub (communities only) | Own API call |
 

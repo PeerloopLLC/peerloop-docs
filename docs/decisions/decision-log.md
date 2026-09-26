@@ -5,6 +5,24 @@
 
 For historical decisions and the full rationale behind each choice, see the session files in `docs/sessions/YYYY-MM/`.
 
+### [DISC-DEFAULT] Course Discussion-Feed Announcements Fire on the Effective-Live Transition; Toggle Defaults ON at Create, Publish Force-Enables (A″)
+**Date:** 2026-09-25 (Conv 454)
+
+The course Discussion toggle defaults ON at creation (INSERT `discussion_feed_enabled=1`, no Stream call at create); the feed is *live* iff `is_active=1 AND discussion_feed_enabled=1`; publish always forces the toggle ON and provisions/announces. Dated announcements (`formatDateTimeUTC(now) + " UTC"`) fire on transitions of the effective-live state — publish → "started"/"started again", unpublish → "turned off", manual toggle on-while-published → "started again", off → "turned off", off-while-draft → silent — via a new shared `src/lib/course-discussion-feed.ts` helper. Stream failures non-fatal; a failed first-provision rolls the toggle back to OFF. Chose A″ over provision-at-create (invisible draft feed, stale date), B (toggle OFF during draft), and A′ (publish respects draft-time OFF).
+
+**Rationale:** Separates intent (toggle) from live state (`is_active`), satisfying both "default ON" and "publish turns the feed on" while keeping announcements out of invisible draft feeds. Deployed to staging (code-only, version `918ddb38`).
+
+**See:** `docs/decisions/01-architecture.md`; `docs/sessions/2026-09/20260925_2024 Decisions.md` §1; Conv 454.
+
+### [DISC-E2E] Discussion-Feed Announcement Render Covered by a CI-Safe Playwright E2E via `mockFeedApi`; Real-Stream Round-Trip Deferred
+**Date:** 2026-09-25 (Conv 454)
+
+New `e2e/course-discussion-feed.spec.ts` (+ `announcementFeedResponse` fixture) follows the `course-feed.spec.ts` + `mockFeedApi` pattern to assert `MattCourseFeed` renders the `system` announcements without Stream creds. The real-Stream network round-trip is parked as `[DISC-E2E-REAL]` (real creds → local-only/opt-in, not CI). Chose the mocked-network render E2E over a manual walk and over PLATO/browser walk (both mock Stream, can't assert feed content).
+
+**Rationale:** Match the test layer to the specific risk. The `system`-activity render was the genuinely-uncovered, CI-testable gap; unit tests already cover which announcement fires per transition. 2 tests, run green live (4.0s).
+
+**See:** `docs/decisions/06-testing-ci.md`; `docs/sessions/2026-09/20260925_2024 Decisions.md` §2; Conv 454.
+
 ### [SESS-DL] R2 Seed Parity — DEMO Sample Files Seeded to Both Local and Staging; Local Overwrites, Remote Gap-Fills
 **Date:** 2026-09-25 (Conv 453)
 

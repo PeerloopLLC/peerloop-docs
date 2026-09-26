@@ -3,6 +3,17 @@
 
 ## 1. Architecture & Design (Highest Impact)
 
+### [DISC-DEFAULT] Course Discussion-Feed Announcements Fire on the Effective-Live Transition (`is_active && discussion_feed_enabled`); Toggle Defaults ON at Create, Publish Force-Enables (A″, Conv 454)
+**Date:** 2026-09-25 (Conv 454)
+
+The client wanted a newly-created course's Discussion toggle ON by default plus a dated "feed began" post. Because a course is a draft (`is_active=0`) until published and the public GET (`/api/feeds/course/[slug]`) filters `is_active=1`, "began" is ambiguous — a draft feed is invisible regardless of the toggle. Resolution (**A″**): the toggle defaults ON at creation (INSERT `discussion_feed_enabled=1`, **no** Stream call at create); the feed is *live* iff `is_active=1 AND discussion_feed_enabled=1`; **publish always forces the toggle ON** and provisions/announces. Announcements fire on transitions of the *effective-live* state, each dated `formatDateTimeUTC(now) + " UTC"`: publish → "started"/"started again"; unpublish → "turned off"; manual `/creating` toggle on-while-published → "started again", off → "turned off", off-while-draft → silent. A new shared helper `src/lib/course-discussion-feed.ts` (`activateCourseDiscussionFeed`/`deactivateCourseDiscussionFeed`) owns lazy Stream provisioning + the first-activation `discussion_feed_created_at` stamp. Rejected: provisioning at course creation (dates the post at draft-creation, invisible until publish); B (toggle only turns ON at publish, so it reads OFF during draft); A′ (publish respects a draft-time OFF).
+
+**Rationale:** Separating intent (the toggle) from live state (`is_active`) satisfies both "default ON" *and* "publish turns the feed on", and keeps announcements out of invisible draft feeds with stale dates. Driving side-effects off the AND of the two columns (computed before/after each mutating action) is the only observable-state that matches what a viewer sees.
+
+**Consequences:** Stream failures are non-fatal everywhere; a failed first-provision rolls the toggle back to OFF so the public feed can't 500. Schema default stays `0` (safety net for seeds/tests). Applied to the creator self-serve flow only (matches `[CRTEACH]` scope); the admin bare-create endpoint is unchanged. Deployed to staging (code-only, no migration; version `918ddb38`).
+
+**See:** `../Peerloop/src/lib/course-discussion-feed.ts`; `src/pages/api/me/courses/index.ts`, `[id]/publish.ts`, `[id]/unpublish.ts`, `src/pages/api/courses/[slug]/discussion-feed.ts`; `docs/sessions/2026-09/20260925_2024 Decisions.md` §1, Learnings §1; Conv 454.
+
 ### [CARD-CTA] The Course Primary CTA Resolves Through ONE Shared `@lib/course-cta` on Every Surface; Enrol Suppression Is Creator-Only (Conv 434)
 **Date:** 2026-08-10 (Conv 434)
 

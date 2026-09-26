@@ -210,6 +210,8 @@ Every non-legacy page (`.astro` / page-level `.tsx`) carries **exactly one** top
 
 **Peerloop** (formerly Alpha Peer) is a peer-to-peer learning platform solving the "2 Sigma Problem" — affordable, scalable 1-on-1 tutoring via a **learn-teach-earn flywheel** (Student → completes course → becomes Teacher earning 70% commission; Creators author courses + certify Teachers for 15% royalty). Roles: **Student · Teacher · Creator · Admin · Moderator**.
 
+**The client is Brian** (hence the staging slug `brian-1dc`). Names like "Guy Rymberg" that appear in requests are **seed/test users inside the app**, NOT the client — don't conflate a persona named in a bug report with Brian.
+
 → See [docs/reference/CLAUDE-OFFLOAD.md § Project Overview](docs/reference/CLAUDE-OFFLOAD.md#project-overview) for the flywheel model + key-metrics table (≥75% completion, 60-80 Genesis cohort, $75k budget) + role table.
 
 ## Technology Stack

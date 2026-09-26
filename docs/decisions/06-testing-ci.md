@@ -3,6 +3,17 @@
 
 ## 6. Testing & CI/CD
 
+### [DISC-E2E] Discussion-Feed Announcement *Render* Is Covered by a CI-Safe Playwright E2E via `mockFeedApi`; the Real-Stream Round-Trip Is Deferred (Conv 454)
+**Date:** 2026-09-25 (Conv 454)
+
+Testing the discussion-feed announcements is layered by risk: unit/integration tests (mocked Stream) already prove *which* announcement fires per transition and the flag states; the genuinely-uncovered, CI-testable gap was the **render** of a `system: true` activity in `MattCourseFeed`. New `e2e/course-discussion-feed.spec.ts` follows the `course-feed.spec.ts` + `mockFeedApi` pattern (plus an `announcementFeedResponse` fixture in `e2e/fixtures/mock-feed-data.ts`), asserting the system announcements render — no Stream creds needed. The real-Stream network round-trip is parked as `[DISC-E2E-REAL]` (needs real creds → local-only/opt-in, not CI). Rejected: a manual local-dev walk; an automated browser walk / PLATO (mocks Stream, so can't assert feed content).
+
+**Rationale:** Match the test layer to the specific risk rather than reaching for a full real-service E2E. PLATO and the unit tests both mock Stream (can't assert rendered feed content), and a real-Stream E2E can't run in CI, so the mocked-network render test is the one that both covers the gap and stays green in CI.
+
+**Consequences:** 2 E2E tests, run green live (4.0s). Publish re-activation ("started again" on the publish path), publish Stream-failure rollback, and disable-when-not-live were left untested by explicit user decision.
+
+**See:** `../Peerloop/e2e/course-discussion-feed.spec.ts`, `e2e/fixtures/mock-feed-data.ts`; `docs/sessions/2026-09/20260925_2024 Decisions.md` §2, Learnings §2; Conv 454.
+
 ### [FEED-KEY] Seeded Stream Feeds Key by ENTITY ID (`comm-`/`crs-<slug>`), Not Slug — `streamFeedIdFor()` in `seed-feeds.mjs`; D1 `feed_id` Stays Slug (Conv 442)
 **Date:** 2026-08-24 (Conv 442)
 

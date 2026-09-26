@@ -1118,6 +1118,7 @@ Create a new course (as draft). Requires a progression to place the course in.
 
 **Notes:**
 - Course created in draft state (`is_active = false`)
+- **Discussion feed toggle defaults ON ([DISC-DEFAULT], Conv 454):** the INSERT sets `discussion_feed_enabled = 1` (no Stream call at create — the feed provisions + announces later, on the effective-live transition at publish). Schema default stays `0`; the create endpoint overrides it.
 - Slug auto-generated from title (unique suffix added if conflict)
 - Default price: $450 (45000 cents)
 - `progression_position` auto-calculated as MAX(existing) + 1
@@ -1478,6 +1479,9 @@ Publish a course.
 | 403 | Not authorized to publish this course |
 | 404 | Course not found |
 
+**Notes:**
+- **Force-enables the discussion feed ([DISC-DEFAULT], Conv 454):** publishing sets both `is_active = 1` and `discussion_feed_enabled = 1` — even if the creator toggled the feed off while it was a draft. On the resulting effective-live transition it provisions the Stream feed (first time) and posts a dated system announcement (`"Discussion feed started[ again] on <UTC>"`). Feed activation is best-effort: a failed *first* provision rolls the toggle back to OFF, but publish still succeeds.
+
 ---
 
 ### PUT /api/me/courses/[id]/unpublish
@@ -1499,6 +1503,7 @@ Unpublish a course (return to draft).
 **Notes:**
 - Enrolled students retain access
 - Warning returned if course has students
+- **Discussion feed goes dark ([DISC-DEFAULT], Conv 454):** if the feed was live (published + toggle on + provisioned), unpublishing posts a dated `"Discussion feed turned off on <UTC>"` system announcement (best-effort — a Stream outage does not fail the unpublish). The toggle flag itself is left unchanged.
 
 **Errors:**
 

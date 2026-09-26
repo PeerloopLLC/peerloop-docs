@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-09-21 Conv 450 (client linear-superset branch curated by history-preserving cherry-pick — §1; dormant-component preservation pattern — §3)
+**Last Updated:** 2026-09-25 Conv 454 (client is "Brian"; in-app persona names are seed/test users — §3)
 
 ---
 
@@ -576,6 +576,15 @@ The 4572-line `docs/DECISIONS.md` was split into a `docs/decisions/` folder: ele
 ---
 
 ## 3. Claude Code Workflow
+
+### The Client Is "Brian" (staging slug `brian-1dc`); In-App Persona Names Are Seed/Test Users (Conv 454)
+**Date:** 2026-09-25 (Conv 454)
+
+Added a CLAUDE.md Project Overview note: the actual client is **Brian** (staging slug `brian-1dc`). In-app names encountered in bug reports and test walkthroughs (e.g. "Guy Rymberg") are **seed/test users**, not the client.
+
+**Rationale:** Prevent conflating a persona named in a bug report or logged-in session with the real client — CC had referred to "the client (Guy)" from a login persona, which the user corrected.
+
+**See:** `CLAUDE.md` (Project Overview); `docs/sessions/2026-09/20260925_2024 Decisions.md` §3; Conv 454.
 
 ### Deleted-but-Wanted Functionality Is Preserved as a Dormant Compiling Component + Commented Consumer Block + Endpoint Guard — Not a Flag, Not a Comment Blob (Conv 450)
 **Date:** 2026-09-21 (Conv 450)
