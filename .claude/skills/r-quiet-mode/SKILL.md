@@ -146,7 +146,7 @@ Branch on the **Argument given** (`$ARGUMENTS`), trimmed and lowercased:
 5. **After the user responds — execute and finalize:**
    - Action each issue per the user's disposition: for the ones to track, add a `### [CODE]` body + `## 🎯 Now` line to `CURRENT-TASKS.md` (unique bracketed mnemonic code each per `feedback_todowrite_mnemonic_codes.md`), apply fixes they ask for now, drop the ones they dismiss.
    - Add the remaining deferred tasks / followups / cleanup items to `CURRENT-TASKS.md` the same way.
-   - Save any genuine memory-save candidates (check the memory dir first per `feedback_check_memory_before_directive_save.md`).
+   - Fold any durable situational detail worth keeping into `docs/reference/CLAUDE-OFFLOAD.md` or the relevant topic doc under `docs/` — never a memory file (auto-memory retired Conv 456).
    - Address tangential observations you judge worth doing now; leave the rest as raised.
 
 6. **Delete the log:**

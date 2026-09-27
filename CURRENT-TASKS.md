@@ -449,7 +449,6 @@
 
 - **State:** 📋 queued
 - **What:** the `peerloop-ref` zsh alias in `~/.zshrc` now points at `~/projects/Peerloop-preflip`, which was removed Conv 455 (`[PREFLIP-WT]`). Strip the alias. Shell-profile edit — asked the user; do on say-so.
-- **Refs:** `memory/project_preflip_worktree_reference` (documents the alias).
 
 ### [BRIAN-ARTIFACTS]
 

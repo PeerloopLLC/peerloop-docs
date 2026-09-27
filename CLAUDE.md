@@ -8,9 +8,9 @@ This file provides guidance to Claude Code when working in the Peerloop dual-rep
 
 These rules live elsewhere in this file in full, but they're recurring failures that the user has had to flag repeatedly. Treat this list as a **pre-send checklist** for every response that ends in a question or contains options.
 
-1. **A/B labels on separate lines for multi-option questions** — put reasoning/recommendation in prose above, then each option on its own line as `**A)** description` / `**B)** description`. Never trailing "or X?" (the compound "X, or Y?" reads as yes/no). End with `👉👉👉 **Which — A or B?**` (Conv 438 decision: replaces the AskUserQuestion tool directive, which is not reliably available.) Full guidance in §User-Facing Questions; history in `docs/reference/memory-archive/feedback_option_phrasing.md`.
+1. **A/B labels on separate lines for multi-option questions** — put reasoning/recommendation in prose above, then each option on its own line as `**A)** description` / `**B)** description`. Never trailing "or X?" (the compound "X, or Y?" reads as yes/no). End with `👉👉👉 **Which — A or B?**`. Full guidance in §User-Facing Questions.
 
-2. **The decision must be the LAST thing in the turn** — the `AskUserQuestion` call, or a `👉👉👉` open-ended question. Do all independent work first (work whose outcome doesn't depend on the answer), then ask, then stop. No status updates after. Detail in `docs/reference/memory-archive/feedback_pause_on_pointing_questions.md`.
+2. **The decision must be the LAST thing in the turn** — the A/B question, or a `👉👉👉` open-ended question. Do all independent work first (work whose outcome doesn't depend on the answer), then ask, then stop. No status updates after. Detail in `docs/reference/memory-archive/feedback_pause_on_pointing_questions.md`.
 
 If you catch yourself about to violate either, refactor before sending. This section exists because the rules are clear but the in-the-moment application slips.
 
@@ -70,7 +70,7 @@ Standing guards that apply every turn, regardless of topic:
 
 ## Memory (retired — no memory files)
 
-**There is no `MEMORY.md` and no auto-memory file of any kind; none is to be created.** (Conv 456) The auto-memory system was retired: its situational-recall index moved to [docs/reference/CLAUDE-OFFLOAD.md § Situational Notes Archive](docs/reference/CLAUDE-OFFLOAD.md), and its detail sub-files to `docs/reference/memory-archive/` (git-tracked, on-demand, **not** auto-loaded). **Always-on rules live HERE in CLAUDE.md.** Durable situational detail belongs in `docs/reference/CLAUDE-OFFLOAD.md` or a topic doc under `docs/`, linked from the rule that needs it — never in a re-created memory file, a live memory dir, or a cross-machine mirror (all removed). Git history + the branch mirror is the cross-machine transport; there is no live↔mirror memory sync.
+**There is no `MEMORY.md` and no auto-memory file of any kind; none is to be created.** (Conv 456) Retired: its index is now in [docs/reference/CLAUDE-OFFLOAD.md § Situational Notes Archive](docs/reference/CLAUDE-OFFLOAD.md), its sub-files in `docs/reference/memory-archive/` (git-tracked, on-demand, **not** auto-loaded). Always-on rules live HERE; durable situational detail goes in CLAUDE-OFFLOAD.md or a topic doc, linked from the rule that needs it. No live memory dir, mirror, or sync — git history is the cross-machine transport.
 
 ## Issue Surfacing (Visual Alerts)
 
@@ -107,7 +107,7 @@ For the §Uncategorized section in `/r-end` extracts, use orange:
 
 **Never trailing "or X?"** — the compound "X, or Y?" phrasing reads as a yes/no question, not an option pick. Each option gets its own labeled line. Mark a recommended option with "(Recommended)" in its description.
 
-(Conv 438 decision: replaces the AskUserQuestion tool directive — the tool is not reliably available across environments. The A/B format achieves the same structural clarity: options are visually distinct, the user selects by label, and the malformed-question failure modes are blocked by format discipline rather than tool enforcement. History in `docs/reference/memory-archive/feedback_option_phrasing.md`.)
+(Conv 438: the A/B format replaces the AskUserQuestion tool directive — the tool isn't reliably available across environments, and the format blocks the same malformed-question failure modes. History in `docs/reference/memory-archive/feedback_option_phrasing.md`.)
 
 **Open-ended clarifications** — a free-text question that isn't a discrete pick — use the **👉👉👉 + bold** convention (the emoji + bold is what the user scans for in long output; bold alone or emoji alone gets buried):
 
@@ -212,11 +212,11 @@ Every non-legacy page (`.astro` / page-level `.tsx`) carries **exactly one** top
 
 **The client is Brian** (hence the staging slug `brian-1dc`). Names like "Guy Rymberg" that appear in requests are **seed/test users inside the app**, NOT the client — don't conflate a persona named in a bug report with Brian.
 
-→ See [docs/reference/CLAUDE-OFFLOAD.md § Project Overview](docs/reference/CLAUDE-OFFLOAD.md#project-overview) for the flywheel model + key-metrics table (≥75% completion, 60-80 Genesis cohort, $75k budget) + role table.
+→ See [docs/reference/CLAUDE-OFFLOAD.md § Project Overview](docs/reference/CLAUDE-OFFLOAD.md#project-overview) for the flywheel model + role table.
 
 ## Technology Stack
 
-**Astro.js** (React islands, SSG/SSR) + **React** + **TailwindCSS v4** on **Cloudflare** (Pages / Workers / D1 SQLite / R2 / KV). Custom JWT auth · **Stripe Connect** (85/15 split) · **Stream.io** feeds · **Resend** email · **BBB/PlugNmeet** video (VideoProvider interface). Two full-capability dev machines (`MacMiniM4Pro`, `MacMiniM4`).
+**Astro.js** (React islands, SSG/SSR) + **React** + **TailwindCSS v4** on **Cloudflare** (Pages / Workers / D1 SQLite / R2 / KV). Custom JWT auth · **Stripe Connect** (85/15 split) · **Stream.io** feeds · **Resend** email · **BBB** video (VideoProvider interface). Two full-capability dev machines (`MacMiniM4Pro`, `MacMiniM4`).
 
 → See [docs/reference/CLAUDE-OFFLOAD.md § Technology Stack](docs/reference/CLAUDE-OFFLOAD.md#technology-stack) for the full stack + dev-machines tables.
 

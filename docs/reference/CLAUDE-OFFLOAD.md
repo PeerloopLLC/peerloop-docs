@@ -377,16 +377,6 @@ Detail behind CLAUDE.md §Page Provenance (full convention + detection sweep + e
 - Student becomes Teacher → teaches new students → earns 70% commission
 - Cycle repeats, creating self-sustaining teaching capacity
 
-### Key Metrics
-
-| Metric | Target |
-|--------|--------|
-| Course Completion Rate | ≥75% (vs 15-20% MOOC average) |
-| Student-to-Teacher Conversion | 10-20% |
-| Genesis Cohort | 60-80 students, 4-5 courses |
-| Timeline | 4 months |
-| Budget | $75,000 |
-
 ### Key Roles
 
 | Role | Description |
@@ -411,7 +401,7 @@ Detail behind CLAUDE.md §Page Provenance (full convention + detection sweep + e
 | Auth | Custom JWT | Session management |
 | Payments | Stripe Connect | 85/15 split, payouts |
 | Activity Feeds | Stream.io | Feeds only (not chat) |
-| Video | VideoProvider Interface | BBB/PlugNmeet abstraction |
+| Video | VideoProvider Interface | BBB (Big Blue Button) |
 | Email | Resend | Transactional email |
 | File Storage | Cloudflare R2 | S3-compatible |
 
@@ -474,7 +464,7 @@ docs/requirements/rfc/
 - [feedback_no_paste_tokens_in_chat](memory-archive/feedback_no_paste_tokens_in_chat.md) — §Guards detail: Conv 113 CF-token + Conv 144 Stripe-key leaks; unsafe-patterns list; safe-alternatives table; leak-response.
 - [feedback_external_source_of_truth_first](memory-archive/feedback_external_source_of_truth_first.md) — §Guards detail: [VDF]/[MFM]/[STOR][DTU]/[EMP]; Convs 178-180.
 - [feedback_verify_baselines_in_conv](memory-archive/feedback_verify_baselines_in_conv.md) — §Baseline Verification detail: Conv 101→102 (5 time-fragile tests) + Conv 104 (astro-check gate).
-- [feedback_memory_index_load_bearing](memory-archive/feedback_memory_index_load_bearing.md) — §Memory detail: one-liners expose distinctive markers; `[link]` label convention; index-vs-body drift discipline.
+- [feedback_memory_index_load_bearing](memory-archive/feedback_memory_index_load_bearing.md) — Index-drift discipline (applies to this archive index): one-liners must expose distinctive markers AND stay in sync with the bodies they point at; `[link]` label convention.
 - [user_hands_off_pilot_workflow](memory-archive/user_hands_off_pilot_workflow.md) — §User WIP File detail: "CC is sole author" implications; USER-WIP.md carve-out (CC read-only).
 - [feedback_assess_ask_before_acting](memory-archive/feedback_assess_ask_before_acting.md) — Conv 407: surface scope choices as questions; a changed premise ⇒ full-doc rewrite.
 - [feedback_retest_task_premise_before_executing](memory-archive/feedback_retest_task_premise_before_executing.md) — [PREMISE] verify against CONSUMERS not the definition; measure visuals live. Convs 418-421.
@@ -520,7 +510,6 @@ docs/requirements/rfc/
 
 - [feedback_pointing_emoji_prefix](memory-archive/feedback_pointing_emoji_prefix.md) — Stub anchor — 👉👉👉 + bold rule lives in CLAUDE.md §User-Facing Questions.
 - [feedback_visual_issue_alerts](memory-archive/feedback_visual_issue_alerts.md) — Stub anchor — 🔴🔴🔴 / 🟠🟠🟠 issue-alert rule lives in CLAUDE.md §Issue Surfacing.
-- [feedback_mirror_term_annotation](memory-archive/feedback_mirror_term_annotation.md) — Say "mirror (from last r-end)" not bare "mirror". Conv 228. *(Obsolete post-Conv-456: mirror system removed.)*
 - [reference_term_garble_upstream_bug](memory-archive/reference_term_garble_upstream_bug.md) — [TERM-GARBLE] blank/partial tool output + confabulated failure = OPEN upstream CC bug. Conv 227.
 - [feedback_routing_addressability_first](memory-archive/feedback_routing_addressability_first.md) — Route shape = decide ADDRESSABILITY not page-count; transient confirmations → overlays. Conv 187.
 - [feedback_afk_nudge_disabled](memory-archive/feedback_afk_nudge_disabled.md) — [AFK-CFG] AskUserQuestion 60s auto-proceed nudge disabled; non-answer/timeout ≠ consent. Conv 361.
@@ -532,9 +521,7 @@ docs/requirements/rfc/
 - [feedback_check_docs_on_how_questions](memory-archive/feedback_check_docs_on_how_questions.md) — On "how does X work" questions, check docs too; offer doc update if answer needed heavy searching.
 - [reference_generated_doc_regen](memory-archive/reference_generated_doc_regen.md) — [DOCGEN] route maps = generated docs, auto-regen at r-end Step 5c; `route-stories.md` is hand-written. Conv 246.
 - [feedback_read_legacy_source_before_conclusion](memory-archive/feedback_read_legacy_source_before_conclusion.md) — Review/compare/port → fully read BOTH sides (esp. legacy `/old` SoT) BEFORE concluding. Conv 222.
-- [feedback_check_memory_before_directive_save](memory-archive/feedback_check_memory_before_directive_save.md) — Before offering to save a directive, grep the memory dir for an existing entry. *(Obsolete post-Conv-456: no memory dir.)*
 - [feedback_confirmations_stand_unless_revoked](memory-archive/feedback_confirmations_stand_unless_revoked.md) — User-confirmed sub-decisions survive later topic pivots; sticky until user names the item to revoke.
-- [feedback_msi_sync_user_checkpoint](memory-archive/feedback_msi_sync_user_checkpoint.md) — /r-start Step 5.7 mirror-vs-live checkpoint. Conv 155-156. *(Obsolete post-Conv-456: sync removed.)*
 - [feedback_fix_docs_inline_not_rend](memory-archive/feedback_fix_docs_inline_not_rend.md) — Fix stale doc refs INLINE same-conv; do NOT defer to /r-end. Conv 286 [TW-V4].
 
 ### Skills & planning
@@ -567,13 +554,8 @@ docs/requirements/rfc/
 
 - [project_spacing_snap_over_matt_exception](memory-archive/project_spacing_snap_over_matt_exception.md) — SPACING axis: off-scale `@matt-source` spacing SNAPS to nearest 4px (ties round UP). Conv 305.
 - [project_role_studios_deconstruct_nudges](memory-archive/project_role_studios_deconstruct_nudges.md) — [ROLE-STUDIOS] `/dashboard`→role workspaces + nudges. Conv 252/317/339/392.
-- [project_matt_phaseout_inspired_default](memory-archive/project_matt_phaseout_inspired_default.md) — Matt phase-out: Figma LAYOUT-ONLY; pages default `@matt-inspired`, NEVER lose `/old` function. Conv 239/289.
-- [project_route_404_honesty_standin](memory-archive/project_route_404_honesty_standin.md) — Route migration: unconverted pages must 404; `@stand-in` = TRANSIENT marker. Conv 203.
-- [project_old_pages_no_delete_until_vetted](memory-archive/project_old_pages_no_delete_until_vetted.md) — RTMIG-4 ports MOVE `/old/X`→`/X` as `@stand-in`; 74 `/old` pages need per-page vetting. Conv 250/338.
-- [feedback_port_functionality_and_styling](memory-archive/feedback_port_functionality_and_styling.md) — legacy→Matt port = faithful function+content AND full Matt styling; diff field-by-field. Conv 222.
-- [feedback_route_sweep_pause_protocol](memory-archive/feedback_route_sweep_pause_protocol.md) — ROUTE SWEEP (RTMIG-4): every route swept, 8-step PAUSE process → `[<ROUTE>-FIXES]` capture.
+- [project_matt_phaseout_inspired_default](memory-archive/project_matt_phaseout_inspired_default.md) — Matt phase-out: Figma LAYOUT-ONLY; pages default `@matt-inspired`. Conv 239/289.
 - [feedback_scan_for_primitive_candidates_on_retrofit](memory-archive/feedback_scan_for_primitive_candidates_on_retrofit.md) — Retrofitting `@stand-in`→`@matt-inspired`: scan for existing primitive candidates BEFORE inline JSX.
-- [project_preflip_worktree_reference](memory-archive/project_preflip_worktree_reference.md) — [PREFLIP-WT] pre-flip worktree reference. *(Note: worktree removed Conv 455.)*
 - [project_module_submodule_model](memory-archive/project_module_submodule_model.md) — Session↔Module = 1:1; nested "N Modules" = Sub-Modules. Conv 188 [MOD-SCHEMA].
 - [project_timezone_confidence](memory-archive/project_timezone_confidence.md) — Recurring `new Date()` issues; user has LOW confidence TZ handling is correct.
 - [project_staging_integration_plan](memory-archive/project_staging_integration_plan.md) — Expand BBB-VERIFY into full staging block (Stream, Resend, Stripe, BBB).
@@ -583,6 +565,5 @@ docs/requirements/rfc/
 - [project_ephemeral_dismiss_dev_staging](memory-archive/project_ephemeral_dismiss_dev_staging.md) — Dismissible nudges reappear every reload in dev+staging BY DESIGN. Conv 292.
 - [project_settings_tier_local_control](memory-archive/project_settings_tier_local_control.md) — Settings: project `settings.json` + machine-local `settings.local.json`; [SETTINGS-GUARD]. Conv 212.
 - [project_jfg_dev_branches_are_snapshots](memory-archive/project_jfg_dev_branches_are_snapshots.md) — `jfg-dev-NN` code branches = intentional SNAPSHOTS — NEVER propose `git branch -d` sweeps. Conv 292.
-- [project_old_appnavbar_retire_by_default](memory-archive/project_old_appnavbar_retire_by_default.md) — [OLD-RETIRE-DEFAULT] `/old/*` + AppNavbar = RETIRE-by-default. Conv 331.
 - [project_admin_conformance_policy](memory-archive/project_admin_conformance_policy.md) — [ADMIN-CONF-POLICY] RG-ADMIN = dense operational console; relaxations A-D. Conv 331.
 - [project_diploma_vs_certificate](memory-archive/project_diploma_vs_certificate.md) — [DIPLOMA] Diploma=course-completion (auto, derived) vs Certificate=teach-readiness. Conv 389.
