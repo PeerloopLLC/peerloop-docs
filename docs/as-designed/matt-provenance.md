@@ -267,6 +267,22 @@ top-of-file doc-comment:
 **Unmarked = legacy.** A page in the design-system tree without one of these three markers belongs
 to the doomed legacy app (`/old/*` after ROUTE-FLIP). `dev/*` pages opt out of the convention.
 
+### Brian-era styling is unattributed (Conv 456)
+
+The three markers capture **Matt-era** provenance only. Once **Brian took over the final style**
+(Conv 456), his changes go forward **without attribution**:
+
+- **New pages/components** Brian introduces carry **no** marker — they are neither legacy, nor
+  `@matt-source`, nor `@matt-inspired`.
+- **Already-attributed pages** Brian restyles **keep their existing marker.** His contribution isn't
+  cleanly separable from the Matt-era baseline, so we do **not** re-attribute them or add a Brian
+  marker.
+
+Consequently an existing `@matt-*` marker is design **heritage** — "originated Matt-era" — not a
+guarantee the page's *current* styling is unchanged; consult git diffs for Brian's subsequent work.
+No `@brian-*` marker axis exists, by design. A future full-restyle scan may reconstruct a fresh
+style guide; until then, do **not** add or change markers for Brian's work.
+
 ### Why three, not two
 
 Component-level provenance only needs two classes because Phase-6 extrapolated components carry

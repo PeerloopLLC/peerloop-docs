@@ -198,6 +198,8 @@ A "baseline" claim asserts the project is healthy — tests pass, types check, b
 
 Every non-legacy page (`.astro` / page-level `.tsx`) carries **exactly one** top-of-file marker: **`@stand-in`** (legacy-rehost awaiting retrofit, transient) · **`@matt-source <nodeId>`** (1:1 Figma-frame port) · **`@matt-inspired`** (Matt design language, no source frame). Unmarked = legacy; `dev/*` opts out. Pick the right marker when adding/retrofitting a page.
 
+**Brian-era styling is unattributed (Conv 456).** The markers capture **Matt-era** provenance only. Brian's later changes carry **no** marker — new pages he adds stay unmarked, and attributed pages he restyles keep their existing marker (his portion isn't separable, so don't re-attribute). Read an existing `@matt-*` marker as design *heritage*, not proof the current styling is unchanged; there is no `@brian-*` axis, by design. Don't add or change markers for Brian's work.
+
 → See [docs/reference/CLAUDE-OFFLOAD.md § Page Provenance](docs/reference/CLAUDE-OFFLOAD.md#page-provenance--detection--component-provenance) (marker table, retrofit primitive-scan, component-level provenance) + [matt-provenance.md § 11](docs/as-designed/matt-provenance.md).
 
 ## Schema Discrepancy Discipline
