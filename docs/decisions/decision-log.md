@@ -5,6 +5,11 @@
 
 For historical decisions and the full rationale behind each choice, see the session files in `docs/sessions/YYYY-MM/`.
 
+### [VIDEO-SOLE] BBB Is the Sole Video Provider; PlugNmeet Fully Dropped
+**Date:** 2026-09-27 (Conv 456)
+
+BigBlueButton (BBB) is the *only* video provider, with no plans to change. PlugNmeet is fully dropped and removed from CLAUDE.md §Technology Stack and the OFFLOAD stack table; the `VideoProvider` interface abstraction is retained for future swapping. Supersedes the "BBB over PlugNmeet" framing (2026-01-20) by removing PlugNmeet as a live option entirely.
+
 ### [DISC-DEFAULT] Course Discussion-Feed Announcements Fire on the Effective-Live Transition; Toggle Defaults ON at Create, Publish Force-Enables (A″)
 **Date:** 2026-09-25 (Conv 454)
 

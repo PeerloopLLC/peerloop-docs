@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-09-27 Conv 455 (preflip reference worktree torn down — §1)
+**Last Updated:** 2026-09-27 Conv 456 (Brian-era styling left unattributed in page provenance — §3)
 
 ---
 
@@ -583,6 +583,15 @@ The 4572-line `docs/DECISIONS.md` was split into a `docs/decisions/` folder: ele
 ---
 
 ## 3. Claude Code Workflow
+
+### Brian-Era Styling Is Left Unattributed — the 3-Marker Provenance Convention Captures Matt-Era Heritage Only (Conv 456)
+**Date:** 2026-09-27 (Conv 456)
+
+The `@stand-in` / `@matt-source` / `@matt-inspired` page-provenance markers record **Matt-era** heritage only. Brian's subsequent styling changes carry **no marker**: new Brian pages are left unmarked, and restyled already-attributed pages keep their existing `@matt-*` marker (not re-attributed). No `@brian-*` marker axis is introduced. A grep of `src` confirmed 180 active markers and 0 `@brian` markers, so the convention is live, not stale.
+
+**Rationale:** Brian's contribution to already-attributed pages isn't cleanly separable from the Matt baseline; new work is unmarked; 0 distinct Brian pages exist, so a new marker axis is premature. Existing `@matt-*` markers now read as "originated Matt-era," not "current styling" — consult git diffs for Brian's later changes. A future full-restyle scan may reconstruct a fresh style guide.
+
+**See:** `CLAUDE.md` (§Page Provenance); `docs/as-designed/matt-provenance.md` §11; `docs/sessions/2026-09/20260927_1235 Decisions.md` §1; Conv 456.
 
 ### The Client Is "Brian" (staging slug `brian-1dc`); In-App Persona Names Are Seed/Test Users (Conv 454)
 **Date:** 2026-09-25 (Conv 454)

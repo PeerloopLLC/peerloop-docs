@@ -1072,6 +1072,8 @@ Use BigBlueButton (BBB) as the video conferencing platform for tutoring sessions
 
 **Rationale:** Client (Brian) chose BBB over PlugNmeet for video platform. VideoProvider abstraction allows future swapping if needed.
 
+> **Update (Conv 456, 2026-09-27):** PlugNmeet is fully dropped — BBB is the *sole* video provider with no plans to change. PlugNmeet removed from CLAUDE.md §Technology Stack + the OFFLOAD stack table; the VideoProvider interface abstraction is retained.
+
 **See:** `docs/reference/bigbluebutton.md`, `src/lib/video/`
 
 ### Homepage Landing Strategy (RESOLVED)
