@@ -156,7 +156,7 @@ users|API-USERS.md
 
 | Skill | Location | Purpose | Helper Files |
 |-------|----------|---------|--------------|
-| `/r-start` | `.claude/skills/r-start/` | Start conversation — pull, increment, resume; Step 5.7 syncs memory mirror → live | — |
+| `/r-start` | `.claude/skills/r-start/` | Start conversation — pull, increment, resume | — |
 | `/r-end` | `.claude/skills/r-end/` | End conversation — collector + 3 parallel agents (learn-decide, update-plan, docs); Step 5b syncs memory live → mirror; emits v2 commit body (H3 sections + `Format: v2` trailer) | refs/fmt-*, scripts/* |
 | `/r-commit` | `.claude/skills/r-commit/` | Commit both repos using v2 commit body format (H3 sections + `Format: v2` trailer); Step 1.5 syncs memory live → mirror | dual-repo-status, conv-read-current |
 | `/r-timecard` | `.claude/skills/r-timecard/` | Merged dual-repo timecard for client billing | — |
@@ -308,8 +308,8 @@ Every work session follows a strict sequence. Two skills own the entry and exit:
 
 | Skill | Role | What It Does |
 |-------|------|-------------|
-| `/r-start` | **Entry (required)** | Check repos clean, pull both, increment Conv counter, push, sync memory mirror → live (Step 5.7), hydrate active-only (TodoWrite stays empty — `CURRENT-TASKS.md` is the backlog), present resume context |
-| `/r-end` | **Exit (full)** | Extract conversation record, dispatch 3 agents in parallel, prune extract, refresh `CURRENT-TASKS.md` (preserve-then-overlay) + write narrative-only RESUME-STATE.md + clear TodoWrite, sync memory live → mirror (Step 5b), commit + push both repos, delete `.conv-current` |
+| `/r-start` | **Entry (required)** | Check repos clean, pull both, increment Conv counter, push, present resume context (read `CURRENT-TASKS.md` for the backlog) |
+| `/r-end` | **Exit (full)** | Extract conversation record, dispatch 3 agents in parallel, prune extract, refresh `CURRENT-TASKS.md` (preserve-then-overlay) + write narrative-only RESUME-STATE.md, commit + push both repos, delete `.conv-current` |
 | `/w-post-fix` | **Exit (lightweight)** | Record fix + targeted doc update, commit both repos. No agents, no extract, no full sync. Use for bug fixes touching 1-3 files |
 
 **When to use which exit:**
@@ -359,12 +359,10 @@ PLAN.md               ← r-start reads (resume context)
                         r-end → update-plan agent writes
                         r-timecard-day reads (block-aware grouping)
 
-.claude/memory-sync/memories/
-                      ← r-end Step 5b writes (live → mirror rsync)
-                        r-commit Step 1.5 writes (live → mirror rsync)
-                        r-start Step 5.7 reads (mirror → live rsync)
-                        Committed to git; git pull/push is the transport
-                        between machines. See §Memory Sync below.
+docs/reference/memory-archive/
+                      ← Frozen archive of the retired MEMORY.md system
+                        (Conv 456). Git-tracked, on-demand, not auto-loaded.
+                        No skill reads or writes it in the lifecycle flow.
 ```
 
 #### Session Files (docs/sessions/YYYY-MM/)
@@ -393,77 +391,14 @@ PLAN.md               ← r-start reads (resume context)
 | `/tmp/git-history.md` | History extract | w-git-history → editor review |
 | `/tmp/extract-manifest.txt` | Agent coordination | r-end agents write consumed lines → r-end reads for pruning → deleted |
 
-### Memory Sync
+### Memory Sync — RETIRED (Conv 456)
 
-Three conv lifecycle skills contain inline memory-sync steps that keep Claude's live memory directory consistent across development machines. This is the cross-machine memory synchronization system introduced in Conv 154.
+The cross-machine memory-synchronization system (introduced Conv 154) was **retired in Conv 456**, along with the whole `MEMORY.md` auto-memory system. There is no live memory directory, no `.claude/memory-sync/` mirror, and no live↔mirror rsync in any skill:
 
-#### Design
-
-The live memory directory (`$HOME/.claude/projects/$SLUG/memory/`) is machine-local and not directly shared. A committed mirror (`peerloop-docs/.claude/memory-sync/memories/`) acts as the transport:
-
-```
-[MacMiniM4]                              [MacMiniM4Pro]
-live/ ──r-end/r-commit──► mirror/ ──git push──► mirror/ ──r-start──► live/
-```
-
-- **Mirror is frozen during a conv.** Between /r-start and /r-end (or /r-commit), the mirror reflects "state at last commit point" — it does not track live changes mid-conv.
-- **Mirror is canonical.** On /r-start, the mirror (just refreshed by git pull) overwrites live. Live is derived, not authoritative.
-- **Git is the manifest.** No separate index file or checksum ledger — `diff -rq mirror live` answers "do they match" in one call.
-
-#### Path Derivation
-
-All three skills derive paths from tilde expansion (cross-machine portable per Conv 162 [CPD-SWEEP] convention — works on M4 = `livingroom` and M4Pro = `jamesfraser`):
-
-```bash
-SLUG=$(echo ~/projects/peerloop-docs | tr / -)
-LIVE=~/.claude/projects/$SLUG/memory
-MIRROR=~/projects/peerloop-docs/.claude/memory-sync/memories
-```
-
-The tilde-piped-through-`tr` form replaces `${CLAUDE_PROJECT_DIR//\//-}` because `$CLAUDE_PROJECT_DIR` (and `$HOME`) trigger the Bash tool's `simple_expansion` permission prompt; tilde does not. See CLAUDE.md §Path Conventions for the full rule.
-
-#### Sync Points
-
-| Skill | Step | Direction | Trigger |
-|-------|------|-----------|---------|
-| `/r-start` | Step 5.7 | mirror → live | After git pull; propagates other machine's changes |
-| `/r-commit` | Step 1.5 | live → mirror | Before staging; captures current conv's memory state |
-| `/r-end` | Step 5b | live → mirror | Before commit; seeds/updates mirror for other machine |
-
-**Bootstrap:** No init skill. The first `/r-end` or `/r-commit` after the feature landed seeds the mirror via `mkdir -p` + `rsync`. Idempotent — subsequent runs just refresh.
-
-**MEMORY.md auto-load lag:** Claude Code auto-loads MEMORY.md at SessionStart (per official docs: first 200 lines or 25KB). /r-start runs *after* SessionStart, so its mirror→live sync wouldn't otherwise reach Claude's auto-context this conv. Step 5.7 explicitly `Read`s MEMORY.md after the rsync to push fresh content into the conversation as a tool result. Sub-files (`feedback_*.md` etc.) don't need this — they're read on-demand by Claude, and on-demand reads see freshly-synced content naturally.
-
-**Concurrent edits:** Rare under "one machine at a time" discipline. When they do happen, git's native merge-conflict behavior surfaces on /r-start's pull step. User resolves via standard git tools.
-
-#### Presync Forensics and User Checkpoint (Conv 155–156)
-
-Step 5.7 uses a two-phase split so the user can review any cross-machine diff before the destructive `rsync -a --delete mirror → live` runs.
-
-**Phase 1 — Forensics + display + halt decision:**
-
-1. **Diff log** — `diff -rq $MIRROR $LIVE` output written to `~/.claude/projects/<slug>/sync-logs/conv-NNN-presync-TS.txt`. Local-only; git history is the cross-machine forensic trail.
-2. **Live mtime** — most recently modified file in `$LIVE` is captured (with timestamp) so the user knows when this machine last received a memory write.
-3. **Print to stdout** — one-line summary (`MODIFIED_COUNT` / `ONLY_IN_MIRROR_COUNT` / `ONLY_IN_LIVE_COUNT`) plus per-file detail are printed to stdout so the user sees the incoming diff inline (not just logged).
-4. **Halt predicate** — any non-empty diff halts Step 5.7 and asks the user before rsync runs. Two question shapes:
-   - **Normal diff (no `Only in $LIVE`)** — yes/no prompt. "yes" → Phase 2 runs. "no" → Phase 2 skipped with a warning that the next /r-end will overwrite mirror with this machine's pre-sync state; /r-start continues.
-   - **Data-loss escalation (`Only in $LIVE` present)** — auto-backup of `$LIVE` to `sync-logs/conv-NNN-live-backup-TS/`, then A/B/C options (copy live-only files into mirror and proceed / proceed and overwrite / stop and inspect manually).
-5. **Empty diff = silent** — mirror and live are byte-equal; Phase 2 runs immediately with no prompt.
-
-**Phase 2 — rsync + cap check:**
-
-Runs after the user approves (or on empty diff). Executes `rsync -a --delete mirror → live`, then reads MEMORY.md into context. MEMORY.md cap check runs here (post-sync state), not in Phase 1.
-
-**When the user checkpoint fires:** On any cross-machine sync (mirror has incoming changes) or if live has out-of-band edits (excluded by `user_hands_off_pilot_workflow.md` but guarded here for safety). Most same-machine /r-starts (after a clean /r-end on the same machine) see an empty diff and run silently through Step 5.7.
-
-#### MEMORY.md Cap Monitoring (Conv 155)
-
-Step 5.7 also checks MEMORY.md size after the rsync (when the freshly-synced file is in live):
-
-- **Silent at ≤79%** of either cap (200 lines or 25 KB per Claude Code auto-load docs)
-- **`🔴🔴🔴` alert at ≥80%** — gives time to run `/r-prune-claude` before truncation silently drops recent entries
-
-The check is inline in Step 5.7 (co-located with the memory boundary) rather than a standalone script or SessionStart hook (which would run for all projects).
+- `MEMORY.md` and its live dir (`$HOME/.claude/projects/$SLUG/memory/`) were deleted.
+- The ~100 detail sub-files were relocated to `docs/reference/memory-archive/` (git-tracked, on-demand, **not** auto-loaded); their index moved to `docs/reference/CLAUDE-OFFLOAD.md § Situational Notes Archive`.
+- The sync steps were removed from `/r-start` (Step 5.7), `/r-commit` (Step 1.5), and `/r-end` (Step 5b); the `/r-prune-memory` skill was deleted; `/r-coherence-check` was repointed to audit `CLAUDE.md ↔ CLAUDE-OFFLOAD.md ↔ memory-archive/`.
+- **Always-on rules live in `CLAUDE.md`; durable situational detail lives in `CLAUDE-OFFLOAD.md` or a topic doc under `docs/`.** No memory file is to be re-created (CLAUDE.md §Memory). Git history + the branch push/pull remains the cross-machine transport for everything.
 
 ### r-end Agent Dispatch
 

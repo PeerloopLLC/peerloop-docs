@@ -67,7 +67,7 @@ Branch on the verdict:
        Conv {conv} · pid {pid} · started {started}
 
      Running /r-start here would trample it (double counter-increment,
-     competing pushes, memory-sync clobber — the Conv 293 failure).
+     competing pushes — the Conv 293 failure).
 
      → Switch to that terminal, or close it / let it finish /r-end, then
        run /r-start here again. If that session truly crashed, the next
@@ -136,7 +136,7 @@ else
 fi
 ```
 
-**If it prints the `⚠️` line, STOP and `Read` `.claude/skills/r-start/SKILL.md` in full before executing Steps 3+.** Execute from the freshly-read on-disk version, not the invocation-time echo — otherwise newly-added steps (e.g. Step 7.5 was added Conv 215 and silently skipped in Conv 218 for exactly this reason) get dropped. (`HEAD@{1}` = the pre-pull position after Step 2's ff-only pull; harmless no-op if the pull changed nothing else.) See `memory/feedback_skill_body_stale_after_self_pull.md`.
+**If it prints the `⚠️` line, STOP and `Read` `.claude/skills/r-start/SKILL.md` in full before executing Steps 3+.** Execute from the freshly-read on-disk version, not the invocation-time echo — otherwise newly-added steps (e.g. Step 7.5 was added Conv 215 and silently skipped in Conv 218 for exactly this reason) get dropped. (`HEAD@{1}` = the pre-pull position after Step 2's ff-only pull; harmless no-op if the pull changed nothing else.) See `docs/reference/memory-archive/feedback_skill_body_stale_after_self_pull.md`.
 
 ### Step 3: Read and increment the counter
 
@@ -219,7 +219,7 @@ Branch on the verdict:
     ```bash
     git -C ~/projects/Peerloop branch --show-current > ~/projects/peerloop-docs/.conv-branch
     ```
-    The stale branch is **kept** (checkout never deletes it — see `memory/project_jfg_dev_branches_are_snapshots.md`).
+    The stale branch is **kept** (checkout never deletes it — see `docs/reference/memory-archive/project_jfg_dev_branches_are_snapshots.md`).
   - On stay → note it and continue; downstream code work uses the current branch at the user's risk.
 - **`MISMATCH ... UNSAFE-DIRTY`** / **`UNSAFE-AHEAD(n)`** → wrong branch, but an auto-checkout could lose work (uncommitted changes, or `n` commits unique to the current branch). **Do NOT offer auto-checkout.** Surface and let the user resolve:
   ```
@@ -229,160 +229,6 @@ Branch on the verdict:
   ```
 
 This gate is **informational/corrective** — it never blocks the counter increment (already done in Step 5; branch-independent) nor the rest of /r-start. Its job is to get the code repo onto the right branch **before Step 8's Recommended Action** points at code work.
-
-### Step 5.7: Sync memory mirror → live
-
-Apply any incoming memory changes from the other machine. The in-repo mirror at `~/projects/peerloop-docs/.claude/memory-sync/memories/` was just refreshed by the pull in Step 2; this step propagates it to the live memory directory.
-
-**Two-phase design.** Step 5.7 runs in two phases:
-
-- **Phase 1** (always) — capture `diff -rq` between mirror and live, log full forensics, display one-line summary + per-file detail to stdout. If diff is empty, no decision needed. If diff is non-empty, halt for user approval.
-- **Phase 2** (immediately on empty diff, or after approval on non-empty diff) — apply `rsync -a --delete` mirror→live, then run MEMORY.md auto-load cap check on the post-sync state.
-
-The phase split exists so that **every non-empty diff** gets a user checkpoint before the destructive `rsync --delete` runs. This catches not just data-loss-risk cases (`Only in $LIVE`) but also unexpected incoming changes — the user can inspect what's coming in before applying. Empty-diff (mirror == live) skips the prompt because there's no decision to make.
-
-**Phase 1 bash** — forensics + display, no rsync:
-
-```bash
-SLUG=$(echo ~/projects/peerloop-docs | tr / -)
-LIVE=~/.claude/projects/$SLUG/memory
-MIRROR=~/projects/peerloop-docs/.claude/memory-sync/memories
-
-if [ -d "$MIRROR" ]; then
-  mkdir -p "$LIVE"
-
-  CONV=$(cat ~/projects/peerloop-docs/.conv-current 2>/dev/null || echo "unknown")
-  TS=$(date +%Y%m%d-%H%M%S)
-  LOG_DIR=~/.claude/projects/$SLUG/sync-logs
-  mkdir -p "$LOG_DIR"
-  LOG="$LOG_DIR/conv-${CONV}-presync-${TS}.txt"
-
-  DIFF_OUT=$(diff -rq "$MIRROR" "$LIVE" 2>&1 || true)
-  DIFF_LINES=$(echo -n "$DIFF_OUT" | grep -c '^' | tr -d ' ')
-  MODIFIED_COUNT=$(echo "$DIFF_OUT" | grep -c "^Files " | tr -d ' ')
-  ONLY_IN_MIRROR_COUNT=$(echo "$DIFF_OUT" | grep -c "^Only in $MIRROR" | tr -d ' ')
-  ONLY_IN_LIVE=$(echo "$DIFF_OUT" | grep "^Only in $LIVE" || true)
-  ONLY_IN_LIVE_COUNT=$(echo -n "$ONLY_IN_LIVE" | grep -c '^' | tr -d ' ')
-  LIVE_LATEST=$(find "$LIVE" -type f -exec stat -f '%Sm  %N' -t '%Y-%m-%d %H:%M:%S' {} \; 2>/dev/null | sort -r | head -1)
-
-  {
-    echo "=== Pre-sync forensics: Conv ${CONV} on $(hostname -s) at $(date) ==="
-    echo "Mirror: $MIRROR"
-    echo "Live:   $LIVE"
-    echo
-    echo "Live last-updated file:"
-    echo "  $LIVE_LATEST"
-    echo
-    echo "diff -rq mirror vs live (BEFORE rsync):"
-    echo "$DIFF_OUT" | sed 's/^/  /'
-  } > "$LOG"
-
-  if [ "$DIFF_LINES" -eq 0 ]; then
-    echo "📋 Pre-sync: 0 changes — mirror and live already match."
-    echo "    Log: $LOG"
-    echo "    Proceeding to Phase 2 (no-op rsync + cap check)."
-  else
-    echo "📋 Pre-sync diff: ${MODIFIED_COUNT} modified, ${ONLY_IN_MIRROR_COUNT} new in mirror, ${ONLY_IN_LIVE_COUNT} only in live"
-    echo "    Live last-updated: $LIVE_LATEST"
-    echo "    Log: $LOG"
-    echo
-    echo "Detail (diff -rq):"
-    echo "$DIFF_OUT" | sed 's/^/  /'
-    if [ "$ONLY_IN_LIVE_COUNT" -gt 0 ]; then
-      BACKUP="$LOG_DIR/conv-${CONV}-live-backup-${TS}"
-      cp -R "$LIVE" "$BACKUP"
-      echo
-      echo "⚠️  DATA-LOSS RISK — ${ONLY_IN_LIVE_COUNT} live-only file(s) would be erased by rsync --delete."
-      echo "    Auto-backup created: $BACKUP"
-      echo "    Sync did NOT run — awaiting decision."
-    else
-      echo
-      echo "    Sync did NOT run — awaiting approval."
-    fi
-  fi
-fi
-```
-
-**Halt-and-ask behavior.** Branch on Phase 1's stdout:
-
-- **`📋 Pre-sync: 0 changes`** → run Phase 2 immediately. No prompt (mirror == live, nothing to decide).
-
-- **`Sync did NOT run — awaiting approval.`** (changes incoming, no live-only files) → ask:
-
-  ```
-  👉👉👉 **Apply mirror→live now? (yes / no)**
-  ```
-
-  - On `yes` → run Phase 2.
-  - On `no` → print this warning and proceed to Step 6 **without** running Phase 2:
-
-    ```
-    ⚠️  Sync skipped. Live retains pre-sync state — incoming changes are NOT applied.
-        The next /r-end's live→mirror push will overwrite mirror with this state,
-        effectively rejecting the incoming changes (recoverable only via git history).
-        Resolve the diff manually before /r-end if you want a different outcome.
-    ```
-
-- **`⚠️  DATA-LOSS RISK`** (one or more `Only in $LIVE` files) → present the three-option question (auto-backup is already in place from Phase 1):
-
-  Frame the choice around **whose intent wins**: the live-only file(s) exist on
-  this machine but not the mirror, which means either THIS machine has unsynced
-  work that was never pushed, OR the OTHER machine intentionally deleted them.
-  The other machine's changes are about to overwrite live — option B accepts
-  that overwrite (including the deletion), option A protects this machine's
-  file(s) first. Auto-backup under `sync-logs/` is the only recovery path if
-  the user picks B and the deletion turns out to have been unintended.
-
-  ```
-  A) Save this machine's file(s) first — copy them into the mirror so the other
-     machine's sync doesn't erase them. Choose if the live-only file(s) are
-     unsynced work from THIS machine.
-  B) Let the other machine's changes win — including deleting the live-only
-     file(s). Choose if the deletion was intentional on the other machine.
-     (Live backup under sync-logs/ is the only recovery path.)
-  C) Inspect the pre-sync log first
-
-  👉👉👉 **Which — A, B, or C?**
-  ```
-
-  - On `A` → bash to copy live-only files into mirror, then re-run Phase 1 (the diff should now be cleaner).
-  - On `B` → run Phase 2.
-  - On `C` → `Read` the pre-sync log file, then re-ask.
-
-**Phase 2 bash** — apply rsync, run cap check (runs in both empty-diff and post-approval paths):
-
-```bash
-SLUG=$(echo ~/projects/peerloop-docs | tr / -)
-LIVE=~/.claude/projects/$SLUG/memory
-MIRROR=~/projects/peerloop-docs/.claude/memory-sync/memories
-
-if [ -d "$MIRROR" ]; then
-  rsync -a --delete "$MIRROR/" "$LIVE/"
-  echo "✅ Sync applied: mirror → live."
-fi
-
-# MEMORY.md auto-load cap check — first 200 lines / 25 KB load at every SessionStart
-# (per code.claude.com/docs/en/memory.md). Silent when healthy, 🔴 alert at ≥80%.
-MEM="$LIVE/MEMORY.md"
-if [ -f "$MEM" ]; then
-  MEM_LINES=$(wc -l < "$MEM" | tr -d ' ')
-  MEM_BYTES=$(wc -c < "$MEM" | tr -d ' ')
-  LINE_PCT=$(awk -v l=$MEM_LINES 'BEGIN { printf "%.0f", l/200*100 }')
-  BYTE_PCT=$(awk -v b=$MEM_BYTES 'BEGIN { printf "%.0f", b/25600*100 }')
-  if [ "$LINE_PCT" -ge 80 ] || [ "$BYTE_PCT" -ge 80 ]; then
-    echo "🔴🔴🔴 MEMORY.md nearing auto-load cap: ${MEM_LINES}/200 lines (${LINE_PCT}%), ${MEM_BYTES}/25600 bytes (${BYTE_PCT}%)"
-    echo "    → Run /r-prune-memory (re-flattens bloated index lines + extracts inline entries into sub-files). First 200 lines / 25 KB load at every SessionStart. NOT /r-prune-claude — that prunes CLAUDE.md, a different file."
-  fi
-fi
-```
-
-**MEMORY.md cap monitoring.** Phase 2 checks the live MEMORY.md against the SessionStart auto-load cap (200 lines / 25 KB per `code.claude.com/docs/en/memory.md`). Silent when ≤79%; emits a `🔴🔴🔴` alert at ≥80% of either dimension so we have time to prune before truncation hides recent entries. The remedy is **`/r-prune-memory`**, which re-flattens bloated index pointer-lines (the dominant byte source) and extracts any inline-only entries into sub-files. **Not `/r-prune-claude`** — that targets `CLAUDE.md` (a different file with different cap mechanics) and does nothing for the MEMORY.md auto-load cap.
-
-**Pre-bootstrap.** If `$MIRROR` does not yet exist, this is pre-bootstrap — silently skip. The next `/r-end` or `/r-commit` will seed it.
-
-**Sync logs are local-only.** They live under `~/.claude/projects/<slug>/sync-logs/` (outside the repo) — git history is the cross-machine forensic trail; these logs cover this machine's local sync history.
-
-**Then `Read` MEMORY.md** (`~/.claude/projects/$SLUG/memory/MEMORY.md`) so the freshly-synced index lands in the conversation as a tool result. Claude's auto-loaded MEMORY.md (from SessionStart, per `code.claude.com/docs/en/memory.md`: "the first 200 lines or 25KB load at the start of every conversation") is a *pre-sync* snapshot — the explicit Read ensures Claude sees current content for the rest of this conv. Sub-files don't need this treatment; they're read on-demand by Claude as needed, and on-demand reads naturally see freshly-synced content.
 
 ### Step 5.8: Leftover quiet-mode log
 
@@ -421,7 +267,7 @@ If it reports `PRESENT`, a prior conv exited uncleanly while `/r-quiet-mode` was
 
 **How tasks change during the conv (write-through):**
 - **Start a task:** flip its body's `- **State:**` bullet to `🔄 active`; if it wasn't already near the top of `## 🎯 Now`, move its TOC line up. The `### [CODE]` body itself never moves (it lives alphabetically under `## Tasks`).
-- **Discover a new task:** add a `### [CODE]` body under `## Tasks` (alphabetical position) **and** a line in `## 🎯 Now` (or `## ⏸️ Parked` if gated). Use a unique bracketed `[CODE]` (`memory/feedback_todowrite_mnemonic_codes.md`).
+- **Discover a new task:** add a `### [CODE]` body under `## Tasks` (alphabetical position) **and** a line in `## 🎯 Now` (or `## ⏸️ Parked` if gated). Use a unique bracketed `[CODE]` (`docs/reference/memory-archive/feedback_todowrite_mnemonic_codes.md`).
 - **Park / gate:** move its line from `## 🎯 Now` to `## ⏸️ Parked` and set `State: ⏸️ parked · gate: …`.
 - **Complete:** delete the body from `## Tasks`, remove its `## 🎯 Now` line, add a one-liner to `## ✅ Done this conv`.
 

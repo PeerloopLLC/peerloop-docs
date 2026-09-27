@@ -116,25 +116,6 @@ git -C ~/projects/peerloop-docs diff --stat
 git -C ~/projects/Peerloop diff --stat
 ```
 
-### Step 1.5: Sync memory live → mirror
-
-Mirror the live memory directory into the in-repo mirror so any memory changes from this conv are captured in the commit.
-
-```bash
-SLUG=$(echo ~/projects/peerloop-docs | tr / -)
-LIVE=~/.claude/projects/$SLUG/memory
-MIRROR=~/projects/peerloop-docs/.claude/memory-sync/memories
-
-mkdir -p "$MIRROR"
-rsync -a --delete "$LIVE/" "$MIRROR/"
-```
-
-The `git add .` in Step 2 picks up any mirror changes — no explicit `git add` needed here.
-
-**First-run bootstrap:** If the mirror dir does not yet exist, `mkdir -p` creates it and rsync populates it from live. No separate setup needed.
-
-**Commit body convention:** Memory-sync mirror changes are typically routine background. Do NOT add a `### Infra Changes` bullet for them unless this conv's substance was actually about memory-system work. Mention them only when meaningful.
-
 ### Step 2: Stage and Commit Both Repos
 
 **Always stage everything.** Do not selectively stage files.

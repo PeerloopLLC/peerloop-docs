@@ -8,9 +8,9 @@ This file provides guidance to Claude Code when working in the Peerloop dual-rep
 
 These rules live elsewhere in this file in full, but they're recurring failures that the user has had to flag repeatedly. Treat this list as a **pre-send checklist** for every response that ends in a question or contains options.
 
-1. **A/B labels on separate lines for multi-option questions** — put reasoning/recommendation in prose above, then each option on its own line as `**A)** description` / `**B)** description`. Never trailing "or X?" (the compound "X, or Y?" reads as yes/no). End with `👉👉👉 **Which — A or B?**` (Conv 438 decision: replaces the AskUserQuestion tool directive, which is not reliably available.) Full guidance in §User-Facing Questions; history in `memory/feedback_option_phrasing.md`.
+1. **A/B labels on separate lines for multi-option questions** — put reasoning/recommendation in prose above, then each option on its own line as `**A)** description` / `**B)** description`. Never trailing "or X?" (the compound "X, or Y?" reads as yes/no). End with `👉👉👉 **Which — A or B?**` (Conv 438 decision: replaces the AskUserQuestion tool directive, which is not reliably available.) Full guidance in §User-Facing Questions; history in `docs/reference/memory-archive/feedback_option_phrasing.md`.
 
-2. **The decision must be the LAST thing in the turn** — the `AskUserQuestion` call, or a `👉👉👉` open-ended question. Do all independent work first (work whose outcome doesn't depend on the answer), then ask, then stop. No status updates after. Detail in `memory/feedback_pause_on_pointing_questions.md`.
+2. **The decision must be the LAST thing in the turn** — the `AskUserQuestion` call, or a `👉👉👉` open-ended question. Do all independent work first (work whose outcome doesn't depend on the answer), then ask, then stop. No status updates after. Detail in `docs/reference/memory-archive/feedback_pause_on_pointing_questions.md`.
 
 If you catch yourself about to violate either, refactor before sending. This section exists because the rules are clear but the in-the-moment application slips.
 
@@ -25,7 +25,7 @@ Instead, when proposing a solution:
 
 **Default to durable.** State which option you're implementing and proceed. Do not stop and wait for explicit approval — the user will redirect if they prefer the simpler path. Building for production — accumulated quick fixes create long-term debt.
 
-**Multi-conv scope carve-out.** If the durable path would span multiple convs (i.e., this conv won't finish what's started), pause and present the scope tradeoff before committing — the user may prefer a smaller-but-completable durable cut, or scope a separate conv for the larger version. See `memory/feedback_default_durable_no_ask.md` for the counter-case detail and the Conv 131 [TDS-AUTH] precedent.
+**Multi-conv scope carve-out.** If the durable path would span multiple convs (i.e., this conv won't finish what's started), pause and present the scope tradeoff before committing — the user may prefer a smaller-but-completable durable cut, or scope a separate conv for the larger version. See `docs/reference/memory-archive/feedback_default_durable_no_ask.md` for the counter-case detail and the Conv 131 [TDS-AUTH] precedent.
 
 ## Critical Rule: Ask Before Deciding
 
@@ -35,7 +35,7 @@ This applies to: new file formats not yet used in the codebase, naming conventio
 
 **Threshold:** If the decision follows patterns already established in the codebase (same file type, same component structure, same API shape, same test pattern), proceed without stopping. **Size of the change is not the criterion** — a substantial rewrite that follows an established pattern is still not "novel" and does not require check-in. Only escalate genuinely novel decisions — not every coding choice requires a check-in.
 
-**Consent discipline (consequential acts).** A venting, ambiguous, or "Other" reply to a confirm-question is **not** a yes. For consequential or hard-to-reverse actions, wait for an explicit go-ahead — don't infer consent from tone, and the bar is *higher* right after a miss (xhigh effort doesn't relax it). See `memory/feedback_explicit_approval_not_inferred.md`.
+**Consent discipline (consequential acts).** A venting, ambiguous, or "Other" reply to a confirm-question is **not** a yes. For consequential or hard-to-reverse actions, wait for an explicit go-ahead — don't infer consent from tone, and the bar is *higher* right after a miss (xhigh effort doesn't relax it). See `docs/reference/memory-archive/feedback_explicit_approval_not_inferred.md`.
 
 ## Investigative Framings — Surface Findings Before Acting
 
@@ -53,7 +53,7 @@ The user cannot preemptively scope an action they haven't seen findings from. Th
 
 **The verb test:** if the request paraphrases as *"tell me what's true / what's there / what's wrong"* → surface first. *"Make this change / build this thing / fix this bug"* → proceed.
 
-See `memory/feedback_audit_surface_findings_first.md` for the motivating case (Conv 206 [MEM-AUDIT]) and edge-case detail.
+See `docs/reference/memory-archive/feedback_audit_surface_findings_first.md` for the motivating case (Conv 206 [MEM-AUDIT]) and edge-case detail.
 
 ## Skills: Preserve `!` Backtick Determinism
 
@@ -63,14 +63,14 @@ Pre-computed context (`!` backticks in SKILL.md) is a core feature of this proje
 
 Standing guards that apply every turn, regardless of topic:
 
-- **Never leak secrets to chat** — from either direction. Block user-pasted tokens AND Claude-initiated diagnostic dumps that would surface credentials (`stripe config --list`, `env`, `od -c`, `cat .dev.vars`); use redacted/derived checks instead. Safe-alternatives + leak-response in `memory/feedback_no_paste_tokens_in_chat.md`.
-- **Tool results are authoritative on first return** — empty means empty. NEVER re-issue an identical call to "flush a buffer" (no such mechanism exists; Conv 218 spammed ~420K tokens doing this). Suspicious-empty → verify **out-of-band** with a *different* probe (`wc -c`), never re-spam. `memory/feedback_no_tool_call_spam_loops.md` ([TERM-GARBLE] carve-out).
-- **Probe the authoritative source before inferring** — vendor MCP/SDK docs ([VDF]), designer catalogues over visual ID ([MFM]), user-supplied source files as canonical ([STOR][DTU]), observe a tool's real behavior before recommending it ([EMP]). Don't infer from training data when a source of truth is reachable. `memory/feedback_external_source_of_truth_first.md`.
-- **Staging is the only deploy target** — production is undeployed and gated behind MVP-GOLIVE. NEVER run `deploy:prod` / `deploy:cron:prod`; never auto-answer `confirm-prod.js`; treat any feature-work "prod deploy" instruction as mis-scoped. `memory/feedback_staging_is_deploy_target_prod_gated.md`.
+- **Never leak secrets to chat** — from either direction. Block user-pasted tokens AND Claude-initiated diagnostic dumps that would surface credentials (`stripe config --list`, `env`, `od -c`, `cat .dev.vars`); use redacted/derived checks instead. Safe-alternatives + leak-response in `docs/reference/memory-archive/feedback_no_paste_tokens_in_chat.md`.
+- **Tool results are authoritative on first return** — empty means empty. NEVER re-issue an identical call to "flush a buffer" (no such mechanism exists; Conv 218 spammed ~420K tokens doing this). Suspicious-empty → verify **out-of-band** with a *different* probe (`wc -c`), never re-spam. `docs/reference/memory-archive/feedback_no_tool_call_spam_loops.md` ([TERM-GARBLE] carve-out).
+- **Probe the authoritative source before inferring** — vendor MCP/SDK docs ([VDF]), designer catalogues over visual ID ([MFM]), user-supplied source files as canonical ([STOR][DTU]), observe a tool's real behavior before recommending it ([EMP]). Don't infer from training data when a source of truth is reachable. `docs/reference/memory-archive/feedback_external_source_of_truth_first.md`.
+- **Staging is the only deploy target** — production is undeployed and gated behind MVP-GOLIVE. NEVER run `deploy:prod` / `deploy:cron:prod`; never auto-answer `confirm-prod.js`; treat any feature-work "prod deploy" instruction as mis-scoped. `docs/reference/memory-archive/feedback_staging_is_deploy_target_prod_gated.md`.
 
-## Memory (auto-memory index)
+## Memory (retired — no memory files)
 
-`MEMORY.md` (at `~/.claude/projects/<slug>/memory/`) is the auto-memory **situational recall index** — a single flat list of one-line pointers into detail sub-files. Only its first 25 KB / 200 lines auto-load at SessionStart; the sub-files load on-demand. **Always-on rules live HERE in CLAUDE.md, not in MEMORY.md** — MEMORY.md holds situational, trigger-gated recall (a distinctive marker / `[CODE]` / anti-pattern + a pointer), not standing rules. When you add a memory, write a **terse** one-line pointer that exposes its distinctive marker/trigger and keep the detail in the sub-file. See `memory/feedback_memory_index_load_bearing.md`. (The Conv-353 HOT/COLD two-tier scheme was retired Conv 358 [MEM-CAP-ARCH]: the "always-on" HOT rules moved here to CLAUDE.md, leaving MEMORY.md single-tier.)
+**There is no `MEMORY.md` and no auto-memory file of any kind; none is to be created.** (Conv 456) The auto-memory system was retired: its situational-recall index moved to [docs/reference/CLAUDE-OFFLOAD.md § Situational Notes Archive](docs/reference/CLAUDE-OFFLOAD.md), and its detail sub-files to `docs/reference/memory-archive/` (git-tracked, on-demand, **not** auto-loaded). **Always-on rules live HERE in CLAUDE.md.** Durable situational detail belongs in `docs/reference/CLAUDE-OFFLOAD.md` or a topic doc under `docs/`, linked from the rule that needs it — never in a re-created memory file, a live memory dir, or a cross-machine mirror (all removed). Git history + the branch mirror is the cross-machine transport; there is no live↔mirror memory sync.
 
 ## Issue Surfacing (Visual Alerts)
 
@@ -92,7 +92,7 @@ For the §Uncategorized section in `/r-end` extracts, use orange:
 
 **Do NOT use these for expected behavior or status updates** — only for genuinely actionable findings during work that is focused on something else.
 
-**Never silently skip a discovered issue.** Write anything unresolved **into `CURRENT-TASKS.md`** (a `### [CODE]` body + a `## 🎯 Now` line — a file edit is as verifiable as the old tool call was), and give **every** 🔴/🟠 alert an explicit disposition + owner (resolved now / task `[CODE]` / your-call / FYI) — not a vague "handle at /r-end" promise. See `memory/feedback_surface_and_track_all_issues.md`.
+**Never silently skip a discovered issue.** Write anything unresolved **into `CURRENT-TASKS.md`** (a `### [CODE]` body + a `## 🎯 Now` line — a file edit is as verifiable as the old tool call was), and give **every** 🔴/🟠 alert an explicit disposition + owner (resolved now / task `[CODE]` / your-call / FYI) — not a vague "handle at /r-end" promise. See `docs/reference/memory-archive/feedback_surface_and_track_all_issues.md`.
 
 ## User-Facing Questions
 
@@ -107,7 +107,7 @@ For the §Uncategorized section in `/r-end` extracts, use orange:
 
 **Never trailing "or X?"** — the compound "X, or Y?" phrasing reads as a yes/no question, not an option pick. Each option gets its own labeled line. Mark a recommended option with "(Recommended)" in its description.
 
-(Conv 438 decision: replaces the AskUserQuestion tool directive — the tool is not reliably available across environments. The A/B format achieves the same structural clarity: options are visually distinct, the user selects by label, and the malformed-question failure modes are blocked by format discipline rather than tool enforcement. History in `memory/feedback_option_phrasing.md`.)
+(Conv 438 decision: replaces the AskUserQuestion tool directive — the tool is not reliably available across environments. The A/B format achieves the same structural clarity: options are visually distinct, the user selects by label, and the malformed-question failure modes are blocked by format discipline rather than tool enforcement. History in `docs/reference/memory-archive/feedback_option_phrasing.md`.)
 
 **Open-ended clarifications** — a free-text question that isn't a discrete pick — use the **👉👉👉 + bold** convention (the emoji + bold is what the user scans for in long output; bold alone or emoji alone gets buried):
 
@@ -117,13 +117,13 @@ For the §Uncategorized section in `/r-end` extracts, use orange:
 
 **Emoji scope.** 👉 in pointing questions and 🔴/🟠 in issue alerts (§Issue Surfacing above) are the **only** emojis that belong in output. Avoid all others.
 
-**Pause behavior.** The decision — the A/B question or a `👉👉👉` open-ended question — must be the **last thing in the turn**. Complete independent work first (work whose outcome doesn't depend on the answer), then ask and stop. Don't use these for status updates, progress narration, or rhetorical questions you answer yourself. See `memory/feedback_pause_on_pointing_questions.md`.
+**Pause behavior.** The decision — the A/B question or a `👉👉👉` open-ended question — must be the **last thing in the turn**. Complete independent work first (work whose outcome doesn't depend on the answer), then ask and stop. Don't use these for status updates, progress narration, or rhetorical questions you answer yourself. See `docs/reference/memory-archive/feedback_pause_on_pointing_questions.md`.
 
 ## Explanatory Style Override
 
 The active output style requires `★ Insight` blocks before and after code. Limit this to **one insight block per response**, only when the insight is genuinely non-obvious or specific to this codebase. Do NOT add insight blocks for standard patterns (React hooks, REST endpoints, SQL queries, etc.) that any competent developer would recognize. Prefer velocity over narration.
 
-**Match response length to the question.** Short/conversational questions get short answers; don't auto-expand into A/B/C impact frameworks unless invited. **[MCFRAME]:** when the user steers with specifics, execute — don't bounce it back as a multiple-choice clarifier. See `memory/feedback_conversational_brevity.md`.
+**Match response length to the question.** Short/conversational questions get short answers; don't auto-expand into A/B/C impact frameworks unless invited. **[MCFRAME]:** when the user steers with specifics, execute — don't bounce it back as a multiple-choice clarifier. See `docs/reference/memory-archive/feedback_conversational_brevity.md`.
 
 ## Feature Tracking Rule
 
@@ -147,7 +147,7 @@ A **living acronym / shorthand lookup** the user keeps for easy reference — te
 
 ## User WIP File (`USER-WIP.md`)
 
-The **one** file across the dual-repo (and the otherwise read-only `--add-dir` folders) that the **user authors directly**, without CC involvement — a running track of what they want to do as a conv progresses, with carry-over expected across convs. **Git-tracked** at the docs-repo root (Conv 304). This is the carve-out to the otherwise-true "CC is sole author" invariant (`memory/user_hands_off_pilot_workflow.md`).
+The **one** file across the dual-repo (and the otherwise read-only `--add-dir` folders) that the **user authors directly**, without CC involvement — a running track of what they want to do as a conv progresses, with carry-over expected across convs. **Git-tracked** at the docs-repo root (Conv 304). This is the carve-out to the otherwise-true "CC is sole author" invariant (`docs/reference/memory-archive/user_hands_off_pilot_workflow.md`).
 
 **CC treats `USER-WIP.md` as READ-ONLY** — never stage, edit, revert, or "tidy" it on your own initiative. Touch it only when the user explicitly asks, or via the one automated exception below.
 
@@ -155,7 +155,7 @@ The **one** file across the dual-repo (and the otherwise read-only `--add-dir` f
 
 ## Dual-Repo Architecture
 
-Peerloop = two sibling repos: `~/projects/peerloop-docs/` (CC home, docs, `.claude/`, this CLAUDE.md) + `~/projects/Peerloop/` (code, added via `--add-dir`). Launch: `peerloop` alias (= `cd ~/projects/peerloop-docs && claude --add-dir ../Peerloop`). **In bash + `!`-backticks always use tilde-literal paths** (`~/projects/peerloop-docs/...`, `~/projects/Peerloop/...`) — cross-machine portable + dodges the `$VAR` `simple_expansion` prompt (Conv 162 sweep; also `memory/feedback_git_dash_c_enforcement.md`). **Always `git -C <repo>`, never bare git** — bare git lands in the wrong repo after a `cd ../Peerloop` cwd drift; the guard regex must tolerate the `git -C` form.
+Peerloop = two sibling repos: `~/projects/peerloop-docs/` (CC home, docs, `.claude/`, this CLAUDE.md) + `~/projects/Peerloop/` (code, added via `--add-dir`). Launch: `peerloop` alias (= `cd ~/projects/peerloop-docs && claude --add-dir ../Peerloop`). **In bash + `!`-backticks always use tilde-literal paths** (`~/projects/peerloop-docs/...`, `~/projects/Peerloop/...`) — cross-machine portable + dodges the `$VAR` `simple_expansion` prompt (Conv 162 sweep; also `docs/reference/memory-archive/feedback_git_dash_c_enforcement.md`). **Always `git -C <repo>`, never bare git** — bare git lands in the wrong repo after a `cd ../Peerloop` cwd drift; the guard regex must tolerate the `git -C` form.
 
 → See [docs/reference/CLAUDE-OFFLOAD.md § Dual-Repo Architecture](docs/reference/CLAUDE-OFFLOAD.md#dual-repo-architecture) for the full directory tree, path conventions, and symlinks.
 
@@ -169,14 +169,14 @@ Hooks run at session start: machine detection (writes `~/.claude/.machine-name`)
 
 Work is tracked as **Conv** numbers (replacing Sessions, which ended at 393); same number in both repos' commits. Daily flow: `/r-start` (begin / resume), `/r-commit` (save + keep working), `/r-end` (close, with 3 parallel agents + commit/push). Multi-session blocks use `CURRENT-BLOCK-PLAN.md` at project root.
 
-**Commit-skill discipline:** `/r-commit` is autonomous (mid-conv snapshots are fine) — **except** on a `[CBG]` code-branch mismatch, where it HALTs and asks (Step 0.5; Conv 395); **`/r-end` always needs explicit approval**. `/r-end` Step-4 🔴/🟠 alerts must be written into `CURRENT-TASKS.md`, not just displayed. A post-`/r-end` fix = `/r-start` (no raw `/clear`) → fix → `/r-end`. See `memory/feedback_rend_discipline.md`.
+**Commit-skill discipline:** `/r-commit` is autonomous (mid-conv snapshots are fine) — **except** on a `[CBG]` code-branch mismatch, where it HALTs and asks (Step 0.5; Conv 395); **`/r-end` always needs explicit approval**. `/r-end` Step-4 🔴/🟠 alerts must be written into `CURRENT-TASKS.md`, not just displayed. A post-`/r-end` fix = `/r-start` (no raw `/clear`) → fix → `/r-end`. See `docs/reference/memory-archive/feedback_rend_discipline.md`.
 
 → See [docs/reference/CLAUDE-OFFLOAD.md § Conversation Lifecycle](docs/reference/CLAUDE-OFFLOAD.md#conversation-conv-lifecycle) for the full r-*/w-* skill catalog + workflow table.
 
 ## Task Persistence
 
-- **All task state lives in git-tracked `CURRENT-TASKS.md`** (docs-repo root), NOT RESUME-STATE ([CURTASKS], Conv 351; Task-tool detach Conv 406). `RESUME-STATE.md` is narrative-only. **Write-through, not tool-overlay** — the Task subsystem (`TaskCreate`/`TaskList`/`TaskUpdate`/`TodoWrite`) is server-gated OFF for this model (see `[TASK-TOOLS-VERIFY]`), so **edit `CURRENT-TASKS.md` directly** the moment a task changes: bodies live under `## Tasks` (alphabetical, never move); a `## 🎯 Now` TOC carries execution order (top = next) and `## ⏸️ Parked` carries gated items. Reprioritise/start/park by editing a TOC line + the body's `State:` bullet; complete by deleting the body and adding a line to `## ✅ Done this conv`. A file edit is as verifiable as a tool call — the forcing-function survives. `/r-update-tasks` / `/r-commit` / `/r-end` just re-tidy the file; crash recovery = re-read it. Detail in `memory/feedback_current_tasks_persistence.md`.
-- **Every task code is a unique 2–3-letter bracket** — every task's `### [CODE]` heading + `## 🎯 Now`/`## ⏸️ Parked` line uses a mnemonic `[CODE]` (e.g. `[PL]`); the user references tasks by that code. Collisions get a numeric suffix (`[GE]`→`[GE2]`). See `memory/feedback_todowrite_mnemonic_codes.md`.
+- **All task state lives in git-tracked `CURRENT-TASKS.md`** (docs-repo root), NOT RESUME-STATE ([CURTASKS], Conv 351; Task-tool detach Conv 406). `RESUME-STATE.md` is narrative-only. **Write-through, not tool-overlay** — the Task subsystem (`TaskCreate`/`TaskList`/`TaskUpdate`/`TodoWrite`) is server-gated OFF for this model (see `[TASK-TOOLS-VERIFY]`), so **edit `CURRENT-TASKS.md` directly** the moment a task changes: bodies live under `## Tasks` (alphabetical, never move); a `## 🎯 Now` TOC carries execution order (top = next) and `## ⏸️ Parked` carries gated items. Reprioritise/start/park by editing a TOC line + the body's `State:` bullet; complete by deleting the body and adding a line to `## ✅ Done this conv`. A file edit is as verifiable as a tool call — the forcing-function survives. `/r-update-tasks` / `/r-commit` / `/r-end` just re-tidy the file; crash recovery = re-read it. Detail in `docs/reference/memory-archive/feedback_current_tasks_persistence.md`.
+- **Every task code is a unique 2–3-letter bracket** — every task's `### [CODE]` heading + `## 🎯 Now`/`## ⏸️ Parked` line uses a mnemonic `[CODE]` (e.g. `[PL]`); the user references tasks by that code. Collisions get a numeric suffix (`[GE]`→`[GE2]`). See `docs/reference/memory-archive/feedback_todowrite_mnemonic_codes.md`.
 
 ## Test Suite Workflow
 
@@ -192,7 +192,7 @@ A "baseline" claim asserts the project is healthy — tests pass, types check, b
 
 **Rule 2 — Verify in THIS conv before claiming:** Never assert "tests passing", "tsc clean", or "build clean" in any document unless the corresponding command was actually run **in this conversation**. If carrying a number forward without re-verifying, write it explicitly: `(unchanged from Conv N, not re-verified this conv)`. Treat a prior conv's claimed baseline as a **hypothesis**, not a fact, until this conv re-verifies.
 
-→ Incident detail (Conv 104 astro-check, Conv 101→102 time-fragile tests) in [CLAUDE-OFFLOAD.md § Baseline Verification — incident detail](docs/reference/CLAUDE-OFFLOAD.md#baseline-verification--incident-detail) + `memory/feedback_verify_baselines_in_conv.md`.
+→ Incident detail (Conv 104 astro-check, Conv 101→102 time-fragile tests) in [CLAUDE-OFFLOAD.md § Baseline Verification — incident detail](docs/reference/CLAUDE-OFFLOAD.md#baseline-verification--incident-detail) + `docs/reference/memory-archive/feedback_verify_baselines_in_conv.md`.
 
 ## Page Provenance — 3-Marker Convention
 

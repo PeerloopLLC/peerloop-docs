@@ -22,10 +22,10 @@ hits=$(grep -rn '^allowed-tools:' "$ROOT/.claude/skills" 2>/dev/null \
         | grep -E 'TaskCreate|TaskList|TaskUpdate|TaskGet|TodoWrite' || true)
 check "no Task* in any skill allowed-tools" "$([ -z "$hits" ] && echo 0 || echo 1)" "${hits:0:120}"
 
-# 2. No stale CURRENT-TASKS.md anchors anywhere in .claude/ or CLAUDE.md (excl. memory mirror + these tests).
+# 2. No stale CURRENT-TASKS.md anchors anywhere in .claude/ or CLAUDE.md (excl. these tests).
 stale=$(grep -rnE '🔥 Ordered|Unordered backlog|Completed this conv|## ⏸️ PARKED' \
          "$ROOT/.claude" "$ROOT/CLAUDE.md" 2>/dev/null \
-         | grep -v 'memory-sync' | grep -v '\.test\.sh' || true)
+         | grep -v '\.test\.sh' || true)
 check "no stale old-format anchors" "$([ -z "$stale" ] && echo 0 || echo 1)" "${stale:0:120}"
 
 # 3. The output-reminder hook no longer says TodoWrite.

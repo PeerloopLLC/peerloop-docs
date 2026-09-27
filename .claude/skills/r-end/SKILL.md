@@ -91,7 +91,7 @@ Read the pre-computed **Code-branch guard** line (it compares the live code bran
 - **`DETACHED (want=<W>)`** → **HALT.** A detached-HEAD commit orphans the whole conv's work.
 - **`MISMATCH live=<L> want=<W> ahead=<A> behind=<B> dirty=<D>`** → **HALT and ask**, per `/r-commit` Step 0.5 (same verdicts, same options, same `AskUserQuestion` shape). At `/r-end` the stakes are higher — this is the conv's final commit — so never auto-resolve.
 
-**HALT for the answer before Step 1.** `/r-end` already needs explicit approval (`memory/feedback_rend_discipline.md`), so a HALT here costs nothing and closes the exact hole Conv 371 fell through.
+**HALT for the answer before Step 1.** `/r-end` already needs explicit approval (`docs/reference/memory-archive/feedback_rend_discipline.md`), so a HALT here costs nothing and closes the exact hole Conv 371 fell through.
 
 ### Step 1: Validate Conv
 
@@ -563,25 +563,6 @@ To continue: run `/r-start` — it reads `CURRENT-TASKS.md` for the task sequenc
 ```
 
 3. Note `State Saved ✅ (CURRENT-TASKS.md validated; RESUME-STATE.md narrative written)`
-
-### Step 5b: Sync memory live → mirror
-
-Mirror the live memory directory into the in-repo mirror so any memory changes from this conv are captured in the commit. Place this step **after** Step 5 (RESUME-STATE.md is written) and **before** Step 6 (which commits everything). Steps 2–4 (collector + agents) do not write to the memory dir, so the latest possible memory writes are mid-conv user prompts that have already settled by this point.
-
-```bash
-SLUG=$(echo ~/projects/peerloop-docs | tr / -)
-LIVE=~/.claude/projects/$SLUG/memory
-MIRROR=~/projects/peerloop-docs/.claude/memory-sync/memories
-
-mkdir -p "$MIRROR"
-rsync -a --delete "$LIVE/" "$MIRROR/"
-```
-
-The `git add .` in Step 6 picks up any mirror changes — no explicit `git add` needed here.
-
-**First-run bootstrap:** If the mirror dir does not yet exist, `mkdir -p` creates it and rsync populates it from live. No separate setup needed; the first `/r-end` (or `/r-commit`) after this skill change lands seeds the mirror naturally.
-
-**Commit body convention:** Memory-sync mirror changes are typically routine background. Do NOT add a `### Infra Changes` bullet for them unless this conv's substance was actually about memory-system work. Mention them only when meaningful.
 
 ### Step 5c: Regenerate generated docs (deterministic gate)
 

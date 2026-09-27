@@ -3,7 +3,7 @@
 #
 # Prevents a second terminal's r-start from trampling an already-active
 # session (the failure that cost ~30 min to untangle: two concurrent
-# sessions both incrementing CONV-COUNTER, pushing, and memory-syncing).
+# sessions both incrementing CONV-COUNTER and pushing).
 #
 # The lock is MACHINE-LOCAL (lives under ~/.claude/projects/<slug>/, NOT in
 # the git repo) because PIDs are only meaningful on one machine, the two

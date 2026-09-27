@@ -53,7 +53,6 @@
 - [KNIP](#knip) — dead-export oracle → gate
 - [TURNLOG](#turnlog) — `conv-turns.md` unmaintained guard
 - [EDITSAFE](#editsafe) — anchored-edit discipline
-- [RSYNC-GATE](#rsync-gate) — memory-sync rsync auto-mode block
 - [COMPDOC](#compdoc) — `_COMPONENTS.md` ui/ section stale
 - [ROUTESTORIES-DRIFT](#routestories-drift) — route-stories.md §3 still documents dissolved /discover routes
 - [EMAILDOC](#emaildoc) — `resend.md` dead-template refs
@@ -66,7 +65,6 @@
 - [UXQ](#uxq) — AskUserQuestion picker teardown (upstream)
 - [RSFD](#rsfd) — port `r-start-from-dirty`
 - [DEPEXP](#depexp) — dependency-probe hygiene
-- [MEM-PRUNE](#mem-prune) — MEMORY.md auto-load cap watch
 - [TASK-TOOLS-VERIFY](#task-tools-verify) — Task-tools gate probe
 - [SKILLDOC](#skilldoc) — `skills-system.md` retired Task-overlay drift
 - [TSLASH](#tslash) — trailing-slash route normalization (`/profile/` 302s, bare `/profile` 200s)
@@ -441,16 +439,6 @@
 - **Known dead exports KEPT by decision (knip re-flags when gate lands):** `CHART_BREAKPOINTS`, `now()`/`parseTimestamp()` (`lib/db/index.ts`), `creators`/`getRelatedCourses`/`getFeaturedCreators` (`lib/mock-data.ts`), `MONITORING_COLORS` (`discover/role-utils.ts`), `emails/styles.ts`'s 6 exports (file live).
 - **Refs:** `../Peerloop/knip.json`, `.claude/scripts/codecheck-orphan-components.mjs`, `[[feedback_orphaned_components_survive_migration]]`, `[ORPHAN-BACKLOG]`, `docs/decisions/06-testing-ci.md §RDOC`.
 
-### [MEM-PRUNE]
-
-- **State:** 👀 watch (recurring) · **FIRED Conv 420** — partial relief applied inline (76% bytes); a full `/r-prune-memory` run is still owed
-- **What:** threshold-triggered, never "done" — standing watch `[MEM-CAP]` in PLAN.md. Fires when `MEMORY.md` auto-load crosses **80%** of the 200-line / 25 KB SessionStart cap on either axis (`/r-start` Step 5.7 Phase 2 emits 🔴🔴🔴). Remedy is **`/r-prune-memory`** (NOT `/r-prune-claude`).
-- **Utilization log:** Conv 211 baseline 53%/73% → tripped 80% bytes Conv 213 → Conv 396 full run 20304 B (79%) → 17979 B (70%), 127 → 124 lines.
-- **Next firing:** the two big Conv-396 levers are spent (label-normalization is a no-op; the intro-blockquote dedup is done). Will likely need extraction or sub-file consolidation, not more trimming.
-- **✅ Conv 420 partial (inline, not a skill run):** a PostToolUse hook fired at 20475 B (80% of the auto-load cap, 84% of the 24.4 KB read-limit) right after two new memories landed. Compacted the **11 index lines that had grown into paragraphs** — the largest was 546 B, six were over 290 — back to terse marker+trigger pointers per `[[feedback_memory_index_load_bearing]]`. **20475 → 19431 B (80% → 76%), 130 lines, zero markers dropped.** So the lever that *is* left after Conv 396 is confirmed: index lines drift back into carrying sub-file detail, and re-flattening them is worth ~1 KB.
-- **⚠️ Still owed:** the hook asked for <17.1 KB and this got to 19.4 KB. Closing the remaining ~2.3 KB needs genuine **consolidation/extraction** (merging near-duplicate entries, retiring stale ones) — a curation judgment call, deliberately NOT wedged into an `/r-end`. Run `/r-prune-memory` as its own focused task.
-- **Refs:** `.claude/skills/r-prune-memory`, PLAN.md `[MEM-CAP]` (~line 102), `[[feedback_memory_index_load_bearing]]`.
-
 ### [BRIAN-WT]
 
 - **State:** 📋 queued
@@ -703,14 +691,6 @@
 - **Blocking decision before any build:** does Peerloop want an event log? Without one, a port just increments a counter over a dirty tree and the reasoning is still lost. Must also handle peerloop-only substrate: `conv-session-lock.sh`, `conv-branch-check.sh`, the ~150-line Step 5.7 memory sync.
 - **Refs:** `~/projects/spt-docs/.claude/skills/r-start-from-dirty/SKILL.md`, `[[feedback_skill_sync_same_name_divergence]]`. Surfaced Conv 395.
 
-### [RSYNC-GATE]
-
-- **State:** 📋 queued (skill infra)
-- **What:** `/r-start` Step 5.7 Phase 2's `rsync -a --delete "$MIRROR/" "$LIVE/"` gets **DENIED by the auto-mode classifier** ("Irreversible Local Destruction" — a destructive call right after a diff-gate whose result is an unseen tool result). **Intermittent** (corrected Conv 397 — NOT every conv), which is worse: a silent pass can be misread as "sync happened". On a conv where the mirror genuinely differs, the block lands mid-`/r-start` and the memory sync doesn't happen.
-- **Options:** (a) move Phase 2 into a named script (`conv-memory-sync.sh`) that reads as intentional; (b) Phase 1 writes a decision sentinel Phase 2 checks; (c) document the expected block so CC handles it deterministically; (d) a project `settings.json` allow-rule for the specific invocation.
-- **Asymmetry:** `/r-commit` Step 1.5 + `/r-end` Step 5b run the same rsync **live→mirror** (safe) and are never blocked. Only mirror→live is sensitive.
-- **Refs:** `.claude/skills/r-start/SKILL.md` Step 5.7 Phase 2, `[[feedback_msi_sync_user_checkpoint]]`. Surfaced Conv 395.
-
 ### [QSLOT]
 
 - **State:** 📋 queued · small — process observation from Conv 435, worth one calibration pass not a project
@@ -938,4 +918,6 @@
 
 ## ✅ Done this conv
 
-- **[PREFLIP-WT]** — tore down the preflip reference worktree (`git worktree remove ~/projects/Peerloop-preflip`; :4331 already not running) and dropped its folder entry from `peerloop.code-workspace`. Its work-driver `[RTMIG-4]` closed Conv 340. (Conv 455)
+- **[MEM-RETIRE]** Retired the MEMORY.md auto-memory system (Conv 456): 101 detail files → `docs/reference/memory-archive/` (git-tracked, on-demand); index folded into CLAUDE-OFFLOAD.md § Situational Notes Archive; MEMORY.md + live memory dir + `.claude/memory-sync/` mirror deleted; all skills/scripts gutted of memory reads (`r-prune-memory` deleted; `r-coherence-check` repointed to CLAUDE.md↔CLAUDE-OFFLOAD.md↔archive; sync steps removed from r-start/r-commit/r-end); CLAUDE.md §Memory now forbids re-creating any memory file.
+- **[MEM-PRUNE]** Closed — obsolete (MEMORY.md auto-load cap watch; no MEMORY.md exists).
+- **[RSYNC-GATE]** Closed — obsolete (memory-sync mirror→live rsync auto-mode block; no memory sync exists).

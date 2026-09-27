@@ -12,9 +12,8 @@ Peerloop uses two sibling repositories:
 ~/projects/
 ├── peerloop-docs/    ← CC home (this repo) + Obsidian vault
 │   ├── .claude/      # All CC configuration, commands, hooks
-│   │   └── memory-sync/memories/  # Cross-machine memory mirror (committed, git is transport)
 │   ├── CLAUDE.md     # This file (behavioral rules + project context)
-│   └── docs/         # Sessions, reference, as-designed, requirements, guides (see docs/INDEX.md)
+│   └── docs/         # Sessions, reference (incl. memory-archive/), as-designed, requirements, guides (see docs/INDEX.md)
 │
 └── Peerloop/         ← Code repo (added via --add-dir)
     ├── src/          # Application code
@@ -347,7 +346,7 @@ Rules: fold bare confirmations (yes/no) into the decision they answered rather t
 
 ## Baseline Verification — incident detail
 
-The two incidents behind CLAUDE.md §Baseline Verification (also in `memory/feedback_verify_baselines_in_conv.md`):
+The two incidents behind CLAUDE.md §Baseline Verification (also in `docs/reference/memory-archive/feedback_verify_baselines_in_conv.md`):
 
 - **Conv 104 (astro-check gate):** discovered 10 pre-existing type errors in `.astro` pages that had been hidden through Convs 100–103 because `astro check` was never run. `tsc --noEmit` alone does not scan `.astro` files — which is why all five gates are required; the authoritative command that runs them is `npm run verify` (`/w-codecheck` is the faster commit-safety subset — static only, no `test`/`build`).
 - **Conv 101→102 (verify-in-conv):** Conv 101's RESUME-STATE confidently claimed "6399/6399 passing"; Conv 102 ran the suite and found 5 silently-broken session-creation tests (time-fragile `Date.now()+Nh` patterns) that had been failing for an unknown number of convs. Carry-forward claims hide regressions — treat a prior conv's claimed baseline as a hypothesis until re-verified.
@@ -364,7 +363,7 @@ Detail behind CLAUDE.md §Page Provenance (full convention + detection sweep + e
 | `@matt-source <nodeId>` | 1:1 port from a Matt Figma frame (may list multiple nodeIds). |
 | `@matt-inspired` | Built with Matt tokens/primitives/design language; no source Figma frame. |
 
-**When retrofitting `@stand-in` → `@matt-inspired`,** scan for primitive candidates BEFORE writing inline JSX (see `memory/feedback_scan_for_primitive_candidates_on_retrofit.md`). Component-level provenance (`@matt-source` on `.tsx` primitives) is a separate axis — page markers don't propagate to children, and Phase-6-extrapolated components don't carry page markers. `dev/*` pages opt out of the convention entirely.
+**When retrofitting `@stand-in` → `@matt-inspired`,** scan for primitive candidates BEFORE writing inline JSX (see `docs/reference/memory-archive/feedback_scan_for_primitive_candidates_on_retrofit.md`). Component-level provenance (`@matt-source` on `.tsx` primitives) is a separate axis — page markers don't propagate to children, and Phase-6-extrapolated components don't carry page markers. `dev/*` pages opt out of the convention entirely.
 
 ---
 
@@ -450,3 +449,140 @@ docs/requirements/rfc/
 - Read `docs/requirements/rfc/INDEX.md` to find open RFCs
 - Check `docs/requirements/rfc/CD-XXX/RFC.md` for pending items
 - Mark checkboxes as completed during implementation
+
+---
+
+## Situational Notes Archive (retired MEMORY.md index)
+
+> **The `MEMORY.md` auto-memory system was retired (Conv 456).** Its detail sub-files were relocated wholesale to `docs/reference/memory-archive/` (git-tracked, on-demand — **not** auto-loaded). This is the old MEMORY.md pointer index, repointed at the archive, kept so a future CLAUDE.md prune can decide entry-by-entry what is still current. Always-on **rules** already live in `CLAUDE.md`; these pointers are situational recall + incident history only. The archive dir also holds ~40 files that were never in this index (orphans) — `ls docs/reference/memory-archive/` for the full set.
+
+### Rule detail & incident-history (behind CLAUDE.md rules)
+
+- [feedback_option_phrasing](memory-archive/feedback_option_phrasing.md) — §User-Facing Questions detail: malformed-question archaeology (Convs 132/147/208/263) + QLINT Stop-hook build-then-retire + Conv 273 switch to AskUserQuestion.
+- [feedback_pause_on_pointing_questions](memory-archive/feedback_pause_on_pointing_questions.md) — §Recurring-Failures #2 detail: 👉👉👉/decision must be last visible content; Conv 125 reorder example.
+- [feedback_conversational_brevity](memory-archive/feedback_conversational_brevity.md) — §Explanatory Style detail: Conv 150 screen-buffer rationale; [MCFRAME] steer-don't-re-ask (Conv 199); Conv 306 work-progress extension.
+- [feedback_audit_surface_findings_first](memory-archive/feedback_audit_surface_findings_first.md) — §Investigative Framings detail: Conv 206 [MEM-AUDIT] motivating quote + CC-sees-findings-first asymmetry + edge cases.
+- [feedback_explicit_approval_not_inferred](memory-archive/feedback_explicit_approval_not_inferred.md) — §Critical Rule (Consent discipline) detail: Conv 300 scratch-folder-flip incident; bar HIGHER right after a miss.
+- [feedback_no_simplest_fix](memory-archive/feedback_no_simplest_fix.md) — §Solution Quality detail: Conv 100 principle quote + drift signal-lists.
+- [feedback_default_durable_no_ask](memory-archive/feedback_default_durable_no_ask.md) — §Solution Quality/§Critical Rule detail: multi-conv-scope counter-case + Conv 131 [TDS-AUTH] precedent.
+- [feedback_surface_and_track_all_issues](memory-archive/feedback_surface_and_track_all_issues.md) — §Issue Surfacing detail: Sessions 386/390 + Conv 340 incidents; self-monitoring trigger words; "I'll handle at /r-end" = no-op promise.
+- [feedback_current_tasks_persistence](memory-archive/feedback_current_tasks_persistence.md) — §Task Persistence detail: CURRENT-TASKS.md IS the state — write-through, no Task-tool overlay. [CURTASKS] 350-352, detach 406.
+- [feedback_todowrite_mnemonic_codes](memory-archive/feedback_todowrite_mnemonic_codes.md) — §Task Persistence detail: code format/derivation/collision (`[GE]`→`[GE2]`); Conv 135 origin.
+- [feedback_rend_discipline](memory-archive/feedback_rend_discipline.md) — §Conv Lifecycle detail: Conv 062 vanished-alert incident; Conv 108 r-commit-autonomous / r-end-needs-approval change.
+- [feedback_git_dash_c_enforcement](memory-archive/feedback_git_dash_c_enforcement.md) — §Dual-Repo detail: Conv 109 wrong-repo near-miss; tilde-literal dodges `$VAR` simple_expansion; Conv 214 [GUARD-VERIFY].
+- [feedback_no_tool_call_spam_loops](memory-archive/feedback_no_tool_call_spam_loops.md) — §Guards detail: Conv 218 ~420K-token Read-spam incident; [TERM-GARBLE] carve-out.
+- [feedback_no_paste_tokens_in_chat](memory-archive/feedback_no_paste_tokens_in_chat.md) — §Guards detail: Conv 113 CF-token + Conv 144 Stripe-key leaks; unsafe-patterns list; safe-alternatives table; leak-response.
+- [feedback_external_source_of_truth_first](memory-archive/feedback_external_source_of_truth_first.md) — §Guards detail: [VDF]/[MFM]/[STOR][DTU]/[EMP]; Convs 178-180.
+- [feedback_verify_baselines_in_conv](memory-archive/feedback_verify_baselines_in_conv.md) — §Baseline Verification detail: Conv 101→102 (5 time-fragile tests) + Conv 104 (astro-check gate).
+- [feedback_memory_index_load_bearing](memory-archive/feedback_memory_index_load_bearing.md) — §Memory detail: one-liners expose distinctive markers; `[link]` label convention; index-vs-body drift discipline.
+- [user_hands_off_pilot_workflow](memory-archive/user_hands_off_pilot_workflow.md) — §User WIP File detail: "CC is sole author" implications; USER-WIP.md carve-out (CC read-only).
+- [feedback_assess_ask_before_acting](memory-archive/feedback_assess_ask_before_acting.md) — Conv 407: surface scope choices as questions; a changed premise ⇒ full-doc rewrite.
+- [feedback_retest_task_premise_before_executing](memory-archive/feedback_retest_task_premise_before_executing.md) — [PREMISE] verify against CONSUMERS not the definition; measure visuals live. Convs 418-421.
+
+### Dual-repo & environment
+
+- [project_route_gen_cross_repo](memory-archive/project_route_gen_cross_repo.md) — route-doc regen writes BOTH repos; `git status` both before commit. Conv 201.
+- [feedback_db_setup_shorthand](memory-archive/feedback_db_setup_shorthand.md) — "run the {local/staging} D1 {level} script" → `npm run db:setup:{target}:{level}`.
+- [project_schema_edit_remote_d1_propagation](memory-archive/project_schema_edit_remote_d1_propagation.md) — [D1-SCHEMA-REMOTE] `0001_schema.sql` edits don't reach an already-migrated remote D1 → `ALTER TABLE ADD COLUMN`. Conv 394.
+- [project_wrangler_exact_pin_miniflare_dedupe](memory-archive/project_wrangler_exact_pin_miniflare_dedupe.md) — [MF-SKEW] `wrangler` EXACT-pinned 4.112.0 (miniflare dedupe). Conv 416.
+- [project_code_repo_shared_with_client](memory-archive/project_code_repo_shared_with_client.md) — [TC-BRANCH-GATE] CODE repo is SHARED with the client — allowlist `^jfg-dev`. Conv 396.
+- [project_task_tools_child_session_leak](memory-archive/project_task_tools_child_session_leak.md) — [TASK-TOOLS-VERIFY] Task*/TodoWrite killed by an undocumented server gate → write-through CURRENT-TASKS.md. Convs 403-406.
+
+### Navigation & UI
+
+- [feedback_orphaned_components_survive_migration](memory-archive/feedback_orphaned_components_survive_migration.md) — [ORPHAN-DETECT] route migrations orphan page components while gates stay GREEN — verify route-reachability. Convs 339/391/392.
+- [reference_icon_system](memory-archive/reference_icon_system.md) — [ICN-NS] 3 icon systems (legacy RETIRED Conv 370); `MattIcon` canonical, kebab-name-wins.
+- [project_navigation_architecture](memory-archive/project_navigation_architecture.md) — AppLayout (Matt shell) canonical since ROUTE-FLIP (Conv 197); mind which shell + `startsWith` active-match.
+- [reference_astro_slot_forwarding](memory-archive/reference_astro_slot_forwarding.md) — Astro Fragment-slot forwarding suppresses child `<slot>FALLBACK`; fix = defaults at layout consumer. Conv 175 [MSH-VIZ].
+- [reference_tailwind_intellisense_canonical_suggestions](memory-archive/reference_tailwind_intellisense_canonical_suggestions.md) — Tailwind `suggestCanonicalClasses` arbitrary-`[Npx]`→scale warnings: REJECT ([DEMO-HOME] 4× bug class). Conv 371.
+
+### Testing & PLATO
+
+- [feedback_full_test_output](memory-archive/feedback_full_test_output.md) — Full suite `npm test 2>&1 | tee /tmp/lastFullTestRun.log` (~3min); `--testNamePattern` for iterative fixes.
+- [e2e-testing-patterns](memory-archive/e2e-testing-patterns.md) — After `page.goto()` add `waitForLoadState('networkidle')` for `client:load` islands.
+- [feedback_no_test_artifacts_in_prod](memory-archive/feedback_no_test_artifacts_in_prod.md) — No dev-only testing infra in production code; two browser vendors for multi-user testing.
+- [feedback_test_import_cleanup](memory-archive/feedback_test_import_cleanup.md) — After writing a test file, quick-pass to remove unused imports/variables.
+- [plato-context](memory-archive/plato-context.md) — **Load when** PLATO/browser-run/STUMBLE-AUDIT/BrowserIntent discussed.
+- [feedback_dom_truth_over_screenshots](memory-archive/feedback_dom_truth_over_screenshots.md) — Precise layout/position: trust DOM + dev log, NOT screenshots. Conv 191.
+- [reference_responsive_iframe_harness](memory-archive/reference_responsive_iframe_harness.md) — [MINWIDTH][SIDEBAR-COLLIDE] responsive testing = exact-SIZE same-origin IFRAME. Conv 367/368.
+- [reference_chrome_bridge_island_stale_cache](memory-archive/reference_chrome_bridge_island_stale_cache.md) — [BRIDGE-MEM] client-gated islands need dev-login + hard nav + settle-read; [STALE-301]. Convs 258/379/408.
+- [reference_playwright_headless_browser_fallback](memory-archive/reference_playwright_headless_browser_fallback.md) — [BRIDGE-OK-USE-LOCALHOST] always `localhost:4321`; [BRIDGE-OFFSCREEN-WINDOW] off-screen window renders BLACK. Convs 413/424/425.
+- [reference_chrome_bridge_connection_recovery](memory-archive/reference_chrome_bridge_connection_recovery.md) — [BRIDGE-CONNECT] "extension is not connected" recovery ritual; try ~2× then STOP. Conv 450.
+- [feedback_plato_expect_is_legacy_spec](memory-archive/feedback_plato_expect_is_legacy_spec.md) — PLATO `expect`/`pageAction` = frozen LEGACY spec; triage REDESIGN/REGRESSION/NEVER-EXISTED first. Conv 343.
+- [feedback_persistent_dev_server_4321](memory-archive/feedback_persistent_dev_server_4321.md) — NO persistent dev server (retired Conv 366) — EPHEMERAL `npm run dev` on demand.
+- [reference_devserver_stale_daemon](memory-archive/reference_devserver_stale_daemon.md) — [DEVSRV-STALE] 3 brick variants via one `curl`; astro-7 `npm run dev` daemonizes; NEVER port-kill. Conv 429.
+- [feedback_codecheck_moment_includes_tests_and_build](memory-archive/feedback_codecheck_moment_includes_tests_and_build.md) — `/w-codecheck` = decision point: also weigh prov-sweep + full suite + build. Conv 207.
+- [feedback_pipefail_when_teeing_verify](memory-archive/feedback_pipefail_when_teeing_verify.md) — `verify`/`test`/`build` piped `| tee | tail` returns TAIL's exit (0), hiding failures. Conv 443 [TBK].
+- [feedback_tailwind_arbitrary_class_stale_on_viewtransition](memory-archive/feedback_tailwind_arbitrary_class_stale_on_viewtransition.md) — newly-added arbitrary Tailwind class can compute to 0 on the ClientRouter swap path → restart dev server. Conv 443.
+- [plato_walk_mocked_service_divergence](memory-archive/plato_walk_mocked_service_divergence.md) — [PLATO-SEQ] browser-walk row-identity EXCLUDES `notifications`; [PSA-WAITUNTIL] fixed Conv 384.
+
+### Output & terms
+
+- [feedback_pointing_emoji_prefix](memory-archive/feedback_pointing_emoji_prefix.md) — Stub anchor — 👉👉👉 + bold rule lives in CLAUDE.md §User-Facing Questions.
+- [feedback_visual_issue_alerts](memory-archive/feedback_visual_issue_alerts.md) — Stub anchor — 🔴🔴🔴 / 🟠🟠🟠 issue-alert rule lives in CLAUDE.md §Issue Surfacing.
+- [feedback_mirror_term_annotation](memory-archive/feedback_mirror_term_annotation.md) — Say "mirror (from last r-end)" not bare "mirror". Conv 228. *(Obsolete post-Conv-456: mirror system removed.)*
+- [reference_term_garble_upstream_bug](memory-archive/reference_term_garble_upstream_bug.md) — [TERM-GARBLE] blank/partial tool output + confabulated failure = OPEN upstream CC bug. Conv 227.
+- [feedback_routing_addressability_first](memory-archive/feedback_routing_addressability_first.md) — Route shape = decide ADDRESSABILITY not page-count; transient confirmations → overlays. Conv 187.
+- [feedback_afk_nudge_disabled](memory-archive/feedback_afk_nudge_disabled.md) — [AFK-CFG] AskUserQuestion 60s auto-proceed nudge disabled; non-answer/timeout ≠ consent. Conv 361.
+- [feedback_chat_vs_tooling_output_separation](memory-archive/feedback_chat_vs_tooling_output_separation.md) — [CHATSEP] `verbose:false` in PROJECT settings + `chat-replay.sh`; `/focus`/fullscreen REJECTED. Conv 395.
+- [feedback_mouse_disabled_picker_misclick](memory-archive/feedback_mouse_disabled_picker_misclick.md) — [MOUSE-GUARD] `CLAUDE_CODE_DISABLE_MOUSE`=1 is DELIBERATE — NEVER re-enable. Conv 395.
+
+### Docs & memory discipline
+
+- [feedback_check_docs_on_how_questions](memory-archive/feedback_check_docs_on_how_questions.md) — On "how does X work" questions, check docs too; offer doc update if answer needed heavy searching.
+- [reference_generated_doc_regen](memory-archive/reference_generated_doc_regen.md) — [DOCGEN] route maps = generated docs, auto-regen at r-end Step 5c; `route-stories.md` is hand-written. Conv 246.
+- [feedback_read_legacy_source_before_conclusion](memory-archive/feedback_read_legacy_source_before_conclusion.md) — Review/compare/port → fully read BOTH sides (esp. legacy `/old` SoT) BEFORE concluding. Conv 222.
+- [feedback_check_memory_before_directive_save](memory-archive/feedback_check_memory_before_directive_save.md) — Before offering to save a directive, grep the memory dir for an existing entry. *(Obsolete post-Conv-456: no memory dir.)*
+- [feedback_confirmations_stand_unless_revoked](memory-archive/feedback_confirmations_stand_unless_revoked.md) — User-confirmed sub-decisions survive later topic pivots; sticky until user names the item to revoke.
+- [feedback_msi_sync_user_checkpoint](memory-archive/feedback_msi_sync_user_checkpoint.md) — /r-start Step 5.7 mirror-vs-live checkpoint. Conv 155-156. *(Obsolete post-Conv-456: sync removed.)*
+- [feedback_fix_docs_inline_not_rend](memory-archive/feedback_fix_docs_inline_not_rend.md) — Fix stale doc refs INLINE same-conv; do NOT defer to /r-end. Conv 286 [TW-V4].
+
+### Skills & planning
+
+- [feedback_skill_body_stale_after_self_pull](memory-archive/feedback_skill_body_stale_after_self_pull.md) — A skill's in-context body = pre-pull SNAPSHOT; re-read on-disk after a pull updates SKILL.md. Conv 218.
+- [feedback_uncategorized_filtering](memory-archive/feedback_uncategorized_filtering.md) — Extract §Uncategorized: "not a bug"/"no action needed" doesn't belong there.
+- [feedback_exploration_pacing](memory-archive/feedback_exploration_pacing.md) — After Phase 1 establishes patterns, Phase N+1 writes code — do NOT re-explore. Conv 057.
+- [feedback_plan_mode](memory-archive/feedback_plan_mode.md) — CC Plan Mode: VERIFY/stress-test designs; plan files EPHEMERAL → persist durable plans. Conv 055-056.
+- [feedback_skill_sync_same_name_divergence](memory-archive/feedback_skill_sync_same_name_divergence.md) — Same-named skills across projects often diverge — default to "evolve independently".
+- [feedback_heuristic_calibration](memory-archive/feedback_heuristic_calibration.md) — New detection heuristic/threshold MUST run against the canonical case BEFORE commit. Conv 142 [CMH].
+- [feedback_cleanup_step](memory-archive/feedback_cleanup_step.md) — Every PLAN block ends with a Cleanup phase.
+- [feedback_infra_vs_deliverable](memory-archive/feedback_infra_vs_deliverable.md) — Building test infra: pause to check generalizable vs special-cased.
+- [feedback_decompose_by_cohesion_not_pseudo_isolation](memory-archive/feedback_decompose_by_cohesion_not_pseudo_isolation.md) — Split by cohesion (vertical slices), NOT fragments. Conv 271.
+- [feedback_watch_task_assumptions](memory-archive/feedback_watch_task_assumptions.md) — Watch-tasks state the assumed precondition in subject; audit falsifies it FIRST. Conv 149-150 [OPW].
+- [rename-lessons](memory-archive/rename-lessons.md) — **Load when** planning a large rename (>50 files): baseline tests first; macOS `sed` lacks `\b` → `perl -pi -e`.
+- [feedback_rend_complete_all_steps](memory-archive/feedback_rend_complete_all_steps.md) — **RECURRING FAILURE:** /r-end must execute ALL steps without stopping after /r-eos. Convs 006/019/026/027.
+
+### Security & Figma
+
+- [figma-context](memory-archive/figma-context.md) — **Load when** Figma/design-token work. GUARDRAIL: Figma READ-ONLY — NEVER call write-shaped `mcp__figma__*` [MNV].
+
+### References
+
+- [reference_spt_dual_repo](memory-archive/reference_spt_dual_repo.md) — `spt`/`spt-docs` is a sibling dual-repo; `r-end-soft`/etc. live THERE not here.
+- [reference_staging_url](memory-archive/reference_staging_url.md) — Staging: `peerloop-staging.brian-1dc.workers.dev` · slug `brian-1dc` · D1 `peerloop-db-staging`.
+- [reference_cf_data_recovery](memory-archive/reference_cf_data_recovery.md) — CF recovery floors: D1 30d Time Travel; R2 Bucket Locks + backup-copy; KV no PITR. Conv 212.
+- [feedback_staging_is_deploy_target_prod_gated](memory-archive/feedback_staging_is_deploy_target_prod_gated.md) — [Deploy] staging is the ONLY deploy target; NEVER `deploy:prod`. Conv 262.
+
+### Project context
+
+- [project_spacing_snap_over_matt_exception](memory-archive/project_spacing_snap_over_matt_exception.md) — SPACING axis: off-scale `@matt-source` spacing SNAPS to nearest 4px (ties round UP). Conv 305.
+- [project_role_studios_deconstruct_nudges](memory-archive/project_role_studios_deconstruct_nudges.md) — [ROLE-STUDIOS] `/dashboard`→role workspaces + nudges. Conv 252/317/339/392.
+- [project_matt_phaseout_inspired_default](memory-archive/project_matt_phaseout_inspired_default.md) — Matt phase-out: Figma LAYOUT-ONLY; pages default `@matt-inspired`, NEVER lose `/old` function. Conv 239/289.
+- [project_route_404_honesty_standin](memory-archive/project_route_404_honesty_standin.md) — Route migration: unconverted pages must 404; `@stand-in` = TRANSIENT marker. Conv 203.
+- [project_old_pages_no_delete_until_vetted](memory-archive/project_old_pages_no_delete_until_vetted.md) — RTMIG-4 ports MOVE `/old/X`→`/X` as `@stand-in`; 74 `/old` pages need per-page vetting. Conv 250/338.
+- [feedback_port_functionality_and_styling](memory-archive/feedback_port_functionality_and_styling.md) — legacy→Matt port = faithful function+content AND full Matt styling; diff field-by-field. Conv 222.
+- [feedback_route_sweep_pause_protocol](memory-archive/feedback_route_sweep_pause_protocol.md) — ROUTE SWEEP (RTMIG-4): every route swept, 8-step PAUSE process → `[<ROUTE>-FIXES]` capture.
+- [feedback_scan_for_primitive_candidates_on_retrofit](memory-archive/feedback_scan_for_primitive_candidates_on_retrofit.md) — Retrofitting `@stand-in`→`@matt-inspired`: scan for existing primitive candidates BEFORE inline JSX.
+- [project_preflip_worktree_reference](memory-archive/project_preflip_worktree_reference.md) — [PREFLIP-WT] pre-flip worktree reference. *(Note: worktree removed Conv 455.)*
+- [project_module_submodule_model](memory-archive/project_module_submodule_model.md) — Session↔Module = 1:1; nested "N Modules" = Sub-Modules. Conv 188 [MOD-SCHEMA].
+- [project_timezone_confidence](memory-archive/project_timezone_confidence.md) — Recurring `new Date()` issues; user has LOW confidence TZ handling is correct.
+- [project_staging_integration_plan](memory-archive/project_staging_integration_plan.md) — Expand BBB-VERIFY into full staging block (Stream, Resend, Stripe, BBB).
+- [project_feeds_hub](memory-archive/project_feeds_hub.md) — [FEEDS] `/`=merged SmartFeed; `/feeds`+`FeedsHub` NO LONGER EXIST (retired Conv 331). Conv 427.
+- [project_obsidian_vault_synced](memory-archive/project_obsidian_vault_synced.md) — `~/Obsidian Vaults/main2025/` synced across M4/M4Pro via Obsidian Sync.
+- [project_scratch_obsidian_symlink](memory-archive/project_scratch_obsidian_symlink.md) — scratch = REAL `_scratch/` + `.scratch` compat symlink; don't delete/flip. Conv 300.
+- [project_ephemeral_dismiss_dev_staging](memory-archive/project_ephemeral_dismiss_dev_staging.md) — Dismissible nudges reappear every reload in dev+staging BY DESIGN. Conv 292.
+- [project_settings_tier_local_control](memory-archive/project_settings_tier_local_control.md) — Settings: project `settings.json` + machine-local `settings.local.json`; [SETTINGS-GUARD]. Conv 212.
+- [project_jfg_dev_branches_are_snapshots](memory-archive/project_jfg_dev_branches_are_snapshots.md) — `jfg-dev-NN` code branches = intentional SNAPSHOTS — NEVER propose `git branch -d` sweeps. Conv 292.
+- [project_old_appnavbar_retire_by_default](memory-archive/project_old_appnavbar_retire_by_default.md) — [OLD-RETIRE-DEFAULT] `/old/*` + AppNavbar = RETIRE-by-default. Conv 331.
+- [project_admin_conformance_policy](memory-archive/project_admin_conformance_policy.md) — [ADMIN-CONF-POLICY] RG-ADMIN = dense operational console; relaxations A-D. Conv 331.
+- [project_diploma_vs_certificate](memory-archive/project_diploma_vs_certificate.md) — [DIPLOMA] Diploma=course-completion (auto, derived) vs Certificate=teach-readiness. Conv 389.

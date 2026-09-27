@@ -140,16 +140,16 @@ After user confirms:
 
 ## Step 4: Scoped Reference Validation (Post-Execute)
 
-Prune is the most likely cause of dangling MEMORY.md → CLAUDE.md `§X` references — when a section is moved to the offload, its `## X` header in CLAUDE.md *should* survive (the skill keeps headers for scannability), but if the prune ever evolves to rename or delete headers, memory pointers will rot silently.
+Prune is the most likely cause of dangling `→ CLAUDE.md §X` references — when a section is moved to the offload, its `## X` header in CLAUDE.md *should* survive (the skill keeps headers for scannability), but if the prune ever evolves to rename or delete headers, pointers will rot silently. The sources that carry such references are `docs/reference/CLAUDE-OFFLOAD.md` (including its "Situational Notes Archive" index) and the `docs/reference/memory-archive/*.md` bodies. (The retired `MEMORY.md` auto-memory system was removed Conv 456 — no live memory dir or mirror exists any more.)
 
 Run **scoped** reference validation immediately after Step 3 — limited to the sections this prune touched:
 
-1. **For each section moved or modified in this prune,** check whether any MEMORY.md line or any memory `feedback_*.md` body contains a reference to `CLAUDE.md §<that-header>` (or standalone `§<that-header>`).
+1. **For each section moved or modified in this prune,** check whether `docs/reference/CLAUDE-OFFLOAD.md` or any `docs/reference/memory-archive/*.md` body contains a reference to `CLAUDE.md §<that-header>` (or standalone `§<that-header>`).
 2. **Resolve each reference** against the post-prune CLAUDE.md headers (re-grep `^## ` after the Step 3 write).
 3. **For each dangling reference,** emit a 🔴 alert:
    ```
-   🔴 Reference rot: {memory file or MEMORY.md line N} references §{X} which no longer exists in CLAUDE.md.
-       → Update the memory line/file, or restore §{X} as a stub-pointer header in CLAUDE.md.
+   🔴 Reference rot: {CLAUDE-OFFLOAD.md or memory-archive file} references §{X} which no longer exists in CLAUDE.md.
+       → Update the referencing line/file, or restore §{X} as a stub-pointer header in CLAUDE.md.
    ```
 
 This is the **edit-coupled** half of the coherence story — same reference-validation logic as `/r-coherence-check`'s Check 1c, but scoped to the prune's own deltas (cheaper, runs every prune).

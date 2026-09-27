@@ -123,7 +123,7 @@ Branch on the **Argument given** (`$ARGUMENTS`), trimmed and lowercased:
 
 2. **Read** `~/projects/peerloop-docs/.scratch/quiet-mode-log.md` fully. Normal "wisdom" is now re-engaged.
 
-3. **Run the deferred processes first** (independent work, done before the pause per `memory/feedback_pause_on_pointing_questions.md`): gates (tsc / astro check / lint / test / build as relevant), `prov:sweep`, route-doc regen, doc-drift checks — whatever the log's "Deferred processes" lists. Report results compactly; surface any `🔴`/`🟠` findings.
+3. **Run the deferred processes first** (independent work, done before the pause per `docs/reference/memory-archive/feedback_pause_on_pointing_questions.md`): gates (tsc / astro check / lint / test / build as relevant), `prov:sweep`, route-doc regen, doc-drift checks — whatever the log's "Deferred processes" lists. Report results compactly; surface any `🔴`/`🟠` findings.
 
 4. **RAISE THE ISSUES — mandatory checkpoint, then HALT.** This is the step quiet mode exists for: every issue held back during the quiet period must now be put to the user for consideration, not silently filed. Compile the issue set = the log's "Issues surfaced inline" section + any blocking / directly-important / open-question items anywhere in the log. For **each** issue, present:
 

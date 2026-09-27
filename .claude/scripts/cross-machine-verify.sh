@@ -103,31 +103,19 @@ run_case "slug-derivation" \
   '-Users-*-projects-peerloop-docs' \
   "SLUG derived via tr-based subshell produces dash-separated path"
 
-# 4. Memory dir path derivation
-run_case "memory-dir-derivation" \
-  'SLUG=$(echo ~/projects/peerloop-docs | tr / -); echo ~/.claude/projects/$SLUG/memory' \
-  '/Users/*/.claude/projects/-Users-*-projects-peerloop-docs/memory' \
-  "Memory dir composed from \$HOME-derived slug; both segments expand on both machines"
-
-# 5. Mirror dir path derivation
-run_case "mirror-dir-derivation" \
-  'echo ~/projects/peerloop-docs/.claude/memory-sync/memories' \
-  '/Users/*/projects/peerloop-docs/.claude/memory-sync/memories' \
-  "Mirror dir under docs repo (in-tree, doesn't depend on machine slug)"
-
-# 6. $HOME outside quotes expands like tilde
+# 4. $HOME outside quotes expands like tilde
 run_case "home-unquoted-equivalence" \
   'echo $HOME/projects/peerloop-docs' \
   '/Users/*/projects/peerloop-docs' \
   "Bare \$HOME outside quotes resolves the same as tilde (would prompt in Claude Code Bash gate)"
 
-# 7. Slug ends with expected suffix (structural property — last 14 chars are stable)
+# 5. Slug ends with expected suffix (structural property — last 14 chars are stable)
 run_case "slug-suffix-stable" \
   'echo ~/projects/peerloop-docs | tr / - | grep -oE "peerloop-docs$"' \
   'peerloop-docs' \
   "Slug always ends with 'peerloop-docs' regardless of HOME (last path segment is HOME-independent)"
 
-# 8. Conv counter file path
+# 6. Conv counter file path
 run_case "conv-counter-path" \
   'echo ~/projects/peerloop-docs/CONV-COUNTER' \
   '/Users/*/projects/peerloop-docs/CONV-COUNTER' \
