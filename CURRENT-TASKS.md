@@ -90,6 +90,8 @@
 - [STREAM-ENV](#stream-env) — ⚠️ CONFIRMED: seed feeds accumulate duplicate Stream activities each --clean reseed (16 in PF now); fix needs Stream-API work
 - [DISC-E2E-REAL](#disc-e2e-real) — optional: opt-in local-only real-Stream round-trip E2E for the discussion feed (post→Stream→render)
 - [HW-DUP](#hw-dup) — session row shows both the "Homework" title-badge AND the detailed inline homework row (redundant); collapse if client finds it noisy
+- [PREFLIP-ALIAS](#preflip-alias) — strip the stale `peerloop-ref` zsh alias (`~/.zshrc`) — its worktree was removed Conv 455
+- [BRIAN-WT](#brian-wt) — verify/document the undocumented `~/projects/Peerloop-brian` worktree (detached `8a1e677f`)
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -101,7 +103,6 @@
 - [SESSION-REMIND-DEPLOY](#session-remind-deploy) — gate: MVP-GOLIVE (prod)
 - [FEEDBACK-DEPLOY](#feedback-deploy) — gate: MVP-GOLIVE (prod)
 - [RG-PUBLIC](#rg-public) — gate: marketing redesign
-- [PREFLIP-WT](#preflip-wt) — gate: user say-so
 - [BROWSER-SMOKE-2B](#browser-smoke-2b) — gate: post-launch
 - [MINWIDTH-320](#minwidth-320) — gate: user say-so
 - [ICON-LIC](#icon-lic) — gate: MVP-GOLIVE
@@ -450,6 +451,18 @@
 - **⚠️ Still owed:** the hook asked for <17.1 KB and this got to 19.4 KB. Closing the remaining ~2.3 KB needs genuine **consolidation/extraction** (merging near-duplicate entries, retiring stale ones) — a curation judgment call, deliberately NOT wedged into an `/r-end`. Run `/r-prune-memory` as its own focused task.
 - **Refs:** `.claude/skills/r-prune-memory`, PLAN.md `[MEM-CAP]` (~line 102), `[[feedback_memory_index_load_bearing]]`.
 
+### [BRIAN-WT]
+
+- **State:** 📋 queued
+- **What:** an undocumented third code worktree `~/projects/Peerloop-brian` (detached `8a1e677f`) exists on disk — not in `peerloop.code-workspace` and not in memory. Likely a client-experimentation checkout. Verify what it's for, then either document it (memory + workspace) or `git worktree remove` it.
+- **Surfaced:** Conv 455 (while enumerating worktrees for the `[PREFLIP-WT]` teardown).
+
+### [PREFLIP-ALIAS]
+
+- **State:** 📋 queued
+- **What:** the `peerloop-ref` zsh alias in `~/.zshrc` now points at `~/projects/Peerloop-preflip`, which was removed Conv 455 (`[PREFLIP-WT]`). Strip the alias. Shell-profile edit — asked the user; do on say-so.
+- **Refs:** `memory/project_preflip_worktree_reference` (documents the alias).
+
 ### [BRIAN-ARTIFACTS]
 
 - **State:** 👀 watch · **external** — waiting on Brian, not on us
@@ -502,13 +515,6 @@
 - **Outstanding — Phase 4c (post-launch, dup of `[BROWSER-SMOKE-2B]`):** agent-driven browser walker — auto-walk a pure-UI segment from a restored waypoint + self-verify, so a full journey chains API-produced waypoints (crossing Stripe/BBB a browser can't) with browser-verified UI segments. **Do NOT resurrect Playwright E2E.**
 - **To resume 4c:** browser-walk mechanics (actor-switch via `POST /api/auth/dev-login`; CUT-2 enroll = signed `checkout.session` with **no `payment_intent`** via `trigger-webhook.sh stripe-direct-raw`; CUT-3 = `bbb-meeting-ended`; click-by-`ref`/late-hydration gotchas; Genesis creds) in `.scratch/plato-waypoint-plan.md` + memory `[[reference_chrome_bridge_island_stale_cache]]`/`[[plato_walk_mocked_service_divergence]]`.
 - **Refs:** `docs/as-designed/plato.md`, `tests/plato/snapshots/README.md`, `PLAN.md §PLATO-SEQ`, `docs/decisions/06-testing-ci.md`.
-
-### [PREFLIP-WT]
-
-- **State:** ⏸️ parked · **gate: user say-so**
-- **What:** tear down the preflip reference worktree (`~/projects/Peerloop-preflip` on :4331, `peerloop-ref` alias). Consequential + machine-local; the PLATO port-audit reason for keeping it has cleared.
-- **Refs:** `memory/project_preflip_worktree_reference`.
-
 
 ### [PROBESAFE]
 
@@ -932,11 +938,4 @@
 
 ## ✅ Done this conv
 
-- **[DISC-TOGGLE] / [DISC-DEFAULT]** — Client (Guy Rymberg) question answered + acted on. The per-course "Discussion" toggle on `/creating` cards is the master on/off for a Stream.io-backed course discussion feed (gates feed access + discovery/promotion). **New behavior (client decision B + A″):**
-  - Toggle **defaults ON** at course creation (`discussion_feed_enabled=1` in the `/api/me/courses` INSERT) — reads ON while developing the draft.
-  - The feed is "live" only when **published AND toggled on**; announcement posts fire on transitions of that effective-live state, each dated `formatDateTimeUTC(now) + " UTC"`.
-  - **Publish always turns the feed on** (A″): `publish.ts` sets `is_active=1, discussion_feed_enabled=1`, provisions the Stream feed on first publish, posts *"Discussion feed started…"* (/"started again" on re-activation).
-  - **Unpublish** posts *"Discussion feed turned off…"* (if it was live). **Manual toggle** off→*"turned off"*, on (published)→*"started/started again"*; toggling a draft posts nothing.
-  - Shared helper `src/lib/course-discussion-feed.ts` (`activate`/`deactivate`). Stream failures are non-fatal (publish/toggle roll back a failed first-provision to keep the feed endpoint from 500ing; unpublish/disable swallow).
-  - Files: `course-discussion-feed.ts` (new), `me/courses/index.ts`, `me/courses/[id]/publish.ts`, `me/courses/[id]/unpublish.ts`, `courses/[slug]/discussion-feed.ts` + 4 test files. 5 gates green (6528 tests). **✅ Deployed to staging Conv 454** (version 918ddb38, `peerloop-staging.brian-1dc.workers.dev`) — applies to newly created/published courses; existing staging courses aren't retroactively flipped (publish forces ON, so republishing an existing draft turns it on).
-- **[DISC-E2E]** — Built the CI-safe render E2E for the feed announcements (option A): `e2e/course-discussion-feed.spec.ts` + `announcementFeedResponse` fixture (mocked-feed pattern from `course-feed.spec.ts`). Asserts `MattCourseFeed` renders the started/started-again/turned-off system posts + doesn't fall to the empty state. **Run green live** (2 passed, 4.0s) against a freshly-restarted dev server — no reseed needed (`intro-to-n8n` already seeded). Fixed the stale-Vite-cache `[DEVSRV-STALE]` brick en route (astro dev stop + rm .vite). Optional real-Stream round-trip left as `[DISC-E2E-REAL]`.
+- **[PREFLIP-WT]** — tore down the preflip reference worktree (`git worktree remove ~/projects/Peerloop-preflip`; :4331 already not running) and dropped its folder entry from `peerloop.code-workspace`. Its work-driver `[RTMIG-4]` closed Conv 340. (Conv 455)

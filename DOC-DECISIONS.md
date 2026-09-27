@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-09-25 Conv 454 (client is "Brian"; in-app persona names are seed/test users — §3)
+**Last Updated:** 2026-09-27 Conv 455 (preflip reference worktree torn down — §1)
 
 ---
 
@@ -18,7 +18,14 @@ This document tracks decisions about **how the peerloop-docs repo itself works**
 
 ## 1. Repo Architecture
 
-### A Client Branch That Is a Strict Linear Superset Is Curated by History-Preserving Cherry-Pick onto a Fresh `jfg-dev-*` — Not Squashed, Not Adopted As-Is (Conv 450)
+### The `Peerloop-preflip` Reference Worktree Is Torn Down Once Its Work-Driver Closes (Conv 455)
+**Date:** 2026-09-27 (Conv 455)
+
+The legacy-app visual/behavioral reference worktree `~/projects/Peerloop-preflip` (pinned at `608346a2`, the parent of Conv 197 ROUTE-FLIP, run on :4331 via the `peerloop-ref` alias) was removed: `git worktree remove`, its folder entry dropped from `peerloop.code-workspace`, and `[PREFLIP-WT]` closed on the task board. The `peerloop.code-workspace` now mounts only peerloop-docs + `../Peerloop`.
+
+**Rationale:** The worktree's sole work-driver `[RTMIG-4]` (the route sweep) closed Conv 340, and the `[PREFLIP-WT]` note already recorded that "the PLATO port-audit reason for keeping it has cleared." It was parked only on `gate: user say-so`, which the user gave. The `peerloop-ref` zsh alias now points at a gone directory and is left in place pending explicit user say-so (shell-profile edits gated). An undocumented third worktree `~/projects/Peerloop-brian` (detached `8a1e677f`) was found and left untouched.
+
+ Is Curated by History-Preserving Cherry-Pick onto a Fresh `jfg-dev-*` — Not Squashed, Not Adopted As-Is (Conv 450)
 **Date:** 2026-09-21 (Conv 450)
 
 When the shared client branch (`brian-sep-05`) is a **strict linear superset** of our branch — 0 divergence, confirmed by `git rev-list --left-right --count jfg-dev-15...origin/brian-sep-05` — the curation path is: cut a **fresh** `jfg-dev-16` off `jfg-dev-15` (preserving the old branch as a point-in-time snapshot), then `git cherry-pick -x` the keep-candidates **in their original linear order**. This is conflict-free by construction and satisfies every inter-commit dependency automatically; `-x` records the source SHA and preserves the client's authorship. Pruning is trivial when the "ignore" set is exactly the branch tip (here the 3 named ignores EMBED-CHECKOUT / CREATOR-TEACHER / COVER-UPLOAD were the tip, the 11 keep-candidates the contiguous prefix). Each cherry-pick was gated on a per-commit coherence/safety/style assessment (4 parallel agents) before the batch ran.
