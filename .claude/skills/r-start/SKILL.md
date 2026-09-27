@@ -335,7 +335,7 @@ Write the header + a first entry for this `/r-start` run (newest-first ordering 
 
 ## Turn 1
 **Q:** /r-start
-**A:** {one-line terse summary of this /r-start run — counter increment, memory sync, CURRENT-TASKS.md task board surfaced, and the recommended-action question asked at the end}
+**A:** {one-line terse summary of this /r-start run — counter increment + push, CURRENT-TASKS.md task board surfaced, any carried findings ruled / hopper leftovers reported, and the recommended-action question asked at the end}
 ```
 
 Thereafter, **at the end of every turn**, prepend a new `## Turn N` entry per the CLAUDE.md rule (question in full, reply terse). Note it in one line:
@@ -428,71 +428,9 @@ Otherwise, display:
 
 This is a soft warning — do not block.
 
-#### Multi-Block Consolidation
+#### Multi-Block / All-Done handling — RETIRED (Conv 457)
 
-> **Mostly legacy under the narrative-only model ([CURTASKS], Conv 351).** The new `/r-end` writes a single narrative block, so this rarely triggers; when it does, **only the narrative merge (Summary / Key Context) applies** — the Remaining / TodoWrite-Items task-merge below is moot (task state lives in `CURRENT-TASKS.md`, not RESUME-STATE). Kept for the rare multi-append case.
-
-If `RESUME-STATE.md` contains multiple state blocks (detected by more than one `# State — Conv` heading), consolidate **before** presenting the resume context:
-
-**Step A: Walk blocks oldest → newest**
-
-Read each block's **Remaining** section. For each item in an earlier block:
-
-1. **Check if done** — use `Grep`, `Glob`, `Read`, or `git log --oneline` (via Bash) to determine if the work was completed. Look for the files/changes the item describes.
-2. **Check for interactions** — does a later block's Remaining or Completed reference the same files, features, or decisions? Flag overlaps or conflicts.
-
-**Step B: Explain what you intend to do and why**
-
-For each item across both blocks, explain your reasoning:
-
-```
-🔄 Consolidating RESUME-STATE.md (2 blocks)
-─────────────────────────────────────────────
-
-Block 1: Conv NNN (date) — [1-line summary]
-Block 2: Conv MMM (date) — [1-line summary]
-
-✅ Marking as done:
-- [item] — done because [evidence: file exists, git log shows commit, etc.]
-- [item] — done because [evidence]
-
-⚠️  Interactions between blocks:
-- [item from block 1] and [item from block 2] touch the same [file/feature/decision] — [explain the relationship and how you propose to handle it]
-
-⏭️  Carrying forward (still pending):
-- [item] — not done because [evidence: file not found, no commits touching this, etc.]
-- [item] — not done because [evidence]
-
-🗑️  Dropping:
-- [item] — [reason: superseded by block 2 item X / no longer relevant because Y]
-```
-
-**Explain every classification.** Wait for user approval before rewriting.
-
-**Step C: Rewrite as single block**
-
-Rewrite `RESUME-STATE.md` as a single `# State — Conv MMM (date)` block (using the latest conv) that merges:
-- **Completed**: items from both blocks that are done
-- **Remaining**: items from both blocks that are still pending, deduplicated
-- **Key Context**: merged from both blocks, dropping stale entries
-
-(Any legacy `## Remaining` / task lists in these old blocks are ignored — task state lives in `CURRENT-TASKS.md`, not RESUME-STATE.)
-
-#### All-Done Cleanup
-
-> **Legacy + superseded (Conv 457).** A narrative-only `RESUME-STATE.md` has no `## Remaining` section, so this all-checked test no longer applies. And since Conv 457 `/r-start` **keeps** `RESUME-STATE.md` (Step 7.6) rather than deleting it — the file carries `## 🔬 Carried findings` across the conv and is overwritten only by `/r-end`. **Do NOT delete `RESUME-STATE.md` here.** This block is retained only as a description of the retired pre-cutover path; treat its "Delete `RESUME-STATE.md`" step as dead.
-
-After consolidation (Step C) or when reading a single-block file, check whether **all** items in the Remaining section are checked (`[x]`). If so:
-
-1. Display:
-```
-✅ All remaining items are done — RESUME-STATE.md has no pending work.
-   Deleting file (state is preserved in git history and PLAN.md).
-```
-
-2. Delete `RESUME-STATE.md`.
-
-3. Continue to present the resume context using PLAN.md only.
+> Two legacy procedures lived here: a **Multi-Block Consolidation** (merging multiple `# State — Conv` blocks in one RESUME-STATE) and an **All-Done Cleanup** (deleting a RESUME-STATE whose `## Remaining` items were all checked). **Both are dead under the Conv-457 model** and were removed: `/r-end` writes a single narrative block, `/r-start` **keeps** RESUME-STATE (never deletes it — Step 7.6), and task state lives in `CURRENT-TASKS.md` (RESUME-STATE has no `## Remaining` checklist), so neither can trigger. If a pre-cutover RESUME-STATE with multiple blocks or a `## Remaining` list ever surfaces, treat it as history — read the newest narrative and do **not** delete the file.
 
 #### Present Context
 
@@ -548,8 +486,7 @@ Present in this format:
 - Highlight **blockers** that need resolution before continuing
 - Keep context brief but sufficient to resume without reading entire PLAN.md
 - The forward-looking **task sequence** comes from `CURRENT-TASKS.md § 🎯 Now` (top = next); `RESUME-STATE.md` supplies **narrative context only** (post-cutover it no longer holds task data)
-- If RESUME-STATE.md exists with a single block, incorporate its narrative context
-- If RESUME-STATE.md has multiple blocks, run **Multi-Block Consolidation** before presenting (narrative merge only — task-data merge is moot under the narrative-only model)
+- Incorporate `RESUME-STATE.md`'s narrative context (Summary / Key Context). (Multi-block consolidation was retired Conv 457 — `/r-end` writes a single block; a stray pre-cutover multi-block file is just read as history.)
 - **Recommended Action MUST be the last section** — it ends with a bold Yes/No question (`**Start [TASK-CODE] now? (yes / no)**`) on its own line so the user knows Claude is waiting for input. HALT after asking. Do not begin work until the user answers.
 
 ---

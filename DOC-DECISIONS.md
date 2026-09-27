@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-09-27 Conv 456 (Brian-era styling left unattributed in page provenance — §3)
+**Last Updated:** 2026-09-27 Conv 457 (fps hopper model ported — capture/commitment split + RESUME-STATE kept across conv — §3)
 
 ---
 
@@ -583,6 +583,17 @@ The 4572-line `docs/DECISIONS.md` was split into a `docs/decisions/` folder: ele
 ---
 
 ## 3. Claude Code Workflow
+
+### The fps Hopper Model Is Adopted — Capture (HOPPER.md) Is Split From Commitment (a CURRENT-TASKS.md Row), and RESUME-STATE Is Now Kept Across the Conv (Conv 457)
+**Date:** 2026-09-27 (Conv 457)
+
+The full fps hopper subsystem was ported to peerloop: a git-tracked `HOPPER.md` + `/r-hopper` skill capture mid-work spin-offs friction-free, ruled deliberately one-at-a-time (promote to a `CURRENT-TASKS.md` row / do now / drop) rather than dumped straight onto the board. An r-end **Step 0.8** gate hard-bounces the close (signal-and-exit, before any write) on any open hopper item, and a `RESUME-STATE.md § 🔬 Carried findings` channel carries findings the close itself surfaces. Making carried-findings work required **flipping r-start to KEEP RESUME-STATE** across the conv (overwritten only by r-end) instead of deleting it at Step 7.6 — r-start's stale-context check was reframed so a *missing* RESUME-STATE is now the anomaly, and its new Step 7.8 rules carried findings + reports hopper leftovers on resume. Rejected: hopper-only (leaving carried-findings + RESUME-STATE-delete as-is).
+
+**Rationale:** peerloop's §Issue Surfacing had mandated writing every spin-off straight into `CURRENT-TASKS.md` as a `### [CODE]` body, so capture == a durable board row and the board had grown to 67 bodies / 56 queued. Separating capture (immediate, no-ask) from commitment (must earn a row) keeps the durable board small without losing spin-offs; the Step 0.8 all-stop bounce is the spine that makes the discipline enforceable rather than advisory. Carried-findings structurally depends on RESUME-STATE persisting, so the whole mechanism only holds with the lifecycle flip.
+
+**Consequences:** New always-on CLAUDE.md §Hopper; §Issue Surfacing capture target changed (spin-offs → HOPPER.md first); §Task Persistence updated (RESUME-STATE kept + carries carried-findings). New files `HOPPER.md`, `.claude/skills/r-hopper/SKILL.md`; edits across r-start / r-end / r-commit + comment-only fixes in `conv-branch-guard.sh` and `resume-state-check.sh`. Follow-up `[REND-HOP]` deferred (let r-end route its own close-findings into the hopper). Committed `55e936e`.
+
+**See:** `CLAUDE.md` (§Hopper, §Issue Surfacing, §Task Persistence); `HOPPER.md`; `.claude/skills/r-hopper/SKILL.md`; `docs/sessions/2026-09/20260927_1715 Decisions.md` §1, `Learnings.md` §§1–2; Conv 457.
 
 ### Brian-Era Styling Is Left Unattributed — the 3-Marker Provenance Convention Captures Matt-Era Heritage Only (Conv 456)
 **Date:** 2026-09-27 (Conv 456)

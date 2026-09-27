@@ -91,6 +91,7 @@
 - [HW-DUP](#hw-dup) — session row shows both the "Homework" title-badge AND the detailed inline homework row (redundant); collapse if client finds it noisy
 - [PREFLIP-ALIAS](#preflip-alias) — strip the stale `peerloop-ref` zsh alias (`~/.zshrc`) — its worktree was removed Conv 455
 - [BRIAN-WT](#brian-wt) — verify/document the undocumented `~/projects/Peerloop-brian` worktree (detached `8a1e677f`)
+- [REND-HOP](#rend-hop) — infra: let /r-end feed its own close-surfaced findings into HOPPER.md (not just carried-findings)
 
 ## ⏸️ Parked  (gated — out of rotation)
 
@@ -681,6 +682,13 @@
 - **Refs:** `../Peerloop/eslint.config.js`, `docs/decisions/06-testing-ci.md §§ RHOOKS/RDOC`, `[A11Y]`, `[LE-TRIAGE]`.
 
 
+
+### [REND-HOP]
+
+- **State:** 📋 queued · infra improvement · surfaced Conv 457 (hopper port), user-flagged for after the port
+- **What:** let `/r-end` route the findings *it* surfaces during its own close into `HOPPER.md` instead of only the `RESUME-STATE.md § 🔬 Carried findings` channel. As shipped Conv 457, r-end's Step 0.8 hopper gate runs **once** at the start and there are no more hopper checks after it — so a finding thrown off later in the close can't reach the hopper; it goes to carried findings and waits for the next `/r-start` to rule. The idea: give the close a path to feed the hopper too, so such findings can be dealt with in the same conv rather than deferred a conv.
+- **Decide when picked up:** whether this is a second hopper re-check later in `/r-end` (and where), or a distinct post-close pass; and whether it supersedes or complements carried findings.
+- **Refs:** `.claude/skills/r-end/SKILL.md` (Step 0.8 gate; Step 5 carried findings), `.claude/skills/r-hopper/SKILL.md`, CLAUDE.md §Hopper. Deferred verbatim by the user during the Conv-457 port.
 
 ### [ROUTESTORIES-DRIFT]
 
