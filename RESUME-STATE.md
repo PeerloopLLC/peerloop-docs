@@ -1,4 +1,4 @@
-# State — Conv 458 (2026-09-27 ~17:37)
+# State — Conv 459 (2026-09-27 ~19:38)
 
 **Conv:** ended
 **Machine:** MacMiniM4Pro
@@ -6,19 +6,20 @@
 
 ## Summary
 
-Single CC-infra fix (no code): applied the Conv-457 handoff item — the `guard-dangerous-bash.sh` force-push false positive. Line 68's two independent `has` checks became one scoped regex, so a plain `git push` batched with an unrelated `-f` (e.g. `rm -f .conv-branch`, on every `/r-end`/`/r-commit` push batch) no longer false-fires the force-push guard. Self-tested 9/9 and this conv's own `/r-end` push was the live regression test.
+CC-infra conv (no code). Fixed the *second* `guard-dangerous-bash.sh` false positive — a multi-line `git commit -m` message documenting a guarded command tripped the guard, because the `-m` strip was line-oriented `sed`; replaced with `perl -0777` + escaped-quote-tolerant match, added a 24-assertion calibration test (`d84d9bf`). Then, prompted by the Conv-458 finding having been buried, **retired the carried-findings channel**: `HOPPER.md` is now the single deferred-work channel — `/r-end` routes its own close-surfaced issues there (tagged `(r-end)`), `/r-start` handles open hopper items first via `/r-hopper` (`01de50e`, closes `[REND-HOP]`).
 
 ## Key Context
 
-- **Guard fix is live.** `.claude/hooks/guard-dangerous-bash.sh:68` now scopes the force flag to the push invocation with `[^;|&]*` (must appear after `push`, before the next `;`/`|`/`&`; grep is line-oriented so it can't cross a newline either). Real `git push --force`/`-f`/`--force-with-lease` still BLOCK; unrelated `-f` on a separate segment no longer trips it.
-- **Known limitation, accepted (not fixed).** The guard is a pure string matcher over `.tool_input.command` — it cannot tell a quoted danger-phrase from an executed command, so a self-test whose text contains `git push --force` will trip the guard on its own outer tool call. This deeper data-vs-command class is unaddressed (would need real shell parsing); judged not worth building. Captured in `docs/sessions/2026-09/20260927_1737 Learnings.md` (Learning 1). When self-testing a guard, route danger-strings through a file/base64 or warn first.
-- **Task board unchanged this conv** — no `CURRENT-TASKS.md` rows added/closed. Ordered `## 🎯 Now` top is `[GSN-SPIN]`; the standing NEXT-CONV priority note is `[RHOOKS]` + `[A11Y]` codecheck-warning cleanup.
-- **Conv-457 mechanisms exercised clean:** Step 0.8 hopper gate passed (empty hopper), carried-findings re-carry had nothing to carry (`_None._` in and out). Both still to fire with real content.
+- **Guard: both false-positive classes fixed + pinned.** Conv 458 scoped the force-flag to the push segment (`b138832`); Conv 459 made the commit-message strip multi-line-aware (`d84d9bf`). `guard-dangerous-bash.test.sh` (24 assertions, negative-control-verified) guards both. Residual data-vs-command limitation (a quoted danger-phrase in *any* command trips the guard) remains accepted — no reasonable fix short of a shell parser.
+- **Carried findings retired (Conv 459).** RESUME-STATE no longer has `## 🔬 Carried findings`; it carries this one-line `## 🗃️ Hopper handoff` pointer instead. `/r-end` Step 5 §2 appends close-surfaced issues to `HOPPER.md` **after** Step 0.8 (so they ride to next conv, not bounce the close); `/r-start` Step 7.8 handles the hopper FIRST via `/r-hopper`; the next Step 0.8 gate blocks re-closing until ruled — the forcing function the old note lacked.
+- **This close exercised the new path live:** one `(r-end)`-tagged item placed in the hopper (see below). Step 0.8 passed cleanly on the empty hopper at open.
+- **Investigation (in `.scratch/conv-459-guard-investigation.md`):** peerloop's `deny` list already blocks bare force-push; the guard hook only adds the `git -C … push --force` form. fps has no guard hook at all. peerloop r-end lacks fps's Step 1b currency-sweep — that gap is the hopper item below.
+- Board otherwise unchanged: `## 🎯 Now` top is `[GSN-SPIN]`; standing NEXT-CONV note is `[RHOOKS]` + `[A11Y]`.
 
-## 🔬 Carried findings
+## 🗃️ Hopper handoff
 
-_None._
+1 item placed in HOPPER.md at this close (`(r-end)`-tagged) — **handle FIRST next conv via `/r-hopper`**: port fps r-end's Step 1b currency-sweep to peerloop.
 
 ## Resume Command
 
-To continue: run `/r-start` — it reads `CURRENT-TASKS.md` for the task sequence and this narrative for context.
+To continue: run `/r-start` — it reads `CURRENT-TASKS.md` for the task sequence and this narrative for context; handle the open hopper item first via `/r-hopper`.

@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-09-27 Conv 457 (fps hopper model ported — capture/commitment split + RESUME-STATE kept across conv — §3)
+**Last Updated:** 2026-09-27 Conv 459 (carried findings retired — the hopper is the single deferred-work channel; supersedes the Conv-457 carried-findings portion — §3)
 
 ---
 
@@ -583,6 +583,17 @@ The 4572-line `docs/DECISIONS.md` was split into a `docs/decisions/` folder: ele
 ---
 
 ## 3. Claude Code Workflow
+
+### Carried Findings Are Retired — the Hopper Is the Single Deferred-Work Channel (Conv 459)
+**Date:** 2026-09-27 (Conv 459)
+
+`/r-end` now appends close-surfaced issues to `HOPPER.md` (tagged `- [ ] **Conv NNN (r-end)** — …`) after its Step 0.8 gate, so the item rides to the next conv, with a one-line `## 🗃️ Hopper handoff` pointer in `RESUME-STATE.md`. `/r-start` Step 7.8 was rewritten to handle any open hopper items FIRST via `/r-hopper`, and the next Step 0.8 gate hard-bounces a re-close until they are ruled. The `RESUME-STATE.md § 🔬 Carried findings` channel is retired. Closes `[REND-HOP]`. Committed `01de50e`.
+
+**Rationale:** A Conv-458 r-end finding self-dispositioned to "FYI" reached neither the hopper, the board, nor carried findings and survived only because the user re-raised it. The hopper has a forcing function (git-persistence + the Step 0.8 close-gate) that a RESUME-STATE carried-findings note lacked, and collapsing to one channel removes the "which do I use?" ambiguity that let the finding fall through.
+
+**Supersedes:** the Conv-457 carried-findings portion of "The fps Hopper Model Is Adopted" below — carried findings and the `§ 🔬 Carried findings` channel no longer exist; RESUME-STATE is still kept across the conv (that part of Conv 457 stands).
+
+**See:** `CLAUDE.md` (§Hopper, §Task Persistence); `HOPPER.md`; `.claude/skills/{r-end,r-start,r-hopper}/SKILL.md`; `.claude/scripts/resume-state-check.sh`; `docs/sessions/2026-09/20260927_1938 Decisions.md` §1, `Learnings.md` §3; Conv 459.
 
 ### The fps Hopper Model Is Adopted — Capture (HOPPER.md) Is Split From Commitment (a CURRENT-TASKS.md Row), and RESUME-STATE Is Now Kept Across the Conv (Conv 457)
 **Date:** 2026-09-27 (Conv 457)
