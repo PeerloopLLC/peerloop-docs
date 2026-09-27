@@ -22,11 +22,13 @@ cmd=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' 2>/dev/null)
 # Scan copy. For `git commit`, exclude the message body from the danger scan:
 # a commit message is inert prose and may legitimately quote dangerous-looking
 # phrases (e.g. a message documenting the `wrangler --remote` pattern itself —
-# the Conv 212 false positive). Strip single-arg `-m "..."` / `-m '...'` /
-# `--message=...` ONLY when the command contains `git commit`; everything
-# OUTSIDE the quotes (e.g. a chained `&& wrangler --remote`) is still scanned,
-# so real dangers survive. Single-quoted-arg case only — multi-line/heredoc
-# messages are intentionally out of scope. Conv 213 [SETTINGS-GUARD].
+# the Conv 212 false positive). Strip `-m "..."` / `-m '...'` / `--message=...`
+# ONLY when the command contains `git commit`; everything OUTSIDE the quotes
+# (e.g. a chained `&& wrangler --remote`) is still scanned, so real dangers
+# survive. The strip is MULTI-LINE-aware (Conv 459): the v2 commit format is
+# always a multi-line `-m "..."`, and a message documenting a guarded command
+# (e.g. `git push --force`) used to trip the guard because the old line-oriented
+# `sed` couldn't strip across newlines. Conv 213 [SETTINGS-GUARD]; Conv 459.
 #
 # Git-subcommand detection must tolerate git's GLOBAL options between `git` and
 # the subcommand — most importantly `git -C <path> <sub>`, this project's
@@ -51,14 +53,16 @@ cmd=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' 2>/dev/null)
 GITOPTS='([[:space:]]+(-C|-c)[[:space:]]+[^[:space:]]+|[[:space:]]+--[A-Za-z][A-Za-z-]*(=[^[:space:]]+)?|[[:space:]]+-[A-Za-z])*'
 
 # Scan copy. For `git commit`, exclude the inert message body from the danger
-# scan (single-quoted-arg `-m "..."` / `-m '...'` / `--message=...` only;
-# multi-line/heredoc messages are intentionally out of scope). Everything OUTSIDE
-# the quotes (e.g. a chained `&& wrangler --remote`) is still scanned.
+# scan (`-m "..."` / `-m '...'` / `--message=...`). `perl -0777` slurps the whole
+# command so the strip spans newlines (multi-line v2 messages); the double-quoted
+# pattern `"([^"\\]|\\.)*"` tolerates escaped `\"` and stops at the first UNESCAPED
+# closing quote, so a chained `&& wrangler --remote` after the message is still
+# scanned. Single-quoted shell strings can't contain escapes, so `'[^']*'` (via
+# \x27) suffices there. Conv 459 (was line-oriented sed, Conv 213).
 scan=$cmd
 if printf '%s' "$cmd" | grep -Eiq "\\bgit\\b${GITOPTS}[[:space:]]+commit\\b"; then
-  scan=$(printf '%s' "$cmd" | sed -E \
-    -e 's/(-m|--message)[[:space:]=]+"[^"]*"//g' \
-    -e "s/(-m|--message)[[:space:]=]+'[^']*'//g")
+  scan=$(printf '%s' "$cmd" | perl -0777 -pe \
+    's/(-m|--message)[\s=]+"([^"\\]|\\.)*"//gs; s/(-m|--message)[\s=]+\x27([^\x27\\]|\\.)*\x27//gs')
 fi
 
 # has PATTERN — true if the (scan copy of the) command matches (extended regex, case-insensitive).
