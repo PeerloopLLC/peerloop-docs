@@ -110,6 +110,8 @@ Read **`HOPPER.md`** (docs-repo root).
 
 **On the re-issue:** Steps 0–0.7 re-run (conv still open → proceed), Step 0.8 reads a hopper with no open items → proceeds to Step 1. If new open items arose in the interim it exits again — desired.
 
+**Note (Conv 459):** Step 5 may itself *append* close-surfaced issues to the hopper — **after** this gate, deliberately, so they ride to the next conv (handled first at its `/r-start`) rather than bouncing the current close. This gate reads the hopper only here, at the start; it never re-checks after Step 5's additions. That is by design.
+
 **This is the one deliberate exception to "execute every step":** it is an artefact-free exit — nothing is half-written — so it is not the partial-close failure `/r-end` otherwise forbids. It is a *different* stop from the removed Step 4d pre-commit pause (that asked "anything to act on?"; this refuses to close over un-ruled task capture).
 
 **No open `- [ ]` items → say so in one line and proceed.** There is no batch to clear here — `/r-hopper` deletes each item as it deals with it, so a hopper with no open items is simply done. An empty hopper is a real state, not a skipped step. (Any lingering `- [x]` completed rows are disposed of by `/r-hopper` Step 2, not here — they do not block the close.)
@@ -549,14 +551,14 @@ Display this inline. If the count of changes is zero across both tagged and unta
    - **`✅ ALL TASK-BOARD TESTS PASSED`** → done.
    - **Live-board `ISSUES:`** (dangling / orphan / slug / State-mismatch in the real board) → fix inline per `[EDITSAFE]`; move any body whose `State:` reads done to `## ✅ Done this conv`. **Never delete a queued/parked body** for lack of activity this conv (the normal case). Re-run to confirm green.
    - **A test suite fails** (self-test / lifecycle / detach-lint) → a **tooling/skill regression** (e.g. a Task tool crept back into a frontmatter, an anchor reverted). Surface `🔴🔴🔴` and fix the offending script/skill before committing — do not close the conv on a red suite.
-2. **Carried findings — re-carry the unruled, capture the new, act on neither (Conv 457, ported from fps).** The `## 🔬 Carried findings` section of the RESUME-STATE you are about to write has **two sources**, and the first comes from a file this step is about to overwrite — so do it **now, before step 3**:
+2. **Close-surfaced issues → the hopper (Conv 459, closes `[REND-HOP]`; carried findings retired).** A noteworthy issue the *closing procedure itself* throws off — a stale doc reference noticed while writing the Extract, a task row that contradicts itself, a limitation realised mid-close — is **appended to `HOPPER.md`'s `## Open`** as a one-line `- [ ]`, and **acted on by nothing here** (no board row, no fix). This replaces the old `RESUME-STATE.md § 🔬 Carried findings` channel, which had no forcing function (a re-carried note could be — and was, Conv 458 — quietly dropped). The hopper does: it is git-tracked/persistent, the next `/r-start` handles it **first thing** (Step 7.8) via `/r-hopper`, and the next `/r-end`'s Step 0.8 gate refuses to close again until it is ruled.
 
-   - **2a — Re-carry anything left unruled.** 🔴 **Read the *outgoing* `RESUME-STATE.md` now, before step 3 overwrites it.** In its `## 🔬 Carried findings` section, every bullet **without** a `✔ **ruled:**` prefix was never ruled at this conv's `/r-start` — carry it into the new section verbatim, appending `(re-carried from Conv {prev})`. Drop the `✔ **ruled:**` ones; they are decided and the Extract holds the outcome. **Do not judge whether a re-carried finding still matters** — that is a ruling, and rulings are the user's, at `/r-start`. This moves text. If a bullet's marker is missing because `/r-start` forgot to annotate, re-carry it anyway (re-carrying a decided finding costs one line; dropping an undecided one is silent and permanent). Nothing to re-carry (no prior file — e.g. `/r-start` deleted it pre-Conv-457 — no section, `_None._`, or every bullet ruled) → say so in one line.
-   - **2b — Capture findings that arose *during this r-end run*.** A stale doc reference noticed while writing the Extract, a task row that contradicts itself — things the *closing procedure itself* threw off, which could not reach the hopper (its gate, Step 0.8, already passed and there is no re-check after). They go into the same section and are **acted on by nothing here** — no board row, no fix, no hopper entry. Their ruling point is the next `/r-start`. Findings from the *work being closed* took their ruling in the hopper before Step 0.8; do not route those here.
+   - **Capture format** matches the hopper, with an `(r-end)` tag marking it close-surfaced (so the next conv handles it first): `- [ ] **Conv {NNN} (r-end)** — <subject>`. Append under `## Open`, replacing the `_None._` placeholder if it is the only content there.
+   - **This happens *after* Step 0.8, deliberately** — so a finding the close throws off rides to the next conv rather than bouncing *this* close. r-end never re-checks the hopper after Step 0.8; that is by design, not a gap.
+   - **Findings from the *work being closed*** already took their ruling in the hopper **before** Step 0.8 — do not re-route those here.
+   - **Nothing noteworthy surfaced during the close → append nothing, say so in one line.** (The hopper cannot already hold `- [ ]` items at this point — Step 0.8 would have bounced this close if it did.)
 
-   Write `_None._` into the section when both halves are empty.
-
-3. **Write `RESUME-STATE.md`** in the docs repo root. Task data lives in `CURRENT-TASKS.md`; RESUME-STATE is the per-conv **narrative** handoff — plus the `## 🔬 Carried findings` section from step 2. 🔴 **It is KEPT, not deleted, by the next `/r-start`** (Conv 457) — that `/r-start` consumes its summary, rules its carried findings in place, and leaves the file readable all conv; only this step overwrites it. **Keep the `Branch` line** — `conv-branch-check.sh` + `[RSTART-DIFFGATE]` depend on it. Format:
+3. **Write `RESUME-STATE.md`** in the docs repo root. Task data lives in `CURRENT-TASKS.md`; RESUME-STATE is the per-conv **narrative** handoff — plus a one-line `## 🗃️ Hopper handoff` pointer noting how many items step 2 placed in `HOPPER.md` (a signpost, never a copy — the items live in the hopper). 🔴 **It is KEPT, not deleted, by the next `/r-start`** (Conv 457) — that `/r-start` consumes its summary and leaves the file readable all conv; only this step overwrites it. **Keep the `Branch` line** — `conv-branch-check.sh` + `[RSTART-DIFFGATE]` depend on it. Format:
 
 ```markdown
 # State — Conv {NNN} ({YYYY-MM-DD} ~{HH:MM})
@@ -573,16 +575,16 @@ Display this inline. If the count of changes is zero across both tagged and unta
 
 {Critical knowledge needed to resume — decisions, gotchas, file paths, workarounds. For the task backlog, point at `CURRENT-TASKS.md`; do NOT re-list pending tasks here.}
 
-## 🔬 Carried findings
+## 🗃️ Hopper handoff
 
-{From step 2 — re-carried unruled findings + findings that arose during this r-end. Each a `- [ ]` bullet; the next `/r-start` rules each and annotates it `✔ **ruled:** <disposition>` in place. `_None._` when empty. NOT the hopper (spin-offs during work go to `HOPPER.md`); this is only for findings the *close itself* surfaced.}
+{One-line pointer from step 2, NOT a copy: e.g. `2 item(s) placed in HOPPER.md at this close — handle FIRST next conv via /r-hopper.` or `_No items placed this close._` The items themselves live in `HOPPER.md`; this line only signposts that the next `/r-start` should look. (Carried findings retired Conv 459 — the hopper is the single deferred-work channel.)}
 
 ## Resume Command
 
 To continue: run `/r-start` — it reads `CURRENT-TASKS.md` for the task sequence and this narrative for context.
 ```
 
-4. Note `State Saved ✅ (CURRENT-TASKS.md validated; RESUME-STATE.md narrative + carried findings written)`
+4. Note `State Saved ✅ (CURRENT-TASKS.md validated; RESUME-STATE.md narrative + hopper-handoff pointer written; N close-surfaced issue(s) placed in HOPPER.md)`
 
 ### Step 5c: Regenerate generated docs (deterministic gate)
 
@@ -762,7 +764,7 @@ If any agent failed, replace its ✅ with ⚠️ and note the failure below the 
 - **HALT if no active conv** — `.conv-current` must exist
 - **HALT on push failure** — do not report success if either push fails
 - **Step 0.8 hopper gate: signal-and-exit on any open `- [ ]` in `HOPPER.md`** — before any file is written; hand back to `/r-hopper` + re-issue `/r-end`. This is the one artefact-free exception to "execute every step" (Conv 457).
-- **Carried findings are handled at Step 5 (before RESUME-STATE is overwritten)** — re-carry unruled bullets from the outgoing file, capture findings the close itself surfaced, act on neither; the next `/r-start` rules them. `/r-start` now KEEPS RESUME-STATE, it does not delete it (Conv 457).
+- **Close-surfaced issues go to `HOPPER.md` at Step 5, not a carried-findings list (Conv 459 — carried findings retired).** Append each as `- [ ] **Conv NNN (r-end)** — …` under `## Open` (this is *after* Step 0.8, so it doesn't bounce this close), and record a one-line `## 🗃️ Hopper handoff` pointer in RESUME-STATE. The next `/r-start` handles them **first thing** via `/r-hopper`, and the next Step 0.8 gate blocks re-closing until they're ruled — the forcing function the old silent note lacked. `/r-start` KEEPS RESUME-STATE, it does not delete it (Conv 457).
 - **Extract MUST be on disk before dispatching agents** — agents read it from the filesystem
 - **Conv-scoped scratch notes are COLLECT inputs** — Step 2 globs `.scratch/conv-<NNN>-*.md` (padded conv number) and folds them into the Extract; this is how decisions/learnings survive a mid-conv `/compact`
 - **All 3 agents launch in one message** — parallel execution, no sequencing

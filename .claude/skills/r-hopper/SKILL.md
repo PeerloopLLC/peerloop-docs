@@ -79,5 +79,6 @@ After a full pass the hopper holds only genuinely-open items — which is none �
 ## Notes
 
 - **Run it whenever.** Hopper items are dealt with *during* the conv, as they come up or at a natural break — this skill is how. It is also what the `/r-end` Step 0.8 hopper gate hands back to: deal with the open items here, then re-issue `/r-end`.
+- **`(r-end)`-tagged items are close-surfaced (Conv 459).** A `- [ ] **Conv NNN (r-end)** — …` item was placed by the previous `/r-end` from an issue its own close threw off; `/r-start` Step 7.8 surfaces these to be handled **first thing** next conv. Rule them like any other open item (promote / do-now / drop) — the tag just says why they're here and that they have priority.
 - **`- [x]` is tolerated, never created.** `/r-hopper` never leaves a tick when *it* deals with an item — it deletes the line — but a completed row arriving from outside the flow is disposed of at Step 2. The durable record is the conv Extract and the board, not a line left in the hopper.
 - **Nothing is optional-by-omission.** An empty hopper is stated in one line, not skipped silently.

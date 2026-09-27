@@ -1,6 +1,6 @@
 ---
 name: r-start
-description: Start a new conversation — check repos clean, pull both, increment conv, push, rule any carried findings + report hopper leftovers, then resume
+description: Start a new conversation — check repos clean, pull both, increment conv, push, handle any open hopper items FIRST via /r-hopper, then resume
 argument-hint: ""
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 ---
@@ -311,7 +311,7 @@ Idempotent — re-running on an already-reset block reproduces the placeholder. 
 
 🔴 **`RESUME-STATE.md` is KEPT, not deleted.** (Changed Conv 457 with the hopper/carried-findings port — before that, `/r-start` deleted it here.) Reading it at Step 8 consumes its *summary*, not its detail — the file stays on disk and readable for the whole conv, because the thing you need from it is usually noticed hours after the resume display, and Step 8's two-or-three sentences are deliberately not a substitute. **Only `/r-end` Step 5 overwrites it**, at the close.
 
-It holds Summary / Key Context / **Branch** (no task data — task state lives in `CURRENT-TASKS.md`) **plus a `## 🔬 Carried findings` section** — findings the previous `/r-end` surfaced during its own close and could not act on. Those are ruled at **Step 7.8** below. Do not delete or edit the file here beyond that ruling's in-place annotation.
+It holds Summary / Key Context / **Branch** (no task data — task state lives in `CURRENT-TASKS.md`) **plus a one-line `## 🗃️ Hopper handoff` pointer** — noting how many close-surfaced issues the previous `/r-end` placed in `HOPPER.md`. Those live in the hopper and are handled at **Step 7.8** below via `/r-hopper` (carried findings retired Conv 459 — the hopper is the single deferred-work channel). Do not edit RESUME-STATE here.
 
 (This is spt's rule, learned the expensive way: deleting-the-file-on-read for ~300 convs also pinned a stale-conv check permanently false, because the condition was evaluated downstream of the step that guaranteed its answer.)
 
@@ -335,7 +335,7 @@ Write the header + a first entry for this `/r-start` run (newest-first ordering 
 
 ## Turn 1
 **Q:** /r-start
-**A:** {one-line terse summary of this /r-start run — counter increment + push, CURRENT-TASKS.md task board surfaced, any carried findings ruled / hopper leftovers reported, and the recommended-action question asked at the end}
+**A:** {one-line terse summary of this /r-start run — counter increment + push, CURRENT-TASKS.md task board surfaced, any open hopper items raised for /r-hopper (handled first), and the recommended-action question asked at the end}
 ```
 
 Thereafter, **at the end of every turn**, prepend a new `## Turn N` entry per the CLAUDE.md rule (question in full, reply terse). Note it in one line:
@@ -344,21 +344,18 @@ Thereafter, **at the end of every turn**, prepend a new `## Turn N` entry per th
 🌀 Seeded .scratch/conv-turns.md — turn-by-turn Q/A re-orientation log (keep open in VS Code).
 ```
 
-### Step 7.8: Rule carried findings + report hopper leftovers (Conv 457 — interior stop, only if present)
+### Step 7.8: Handle the hopper FIRST (Conv 459 — interior stop, only if open items)
 
-Two independent inputs, both from *unclean or deferred* prior state. Handle whichever is present; if **both** are empty, say so in one line and go to Step 8. When either is present, this is an **interior stop** — rule/report it, then proceed to Step 8's recommended action (a separate turn is fine).
+Read `HOPPER.md`'s `## Open`. The hopper is now the **single** deferred-work channel: it holds both mid-work spin-offs **and** the close-surfaced issues the previous `/r-end` placed here (tagged `(r-end)`). Carried findings are retired (Conv 459) — there is no `RESUME-STATE.md § 🔬 Carried findings` to rule anymore.
 
-**A) Carried findings** — read `RESUME-STATE.md`'s `## 🔬 Carried findings` section. These arose *during the previous `/r-end`* and were deliberately not acted on then. **This is where they are meant to be ruled.**
+- 🔴 **Any open `- [ ]` item → this is the FIRST thing to do this conv, before Step 8's board recommendation.** Lead with dealing with them via **`/r-hopper`** — do not defer them under a task, do not absorb them silently, do not rule them here (`/r-hopper` rules each: promote / do-now / drop, one at a time, never alone).
+- **Report the count + a one-line summary of each**, distinguishing:
+  - **`(r-end)`-tagged** items — close-surfaced by the previous conv and deliberately handed forward; the user asked that these be **handled first thing** (Conv 459). Normal, expected state.
+  - **untagged** items — mid-work spin-offs still open; if a whole prior conv's worth are here it *additionally* suggests that conv didn't close cleanly (a session died, or `/r-end` was never run).
+- ⚠️ **Re-verify a finding's premises before it is ruled** — a close-surfaced issue preserved the question, not proof it still holds.
+- **No open items → say so in one line and go to Step 8.**
 
-- For **each** unruled `- [ ]` bullet, one at a time (§User-Facing Questions — show the finding + what a ruling would decide, then A/B/C): **A) promote** to a `CURRENT-TASKS.md` row · **B) do it now** · **C) drop it**. Same criterion as the hopper: *a new task has to earn its place — significant work, or multi-conv.* 🔴 **Never rule alone.**
-- ⚠️ **Re-verify before ruling a `(re-carried from Conv NNN)` finding** — re-carrying preserved the question, not its premises.
-- 🔴 **Annotate each bullet in place as it is ruled** — prefix it `✔ **ruled:** <disposition>` (`promoted to [CODE]` · `done now` · `dropped`). This is the only write `/r-start` makes to that file; the bullet text stays, so the file stays readable all conv. **The marker is load-bearing:** `/r-end` Step 5 re-carries every bullet that *lacks* it — skip the annotation and a ruled finding gets re-carried as noise.
-- Section says `_None._` or is absent → say so in one line.
-
-**B) Hopper leftovers** — read `HOPPER.md`'s `## Open`. Do **not** hydrate it from the board; it is for spin-offs found *during* a conv, and `/r-end`'s Step 0.8 gate blocks any close that leaves open items.
-
-- 🔴 **So open items here mean the previous conv did not close cleanly** — a session died, or `/r-end` was never run. They are not this conv's findings and were never ruled. **Report them; do not absorb them silently.** Ask whether to deal with them now (`/r-hopper`) or leave them for this conv's `/r-end` (which will then bounce until they are ruled). Under a per-session hopper this state was unreachable — the file made it visible.
-- No open items → say so in one line.
+This makes the recommended next action at Step 8 conditional: **open hopper items ⇒ the recommendation is `/r-hopper` first**, ahead of any `CURRENT-TASKS.md` task (see Step 8).
 
 ### Step 8: Resume work context (inline)
 
@@ -384,11 +381,8 @@ Present the current work position and recommended next action. This step uses pr
 **Active conv (.conv-current):**
 !`test -f .conv-current && echo "$(cat .conv-current)" || echo "(none)"`
 
-**Hopper open items (Step 7.8-B input — non-empty means the prior conv didn't close cleanly):**
+**Hopper open items (Step 7.8 input — handle FIRST via /r-hopper; `(r-end)`-tagged = close-surfaced by the previous `/r-end`):**
 !`awk '/^## /{o=($0=="## Open")} o&&/^- \[ \]/' ~/projects/peerloop-docs/HOPPER.md 2>/dev/null | grep . || echo "(clear)"`
-
-**Carried findings in RESUME-STATE.md (Step 7.8-A input — unruled `- [ ]` bullets to rule):**
-!`awk '/^## /{c=($0=="## 🔬 Carried findings")} c&&/^- \[ \]/' ~/projects/peerloop-docs/RESUME-STATE.md 2>/dev/null | grep . || echo "(none)"`
 
 **RESUME-STATE.md (narrative handoff — Summary / Key Context / Branch):**
 !`cat RESUME-STATE.md 2>/dev/null || echo "(no resume state file)"`
@@ -464,7 +458,7 @@ Present in this format:
 
 📋 Next Planned: BLOCKNAME - [Block Name]
 
-🗃️  Hopper: {clear · or N open — prior conv didn't close cleanly, see Step 7.8}   Carried findings: {none · or N to rule}
+🗃️  Hopper: {clear · or N open — handle FIRST via /r-hopper, see Step 7.8 (N `(r-end)`-tagged = close-surfaced last conv)}
 
 ─────────────────
 💡 Quick Context
@@ -487,7 +481,8 @@ Present in this format:
 - Keep context brief but sufficient to resume without reading entire PLAN.md
 - The forward-looking **task sequence** comes from `CURRENT-TASKS.md § 🎯 Now` (top = next); `RESUME-STATE.md` supplies **narrative context only** (post-cutover it no longer holds task data)
 - Incorporate `RESUME-STATE.md`'s narrative context (Summary / Key Context). (Multi-block consolidation was retired Conv 457 — `/r-end` writes a single block; a stray pre-cutover multi-block file is just read as history.)
-- **Recommended Action MUST be the last section** — it ends with a bold Yes/No question (`**Start [TASK-CODE] now? (yes / no)**`) on its own line so the user knows Claude is waiting for input. HALT after asking. Do not begin work until the user answers.
+- **Hopper first (Conv 459).** If Step 7.8 found **open hopper items**, the Recommended Action is to run **`/r-hopper`** — ahead of any `CURRENT-TASKS.md` task — and the closing question is `**Deal with the hopper now (/r-hopper)? (yes / no)**`. `(r-end)`-tagged items especially were handed forward to be handled first. Only when the hopper is **clear** does the recommendation come from `CURRENT-TASKS.md § 🎯 Now` with `**Start [TASK-CODE] now? (yes / no)**`.
+- **Recommended Action MUST be the last section** — it ends with a bold Yes/No question on its own line so the user knows Claude is waiting for input. HALT after asking. Do not begin work until the user answers.
 
 ---
 

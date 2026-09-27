@@ -1,7 +1,8 @@
 #!/bin/bash
 # Check if RESUME-STATE.md exists and show its state header.
-# RESUME-STATE.md carries narrative (Summary / Key Context / Branch) + a
-# `## 🔬 Carried findings` list (Conv 457); no task data — the backlog lives in
+# RESUME-STATE.md carries narrative (Summary / Key Context / Branch) + a one-line
+# `## 🗃️ Hopper handoff` pointer (Conv 459 — close-surfaced issues go to HOPPER.md,
+# carried findings retired); no task data — the backlog lives in
 # CURRENT-TASKS.md. Since Conv 457 it is KEPT across the conv (not deleted at
 # /r-start), so it normally EXISTS mid-conv. This probe only surfaces the header
 # line; it never inspected task sections, so it needs no change.
