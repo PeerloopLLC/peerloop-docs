@@ -1,4 +1,4 @@
-# State — Conv 457 (2026-09-27 ~17:15)
+# State — Conv 458 (2026-09-27 ~17:37)
 
 **Conv:** ended
 **Machine:** MacMiniM4Pro
@@ -6,16 +6,14 @@
 
 ## Summary
 
-CC skill-workflow infra conv (no code). Removed the r-end pre-commit interactive pause (Step 4d), then ported the fps "hopper" task-management model to peerloop: a git-tracked `HOPPER.md` for friction-free mid-work spin-off capture, a new `/r-hopper` ruling skill, an `/r-end` Step 0.8 gate that hard-bounces the close on any open hopper item, and the `RESUME-STATE § 🔬 Carried findings` channel — which required flipping `/r-start` to KEEP RESUME-STATE across the conv instead of deleting it. Two commits: `55e936e` (port) + this end-of-conv bookkeeping.
+Single CC-infra fix (no code): applied the Conv-457 handoff item — the `guard-dangerous-bash.sh` force-push false positive. Line 68's two independent `has` checks became one scoped regex, so a plain `git push` batched with an unrelated `-f` (e.g. `rm -f .conv-branch`, on every `/r-end`/`/r-commit` push batch) no longer false-fires the force-push guard. Self-tested 9/9 and this conv's own `/r-end` push was the live regression test.
 
 ## Key Context
 
-- **Hopper is live (Conv 457).** Spin-offs during work → `HOPPER.md` (one-line `- [ ]`, no-ask capture); rule via `/r-hopper` (promote / do-now / drop); a task must *earn* a `CURRENT-TASKS.md` row. `/r-end` Step 0.8 **bounces the close** if the hopper has open items. CLAUDE.md §Hopper is the standing rule.
-- **RESUME-STATE lifecycle flipped.** `/r-start` now **KEEPS** this file (no longer deletes it at Step 7.6); it carries `## 🔬 Carried findings` (findings the *close itself* surfaces), ruled at the next `/r-start` Step 7.8 with in-place `✔ **ruled:**` annotation; `/r-end` Step 5 re-carries unruled ones then overwrites the file.
-- **The two new mechanisms have not fired live yet** — this conv closed happy-path (empty hopper, no outgoing RESUME-STATE). Step 0.8 bounce + carried-findings re-carry first exercise **next** conv. The `/r-hopper` dry-run confirmed the wiring.
-- **New task `[REND-HOP]`** (queued): let `/r-end` route its own close-surfaced findings into `HOPPER.md` instead of only carried-findings (r-end does no hopper re-check after Step 0.8). User-deferred.
-- **r-end Step 4d** header + Purpose prose still say "pause" though the interactive pause is gone — left intentionally; a further revision is planned.
-- Pre-existing NEXT-CONV note in `CURRENT-TASKS.md` (`[RHOOKS]`+`[A11Y]` codecheck-warning cleanup) still stands; the ordered `## 🎯 Now` top is `[GSN-SPIN]`.
+- **Guard fix is live.** `.claude/hooks/guard-dangerous-bash.sh:68` now scopes the force flag to the push invocation with `[^;|&]*` (must appear after `push`, before the next `;`/`|`/`&`; grep is line-oriented so it can't cross a newline either). Real `git push --force`/`-f`/`--force-with-lease` still BLOCK; unrelated `-f` on a separate segment no longer trips it.
+- **Known limitation, accepted (not fixed).** The guard is a pure string matcher over `.tool_input.command` — it cannot tell a quoted danger-phrase from an executed command, so a self-test whose text contains `git push --force` will trip the guard on its own outer tool call. This deeper data-vs-command class is unaddressed (would need real shell parsing); judged not worth building. Captured in `docs/sessions/2026-09/20260927_1737 Learnings.md` (Learning 1). When self-testing a guard, route danger-strings through a file/base64 or warn first.
+- **Task board unchanged this conv** — no `CURRENT-TASKS.md` rows added/closed. Ordered `## 🎯 Now` top is `[GSN-SPIN]`; the standing NEXT-CONV priority note is `[RHOOKS]` + `[A11Y]` codecheck-warning cleanup.
+- **Conv-457 mechanisms exercised clean:** Step 0.8 hopper gate passed (empty hopper), carried-findings re-carry had nothing to carry (`_None._` in and out). Both still to fire with real content.
 
 ## 🔬 Carried findings
 

@@ -40,6 +40,14 @@ cmd=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' 2>/dev/null)
 # repeated, then the subcommand — stopping at any non-option word so it can't
 # span a `;`/`&&` boundary. Conv 213 (commit strip) + Conv 214 [GUARD-VERIFY]
 # (git -C tolerance; push rule).
+#
+# The force-push rule (below) scopes the force flag to the push invocation with
+# `[^;|&]*` — it must appear AFTER `push` and BEFORE the next command separator.
+# The prior form ran two independent `has` checks over the whole string ("is
+# there a git push?" AND "is there a force flag?"), so any compound command
+# pairing a plain `git push` with an unrelated `-f` (e.g. `rm -f .conv-branch`,
+# on essentially every /r-end and /r-commit push batch) false-fired the guard.
+# grep is line-oriented, so `[^;|&]` also can't cross a newline. Conv 458.
 GITOPTS='([[:space:]]+(-C|-c)[[:space:]]+[^[:space:]]+|[[:space:]]+--[A-Za-z][A-Za-z-]*(=[^[:space:]]+)?|[[:space:]]+-[A-Za-z])*'
 
 # Scan copy. For `git commit`, exclude the inert message body from the danger
@@ -65,7 +73,7 @@ elif has '\bcurl\b' && has '((^|[[:space:]])-X[[:space:]]*(POST|PUT|DELETE|PATCH
   reason="Outbound write via curl (POST/PUT/DELETE/PATCH or --data) to an external service."
 elif has '(DROP[[:space:]]+(TABLE|INDEX|VIEW|TRIGGER)|TRUNCATE[[:space:]]+TABLE|DELETE[[:space:]]+FROM)'; then
   reason="Destructive SQL (DROP/TRUNCATE/DELETE FROM) — confirm the target database first."
-elif has "\\bgit\\b${GITOPTS}[[:space:]]+push\\b" && has '(--force\b|--force-with-lease\b|(^|[[:space:]])-f([[:space:]]|$))'; then
+elif has "\\bgit\\b${GITOPTS}[[:space:]]+push\\b[^;|&]*(--force\\b|--force-with-lease\\b|[[:space:]]-f([[:space:]]|\$))"; then
   reason="Force push rewrites remote history (also denied for the bare form; this catches the git -C … form deny prefixes miss)."
 elif has '\blsof\b' && has '\b(kill|pkill|killall)\b'; then
   reason="Port-based process kill (lsof + kill). lsof -ti:PORT returns EVERY process on that port — including the user's Chrome (verified Conv 429: pid was Chrome's NetworkService, not the server) and any pre-existing dev server this session did not start (Conv 393). Use \`npx astro dev stop\` (reads .astro/dev.json, kills only this project's pid)."
