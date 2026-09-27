@@ -79,7 +79,7 @@ Before reviewing changes, run the task-board test suite (~1s) — it validates t
 
 Read the pre-computed **Code-branch guard** line. It compares the code repo's live branch against `.conv-branch` — the branch `/r-start` Step 5.6 validated and recorded for **this** conv.
 
-**This gate exists because Conv 371 committed to `brian-July-7`** (the client's experimental branch, checked out externally *mid-conv*) before anyone noticed. `[RSTART-DIFFGATE]` can't catch that — it only runs at `/r-start`, before the drift happens. Do **not** substitute `conv-branch-check.sh` here: it reads `RESUME-STATE.md`, which `/r-start` Step 7.6 **deletes**, so mid-conv it always returns `NO-RESUME-STATE` and would green-light every commit.
+**This gate exists because Conv 371 committed to `brian-July-7`** (the client's experimental branch, checked out externally *mid-conv*) before anyone noticed. `[RSTART-DIFFGATE]` can't catch that — it only runs at `/r-start`, before the drift happens. Do **not** substitute `conv-branch-check.sh` here: it reads `RESUME-STATE.md`, which reflects the *previous* conv's branch (Conv 457: `/r-start` now **keeps** RESUME-STATE rather than deleting it) — not the branch *this* conv validated. `.conv-branch` (written by `/r-start` Step 5.6) is this conv's authoritative branch and is what this gate compares against.
 
 Branch on the verdict:
 
@@ -209,7 +209,7 @@ The `/r-timecard-day2` parser evaluates each H4 section's inclusion predicate in
 - `docs/sessions/**` (Extract / Learnings / Decisions)
 - `PLAN.md`, `plan/COMPLETED.md`, `TIMELINE.md`
 - `DECISIONS.md`, `DOC-DECISIONS.md`, `docs/decisions/**`
-- `RESUME-STATE.md`, `CURRENT-TASKS.md`, `CONV-INDEX.md`, `SESSION-INDEX.md`
+- `RESUME-STATE.md`, `CURRENT-TASKS.md`, `HOPPER.md`, `CONV-INDEX.md`, `SESSION-INDEX.md`
 
 Mentions of these files in any bullet are filtered out by the timecard's `routineStrip` filter, so you don't need to avoid mentioning them — just don't create a `### Doc Changes` bullet whose only content is one of these files.
 

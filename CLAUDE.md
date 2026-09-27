@@ -92,7 +92,7 @@ For the §Uncategorized section in `/r-end` extracts, use orange:
 
 **Do NOT use these for expected behavior or status updates** — only for genuinely actionable findings during work that is focused on something else.
 
-**Never silently skip a discovered issue.** Write anything unresolved **into `CURRENT-TASKS.md`** (a `### [CODE]` body + a `## 🎯 Now` line — a file edit is as verifiable as the old tool call was), and give **every** 🔴/🟠 alert an explicit disposition + owner (resolved now / task `[CODE]` / your-call / FYI) — not a vague "handle at /r-end" promise. See `docs/reference/memory-archive/feedback_surface_and_track_all_issues.md`.
+**Never silently skip a discovered issue.** Anything unresolved gets captured immediately — **default to `HOPPER.md`** (a one-line `- [ ]` spin-off capture, no ruling, no asking; see §Hopper) so it survives the session and gets ruled later via `/r-hopper`. Promote **straight to `CURRENT-TASKS.md`** (a `### [CODE]` body + a `## 🎯 Now` line) only when it's already clearly a durable, board-worthy task — the hopper's "earn a row" test applied on the spot. Either way a file edit is as verifiable as the old tool call was, and **every** 🔴/🟠 alert still gets an explicit disposition + owner (resolved now / hopper / task `[CODE]` / your-call / FYI) — not a vague "handle at /r-end" promise. See `docs/reference/memory-archive/feedback_surface_and_track_all_issues.md`.
 
 ## User-Facing Questions
 
@@ -175,8 +175,16 @@ Work is tracked as **Conv** numbers (replacing Sessions, which ended at 393); sa
 
 ## Task Persistence
 
-- **All task state lives in git-tracked `CURRENT-TASKS.md`** (docs-repo root), NOT RESUME-STATE ([CURTASKS], Conv 351; Task-tool detach Conv 406). `RESUME-STATE.md` is narrative-only. **Write-through, not tool-overlay** — the Task subsystem (`TaskCreate`/`TaskList`/`TaskUpdate`/`TodoWrite`) is server-gated OFF for this model (see `[TASK-TOOLS-VERIFY]`), so **edit `CURRENT-TASKS.md` directly** the moment a task changes: bodies live under `## Tasks` (alphabetical, never move); a `## 🎯 Now` TOC carries execution order (top = next) and `## ⏸️ Parked` carries gated items. Reprioritise/start/park by editing a TOC line + the body's `State:` bullet; complete by deleting the body and adding a line to `## ✅ Done this conv`. A file edit is as verifiable as a tool call — the forcing-function survives. `/r-update-tasks` / `/r-commit` / `/r-end` just re-tidy the file; crash recovery = re-read it. Detail in `docs/reference/memory-archive/feedback_current_tasks_persistence.md`.
+- **All task state lives in git-tracked `CURRENT-TASKS.md`** (docs-repo root), NOT RESUME-STATE ([CURTASKS], Conv 351; Task-tool detach Conv 406). `RESUME-STATE.md` is narrative + a `## 🔬 Carried findings` list (findings the close itself surfaced); it is **kept across the conv and overwritten only by `/r-end`** (Conv 457 — no longer deleted at `/r-start`). **Write-through, not tool-overlay** — the Task subsystem (`TaskCreate`/`TaskList`/`TaskUpdate`/`TodoWrite`) is server-gated OFF for this model (see `[TASK-TOOLS-VERIFY]`), so **edit `CURRENT-TASKS.md` directly** the moment a task changes: bodies live under `## Tasks` (alphabetical, never move); a `## 🎯 Now` TOC carries execution order (top = next) and `## ⏸️ Parked` carries gated items. Reprioritise/start/park by editing a TOC line + the body's `State:` bullet; complete by deleting the body and adding a line to `## ✅ Done this conv`. A file edit is as verifiable as a tool call — the forcing-function survives. `/r-update-tasks` / `/r-commit` / `/r-end` just re-tidy the file; crash recovery = re-read it. Detail in `docs/reference/memory-archive/feedback_current_tasks_persistence.md`.
 - **Every task code is a unique 2–3-letter bracket** — every task's `### [CODE]` heading + `## 🎯 Now`/`## ⏸️ Parked` line uses a mnemonic `[CODE]` (e.g. `[PL]`); the user references tasks by that code. Collisions get a numeric suffix (`[GE]`→`[GE2]`). See `docs/reference/memory-archive/feedback_todowrite_mnemonic_codes.md`.
+
+## Hopper (`HOPPER.md`)
+
+**Mid-work spin-off capture** (docs-repo root, git-tracked; ported from fps, Conv 457). A finding that surfaces *while doing something else* and isn't worth stopping for lands in `HOPPER.md` **immediately, as a one-line `- [ ]`, without asking** — capture is friction-free and survives a session death. It is **convenience capture, not a commitment**: `CURRENT-TASKS.md` is the durable board, and a hopper item must **earn** a row there (significant, or multi-conv). Most items are dealt with the same conv and never become rows.
+
+- **Ruling is `/r-hopper`'s job, not capture's.** Run `/r-hopper` mid-conv (or at a natural break) to walk each open item and rule it one at a time — **promote to a board row · do it now · drop** — clearing each line the instant it is ruled. 🔴 **Never rule alone.**
+- **`/r-end` refuses to close over open items** (its Step 0.8 gate): any `- [ ]` in `HOPPER.md` bounces the close back to `/r-hopper`. Deal with the hopper *before* `/r-end`.
+- **Not the same as carried findings.** The hopper is for spin-offs during *work*; `RESUME-STATE.md § 🔬 Carried findings` is for findings the *close itself* (`/r-end`) surfaced, ruled at the next `/r-start`.
 
 ## Test Suite Workflow
 

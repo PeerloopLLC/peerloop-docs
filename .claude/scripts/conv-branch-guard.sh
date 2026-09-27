@@ -5,17 +5,15 @@
 # ── Why this exists, and why it is NOT conv-branch-check.sh ───────────────────
 # `conv-branch-check.sh` ([RSTART-DIFFGATE], Conv 297) guards /r-START: it compares
 # the code branch against the branch recorded in the PREVIOUS conv's RESUME-STATE.md.
-# It cannot be reused at commit time, for two independent reasons:
-#
-#   1. RESUME-STATE.md DOES NOT EXIST mid-conv. /r-start Step 7.6 deletes it once its
-#      narrative is consumed; /r-end Step 5 only regenerates it at the very end. So
-#      for the entire middle of a conv — exactly when /r-commit runs — that script
-#      returns `NO-RESUME-STATE` and skips silently. Verified live, Conv 395. Wiring
-#      it into /r-commit would yield a guard that reports clean on every commit.
-#   2. It answers the WRONG QUESTION. RESUME-STATE describes the PREVIOUS conv. The
-#      Conv 371 failure was a branch swapped MID-CONV by an external checkout
-#      (client's `brian-July-7`), committed to before anyone noticed. No comparison
-#      against last conv's branch can catch that.
+# It cannot be reused at commit time: it answers the WRONG QUESTION. RESUME-STATE
+# describes the PREVIOUS conv — and since Conv 457 it PERSISTS mid-conv (no longer
+# deleted at /r-start Step 7.6), so wiring conv-branch-check.sh into /r-commit would
+# silently compare the live branch against LAST conv's recorded branch, not this
+# one's. The Conv 371 failure was a branch swapped MID-CONV by an external checkout
+# (client's `brian-July-7`), committed to before anyone noticed; no comparison
+# against last conv's branch can catch that.
+# (Pre-Conv-457 there was a second reason — RESUME-STATE didn't exist mid-conv, so
+# the script just returned NO-RESUME-STATE — now obsolete since the file persists.)
 #
 # This guard instead compares live HEAD against `.conv-branch` — the branch /r-start
 # Step 5.6 ALREADY VALIDATED this conv and now records (ephemeral, gitignored,

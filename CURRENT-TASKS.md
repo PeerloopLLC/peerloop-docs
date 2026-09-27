@@ -924,8 +924,4 @@
 
 ## ✅ Done this conv
 
-- **[MEM-RETIRE]** Retired the MEMORY.md auto-memory system (Conv 456): 101 detail files → `docs/reference/memory-archive/` (git-tracked, on-demand); index folded into CLAUDE-OFFLOAD.md § Situational Notes Archive; MEMORY.md + live memory dir + `.claude/memory-sync/` mirror deleted; all skills/scripts gutted of memory reads (`r-prune-memory` deleted; `r-coherence-check` repointed to CLAUDE.md↔CLAUDE-OFFLOAD.md↔archive; sync steps removed from r-start/r-commit/r-end); CLAUDE.md §Memory now forbids re-creating any memory file.
-- **[MEM-PRUNE]** Closed — obsolete (MEMORY.md auto-load cap watch; no MEMORY.md exists).
-- **[RSYNC-GATE]** Closed — obsolete (memory-sync mirror→live rsync auto-mode block; no memory sync exists).
-- **[CLAUDE-PRUNE]** Currency + terseness pass on CLAUDE.md and CLAUDE-OFFLOAD.md driven by `/r-coherence-check --deep` (Conv 456): dropped the retired AskUserQuestion directive for A/B (Conv 438), the dead "branch mirror" phrase, the stale Key Metrics table, and PlugNmeet (BBB is sole video provider); culled 9 dead archive-index entries + `git rm`'d their files (memory-mirror/dir/sync, pre-flip worktree, `/old` route-migration era); fixed 2 live dangling refs the Conv 456 sweep missed (`[PREFLIP-ALIAS]` task, `r-quiet-mode` step 5).
-- **[PROV-BRIAN]** Recorded the governance decision that Brian-era styling is unattributed (Conv 456): the 3-marker page-provenance convention is live (180 markers in `src`), so nothing pruned — added a note to CLAUDE.md §Page Provenance + `matt-provenance.md §11` that markers capture Matt-era heritage only, Brian's changes carry no marker, and no `@brian-*` axis exists by design.
+_(none yet — cleared at each /r-start)_
