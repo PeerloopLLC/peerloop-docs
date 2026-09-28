@@ -924,4 +924,4 @@
 
 ## ✅ Done this conv
 
-- **[REND-HOP]** — retired carried findings; `/r-end` now routes its own close-surfaced issues into `HOPPER.md` (tagged `(r-end)`) with a RESUME-STATE pointer, `/r-start` Step 7.8 handles open hopper items first via `/r-hopper`. Edited r-end, r-start, r-hopper, HOPPER.md, CLAUDE.md (§Hopper + §Task Persistence), resume-state-check.sh. (Conv 459)
+_(none yet — cleared at each /r-start)_

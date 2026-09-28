@@ -23,4 +23,4 @@ Nest detail as an indented sub-bullet when the subject alone won't survive the w
 
 ## Open
 
-- [ ] **Conv 459 (r-end)** — port fps r-end's Step 1b currency-sweep to peerloop: mechanically list every path this conv changed (`git diff "$H"` working-tree-vs-heartbeat + `ls-files --others`, not `..HEAD`) and re-read each for claims the conv's own work falsified. peerloop r-end has no equivalent; surfaced in the Conv-459 peerloop-vs-fps r-end comparison.
+_None._

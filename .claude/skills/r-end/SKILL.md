@@ -533,9 +533,54 @@ Display this inline. If the count of changes is zero across both tagged and unta
 
    If all of these are empty, state `Nothing outstanding surfaced this conv.` — but still ask the question (the user may have an item of their own).
 
-2. Present the digest for the record, then proceed to Step 5.
+2. Present the digest for the record, then proceed to Step 4e.
 
    **The interactive pause was removed Conv 457** — the digest now displays without halting; r-end no longer asks "anything to act on before I close?" and flows straight into save/commit/push. (The rest of this step's rationale + the digest itself are kept intentionally; a further revision is planned.)
+
+### Step 4e: 🔴 Currency sweep — what did this conv's own work falsify? (ported from fps Step 1b, Conv 460)
+
+**A durable surface can go stale inside the conv that wrote it, and nothing else here looks.** The Step 3 agents build the Extract *forward* from the conv; none re-reads the conv's own changed files *backward* asking whether the edits made an existing claim untrue. A code change can falsify a `docs/reference/*` claim, a `plan/*/README.md` status line, or a `CLAUDE.md`/`CLAUDE-OFFLOAD.md` cross-reference — and it survives every close until someone trips over it. This step is the mechanical check. It runs **before** Step 6 commits, so the conv's work is still in the working tree.
+
+🔴 **Derive the surface list mechanically — never from memory of what you touched.** That judgement is the thing that fails, so it is not asked for:
+
+```bash
+# Heartbeat = this conv's `Conv NNN start — MACHINE` commit in peerloop-docs
+H=$(git -C ~/projects/peerloop-docs log --format='%H %s' \
+      | grep -m1 '^[0-9a-f]* Conv {NNN} start — ' | cut -d' ' -f1)
+
+# docs repo — working tree vs the heartbeat, plus files git has never seen
+{ git -C ~/projects/peerloop-docs diff --name-only "$H"
+  git -C ~/projects/peerloop-docs ls-files --others --exclude-standard; } | sort -u
+
+# code repo (Peerloop) — no heartbeat of its own: commits since the heartbeat's
+# timestamp + the current working tree + untracked files
+TS=$(git -C ~/projects/peerloop-docs show -s --format=%cI "$H")
+{ git -C ~/projects/Peerloop log --since="$TS" --format= --name-only
+  git -C ~/projects/Peerloop diff --name-only HEAD
+  git -C ~/projects/Peerloop ls-files --others --exclude-standard; } | sort -u
+```
+
+🔴 **No `..HEAD`, and the untracked (`ls-files --others`) command is not optional.** This step runs *before* Step 6, so `diff "$H"..HEAD` (two committed points) would compare the wrong thing and can return **empty** while changed files sit uncommitted in the working tree. `diff "$H"` compares the *working tree* to the heartbeat; `ls-files --others` adds files the conv created that git has never seen. A sweep that silently finds nothing reports as done — worse than no sweep. (The code repo has no `Conv NNN start` heartbeat of its own — it is anchored by the docs heartbeat's timestamp via `--since`.)
+
+🔴 **Always-swept surfaces — checked regardless of whether they changed.** A stale claim in a file no conv touches never appears in the mechanical diff. peerloop's enumerating/counting surfaces grow without being edited, so add them to the list unconditionally:
+
+- **`docs/INDEX.md`** — the docs-tree navigation index; enumerates the doc set.
+- **`PLAN.md`** — enumerates active/pending blocks and the migrated `plan/*` list.
+- **`CLAUDE.md` ↔ `docs/reference/CLAUDE-OFFLOAD.md`** — the `→ See OFFLOAD` cross-references drift when either side moves.
+
+**Re-read every changed file that makes claims, plus the always-swept surfaces**, asking one question of each: **did this conv's own work make anything written here untrue?** Not *is it well written* — only *is it still true*. Prime targets when they appear in the diff: `docs/reference/*`, `docs/as-designed/*`, `plan/*/README.md`, `CURRENT-TASKS.md`, `VERNACULAR.md`, RFC `RFC.md`/`INDEX.md`, and any tech doc whose code source-of-truth the conv changed.
+
+**Excluded, deliberately:**
+- `docs/sessions/*` — conv history, written once and never edited (the Extract/Learnings/Decisions for a conv).
+- `RESUME-STATE.md` — rewritten wholesale at Step 5, so a stale claim there is about to be overwritten anyway.
+- **Generated docs** (route maps, `tests/plato/route-map.generated.ts`, day-stamped `page-connections.md`) — regenerated deterministically at Step 5c; a diff there is by-design regen churn, not a hand-maintained stale claim.
+- `.scratch/*` — gitignored workspace.
+
+**Fix what you find, in place, naming the conv that corrected it** (e.g. `(corrected Conv {NNN})`). Where a reader may still meet the old form in the wild (a renamed file pattern, a headline number), a one-clause amendment note pointing at what replaced it beats silent replacement.
+
+⚠️ **A refinement is not a falsehood.** A claim the conv *narrowed* or *superseded but left true as far as it goes* is left alone. Correct only what a reader would now be actively **misled** by. Fixes made here are part of this conv's working tree and get committed in Step 6.
+
+Note the outcome in one line: `Currency sweep: N surface(s) re-read, M corrected (paths).` — or `Currency sweep: clean (N surfaces re-read, nothing falsified).`
 
 ### Step 5: SAVE STATE (inline)
 

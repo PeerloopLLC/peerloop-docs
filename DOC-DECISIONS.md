@@ -2,7 +2,7 @@
 
 This document tracks decisions about **how the peerloop-docs repo itself works** — its organization, workflows, conventions, and tooling. For Peerloop application decisions (code, schema, UI), see `docs/DECISIONS.md`.
 
-**Last Updated:** 2026-09-27 Conv 459 (carried findings retired — the hopper is the single deferred-work channel; supersedes the Conv-457 carried-findings portion — §3)
+**Last Updated:** 2026-09-27 Conv 460 (r-end gained a Step 4e pre-commit currency sweep — §3)
 
 ---
 
@@ -583,6 +583,15 @@ The 4572-line `docs/DECISIONS.md` was split into a `docs/decisions/` folder: ele
 ---
 
 ## 3. Claude Code Workflow
+
+### r-end Gained a Pre-Commit Currency Sweep (Step 4e) — a Self-Falsification Check Ported From fps Step 1b (Conv 460)
+**Date:** 2026-09-27 (Conv 460)
+
+`/r-end` now runs a **Step 4e currency sweep** — inserted between Step 4d PRE-COMMIT CHECKPOINT and Step 5 SAVE STATE — that re-reads the conv's own changed files *backward*, asking "did this edit make an existing claim untrue?" before committing. It derives the change-list mechanically per repo: docs via `git diff "$H"` (working-tree-vs-heartbeat) + `ls-files --others`; code (Peerloop, no heartbeat of its own) via `git log --since=<heartbeat ts>` + `diff --name-only HEAD` + `ls-files --others`. Always-swept surfaces: `docs/INDEX.md`, `PLAN.md`, `CLAUDE.md`↔`CLAUDE-OFFLOAD.md` cross-refs. peerloop-specific exclusions: `docs/sessions/*`, `RESUME-STATE.md` (rewritten Step 5), generated docs (regenerated Step 5c), `.scratch/*`. fps's `DEC-`/`DECISIONS.md` tombstone machinery was dropped (no peerloop equivalent — decisions route to `docs/decisions/` chunks via the learn-decide agent). Ruled do-it-now from the Conv-459 `(r-end)` hopper item. Committed this conv.
+
+**Rationale:** peerloop's r-end DISPATCH agents (learn-decide, update-plan, docs) only build the Extract/PLAN/docs *forward*; none re-read the conv's changed files to catch a claim the conv's own edits falsified. A grep confirmed no `currency`/`falsif`/`re-read`/`stale` language existed in r-end, so the gap was real. Step 4e must run pre-commit (edits still in the working tree for `git diff "$H"`) and after the 4d checkpoint (so late edits are included).
+
+**See:** `.claude/skills/r-end/SKILL.md` (Step 4e); `docs/sessions/2026-09/20260927_2024 Decisions.md` §§1–2, `Learnings.md` §§1–2; Conv 460.
 
 ### Carried Findings Are Retired — the Hopper Is the Single Deferred-Work Channel (Conv 459)
 **Date:** 2026-09-27 (Conv 459)

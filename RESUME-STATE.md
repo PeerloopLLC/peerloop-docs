@@ -1,4 +1,4 @@
-# State — Conv 459 (2026-09-27 ~19:38)
+# State — Conv 460 (2026-09-27 ~20:30)
 
 **Conv:** ended
 **Machine:** MacMiniM4Pro
@@ -6,20 +6,20 @@
 
 ## Summary
 
-CC-infra conv (no code). Fixed the *second* `guard-dangerous-bash.sh` false positive — a multi-line `git commit -m` message documenting a guarded command tripped the guard, because the `-m` strip was line-oriented `sed`; replaced with `perl -0777` + escaped-quote-tolerant match, added a 24-assertion calibration test (`d84d9bf`). Then, prompted by the Conv-458 finding having been buried, **retired the carried-findings channel**: `HOPPER.md` is now the single deferred-work channel — `/r-end` routes its own close-surfaced issues there (tagged `(r-end)`), `/r-start` handles open hopper items first via `/r-hopper` (`01de50e`, closes `[REND-HOP]`).
+CC-infra conv (no code). Ruled the one open hopper item carried from Conv 459 (`(r-end)`-tagged) via `/r-hopper` — user chose **do-it-now** over CC's promote-to-a-row recommendation. Ported **fps r-end's Step 1b currency-sweep** into peerloop r-end as a new **Step 4e** (pre-commit self-falsification check), then exercised it live on this very close (worked as designed — clean).
 
 ## Key Context
 
-- **Guard: both false-positive classes fixed + pinned.** Conv 458 scoped the force-flag to the push segment (`b138832`); Conv 459 made the commit-message strip multi-line-aware (`d84d9bf`). `guard-dangerous-bash.test.sh` (24 assertions, negative-control-verified) guards both. Residual data-vs-command limitation (a quoted danger-phrase in *any* command trips the guard) remains accepted — no reasonable fix short of a shell parser.
-- **Carried findings retired (Conv 459).** RESUME-STATE no longer has `## 🔬 Carried findings`; it carries this one-line `## 🗃️ Hopper handoff` pointer instead. `/r-end` Step 5 §2 appends close-surfaced issues to `HOPPER.md` **after** Step 0.8 (so they ride to next conv, not bounce the close); `/r-start` Step 7.8 handles the hopper FIRST via `/r-hopper`; the next Step 0.8 gate blocks re-closing until ruled — the forcing function the old note lacked.
-- **This close exercised the new path live:** one `(r-end)`-tagged item placed in the hopper (see below). Step 0.8 passed cleanly on the empty hopper at open.
-- **Investigation (in `.scratch/conv-459-guard-investigation.md`):** peerloop's `deny` list already blocks bare force-push; the guard hook only adds the `git -C … push --force` form. fps has no guard hook at all. peerloop r-end lacks fps's Step 1b currency-sweep — that gap is the hopper item below.
-- Board otherwise unchanged: `## 🎯 Now` top is `[GSN-SPIN]`; standing NEXT-CONV note is `[RHOOKS]` + `[A11Y]`.
+- **New r-end Step 4e — currency sweep.** Sits between Step 4d (PRE-COMMIT CHECKPOINT) and Step 5 (SAVE STATE), so it runs while the conv's work is still in the working tree. Mechanically derives the changed-path list — docs via `git diff "$H"` (working-tree-vs-heartbeat, `$H` = the `Conv NNN start` commit) + `ls-files --others`; code repo (no heartbeat of its own) via `git log --since=<heartbeat ts>` + `diff --name-only HEAD` + untracked — then re-reads each changed file **plus always-swept surfaces** (`docs/INDEX.md`, `PLAN.md`, `CLAUDE.md`↔`CLAUDE-OFFLOAD.md`) asking only *"did this conv's own work make anything here untrue?"*. Fix in place, naming the conv. **Exclusions:** `docs/sessions/*` (history), `RESUME-STATE.md` (rewritten Step 5), generated docs (regen Step 5c), `.scratch/*`.
+- **What was adapted from fps:** dual-repo heartbeat asymmetry (only peerloop-docs carries the heartbeat; code repo anchored by its timestamp). **What was dropped:** fps's `DEC-`/`DECISIONS.md` tombstone machinery (peerloop routes decisions to `docs/decisions/` chunks via the learn-decide agent, not a tombstone sweep). Kept all of fps's discipline warnings: derive mechanically not from memory, no `..HEAD`, untracked command not optional, silent-empty-is-worse, refinement≠falsehood.
+- **First live run was clean** — 7 surfaces re-read (4 changed + 3 always-swept), 0 corrected. The only durable claim at risk ("peerloop r-end lacks fps Step 1b") lived only in the previous RESUME-STATE + a `.scratch` note, both excluded/rewritten.
+- **Decision routed** to `DOC-DECISIONS.md` § 3 (cc-workflow topic) by the learn-decide agent.
+- Board unchanged otherwise: `## 🎯 Now` top is `[GSN-SPIN]`; standing NEXT-CONV priority remains the **163 codecheck warnings** — `[RHOOKS]` (88 react-hooks, already `[Opus]`-tagged, behavior-sensitive) + `[A11Y]` (75 jsx-a11y). See `CURRENT-TASKS.md`.
 
 ## 🗃️ Hopper handoff
 
-1 item placed in HOPPER.md at this close (`(r-end)`-tagged) — **handle FIRST next conv via `/r-hopper`**: port fps r-end's Step 1b currency-sweep to peerloop.
+_No items placed this close._ (The Conv-459 item was ruled do-it-now and cleared; nothing new surfaced during this close.)
 
 ## Resume Command
 
-To continue: run `/r-start` — it reads `CURRENT-TASKS.md` for the task sequence and this narrative for context; handle the open hopper item first via `/r-hopper`.
+To continue: run `/r-start` — it reads `CURRENT-TASKS.md` for the task sequence and this narrative for context.
